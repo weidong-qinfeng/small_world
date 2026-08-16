@@ -8,3 +8,9 @@ target/
 *.tar.gz
 *.log
 .DS_Store
+
+# 数字大脑运行时记忆持久化
+digital_brain/data/memory_store/
+__pycache__/
+*.pyc
+.pytest_cache/

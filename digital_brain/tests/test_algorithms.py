@@ -1,4 +1,9 @@
-"""工具模块测试：Tokenizer 词素拆分 + KnowledgeBuilder 初始知识构建"""
+"""工具模块测试：Tokenizer 词素拆分 + KnowledgeBuilder 初始知识构建
+
+v2 调整：
+    - Tokenizer 已改为无状态引擎，未绑定图谱时退化为单字拆分。
+    - 需要测试多字词/数字合并的场景，通过绑定 DeclarativeMemory 实现。
+"""
 from __future__ import annotations
 
 import sys, os
@@ -13,7 +18,8 @@ from digital_brain.src.utils.tokenizer import Tokenizer
 
 
 class TestTokenizer:
-    def test_basic(self):
+    def test_basic_fallback_single_char(self):
+        """未绑定图谱时按单字拆分"""
         t = Tokenizer()
         assert t.tokenize("1+1=?") == ["1", "+", "1", "=", "?"]
 
@@ -21,14 +27,20 @@ class TestTokenizer:
         t = Tokenizer()
         assert t.tokenize("  3 + 4  =  ?  ") == ["3", "+", "4", "=", "?"]
 
-    def test_merge_numbers(self):
-        t = Tokenizer(merge_numbers=True)
+    def test_merge_numbers_with_memory(self):
+        """绑定图谱并写入 digit_merge 规则后能合并数字"""
+        dm = DeclarativeMemory()
+        t = Tokenizer(declarative_memory=dm, merge_numbers=True)
+        # merge_numbers=True 触发写入 digit_merge 规则到图谱
+        assert t.merge_digit_sequences is True
         assert t.tokenize("12+34") == ["12", "+", "34"]
 
-    def test_chinese_ops(self):
-        t = Tokenizer()
+    def test_chinese_ops_with_memory(self):
+        """绑定图谱并通过样本学习后能分多字词"""
+        dm = DeclarativeMemory()
+        t = Tokenizer(declarative_memory=dm)
+        t.learn_from_example("一加一等于多少", ["一", "加", "一", "等于", "多少"])
         toks = t.tokenize("一加一等于多少")
-        # 一加一等于多少 -> 一 加 一 等于 多少
         assert "一" in toks and "加" in toks
         assert "等于" in toks
         assert "多少" in toks

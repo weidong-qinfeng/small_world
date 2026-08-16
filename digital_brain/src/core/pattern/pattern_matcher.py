@@ -1,4 +1,14 @@
-"""模式匹配器 - 识别输入序列中的模式结构"""
+"""模式匹配器 - v2
+
+设计哲学（对应详细设计/模式匹配设计.md）：
+    模式作为实体存于知识图谱，PatternMatcher 从图谱加载。
+    词性分类纯查图谱（已学实体才知道是什么词性）。
+    不再硬编码模式定义。
+
+向后兼容：
+    若 declarative_memory=None（孤立测试场景），退化为 v1 fallback 模式 + fallback 词性分类。
+    生产环境（绑定图谱后）严格走图谱查询。
+"""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
@@ -19,18 +29,60 @@ class PatternMatchResult(BaseModel):
 
 
 class MathPattern(BaseModel):
-    """内置的数学表达式模式定义"""
+    """内置的数学表达式模式定义（v1 兼容）"""
     name: str
-    tokens_template: List[str] = Field(default_factory=list)   # 如 ["N", "+", "N", "=", "?"]
+    tokens_template: List[str] = Field(default_factory=list)
     description: str = ""
+
+
+# v1 fallback 模式（仅 declarative=None 时使用）
+_FALLBACK_PATTERNS: Dict[str, dict] = {
+    "binary_op_question": {
+        "slots": [
+            {"type": "N", "capture": "left"},
+            {"type": "OP", "capture": "op"},
+            {"type": "N", "capture": "right"},
+            {"type": "=", "capture": None},
+            {"type": "?", "capture": None},
+        ],
+        "action": "compute_binary",
+        "priority": 1.0,
+        "description": "二元运算提问式：A + B = ?",
+    },
+    "binary_op": {
+        "slots": [
+            {"type": "N", "capture": "left"},
+            {"type": "OP", "capture": "op"},
+            {"type": "N", "capture": "right"},
+        ],
+        "action": "compute_binary",
+        "priority": 0.8,
+        "description": "二元运算：A + B",
+    },
+    "compare": {
+        "slots": [
+            {"type": "N", "capture": "left"},
+            {"type": "CMP", "capture": None},
+            {"type": "N", "capture": "right"},
+        ],
+        "action": "compare",
+        "priority": 0.7,
+        "description": "比较：A > B",
+    },
+}
 
 
 class PatternMatcher:
     """模式匹配器
 
-    核心原则（"没有初始能力"）：分类 token 时必须先查 declarative memory 中"是否学过该词的含义"。
-    没学过的词一律分类为 X（未知）。只有在传入 declarative_memory=None 的兼容旧模式下，
-    才退化为用内置字符集硬编码分类（用于老测试 / KnowledgeBuilder 兼容）。
+    v2 行为：
+    - 启动时从图谱加载所有 kind="pattern" 的实体
+    - 词性分类纯查图谱（已学实体）
+    - 匹配时按 pattern.slots 滑动匹配 token 序列
+    - 支持字面值约束（literal）和词性约束（type）
+
+    v1 兼容：
+    - 若 declarative=None，退化为 fallback 模式 + fallback 词性集合
     """
 
     # ---- 仅作兼容 fallback：仅当 declarative_memory 为 None 时启用 ----
@@ -45,10 +97,12 @@ class PatternMatcher:
         declarative_memory: Optional["DeclarativeMemory"] = None,
     ) -> None:
         self.declarative = declarative_memory
+        # v1 兼容：保留 _patterns 供老代码读取（但 v2 主要走图谱）
         self._patterns: Dict[str, MathPattern] = {}
-        self._register_defaults()
+        self._register_v1_defaults()
 
-    def _register_defaults(self) -> None:
+    def _register_v1_defaults(self) -> None:
+        """v1 兼容：保留内置 MathPattern（仅供 _try_match_binary_op_question 等老方法使用）"""
         self._patterns["binary_op_question"] = MathPattern(
             name="binary_op_question",
             tokens_template=["N", "OP", "N", "=", "?"],
@@ -65,7 +119,25 @@ class PatternMatcher:
             description="比较：A > B",
         )
 
-    # ---------- 词素归类（核心：以 declarative memory 为准）----------
+    # ---------- 模式加载：从图谱读取 ----------
+    def _load_patterns_from_memory(self) -> Dict[str, dict]:
+        """从图谱加载所有 kind=pattern 实体。图谱为空或无模式时返回 v1 fallback。"""
+        if self.declarative is None:
+            return dict(_FALLBACK_PATTERNS)
+        patterns: Dict[str, dict] = {}
+        for e in self.declarative.find_entities_by_attr("kind", "pattern"):
+            patterns[e.name] = {
+                "slots": e.attributes.get("slots", []),
+                "action": e.attributes.get("action", ""),
+                "priority": e.attributes.get("priority", 0.5),
+                "description": e.attributes.get("description", ""),
+            }
+        # 若图谱中无任何模式，退化为 fallback（保证基础可用）
+        if not patterns:
+            return dict(_FALLBACK_PATTERNS)
+        return patterns
+
+    # ---------- 词性归类（核心：以 declarative memory 为准）----------
     def classify_token(self, token: str) -> str:
         # 1) 优先查记忆系统：学过才知道是什么词
         if self.declarative is not None:
@@ -85,8 +157,14 @@ class PatternMatcher:
                         return "?"
                     if mk in ("compare_gt", "compare_lt", "compare_eq", "compare"):
                         return "CMP"
-                # 其他已学实体也不归类为 OP/N/=/？，保持 X
-                return "X"
+                # 其他已学实体（word/morpheme）归类为 word
+                if kind in ("word", "morpheme"):
+                    # 特例：morpheme 是纯数字串时归为 N（如 tokenize 泛化产生的 "31"）
+                    if kind == "morpheme" and self._is_number_str(token):
+                        return "N"
+                    return "word"
+                # 未识别 kind 也归类为 word（兼容）
+                return "word"
             # 记忆中查不到 -> 没学过 -> X
             return "X"
 
@@ -113,31 +191,116 @@ class PatternMatcher:
 
     # ---------- 主匹配 ----------
     def match(self, tokens: List[str]) -> List[PatternMatchResult]:
+        """对 tokens 应用所有 pattern 做匹配，返回按得分排序的结果列表"""
+        patterns = self._load_patterns_from_memory()
         results: List[PatternMatchResult] = []
-        tags = [self.classify_token(t) for t in tokens]
-        # 1) 完整匹配 binary_op_question [N, OP, N, =, ?]
-        result = self._try_match_binary_op_question(tokens, tags)
-        if result:
-            results.append(result)
-        # 2) 匹配 binary_op [N, OP, N]（允许尾部有 =? 或其他）
-        result = self._try_match_binary_op(tokens, tags)
-        if result:
-            results.append(result)
-        # 排序：得分高的在前
+        for name, pat in patterns.items():
+            results.extend(self._try_match_pattern(tokens, name, pat))
+        # 同一 pattern 多次命中时只保留得分最高的（避免重复）
+        seen: Dict[str, PatternMatchResult] = {}
+        for r in results:
+            cur = seen.get(r.pattern_name)
+            if cur is None or r.match_score > cur.match_score:
+                seen[r.pattern_name] = r
+        results = list(seen.values())
         results.sort(key=lambda r: -r.match_score)
         return results
 
+    def _try_match_pattern(
+        self, tokens: List[str], name: str, pat: dict
+    ) -> List[PatternMatchResult]:
+        """对 token 序列滑动匹配 pattern 的 slots"""
+        slots = pat.get("slots", [])
+        if not slots:
+            return []
+        n = len(tokens)
+        L = len(slots)
+        # 检查最少必填 slot 数
+        min_required = sum(1 for s in slots if not s.get("optional", False))
+        if n < min_required:
+            return []
+
+        results: List[PatternMatchResult] = []
+        # 滑动起始位置
+        max_start = n - min_required
+        for start in range(max_start + 1):
+            captured: Dict[str, Any] = {}
+            matched_tokens: List[str] = []
+            ok = True
+            i = start
+            j = 0
+            while j < L:
+                slot = slots[j]
+                optional = slot.get("optional", False)
+                if i >= n:
+                    # token 用完：若剩余都是可选 slot 则跳过，否则失败
+                    if optional:
+                        cap = slot.get("capture")
+                        if cap:
+                            captured[cap] = None
+                        j += 1
+                        continue
+                    ok = False
+                    break
+                tok = tokens[i]
+                if self._slot_matches(tok, slot):
+                    matched_tokens.append(tok)
+                    cap = slot.get("capture")
+                    if cap:
+                        captured[cap] = tok
+                    i += 1
+                    j += 1
+                elif optional:
+                    # 可选 slot 不匹配则跳过该 slot（不消耗 token）
+                    cap = slot.get("capture")
+                    if cap:
+                        captured[cap] = None
+                    j += 1
+                else:
+                    ok = False
+                    break
+            if ok and j >= L:
+                results.append(PatternMatchResult(
+                    pattern_name=name,
+                    match_score=float(pat.get("priority", 0.5)),
+                    matched_tokens=matched_tokens,
+                    captured=captured,
+                    span=(start, start + len(matched_tokens)),
+                ))
+        return results
+
+    def _slot_matches(self, token: str, slot: dict) -> bool:
+        """检查 token 是否匹配 slot 约束"""
+        # 1) 字面值约束（优先）
+        literal = slot.get("literal")
+        if literal is not None:
+            return token == literal
+        # 2) 词性约束
+        type_ = slot.get("type")
+        if type_ is None:
+            return True
+        if type_ == "word":
+            # word 类型：任何已学实体（含别名）都算
+            if self.declarative is None:
+                # fallback：任何非空白字符都算（兼容老测试）
+                return bool(token)
+            return bool(self.declarative.find_entity_by_name(token))
+        # N/OP/=/等：通过 classify_token
+        return self.classify_token(token) == type_
+
+    def best_match(self, tokens: List[str]) -> Optional[PatternMatchResult]:
+        results = self.match(tokens)
+        return results[0] if results else None
+
+    # ---------- v1 兼容老方法（保留供老代码调用）----------
     def _try_match_binary_op_question(
         self, tokens: List[str], tags: List[str]
     ) -> Optional[PatternMatchResult]:
-        """匹配 [N, OP, N, =, ?] 结构，长度5+"""
         n = len(tokens)
         if n < 3:
             return None
-        # 在 tags 里滑动找序列 N-OP-N-(=?可选)-(?可选)
         for i in range(n - 2):
             if tags[i] == "N" and tags[i + 1] == "OP" and tags[i + 2] == "N":
-                # 找后面的 = 和 ?
                 j = i + 3
                 has_eq = False
                 has_q = False
@@ -171,7 +334,6 @@ class PatternMatcher:
     def _try_match_binary_op(
         self, tokens: List[str], tags: List[str]
     ) -> Optional[PatternMatchResult]:
-        """匹配 [N, OP, N]"""
         n = len(tokens)
         for i in range(n - 2):
             if tags[i] == "N" and tags[i + 1] == "OP" and tags[i + 2] == "N":
@@ -183,12 +345,8 @@ class PatternMatcher:
                 return PatternMatchResult(
                     pattern_name="binary_op",
                     match_score=0.8,
-                    matched_tokens=tokens[i : i + 3],
+                    matched_tokens=tokens[i: i + 3],
                     captured=captured,
                     span=(i, i + 3),
                 )
         return None
-
-    def best_match(self, tokens: List[str]) -> Optional[PatternMatchResult]:
-        results = self.match(tokens)
-        return results[0] if results else None

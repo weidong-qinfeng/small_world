@@ -47,6 +47,20 @@ class DeclarativeMemory:
     def find_entities_by_type(self, entity_type: EntityType) -> List[Entity]:
         return [e for e in self._entities.values() if e.entity_type == entity_type]
 
+    def find_entities_by_attr(self, key: str, value) -> List[Entity]:
+        """按 attributes[key] == value 查询实体"""
+        return [
+            e for e in self._entities.values()
+            if key in e.attributes and e.attributes[key] == value
+        ]
+
+    def has_entity_with_attr(self, key: str, value) -> bool:
+        """快速判断是否存在 attributes[key] == value 的实体"""
+        for e in self._entities.values():
+            if key in e.attributes and e.attributes[key] == value:
+                return True
+        return False
+
     def update_entity(self, entity: Entity) -> None:
         if entity.id not in self._entities:
             raise ValueError(f"Entity id '{entity.id}' does not exist")

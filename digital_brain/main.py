@@ -18,12 +18,25 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 from digital_brain.src.interfaces.symbolic_interface import SymbolicInterface
 
+# v2: 默认持久化目录，启动时自动恢复已学知识
+DEFAULT_STORAGE_DIR = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "data", "memory_store"
+)
+
 
 def build_brain() -> SymbolicInterface:
-    """构建一个空白大脑（不做任何自动学习）"""
+    """构建一个大脑实例。
+
+    v2 行为：
+    - 默认空白启动（auto_build=False, auto_learn_tokenizer=False）
+    - 启用持久化目录，启动时若存在已固化状态则自动恢复
+    - 学习后自动固化（无需手动 save）
+    """
     return SymbolicInterface(
         auto_build=False,
         auto_learn_tokenizer=False,
+        storage_dir=DEFAULT_STORAGE_DIR,
+        auto_restore=True,
     )
 
 
@@ -39,6 +52,8 @@ def demo() -> None:
     print(f"[空白脑已启动] 实体={brain.declarative.entity_count}, "
           f"程序={brain.procedural.procedure_count}, "
           f"词素={len(brain.tokenizer.known_morphemes)}")
+    if brain.storage_dir:
+        print(f"  持久化目录: {brain.storage_dir}")
     print()
 
     # 列出可用知识包
@@ -56,6 +71,8 @@ def demo() -> None:
     print("  learn <包名>     学习知识包")
     print("  packages         列出可用知识包")
     print("  status           查看大脑当前知识状态")
+    print("  save [目录]      固化知识到硬盘（默认: 自动持久化）")
+    print("  load [目录]      从硬盘恢复知识")
     print("  <问题>           直接输入问题求解")
     print("  q                退出")
     print()
@@ -111,6 +128,47 @@ def demo() -> None:
                   f"关系={brain.declarative.relation_count}, "
                   f"程序={brain.procedural.procedure_count}, "
                   f"词素={len(brain.tokenizer.known_morphemes)}")
+            if brain.storage_dir:
+                has = brain.has_persisted_state()
+                print(f"持久化目录: {brain.storage_dir} (已固化: {has})")
+            print()
+            continue
+
+        # ---- save 命令：固化到硬盘 ----
+        if text.lower() == "save" or text.lower().startswith("save "):
+            arg = text[5:].strip() if text.lower().startswith("save ") else None
+            target = arg or brain.storage_dir or DEFAULT_STORAGE_DIR
+            try:
+                stats = brain.consolidate(target)
+                if stats.get("consolidated"):
+                    print(f"[固化完成] 实体={stats.get('entity_count')}, "
+                          f"关系={stats.get('relation_count')}, "
+                          f"程序={stats.get('procedure_count')}")
+                    print(f"  目录: {target}")
+                else:
+                    print(f"[固化失败] {stats}")
+            except Exception as e:
+                print(f"[错误] {e}")
+            print()
+            continue
+
+        # ---- load 命令：从硬盘恢复 ----
+        if text.lower() == "load" or text.lower().startswith("load "):
+            arg = text[5:].strip() if text.lower().startswith("load ") else None
+            target = arg or brain.storage_dir or DEFAULT_STORAGE_DIR
+            try:
+                stats = brain.restore(target)
+                if stats.get("restored"):
+                    print(f"[恢复完成] 实体={stats.get('entity_count')}, "
+                          f"关系={stats.get('relation_count')}, "
+                          f"程序={stats.get('procedure_count')}")
+                    print(f"  版本: {stats.get('version')}, 固化时间: {stats.get('consolidated_at')}")
+                elif stats.get("skipped"):
+                    print(f"[跳过] {stats.get('reason', '目录无已固化状态')}")
+                else:
+                    print(f"[恢复失败] {stats}")
+            except Exception as e:
+                print(f"[错误] {e}")
             print()
             continue
 

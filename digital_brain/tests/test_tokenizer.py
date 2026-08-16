@@ -1,12 +1,12 @@
-"""词素拆分学习单元测试（开发计划 §6.2）
+"""词素拆分学习单元测试（v2 - 无状态查图谱）
 
 验证：
-- 学习前 vs 学习后 的分词行为差异（证明能力不是先天的）
-- 从单个样本归纳多字词素
-- 从数字合并样本学到"数字串合并"规则并泛化到未见过的数字
-- 批量学习（load_from_dataset）
-- 独立符号识别（未知字符首次出现后被记住）
-- 上下文关联：长词优先匹配（如"等于"优先于"等"/"于"）
+- BootstrapTokenizer 仅做单字拆分（先天基础）
+- LearnableTokenizer 未绑定图谱时退化为单字拆分（兼容孤立场景）
+- 通过 SymbolicInterface 学习后分词正确（知识唯一来源是图谱）
+- 数字合并规则存图谱，泛化到未见过的数字
+- 多字词最长匹配优先（"等于"优先于"等"+"于"）
+- 学习新多字词后能正确分词
 """
 from __future__ import annotations
 
@@ -15,6 +15,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../.
 
 import pytest
 
+from digital_brain.src.core.memory.declarative_memory import DeclarativeMemory
 from digital_brain.src.utils.tokenizer import (
     BootstrapTokenizer,
     LearnableTokenizer,
@@ -33,68 +34,118 @@ class TestBootstrap:
         # 空格被跳过，其他一切按单字
         assert tokens == ["1", "+", "1", "=", "?", "你", "好"]
 
-    def test_bootstrap_knows_no_digit_merge(self):
-        """先天没有"数字合并"概念"""
-        t = LearnableTokenizer(auto_learn=False)  # 完全空白
+
+# ==============================================================
+# 无状态 Tokenizer：未绑定图谱时退化为单字
+# ==============================================================
+
+class TestStatelessFallback:
+    def test_no_memory_degrades_to_single_char(self):
+        """未绑定图谱 → 没有任何词素知识 → 全部按单字拆"""
+        t = LearnableTokenizer()  # 默认 declarative=None
         assert t.merge_digit_sequences is False
-        assert t.tokenize("1234") == ["1", "2", "3", "4"]
+        assert t.known_morphemes == set()
+        # 没学时 999 被拆成 ['9','9','9']
+        assert t.tokenize("999") == ["9", "9", "9"]
+        # 一加一等于多少 全部按单字
+        assert t.tokenize("一加一等于多少") == ["一", "加", "一", "等", "于", "多", "少"]
 
 
 # ==============================================================
-# 单样本学习能力
+# 通过 SymbolicInterface 学习后分词正确（知识唯一来源是图谱）
 # ==============================================================
 
-class TestLearnFromExample:
-    def test_before_after_one_example(self):
-        """学习前："等于/多少" 拆成单字 → 学 1 个样本后：合并"""
-        t = LearnableTokenizer(auto_learn=False)
-        text = "一加一等于多少"
-        # ---- 学习前 ----
-        assert t.tokenize(text) == ["一", "加", "一", "等", "于", "多", "少"]
-        # ---- 学习 ----
-        stats = t.learn_from_example(text, ["一", "加", "一", "等于", "多少"])
-        assert stats["n_added"] == 2   # 等于、多少 是新词素
-        assert stats["merge_digit_learned"] is False
+class TestLearnThroughBrain:
+    def test_brain_can_tokenize_after_learning_default_curriculum(self):
+        """学习标准课程后能正确分词"""
+        from digital_brain.src.interfaces.symbolic_interface import SymbolicInterface
+        brain = SymbolicInterface(auto_build=True)
+        # 学过 0-10 数字、+ - = ? 等词，能正确分词
+        assert brain.tokenizer.tokenize("1+1=?") == ["1", "+", "1", "=", "?"]
+        # 学过"等于""多少"作为别名（marker 的 aliases），能分多字词
+        assert brain.tokenizer.tokenize("一加一等于多少") == ["一", "加", "一", "等于", "多少"]
+
+    def test_digit_merge_learned_through_brain(self):
+        """学过多位数后图谱中有 digit_merge 规则，能泛化到未见数字"""
+        from digital_brain.src.interfaces.symbolic_interface import SymbolicInterface
+        brain = SymbolicInterface(auto_build=True)
+        # 学过数字 10（两位数）→ 图谱中有 digit_merge 规则
+        assert brain.tokenizer.merge_digit_sequences is True
+        # 泛化到未见过的 9876
+        assert brain.tokenizer.tokenize("9876") == ["9876"]
+        # 泛化到 77+88
+        assert brain.tokenizer.tokenize("77+88") == ["77", "+", "88"]
+
+    def test_learn_new_multichar_word_then_tokenize(self):
+        """主动学习新的多字词（如"请问"）后能正确分词"""
+        from digital_brain.src.interfaces.symbolic_interface import SymbolicInterface
+        brain = SymbolicInterface(auto_build=True)
+        # 学习前 "请问" 拆成单字（因为图谱里没有这个词）
+        before = brain.tokenizer.tokenize("请问一加一")
+        assert "请问" not in before
+        # 通过 learn_tokenizer_example 学习
+        brain.learn_tokenizer_example(
+            "请问三加二等于几？",
+            ["请问", "三", "加", "二", "等于", "几", "？"],
+        )
+        # 学习后能正确分词
+        after = brain.tokenizer.tokenize("请问一加一")
+        assert "请问" in after
+
+    def test_longest_match_priority(self):
+        """最长匹配优先：若学过"等于"则不拆成"等"+"于" """
+        from digital_brain.src.interfaces.symbolic_interface import SymbolicInterface
+        brain = SymbolicInterface(auto_build=True)
+        # "等于" 作为 marker "=" 的别名已经在图谱中
+        toks = brain.tokenizer.tokenize("等于")
+        assert "等于" in toks
+
+
+# ==============================================================
+# 通过 DeclarativeMemory 直接测试 Tokenizer 无状态行为
+# ==============================================================
+
+class TestTokenizerWithMemory:
+    def _make_brain_with_memory(self):
+        """构造一个绑定了图谱的 Tokenizer（不通过 SymbolicInterface）"""
+        dm = DeclarativeMemory()
+        t = LearnableTokenizer(declarative_memory=dm)
+        return t, dm
+
+    def test_learn_example_writes_to_memory(self):
+        """learn_from_example 把词素写入图谱"""
+        t, dm = self._make_brain_with_memory()
+        # 学习前图谱为空
+        assert t.known_morphemes == set()
+        # 学习一个样本
+        stats = t.learn_from_example("一加一等于多少", ["一", "加", "一", "等于", "多少"])
+        assert stats["n_added"] == 4   # 4 个新词素（"一"重复，只算 1 次）
         assert stats["ok"] is True
         assert t.learned_examples == 1
-        # ---- 学习后 ----
-        assert t.tokenize(text) == ["一", "加", "一", "等于", "多少"]
+        # 学习后图谱中有这些词素
+        assert "等于" in t.known_morphemes
+        assert "多少" in t.known_morphemes
+        # 能正确分词
+        assert t.tokenize("一加一等于多少") == ["一", "加", "一", "等于", "多少"]
 
     def test_learn_digit_merge_and_generalize(self):
-        t = LearnableTokenizer(auto_learn=False)
-        # 没学时 999 被拆成 ['9','9','9']
-        assert "".join(t.tokenize("999")) == "999"
-        assert len(t.tokenize("999")) == 3
-        # 学一个"12+34"样本 —— 里面有 12、34 两个 >=2 位数字串
+        """学过含 2 位数字的样本后，digit_merge 规则写入图谱，能泛化"""
+        t, dm = self._make_brain_with_memory()
+        # 学习前不会数字合并
+        assert t.merge_digit_sequences is False
+        # 学习"12+34"样本
         stats = t.learn_from_example("12+34", ["12", "+", "34"])
         assert stats["merge_digit_learned"] is True
-        # 泛化：从未见过的 9876 正确合并成 1 个 token
+        # 学习后规则在图谱中
+        assert t.merge_digit_sequences is True
+        # 泛化到未见过的 9876
         assert t.tokenize("9876") == ["9876"]
         # 泛化：77+88 正确
         assert t.tokenize("77+88") == ["77", "+", "88"]
 
-    def test_longest_match_priority(self):
-        """最长匹配优先：若学会"等于"则不拆成"等"+"于" """
-        t = LearnableTokenizer(auto_learn=False)
-        t.learn_from_example("X", ["等于", "于"])  # 同时学会 2-char 和 1-char
-        # 上下文：出现"等于"时 2-char 优先
-        assert "等于" in t.tokenize("等于a")
-
-    def test_conflict_detection(self):
-        """标注不一致时被记为冲突（不抛异常）"""
-        t = LearnableTokenizer(auto_learn=False)
-        stats = t.learn_from_example("abc", ["ab"])  # "abc" != "ab" 拼接
-        assert stats["ok"] is False
-        assert len(t.conflicts) == 1
-
-
-# ==============================================================
-# 批量学习 + 默认数据集
-# ==============================================================
-
-class TestLearnFromDataset:
-    def test_learn_from_list(self):
-        t = LearnableTokenizer(auto_learn=False)
+    def test_learn_dataset_batch(self):
+        """批量学习"""
+        t, dm = self._make_brain_with_memory()
         dataset = [
             {"input": "1+1=?", "expected_tokens": ["1", "+", "1", "=", "?"]},
             {"input": "一加一等于多少", "expected_tokens": ["一", "加", "一", "等于", "多少"]},
@@ -108,64 +159,16 @@ class TestLearnFromDataset:
         assert t.tokenize("56+78") == ["56", "+", "78"]
         assert "等于" in t.tokenize("五减去二等于多少")
 
-    def test_auto_learn_from_default_dataset_on_init(self):
-        """构造时默认加载 tokenization_examples.json"""
-        t = LearnableTokenizer(auto_learn=True)
-        assert t.learned_examples >= 4   # 预设 4 个样本
-        assert t.merge_digit_sequences is True
-        assert "等于" in t.known_morphemes
-        assert "多少" in t.known_morphemes
-
-    def test_default_dataset_cover_all_basic_cases(self):
-        """加载默认数据集后，预设 4 个样本都能正确分词"""
-        t = LearnableTokenizer(auto_learn=True)
-        cases = [
-            ("1+1=?", ["1", "+", "1", "=", "?"]),
-            ("1 + 1 = ？", ["1", "+", "1", "=", "？"]),
-            ("一加一等于多少", ["一", "加", "一", "等于", "多少"]),
-            ("12+34", ["12", "+", "34"]),
-        ]
-        for inp, expected in cases:
-            assert t.tokenize(inp) == expected, f"Failed on {inp}"
+    def test_conflict_detection(self):
+        """标注不一致时被记为冲突（不抛异常）"""
+        t, dm = self._make_brain_with_memory()
+        stats = t.learn_from_example("abc", ["ab"])  # "abc" != "ab" 拼接
+        assert stats["ok"] is False
+        assert len(t.conflicts) == 1
 
 
 # ==============================================================
-# 独立符号识别（§6.2）
-# ==============================================================
-
-class TestIndependentSymbolRecognition:
-    def test_unknown_symbol_learned_after_first_encounter(self):
-        t = LearnableTokenizer(auto_learn=False)
-        assert "@" not in t.known_morphemes
-        t.tokenize("x@y")        # 首次遇到 @，被当单字兜底添加
-        assert "@" in t.known_morphemes  # 下次就是"熟人"
-
-
-# ==============================================================
-# 与 SymbolicInterface 集成
-# ==============================================================
-
-class TestTokenizerThroughBrain:
-    def test_brain_exposes_learning_api(self):
-        from digital_brain.src.interfaces.symbolic_interface import SymbolicInterface
-        brain = SymbolicInterface(auto_build=True)
-        # 有学习统计
-        stats = brain.tokenizer_stats()
-        assert stats["learned_examples"] >= 4
-        assert stats["merge_digit_sequences_learned"] is True
-        # 可主动学习新样本
-        before = stats["known_morphemes_count"]
-        brain.learn_tokenizer_example("请问 99 乘以 88 等于多少？",
-                                       ["请问", "99", "乘以", "88", "等于", "多少", "？"])
-        after = brain.tokenizer_stats()["known_morphemes_count"]
-        assert after > before  # 新增了"请问""乘以""？"等
-        # 再对同一输入做 solve，词素拆分正确包含"请问"
-        r = brain.solve("请问 99 乘以 88 等于多少？")
-        assert "请问" in r.tokens or "乘以" in r.tokens
-
-
-# ==============================================================
-# 向后兼容：旧代码 Tokenizer() 仍然可用
+# 向后兼容：Tokenizer 类名别名
 # ==============================================================
 
 class TestBackwardCompatibility:
@@ -175,31 +178,18 @@ class TestBackwardCompatibility:
         t = Tokenizer()
         assert isinstance(t, LearnableTokenizer)
 
-    def test_merge_numbers_kwarg_still_works(self):
-        # merge_numbers=True 立即得到数字合并能力
-        t = Tokenizer(auto_learn=False, merge_numbers=True)
-        assert t.merge_digit_sequences is True
-        assert t.tokenize("42") == ["42"]
-        # merge_numbers=False 不合并
-        t = Tokenizer(auto_learn=False, merge_numbers=False)
-        assert t.merge_digit_sequences is False
-        assert t.tokenize("42") == ["4", "2"]
-
 
 # ==============================================================
-# 完整 E2E：没学过 token 的全新词 → 学习后 solve 正确
+# 完整 E2E：通过 SymbolicInterface 学新词 → solve
 # ==============================================================
 
 class TestEndToEndLearningNewMorphemes:
-    def test_teach_then_solve_chinese_multiplication_phrase(self):
-        """学习新的中文多字词素后，能正确拆分并解加法题。
-        注意：遵循「没有初始能力」原则，加减之外的运算（乘/除）必须单独 teach 对应程序才会解。
-        这里用加法保证在 teach_default_curriculum 范围内也能验证分词学习效果。
-        """
+    def test_teach_then_solve_chinese_phrase(self):
+        """学习新的中文多字词素后，能正确拆分并解题。"""
         from digital_brain.src.interfaces.symbolic_interface import SymbolicInterface
         brain = SymbolicInterface(auto_build=True)
         question = "请问三加二等于几？"
-        # 先教一遍"请问""等于""几"该怎么拆（两字词）
+        # 先教一遍"请问""等于""几"该怎么拆（多字词）
         brain.learn_tokenizer_example(
             "请问三加二等于几？",
             ["请问", "三", "加", "二", "等于", "几", "？"],

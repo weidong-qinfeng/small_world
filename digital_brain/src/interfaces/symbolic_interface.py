@@ -91,6 +91,8 @@ class SymbolicInterface:
         *,
         auto_build: bool = False,           # 默认：不自动构建（遵循"初始没有能力"）
         auto_learn_tokenizer: bool = False, # 默认：分词器也空白（不加载 tokenization_examples.json）
+        storage_dir: Optional[str] = None,  # v2: 记忆持久化目录，None=不持久化
+        auto_restore: bool = False,         # v2: 启动时自动从 storage_dir 恢复
     ) -> None:
         # 1. 加载配置
         self.config = self._load_config(config_path or self.DEFAULT_CONFIG_PATH)
@@ -98,6 +100,14 @@ class SymbolicInterface:
         self.declarative = DeclarativeMemory()
         self.procedural = ProceduralMemory()
         self.consolidation = MemoryConsolidation(self.declarative, self.procedural)
+        # v2: 持久化目录
+        self.storage_dir = storage_dir
+        self._auto_consolidate = storage_dir is not None  # 学习后自动固化
+        # v2: 启动时自动恢复（优先级高于 auto_build）
+        restored = False
+        if auto_restore and storage_dir and MemoryConsolidation.has_saved_state(storage_dir):
+            stats = self.consolidation.restore_from_disk(storage_dir)
+            restored = stats.get("restored", False)
         # 3. 激活引擎
         act_cfg = self.config.get("memory", {}).get("activation", {})
         self.memory_activation = MemoryActivation(
@@ -130,10 +140,15 @@ class SymbolicInterface:
         )
         # 6. 工具：Tokenizer 默认空白（不会自动加载 JSON 样本 —— 那等于先天有能力）
         #    但 LearnableTokenizer 本身是"学习机制"，允许存在。
-        self.tokenizer: Tokenizer = Tokenizer(auto_learn=auto_learn_tokenizer)
+        #    v2: Tokenizer 绑定 declarative_memory，词素知识唯一来源是图谱
+        self.tokenizer: Tokenizer = Tokenizer(
+            auto_learn=auto_learn_tokenizer,
+            declarative_memory=self.declarative,
+        )
         self.physical = PhysicalInterface()
         # 7. 向后兼容：auto_build=True 时走标准课程（内部也是调用 teach_*，模拟教学）
-        if auto_build:
+        #    v2: 若已从硬盘恢复，跳过 auto_build（避免覆盖已学知识）
+        if auto_build and not restored:
             self.teach_default_curriculum(
                 max_number=self.config.get("knowledge", {}).get("max_initial_number", 10)
             )
@@ -156,11 +171,10 @@ class SymbolicInterface:
             brain.learn_number_word("两", 2)
         """
         aliases = list(aliases or [])
-        # 把"主符号 symbol"和"别名"都视为词，教给分词器
-        self._teach_tokenizer_morphemes([symbol] + aliases)
-        # 若 value 是多位数，还要教会分词器"数字要合并"的结构规则
+        # v2: 词素知识写入图谱（实体本身即词素），无需单独教 tokenizer
+        # 若 value 是多位数，在图谱中写入 digit_merge 规则
         if len(str(abs(int(value)))) >= 2:
-            self._teach_tokenizer_merge_digits()
+            self.tokenizer._ensure_digit_merge_rule()
 
         attrs: Dict[str, Any] = {"kind": "number", "value": int(value), "numeric_value": int(value)}
         embodied = [embodied_tag] if embodied_tag else [f"finger_{value}"]
@@ -193,7 +207,7 @@ class SymbolicInterface:
             brain.learn_operator_word("+", "add", aliases=["加", "加上", "＋"])
         """
         aliases = list(aliases or [])
-        self._teach_tokenizer_morphemes([symbol] + aliases)
+        # v2: 词素知识写入图谱（实体本身即词素）
         entity = Entity(
             id=self._new_entity_id(f"op_{op_type}"),
             name=symbol,
@@ -220,7 +234,7 @@ class SymbolicInterface:
         marker_kind 示例："equality"(等号), "question"(疑问号), "compare_gt"/"compare_lt"
         """
         aliases = list(aliases or [])
-        self._teach_tokenizer_morphemes([symbol] + aliases)
+        # v2: 词素知识写入图谱（实体本身即词素）
         entity = Entity(
             id=self._new_entity_id(f"marker_{marker_kind}"),
             name=symbol,
@@ -252,7 +266,7 @@ class SymbolicInterface:
             brain.learn_word("爸爸", meaning="父亲", pinyin="bà ba", word_type="名词", aliases=["爸"])
         """
         aliases = list(aliases or [])
-        self._teach_tokenizer_morphemes([symbol] + aliases)
+        # v2: 词素知识写入图谱（实体本身即词素）
         attrs: Dict[str, Any] = {
             "kind": "word",
             "meaning": meaning,
@@ -325,7 +339,10 @@ class SymbolicInterface:
                 f"algorithm_key='{algorithm_key}' 不在注册表里。"
                 f"可用: {list(self.algorithm_registry.all_algorithms().keys())}"
             )
-        self._teach_tokenizer_morphemes(list(trigger_words))
+        # v2: trigger_words 作为词素存入图谱
+        for w in trigger_words:
+            if w:
+                self.tokenizer._ensure_morpheme_entity(w)
         # 步骤：用户有传就用；否则按 algorithm_key 生成标准步骤
         op_steps: List[OperationStep] = []
         if steps:
@@ -378,6 +395,91 @@ class SymbolicInterface:
                 "conflicts": len(t.conflicts),
             }
         return {"type": "unknown_tokenizer"}
+
+    # ============================================================
+    # v2: 模式学习接口
+    # ============================================================
+
+    def learn_pattern(
+        self,
+        name: str,
+        slots: List[Dict[str, Any]],
+        action: str = "",
+        priority: float = 0.5,
+        description: str = "",
+    ) -> str:
+        """教大脑一个模式：把模式作为实体写入知识图谱。
+
+        Args:
+            name: 模式名（如 "binary_op_question"）
+            slots: 模式的 slot 定义列表，每个 slot 含 type/literal/capture/optional 字段
+            action: 匹配后触发的动作（如 "build_dag:binary_op"）
+            priority: 优先级（用于多模式同时命中时排序）
+            description: 模式描述
+
+        学习后：PatternMatcher._load_patterns_from_memory() 会自动读到该模式。
+        同时，slots 中的字面值（如"的""之和"）也会作为词素写入图谱。
+        """
+        # 把 slots 中的字面值作为词素写入图谱
+        for slot in slots:
+            literal = slot.get("literal")
+            if literal:
+                self.tokenizer._ensure_morpheme_entity(literal)
+        # 创建或更新 pattern 实体
+        eid = f"pattern_{name}"
+        existing = self.declarative.get_entity(eid)
+        entity = Entity(
+            id=eid,
+            name=name,
+            aliases=[],
+            entity_type=EntityType.ABSTRACT,
+            attributes={
+                "kind": "pattern",
+                "slots": slots,
+                "action": action,
+                "priority": priority,
+                "description": description,
+            },
+        )
+        if existing:
+            self.declarative.update_entity(entity)
+            return eid
+        try:
+            self.declarative.add_entity(entity)
+            return eid
+        except ValueError:
+            # 已存在（按 id），走 update
+            self.declarative.update_entity(entity)
+            return eid
+
+    def learn_pattern_sample(
+        self,
+        input_text: str,
+        tokens: List[str],
+        pattern: str,
+        captured: Dict[str, Any],
+    ) -> str:
+        """教大脑一个模式样本：把样本作为实体写入图谱。
+
+        用于学习后自检：检查模式匹配是否正确。
+        """
+        import uuid as _uuid
+        eid = f"psample_{_uuid.uuid4().hex[:8]}"
+        entity = Entity(
+            id=eid,
+            name=f"sample_{pattern}",
+            aliases=[],
+            entity_type=EntityType.ABSTRACT,
+            attributes={
+                "kind": "pattern_sample",
+                "input": input_text,
+                "tokens": tokens,
+                "pattern": pattern,
+                "captured": captured,
+            },
+        )
+        self.declarative.add_entity(entity)
+        return eid
 
     # ============================================================
     # 知识包学习：从可读文件加载知识（人工触发）
@@ -433,6 +535,8 @@ class SymbolicInterface:
             "words": 0,
             "procedures": 0,
             "tokenizer_samples": 0,
+            "patterns": 0,        # v2: 模式
+            "pattern_samples": 0, # v2: 模式样本
         }
 
         # 1) 数字单词
@@ -491,12 +595,75 @@ class SymbolicInterface:
             ts = self.learn_tokenizer_dataset(examples)
             stats["tokenizer_samples"] = ts.get("examples", 0)
 
+        # 7) v2: 模式定义
+        for item in pkg.get("patterns", []):
+            self.learn_pattern(
+                name=item["name"],
+                slots=item.get("slots", []),
+                action=item.get("action", ""),
+                priority=item.get("priority", 0.5),
+                description=item.get("description", ""),
+            )
+            stats["patterns"] += 1
+
+        # 8) v2: 模式样本
+        for item in pkg.get("pattern_samples", []):
+            self.learn_pattern_sample(
+                input_text=item["input"],
+                tokens=item.get("tokens", []),
+                pattern=item["pattern"],
+                captured=item.get("captured", {}),
+            )
+            stats["pattern_samples"] += 1
+
         self.knowledge_stats = {
             "learned_from_package": stats,
             "declarative_total": self.declarative.entity_count,
             "procedural_total": self.procedural.procedure_count,
         }
+        # v2: 学习后自动固化（若启用了持久化目录）
+        if self._auto_consolidate and self.storage_dir:
+            self.consolidation.consolidate_to_disk(self.storage_dir)
         return self.knowledge_stats
+
+    # ============================================================
+    # v2: 记忆固化与启动恢复
+    # ============================================================
+
+    def consolidate(self, storage_dir: Optional[str] = None) -> Dict[str, Any]:
+        """固化当前知识到硬盘。
+
+        Args:
+            storage_dir: 固化目录；None 则用 self.storage_dir
+        """
+        target = storage_dir or self.storage_dir
+        if not target:
+            return {"consolidated": False, "reason": "no storage_dir configured"}
+        if storage_dir:
+            self.storage_dir = storage_dir
+            self._auto_consolidate = True
+        return self.consolidation.consolidate_to_disk(target)
+
+    def restore(self, storage_dir: Optional[str] = None) -> Dict[str, Any]:
+        """从硬盘恢复知识到当前 brain（覆盖现有内存）。
+
+        Args:
+            storage_dir: 恢复目录；None 则用 self.storage_dir
+        """
+        target = storage_dir or self.storage_dir
+        if not target:
+            return {"restored": False, "reason": "no storage_dir configured"}
+        if storage_dir:
+            self.storage_dir = storage_dir
+            self._auto_consolidate = True
+        return self.consolidation.restore_from_disk(target)
+
+    def has_persisted_state(self, storage_dir: Optional[str] = None) -> bool:
+        """检查是否已有持久化状态"""
+        target = storage_dir or self.storage_dir
+        if not target:
+            return False
+        return MemoryConsolidation.has_saved_state(target)
 
     # ============================================================
     # 标准入门课程：从零教完 10 以内加减法所需最小知识集合
@@ -704,26 +871,6 @@ class SymbolicInterface:
             return e
         matches = self.declarative.find_entity_by_name(symbol_or_id)
         return matches[0] if matches else None
-
-    # ---- 把一个词同时教给 tokenizer 的已知词素词典（最短句子样本形式）----
-    def _teach_tokenizer_morphemes(self, words: Sequence[str]) -> None:
-        if not isinstance(self.tokenizer, LearnableTokenizer):
-            return
-        for w in words:
-            if not w:
-                continue
-            if w not in self.tokenizer.known_morphemes:
-                self.tokenizer.known_morphemes.add(w)
-        self.tokenizer._rebuild_morpheme_index()
-
-    # ---- 教"数字要合并"（通过构造一个样本让它学到结构规则）----
-    def _teach_tokenizer_merge_digits(self) -> None:
-        if not isinstance(self.tokenizer, LearnableTokenizer):
-            return
-        if self.tokenizer.merge_digit_sequences:
-            return
-        # 通过一个 2 位数的样本触发 merge_digit_sequences 学习
-        self.tokenizer.learn_from_example("12+34", ["12", "+", "34"])
 
     # ---- 程序性步骤默认模板 ----
     @staticmethod
