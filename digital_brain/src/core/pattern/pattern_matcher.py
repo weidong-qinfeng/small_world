@@ -26,6 +26,7 @@ class PatternMatchResult(BaseModel):
     matched_tokens: List[str] = Field(default_factory=list)
     captured: Dict[str, Any] = Field(default_factory=dict)
     span: Tuple[int, int] = (0, 0)  # [start, end) 索引范围
+    action: str = ""                # v2: 模式匹配后触发的动作（如 build_dag:binary_op）
 
 
 class MathPattern(BaseModel):
@@ -191,17 +192,25 @@ class PatternMatcher:
 
     # ---------- 主匹配 ----------
     def match(self, tokens: List[str]) -> List[PatternMatchResult]:
-        """对 tokens 应用所有 pattern 做匹配，返回按得分排序的结果列表"""
+        """对 tokens 应用所有 pattern 做匹配，返回按得分排序的结果列表
+
+        v2: 同一 pattern 在不同 span 命中时保留全部（用于多句应用题），
+            仅去除完全相同的 (pattern_name, span) 重复。
+        """
         patterns = self._load_patterns_from_memory()
         results: List[PatternMatchResult] = []
         for name, pat in patterns.items():
-            results.extend(self._try_match_pattern(tokens, name, pat))
-        # 同一 pattern 多次命中时只保留得分最高的（避免重复）
-        seen: Dict[str, PatternMatchResult] = {}
+            for r in self._try_match_pattern(tokens, name, pat):
+                # 填入 action 字段
+                r.action = pat.get("action", "")
+                results.append(r)
+        # 仅去除完全相同的 (pattern_name, span_start) 重复
+        seen: Dict[Tuple[str, int], PatternMatchResult] = {}
         for r in results:
-            cur = seen.get(r.pattern_name)
+            key = (r.pattern_name, r.span[0])
+            cur = seen.get(key)
             if cur is None or r.match_score > cur.match_score:
-                seen[r.pattern_name] = r
+                seen[key] = r
         results = list(seen.values())
         results.sort(key=lambda r: -r.match_score)
         return results

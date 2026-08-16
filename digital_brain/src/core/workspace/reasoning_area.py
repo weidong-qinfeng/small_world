@@ -1,10 +1,17 @@
 """推理操作区 - 协调模式匹配、意图识别和程序性记忆/算法的执行
 
+v2 变更（Phase 3）：
+    - 新增 DAG 推理路径：问题→DAG构建（理解）→DAG执行（求解）
+    - 新增原子操作集：read_memory/write_memory/search_context/call_algorithm/return_value
+    - 新增 DAG 构建器：模式匹配结果→问题DAG
+    - 新增 DAG 执行引擎：拓扑排序→逐节点执行→工作记忆传数据
+    - 保留旧单步推理路径作为回退（无 build_dag 模式命中时使用）
+
 将推理链写入 OutputBuffer。
 """
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from digital_brain.src.algorithms.adding import AddingAlgorithm
 from digital_brain.src.algorithms.counting import CountingAlgorithm
@@ -15,6 +22,17 @@ from digital_brain.src.core.memory.procedural_memory import ProceduralMemory
 from digital_brain.src.core.models import Procedure
 from digital_brain.src.core.pattern.intent_recognizer import Intent, IntentRecognizer, IntentType
 from digital_brain.src.core.pattern.pattern_matcher import PatternMatchResult, PatternMatcher
+from digital_brain.src.core.workspace.dag import (
+    ATOMIC_OPS,
+    DAGBuildResult,
+    DAGGraph,
+    DAGNode,
+    OP_CALL_ALGORITHM,
+    OP_READ_MEMORY,
+    OP_RETURN_VALUE,
+    OP_SEARCH_CONTEXT,
+    OP_WRITE_MEMORY,
+)
 from digital_brain.src.core.workspace.output_buffer import OutputBuffer
 from digital_brain.src.core.workspace.workspace import Workspace
 
@@ -39,8 +57,496 @@ class AlgorithmRegistry:
         }
 
 
+# ============================================================
+# DAG 构建器
+# ============================================================
+
+# op_type → algorithm_key 映射（引擎命名约定，非领域知识）
+_OP_TYPE_TO_ALGORITHM: Dict[str, str] = {
+    "add": "adding",
+    "sub": "subtracting",
+    "mul": "multiplying",
+    "div": "dividing",
+}
+
+# v2 算法 key 集合（原子操作的包装，允许 learn_procedure 注册）
+_V2_ALGORITHM_KEYS = frozenset({
+    "removing", "bind_attribute", "resolve_pronoun", "retrieve_attr",
+})
+
+
+class DAGBuilder:
+    """DAG 构建器 - 把模式匹配结果翻译为问题DAG
+
+    构建成功 = 系统理解了问题。
+    构建失败 = 不理解，返回结构化缺失清单。
+
+    模板由模式实体的 action 字段指定（如 build_dag:binary_op），
+    构建器按 action 类型实例化对应的 DAG 节点骨架。
+    """
+
+    def __init__(
+        self,
+        declarative_memory: Optional[Any] = None,
+        procedural_memory: Optional[ProceduralMemory] = None,
+    ) -> None:
+        self.declarative = declarative_memory
+        self.procedural = procedural_memory
+        self._node_counter = 0
+
+    def _new_node_id(self, prefix: str = "n") -> str:
+        self._node_counter += 1
+        return f"{prefix}{self._node_counter}"
+
+    def build(self, matches: List[PatternMatchResult]) -> DAGBuildResult:
+        """根据模式匹配结果构建问题DAG。
+
+        三道闸门：
+        1. 节点完备：每个 action 的输入都有来源
+        2. 无环：图是真正的 DAG
+        3. 算法已学：call_algorithm 引用的 key 已注册
+        """
+        self._node_counter = 0
+        dag = DAGGraph()
+        missing: List[str] = []
+
+        # 按 span 排序，确保 write_memory 在 search_context 之前
+        sorted_matches = sorted(matches, key=lambda m: (m.span[0], -m.match_score))
+
+        write_node_ids: List[str] = []  # 所有 write_memory 节点（供 search_context 依赖）
+
+        for match in sorted_matches:
+            action = match.action or ""
+            if not action.startswith("build_dag:"):
+                continue
+            template = action.split(":", 1)[1]
+            self._build_template(template, match, dag, missing, write_node_ids)
+
+        # 闸门1：节点完备
+        if missing:
+            return DAGBuildResult(
+                success=False, dag=None,
+                failure_type="missing_dependency",
+                failure_reason="缺少依赖：" + "、".join(missing),
+                missing=missing,
+                node_count=dag.node_count,
+                pattern_count=len(sorted_matches),
+            )
+
+        # 闸门2：无环
+        if dag.has_cycle():
+            return DAGBuildResult(
+                success=False, dag=None,
+                failure_type="cycle",
+                failure_reason="问题自相矛盾，DAG存在环",
+                node_count=dag.node_count,
+                pattern_count=len(sorted_matches),
+            )
+
+        # 闸门3：算法已学
+        unlearned = self._check_algorithms_learned(dag)
+        if unlearned:
+            return DAGBuildResult(
+                success=False, dag=None,
+                failure_type="algorithm_not_learned",
+                failure_reason="未学算法：" + "、".join(unlearned),
+                missing=unlearned,
+                node_count=dag.node_count,
+                pattern_count=len(sorted_matches),
+            )
+
+        if dag.node_count == 0:
+            return DAGBuildResult(
+                success=False, dag=None,
+                failure_type="no_pattern",
+                failure_reason="没有命中可构建DAG的模式",
+                node_count=0,
+                pattern_count=len(sorted_matches),
+            )
+
+        return DAGBuildResult(
+            success=True, dag=dag,
+            node_count=dag.node_count,
+            pattern_count=len(sorted_matches),
+        )
+
+    # ---- 模板构建 ----
+
+    def _build_template(
+        self,
+        template: str,
+        match: PatternMatchResult,
+        dag: DAGGraph,
+        missing: List[str],
+        write_node_ids: List[str],
+    ) -> None:
+        captured = match.captured
+        if template == "binary_op":
+            self._build_binary_op(captured, dag, missing)
+        elif template == "attr_value":
+            self._build_attr_value(captured, dag, write_node_ids)
+        elif template == "pronoun_sum":
+            self._build_pronoun_aggregate(captured, dag, write_node_ids, "adding", "之和")
+        elif template == "pronoun_diff":
+            self._build_pronoun_aggregate(captured, dag, write_node_ids, "subtracting", "之差")
+        # 未知模板忽略
+
+    def _build_binary_op(
+        self,
+        captured: Dict[str, Any],
+        dag: DAGGraph,
+        missing: List[str],
+    ) -> None:
+        """二元运算：A op B = ? → call_algorithm + return_value"""
+        left_tok = str(captured.get("left", ""))
+        op_tok = str(captured.get("op", ""))
+        right_tok = str(captured.get("right", ""))
+
+        left_val = self._resolve_number(left_tok)
+        right_val = self._resolve_number(right_tok)
+        algo_key = self._resolve_op_algorithm(op_tok)
+
+        if left_val is None:
+            missing.append(f"数字'{left_tok}'未学")
+        if right_val is None:
+            missing.append(f"数字'{right_tok}'未学")
+        if algo_key is None:
+            missing.append(f"操作符'{op_tok}'未学")
+
+        if left_val is None or right_val is None or algo_key is None:
+            return
+
+        call_id = self._new_node_id()
+        dag.add_node(DAGNode(
+            id=call_id,
+            action=OP_CALL_ALGORITHM,
+            params={"key": algo_key, "args": [left_val, right_val]},
+            description=f"调用算法 {algo_key}({left_val}, {right_val})",
+        ))
+
+        ret_id = self._new_node_id()
+        dag.add_node(DAGNode(
+            id=ret_id,
+            action=OP_RETURN_VALUE,
+            params={"value": f"${call_id}"},
+            depends_on=[call_id],
+            description="返回最终结果",
+        ))
+
+    def _build_attr_value(
+        self,
+        captured: Dict[str, Any],
+        dag: DAGGraph,
+        write_node_ids: List[str],
+    ) -> None:
+        """属性绑定：entity 的 attr value → write_memory"""
+        entity = str(captured.get("entity", ""))
+        attr = str(captured.get("attr", ""))
+        value_tok = str(captured.get("value", ""))
+
+        value = self._resolve_number(value_tok)
+        if value is None:
+            value = value_tok  # 保留原始 token
+
+        node_id = self._new_node_id("w")
+        dag.add_node(DAGNode(
+            id=node_id,
+            action=OP_WRITE_MEMORY,
+            params={"entity": entity, "attr": attr, "value": value},
+            description=f"写入工作记忆：{entity}.{attr} = {value}",
+        ))
+        write_node_ids.append(node_id)
+
+    def _build_pronoun_aggregate(
+        self,
+        captured: Dict[str, Any],
+        dag: DAGGraph,
+        write_node_ids: List[str],
+        algo_key: str,
+        op_label: str,
+    ) -> None:
+        """指代聚合：pronoun 的 attr 之和/之差 → search_context + call_algorithm + return_value"""
+        pronoun = str(captured.get("pronoun", ""))
+        attr = str(captured.get("attr", ""))
+
+        # search_context 节点：依赖所有 write_memory 节点
+        search_id = self._new_node_id("s")
+        dag.add_node(DAGNode(
+            id=search_id,
+            action=OP_SEARCH_CONTEXT,
+            params={"keyword": pronoun},
+            depends_on=list(write_node_ids),
+            description=f"代词消解：'{pronoun}' → 实体列表",
+        ))
+
+        # call_algorithm 节点：从 search 结果收集 attr 值，调用算法
+        call_id = self._new_node_id()
+        dag.add_node(DAGNode(
+            id=call_id,
+            action=OP_CALL_ALGORITHM,
+            params={
+                "key": algo_key,
+                "collect_from": {"node": search_id, "attr": attr},
+            },
+            depends_on=[search_id],
+            description=f"调用算法 {algo_key}（收集'{attr}'属性值）",
+        ))
+
+        # return_value 节点
+        ret_id = self._new_node_id()
+        dag.add_node(DAGNode(
+            id=ret_id,
+            action=OP_RETURN_VALUE,
+            params={"value": f"${call_id}"},
+            depends_on=[call_id],
+            description="返回最终结果",
+        ))
+
+    # ---- 值解析（查询陈述性记忆）----
+
+    def _resolve_number(self, token: str) -> Optional[int]:
+        """从陈述性记忆解析数字token的数值。
+
+        单字符数字必须通过学习获得（查知识图谱）；
+        多位数字串（如"31"）可解析（因为 digit_merge 规则是学来的）。
+        """
+        if self.declarative is not None:
+            entities = self.declarative.find_entity_by_name(token)
+            for e in entities:
+                if e.attributes.get("kind") == "number":
+                    return e.attributes.get("value")
+        # fallback: 多位数字串可解析（digit_merge 规则是学来的）
+        if len(token) > 1 and token.isdigit():
+            try:
+                return int(token)
+            except (ValueError, TypeError):
+                return None
+        return None
+
+    def _resolve_op_algorithm(self, token: str) -> Optional[str]:
+        """从陈述性记忆解析操作符token的算法key"""
+        if self.declarative is not None:
+            entities = self.declarative.find_entity_by_name(token)
+            for e in entities:
+                if e.attributes.get("kind") == "operator":
+                    op_type = e.attributes.get("op_type")
+                    return _OP_TYPE_TO_ALGORITHM.get(op_type)
+        return None
+
+    def _check_algorithms_learned(self, dag: DAGGraph) -> List[str]:
+        """闸门3：检查 call_algorithm 引用的 key 是否已学习"""
+        if self.procedural is None:
+            return []
+        learned_keys = set()
+        for proc in self.procedural.list_procedures():
+            key = proc.attributes.get("algorithm_key") if proc.attributes else None
+            if key:
+                learned_keys.add(key)
+        unlearned: List[str] = []
+        for node in dag.nodes.values():
+            if node.action == OP_CALL_ALGORITHM:
+                key = node.params.get("key", "")
+                if key and key not in learned_keys:
+                    unlearned.append(key)
+        return unlearned
+
+
+# ============================================================
+# DAG 执行引擎
+# ============================================================
+
+class DAGExecutor:
+    """DAG 执行引擎 - 通用虚拟机
+
+    输入一张 DAG，按拓扑序逐节点执行原子操作。
+    节点之间通过工作记忆传数据。引擎不认识任何业务语义。
+    """
+
+    def __init__(
+        self,
+        algorithm_registry: AlgorithmRegistry,
+        procedural_memory: Optional[ProceduralMemory] = None,
+        use_embodied: bool = True,
+    ) -> None:
+        self.algorithms = algorithm_registry
+        self.procedural = procedural_memory
+        self.use_embodied = use_embodied
+
+    def execute(
+        self,
+        dag: DAGGraph,
+        working_memory: Any,
+        output_buffer: OutputBuffer,
+    ) -> Tuple[Optional[Any], float, List[str]]:
+        """执行 DAG，返回 (答案, 置信度, 节点执行序列描述)。
+
+        将每步执行结果写入 output_buffer 推理链。
+        """
+        seq, ok = dag.topological_sort()
+        if not ok:
+            output_buffer.add_step(
+                action="dag_execute",
+                description="拓扑排序失败：DAG存在环",
+                confidence=0.0,
+            )
+            return None, 0.0, []
+
+        answer: Optional[Any] = None
+        confidence = 1.0
+        node_descs: List[str] = []
+
+        for node_id in seq:
+            node = dag.get_node(node_id)
+            if node is None:
+                continue
+            try:
+                result = self._execute_node(node, working_memory)
+                working_memory.put_node_output(node_id, result)
+                desc = self._describe_node(node, result)
+                node_descs.append(desc)
+                output_buffer.add_step(
+                    action=node.action,
+                    description=desc,
+                    inputs=dict(node.params),
+                    outputs={"result": result},
+                )
+                if node.action == OP_RETURN_VALUE:
+                    answer = result
+            except Exception as exc:
+                output_buffer.add_step(
+                    action=node.action,
+                    description=f"节点 {node_id} 执行失败：{exc}",
+                    inputs=dict(node.params),
+                    confidence=0.0,
+                )
+                return None, 0.0, node_descs
+
+        return answer, round(confidence, 3), node_descs
+
+    def _execute_node(self, node: DAGNode, wm: Any) -> Any:
+        """执行单个节点，分发到对应的原子操作处理器"""
+        action = node.action
+        params = node.params
+
+        if action == OP_WRITE_MEMORY:
+            return self._op_write_memory(wm, params)
+        if action == OP_READ_MEMORY:
+            return self._op_read_memory(wm, params)
+        if action == OP_SEARCH_CONTEXT:
+            return self._op_search_context(wm, params)
+        if action == OP_CALL_ALGORITHM:
+            return self._op_call_algorithm(wm, params)
+        if action == OP_RETURN_VALUE:
+            return self._op_return_value(wm, params)
+        raise ValueError(f"未知原子操作：{action}")
+
+    # ---- 原子操作实现（L0 硬件指令集）----
+
+    def _op_write_memory(self, wm: Any, params: Dict[str, Any]) -> Any:
+        """write_memory(entity, attr, value) → ok"""
+        entity = params.get("entity", "")
+        attr = params.get("attr", "")
+        value = params.get("value")
+        wm.write_attr(entity, attr, value)
+        return value
+
+    def _op_read_memory(self, wm: Any, params: Dict[str, Any]) -> Any:
+        """read_memory(entity, attr) → value"""
+        entity = params.get("entity", "")
+        attr = params.get("attr", "")
+        return wm.read_attr(entity, attr)
+
+    def _op_search_context(self, wm: Any, params: Dict[str, Any]) -> Any:
+        """search_context(keyword) → entities"""
+        keyword = params.get("keyword", "")
+        return wm.resolve_pronoun(keyword)
+
+    def _op_call_algorithm(self, wm: Any, params: Dict[str, Any]) -> Any:
+        """call_algorithm(key, args/collect_from) → result"""
+        key = params.get("key", "")
+        # 收集参数
+        if "collect_from" in params:
+            cf = params["collect_from"]
+            ref_node = cf.get("node", "")
+            attr = cf.get("attr", "")
+            entity_names = wm.get_node_output(ref_node)
+            if not isinstance(entity_names, list):
+                entity_names = [entity_names] if entity_names else []
+            args = []
+            for name in entity_names:
+                val = wm.read_attr_or_none(name, attr)
+                if val is not None:
+                    args.append(val)
+        else:
+            raw_args = params.get("args", [])
+            args = [self._resolve_arg(a, wm) for a in raw_args]
+
+        # 门控：算法 key 必须已注册
+        algs = self.algorithms.all_algorithms()
+        if key not in algs:
+            raise ValueError(f"算法 '{key}' 未注册")
+
+        alg = algs[key]
+        if not hasattr(alg, "execute"):
+            raise ValueError(f"算法 '{key}' 无 execute 方法")
+
+        # adding/subtracting 接受两个位置参数
+        if key in ("adding", "subtracting"):
+            if len(args) < 2:
+                raise ValueError(f"算法 '{key}' 需要至少2个参数，得到 {args}")
+            result = alg.execute(args[0], args[1], use_embodied=self.use_embodied)
+        else:
+            result = alg.execute(*args)
+        # 算法返回 dict，取 result 字段
+        if isinstance(result, dict):
+            return result.get("result")
+        return result
+
+    def _op_return_value(self, wm: Any, params: Dict[str, Any]) -> Any:
+        """return_value(value) → value（终止推理并输出答案）"""
+        value = params.get("value")
+        return self._resolve_arg(value, wm)
+
+    # ---- 参数解析 ----
+
+    def _resolve_arg(self, arg: Any, wm: Any) -> Any:
+        """解析参数：$开头为节点输出引用，否则为字面量"""
+        if isinstance(arg, str) and arg.startswith("$"):
+            ref_id = arg[1:]
+            return wm.get_node_output(ref_id)
+        return arg
+
+    def _describe_node(self, node: DAGNode, result: Any) -> str:
+        """生成节点执行的人类可读描述"""
+        action = node.action
+        params = node.params
+        if action == OP_WRITE_MEMORY:
+            return f"写入工作记忆：{params.get('entity')}.{params.get('attr')} = {params.get('value')}"
+        if action == OP_READ_MEMORY:
+            return f"读取工作记忆：{params.get('entity')}.{params.get('attr')} → {result}"
+        if action == OP_SEARCH_CONTEXT:
+            return f"代词消解：'{params.get('keyword')}' → {result}"
+        if action == OP_CALL_ALGORITHM:
+            return f"调用算法 {params.get('key')} → {result}"
+        if action == OP_RETURN_VALUE:
+            return f"返回最终答案：{result}"
+        return f"{action}: {params}"
+
+
+# ============================================================
+# 推理操作区
+# ============================================================
+
 class ReasoningArea:
     """推理操作区"""
+
+    # op_type -> 对应的 algorithm_key（兼容旧单步路径）
+    _OP_TO_ALGORITHM_KEY = {
+        "add": "adding",
+        "sub": "subtracting",
+        "mul": "multiplying",
+        "div": "dividing",
+    }
 
     def __init__(
         self,
@@ -49,12 +555,14 @@ class ReasoningArea:
         pattern_matcher: Optional[PatternMatcher] = None,
         intent_recognizer: Optional[IntentRecognizer] = None,
         use_embodied: bool = True,
+        declarative_memory: Optional[Any] = None,
     ) -> None:
         self.algorithms = algorithm_registry or AlgorithmRegistry()
         self.procedural = procedural_memory
         self.pattern_matcher = pattern_matcher or PatternMatcher()
         self.intent_recognizer = intent_recognizer or IntentRecognizer()
         self.use_embodied = use_embodied
+        self.declarative = declarative_memory
 
     # ---------- 主入口 ----------
     def run(self, workspace: Workspace) -> OutputBuffer:
@@ -74,7 +582,58 @@ class ReasoningArea:
             },
         )
 
-        # 2. 意图识别
+        # 2. 检查是否有 build_dag 模式命中 → DAG 推理路径
+        dag_matches = [p for p in patterns if p.action and p.action.startswith("build_dag:")]
+        if dag_matches:
+            return self._run_dag(workspace, patterns)
+
+        # 3. 旧单步推理路径（无 build_dag 模式时回退）
+        return self._run_single_step(workspace, patterns)
+
+    # ---------- DAG 推理路径 ----------
+    def _run_dag(self, workspace: Workspace, patterns: List[PatternMatchResult]) -> OutputBuffer:
+        out = workspace.output_buffer
+        wm = workspace.working_memory
+        wm.clear()
+
+        # DAG 构建（= 理解）
+        builder = DAGBuilder(self.declarative, self.procedural)
+        build_result = builder.build(patterns)
+
+        if not build_result.success:
+            out.add_step(
+                action="dag_build_failed",
+                description=f"DAG构建失败：{build_result.failure_reason}",
+                outputs={
+                    "failure_type": build_result.failure_type,
+                    "missing": build_result.missing,
+                },
+                confidence=0.0,
+            )
+            out.set_answer(None, confidence=0.0)
+            workspace.mark_done()
+            return out
+
+        out.add_step(
+            action="dag_build",
+            description=f"DAG构建成功：{build_result.node_count}个节点，{build_result.pattern_count}条模式命中",
+            outputs={"node_count": build_result.node_count},
+        )
+
+        # DAG 执行（= 求解）
+        executor = DAGExecutor(self.algorithms, self.procedural, self.use_embodied)
+        answer, confidence, _ = executor.execute(build_result.dag, wm, out)
+
+        out.set_answer(answer, confidence=confidence)
+        workspace.mark_done()
+        return out
+
+    # ---------- 旧单步推理路径（回退）----------
+    def _run_single_step(self, workspace: Workspace, patterns: List[PatternMatchResult]) -> OutputBuffer:
+        out = workspace.output_buffer
+
+        # 意图识别
+        tokens = workspace.input_buffer.tokens
         intent = self.intent_recognizer.recognize(patterns, tokens)
         out.add_step(
             action="intent_recognize",
@@ -83,7 +642,7 @@ class ReasoningArea:
             confidence=intent.confidence,
         )
 
-        # 3. 根据意图选择算法并执行
+        # 根据意图选择算法并执行
         answer: Optional[Any] = None
         final_confidence = intent.confidence
 
@@ -96,14 +655,12 @@ class ReasoningArea:
                 outputs={"result": execution.get("result"), "method": execution.get("method")},
                 procedure_id=intent.slots.get("operation"),
             )
-            # 将具身子步骤也写进推理链（若有）
             for sub in execution.get("steps", [])[1:-1] if execution.get("method") == "embodied" else []:
                 out.add_step(action="sub_step", description=sub)
             answer = execution.get("result")
             final_confidence = min(1.0, intent.confidence + 0.1)
 
         if answer is None:
-            # 兜底：尝试从激活的 procedural 中找可执行的
             answer = self._try_run_procedures(workspace)
             if answer is not None:
                 out.add_step(
@@ -125,19 +682,8 @@ class ReasoningArea:
         workspace.mark_done()
         return out
 
-    # ---------- 内部执行 ----------
-    # op_type -> 对应的 algorithm_key（必须同时在 procedural memory 中学过对应 procedure）
-    _OP_TO_ALGORITHM_KEY = {
-        "add": "adding",
-        "sub": "subtracting",
-        "mul": "multiplying",   # 预留：需对应 procedural 里学过 algorithm_key="multiplying"
-        "div": "dividing",      # 预留：需对应 procedural 里学过 algorithm_key="dividing"
-    }
-
+    # ---------- 内部执行（旧路径）----------
     def _is_algorithm_learned(self, algorithm_key: str) -> bool:
-        """是否在 procedural memory 里学过指向该 algorithm_key 的程序性记忆。
-        procedural_memory=None（兼容旧模式）时视为已学过，用于老测试 / KnowledgeBuilder 场景。
-        """
         if self.procedural is None:
             return True
         for proc in self.procedural.list_procedures():
@@ -151,7 +697,6 @@ class ReasoningArea:
         b = slots.get("operand_right")
         algorithm_key = self._OP_TO_ALGORITHM_KEY.get(op)
 
-        # --- 门控：没学过对应程序性记忆 → 拒绝执行 ---
         if not algorithm_key or not self._is_algorithm_learned(algorithm_key):
             return {
                 "result": None,
@@ -164,7 +709,6 @@ class ReasoningArea:
             return self.algorithms.adding.execute(a, b, use_embodied=self.use_embodied)
         if algorithm_key == "subtracting":
             return self.algorithms.subtracting.execute(a, b, use_embodied=self.use_embodied)
-        # mul / dividing 等需要 registry 里有 + procedural 里学过，这里统一防护
         algs = self.algorithms.all_algorithms()
         if algorithm_key in algs:
             alg = algs[algorithm_key]
@@ -189,15 +733,11 @@ class ReasoningArea:
         return None
 
     def _execute_procedure(self, proc: Procedure, workspace: Workspace) -> Optional[Any]:
-        """根据 procedure.attributes["algorithm_key"] 路由到注册算法执行。
-        禁止用"取激活实体的 value"这种绕过方式，必须走真正的算法硬件。
-        """
         algs = self.algorithms.all_algorithms()
         algorithm_key = proc.attributes.get("algorithm_key") if proc.attributes else None
         if not algorithm_key or algorithm_key not in algs:
             return None
         alg = algs[algorithm_key]
-        # counting: 对工作区激活的数字实体做具身映射后计数（简化：取第一个有 embodied_mapping 的实体数）
         if algorithm_key == "counting":
             entities = workspace.activation_area.entities()
             nums = [
@@ -206,10 +746,7 @@ class ReasoningArea:
                 if e.attributes.get("kind") == "number" and e.attributes.get("value") is not None
             ]
             if nums:
-                # counting 算法在 MVP 中被 adding/subtracting 内部流程驱动，
-                # 这里顶层单独触发时只返回"集合大小 = 激活数字个数"
                 execution = alg.execute(nums)
                 return execution.get("count")
             return None
-        # mapping / merging 顶层独立触发的场景：MVP 中暂不使用（总是被 adding 内部步骤调用）
         return None

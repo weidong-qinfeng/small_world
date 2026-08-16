@@ -13,6 +13,7 @@ from digital_brain.src.core.models import ActivatedKnowledge
 from digital_brain.src.core.workspace.activation_area import ActivationArea
 from digital_brain.src.core.workspace.input_buffer import InputBuffer
 from digital_brain.src.core.workspace.output_buffer import OutputBuffer
+from digital_brain.src.core.workspace.working_memory import WorkingMemory
 
 
 class Workspace:
@@ -32,6 +33,8 @@ class Workspace:
         self.input_buffer = InputBuffer(capacity=input_capacity)
         self.activation_area = ActivationArea(capacity=activation_capacity)
         self.output_buffer = OutputBuffer()
+        # v2: 工作记忆 - DAG节点间数据传递的唯一通道
+        self.working_memory = WorkingMemory()
         # 生命周期跟踪
         self._current_phase = "idle"  # idle / input / activation / reasoning / done
 
@@ -65,6 +68,7 @@ class Workspace:
         self.input_buffer.clear()
         self.activation_area.clear()
         self.output_buffer.clear()
+        self.working_memory.clear()
         self._current_phase = "idle"
 
     @property

@@ -32,7 +32,7 @@ from digital_brain.src.core.models import (
     RelationType,
     TriggerCondition,
 )
-from digital_brain.src.core.workspace.reasoning_area import AlgorithmRegistry, ReasoningArea
+from digital_brain.src.core.workspace.reasoning_area import AlgorithmRegistry, ReasoningArea, _V2_ALGORITHM_KEYS
 from digital_brain.src.core.workspace.workspace import Workspace
 from digital_brain.src.core.pattern.pattern_matcher import PatternMatcher
 from digital_brain.src.core.pattern.intent_recognizer import IntentRecognizer
@@ -137,6 +137,7 @@ class SymbolicInterface:
             pattern_matcher=self.pattern_matcher,
             intent_recognizer=self.intent_recognizer,
             use_embodied=use_embodied,
+            declarative_memory=self.declarative,
         )
         # 6. 工具：Tokenizer 默认空白（不会自动加载 JSON 样本 —— 那等于先天有能力）
         #    但 LearnableTokenizer 本身是"学习机制"，允许存在。
@@ -334,10 +335,12 @@ class SymbolicInterface:
 
         调用后：该 procedure 被写入 procedural memory，工作区激活时可被检索到。
         """
-        if algorithm_key not in self.algorithm_registry.all_algorithms():
+        if algorithm_key not in self.algorithm_registry.all_algorithms() and \
+           algorithm_key not in _V2_ALGORITHM_KEYS:
             raise ValueError(
                 f"algorithm_key='{algorithm_key}' 不在注册表里。"
-                f"可用: {list(self.algorithm_registry.all_algorithms().keys())}"
+                f"可用: {list(self.algorithm_registry.all_algorithms().keys())} + "
+                f"v2: {sorted(_V2_ALGORITHM_KEYS)}"
             )
         # v2: trigger_words 作为词素存入图谱
         for w in trigger_words:
@@ -579,6 +582,18 @@ class SymbolicInterface:
 
         # 5) 程序性记忆
         for item in pkg.get("procedures", []):
+            self.learn_procedure(
+                name=item["name"],
+                algorithm_key=item["algorithm_key"],
+                trigger_words=item["trigger_words"],
+                steps=item.get("steps"),
+                dependencies=item.get("dependencies"),
+                description=item.get("description", ""),
+            )
+            stats["procedures"] += 1
+
+        # 5b) v2 程序性记忆（removing/bind_attribute/resolve_pronoun/retrieve_attr）
+        for item in pkg.get("procedures_v2", []):
             self.learn_procedure(
                 name=item["name"],
                 algorithm_key=item["algorithm_key"],
