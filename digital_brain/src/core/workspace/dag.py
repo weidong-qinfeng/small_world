@@ -87,6 +87,32 @@ class DAGGraph:
     def __repr__(self) -> str:
         return f"DAGGraph(nodes={self.node_count})"
 
+    def to_text(self) -> str:
+        """生成人类可读的 DAG 描述（节点 + 依赖 + 参数）。
+
+        按拓扑序展示节点，直观反映「问题理解」的结构。
+        """
+        seq, ok = self.topological_sort()
+        if not ok:
+            return f"[DAG 含环，共 {self.node_count} 个节点]"
+
+        lines = [f"[DAG 共 {self.node_count} 个节点，拓扑序如下]"]
+        for idx, nid in enumerate(seq, 1):
+            node = self.nodes[nid]
+            deps = f" ← 依赖 {node.depends_on}" if node.depends_on else ""
+            params = dict(node.params)
+            # 节点输出引用以 $ 开头可读性差，原样保留
+            params_str = ", ".join(f"{k}={v}" for k, v in params.items())
+            desc = f"  {idx}. {nid} [{node.action}]"
+            if params_str:
+                desc += f"  ({params_str})"
+            if deps:
+                desc += deps
+            if node.description:
+                desc += f"\n      # {node.description}"
+            lines.append(desc)
+        return "\n".join(lines)
+
 
 class DAGBuildResult(BaseModel):
     """DAG构建结果"""

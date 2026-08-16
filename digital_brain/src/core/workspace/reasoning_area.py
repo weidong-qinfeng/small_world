@@ -617,7 +617,10 @@ class ReasoningArea:
         out.add_step(
             action="dag_build",
             description=f"DAG构建成功：{build_result.node_count}个节点，{build_result.pattern_count}条模式命中",
-            outputs={"node_count": build_result.node_count},
+            outputs={
+                "node_count": build_result.node_count,
+                "dag_text": build_result.dag.to_text() if build_result.dag else "",
+            },
         )
 
         # DAG 执行（= 求解）

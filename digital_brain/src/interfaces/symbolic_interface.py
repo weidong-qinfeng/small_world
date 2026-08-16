@@ -53,11 +53,15 @@ class BrainResult:
     tokens: List[str] = field(default_factory=list)
     activated_count: int = 0
     raw_text: str = ""
+    dag_text: str = ""   # 问题理解 DAG 的人类可读描述（无 DAG 路径时为空）
 
     def format(self) -> str:
         lines = [f"输入: {self.raw_text}"]
         lines.append(f"词素: {self.tokens}")
         lines.append(f"激活知识数: {self.activated_count}")
+        if self.dag_text:
+            lines.append("--- 问题理解 DAG ---")
+            lines.append(self.dag_text)
         lines.append("--- 推理链 ---")
         for i, step in enumerate(self.reasoning_chain, 1):
             desc = step.get("description", "")
@@ -815,6 +819,12 @@ class SymbolicInterface:
             if a.procedure:
                 self.consolidation.record_activation(a.procedure.id)
         out = self.reasoning.run(self.workspace)
+        # 提取问题理解 DAG 文本（从 dag_build 步骤的 outputs.dag_text 中取）
+        dag_text = ""
+        for s in out.reasoning_chain:
+            if s.action == "dag_build" and s.outputs.get("dag_text"):
+                dag_text = s.outputs["dag_text"]
+                break
         return BrainResult(
             answer=out.final_answer,
             confidence=out.confidence,
@@ -822,6 +832,7 @@ class SymbolicInterface:
             tokens=tokens,
             activated_count=len(activated),
             raw_text=text,
+            dag_text=dag_text,
         )
 
     def quick_ask(self, text: str, show_chain: bool = True) -> Any:
