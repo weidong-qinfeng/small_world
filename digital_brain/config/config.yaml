@@ -1,0 +1,28 @@
+# 数字大脑配置文件
+system:
+  name: "Digital Brain MVP"
+  version: "0.1.0"
+  log_level: "INFO"
+
+workspace:
+  input_capacity: 100
+  activation_capacity: 20
+
+memory:
+  activation:
+    max_hops: 2
+    decay_factor: 0.6
+  consolidation:
+    threshold: 0.2
+
+knowledge:
+  # 初始知识范围：0-10 的数字
+  max_initial_number: 10
+  auto_build_on_start: true
+  persist_path: "digital_brain/data/knowledge/"
+
+algorithms:
+  use_embodied_reasoning: true   # True=展示具身map+merge+count，False=直接算数
+
+patterns:
+  pattern_file: "digital_brain/data/patterns/math_patterns.json"

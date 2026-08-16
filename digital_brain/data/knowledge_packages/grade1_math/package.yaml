@@ -1,0 +1,101 @@
+# ============================================================
+# 知识包：小学一年级数学（上册 + 下册核心内容）
+# ============================================================
+# 用途：教大脑掌握一年级数学所需的知识
+# 内容：0-20 数字、加减运算、等号问号、5 条算法
+# 学习方式：人工执行 learn grade1_math 命令
+# 未学习此包时，大脑不具备相关知识，无法回答此类问题
+# ============================================================
+
+name: "小学一年级数学"
+description: "一年级数学核心知识：0-20 的数字认识、10 以内和 20 以内加减法"
+
+# ---- 数字单词（含义：这个符号代表多少）----
+# 一年级要求认识 0-20
+numbers:
+  - {symbol: "0",  value: 0,  aliases: ["零"]}
+  - {symbol: "1",  value: 1,  aliases: ["一", "壹"]}
+  - {symbol: "2",  value: 2,  aliases: ["二", "两", "贰"]}
+  - {symbol: "3",  value: 3,  aliases: ["三", "叁"]}
+  - {symbol: "4",  value: 4,  aliases: ["四", "肆"]}
+  - {symbol: "5",  value: 5,  aliases: ["五", "伍"]}
+  - {symbol: "6",  value: 6,  aliases: ["六", "陆"]}
+  - {symbol: "7",  value: 7,  aliases: ["七", "柒"]}
+  - {symbol: "8",  value: 8,  aliases: ["八", "捌"]}
+  - {symbol: "9",  value: 9,  aliases: ["九", "玖"]}
+  - {symbol: "10", value: 10, aliases: ["十", "拾"]}
+  - {symbol: "11", value: 11, aliases: ["十一"]}
+  - {symbol: "12", value: 12, aliases: ["十二"]}
+  - {symbol: "13", value: 13, aliases: ["十三"]}
+  - {symbol: "14", value: 14, aliases: ["十四"]}
+  - {symbol: "15", value: 15, aliases: ["十五"]}
+  - {symbol: "16", value: 16, aliases: ["十六"]}
+  - {symbol: "17", value: 17, aliases: ["十七"]}
+  - {symbol: "18", value: 18, aliases: ["十八"]}
+  - {symbol: "19", value: 19, aliases: ["十九"]}
+  - {symbol: "20", value: 20, aliases: ["二十", "廿"]}
+
+# ---- 操作符单词（含义：这个符号代表什么运算）----
+operators:
+  - {symbol: "+", op_type: "add", aliases: ["加", "加上", "加于", "＋"]}
+  - {symbol: "-", op_type: "sub", aliases: ["减", "减去", "－"]}
+
+# ---- 标记符号（含义：等号表示"等同于"，问号表示"求多少"）----
+markers:
+  - {symbol: "=", marker_kind: "equality", aliases: ["等于", "＝", "是"]}
+  - {symbol: "?", marker_kind: "question", aliases: ["？", "多少", "几"]}
+
+# ---- 程序性记忆（含义：遇到什么词，用什么算法怎么做）----
+procedures:
+  # 基础算法
+  - name: "counting"
+    algorithm_key: "counting"
+    trigger_words: ["多少", "几", "数"]
+    description: "计数：对集合逐个数出总数"
+
+  - name: "mapping"
+    algorithm_key: "mapping"
+    trigger_words: ["映射", "map"]
+    description: "把数字映射为对应数量的元素集合"
+
+  - name: "merging"
+    algorithm_key: "merging"
+    trigger_words: ["合并", "merge"]
+    description: "把两个集合合并成一个集合"
+
+  # 加法算法
+  - name: "adding"
+    algorithm_key: "adding"
+    trigger_words: ["+", "加", "加上"]
+    description: "加法：映射两个数→合并集合→计数"
+    steps:
+      - {action: "mapping", parameters: {operand: "a"}, description: "把 a 映射为集合 A"}
+      - {action: "mapping", parameters: {operand: "b"}, description: "把 b 映射为集合 B"}
+      - {action: "merging", parameters: {sets: ["A", "B"]}, description: "把 A、B 合并成一个集合"}
+      - {action: "counting", parameters: {set: "merged"}, description: "数合并后集合的个数 = a+b"}
+    dependencies: ["mapping", "merging", "counting"]
+
+  # 减法算法
+  - name: "subtracting"
+    algorithm_key: "subtracting"
+    trigger_words: ["-", "减", "减去"]
+    description: "减法：从大集合中去掉小集合后，数剩余"
+    steps:
+      - {action: "mapping", parameters: {operand: "a"}, description: "把 a 映射为集合 A（被减数）"}
+      - {action: "mapping", parameters: {operand: "b"}, description: "把 b 映射为集合 B（减数）"}
+      - {action: "removing", parameters: {from: "A", remove: "B"}, description: "从 A 中去掉 B 的元素"}
+      - {action: "counting", parameters: {set: "remaining"}, description: "数剩余集合的个数 = a-b"}
+    dependencies: ["mapping", "counting"]
+
+# ---- 分词样本（教分词器认识多字词和数字合并规则）----
+tokenizer_examples:
+  # 阿拉伯数字
+  - {input: "1+1=?",    expected_tokens: ["1", "+", "1", "=", "?"]}
+  - {input: "10-3=?",   expected_tokens: ["10", "-", "3", "=", "?"]}
+  - {input: "15+5=?",   expected_tokens: ["15", "+", "5", "=", "?"]}
+  - {input: "20-8=?",   expected_tokens: ["20", "-", "8", "=", "?"]}
+  # 中文数字
+  - {input: "一加一等于多少", expected_tokens: ["一", "加", "一", "等于", "多少"]}
+  - {input: "十减三等于几",   expected_tokens: ["十", "减", "三", "等于", "几"]}
+  # 混合
+  - {input: "5+三=？", expected_tokens: ["5", "+", "三", "=", "？"]}

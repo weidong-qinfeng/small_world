@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "digital-brain"
+version = "0.1.0"
+description = "仿人脑数字大脑系统 - 知识+程序驱动的确定性推理"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [{ name = "Digital Brain Team" }]
+license = { text = "MIT" }
+dependencies = [
+    "networkx>=2.6,<3.5",
+    "pydantic>=1.10,<2",
+    "typing_extensions>=4.0",
+    "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "black>=22.0",
+    "ruff>=0.0.270",
+    "mypy>=0.990",
+    "pre-commit>=3.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["digital_brain"]
+
+[tool.black]
+line-length = 100
+target-version = ['py39']
+
+[tool.ruff]
+target-version = "py39"
+line-length = 100
+select = ["E", "F", "W", "I", "N"]
+
+[tool.pytest.ini_options]
+testpaths = ["digital_brain/tests"]
+pythonpath = ["."]
+addopts = "-v"
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true

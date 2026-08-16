@@ -1,0 +1,23 @@
+[
+  {
+    "id": "count_ex_1",
+    "description": "数3个苹果",
+    "input": ["苹果1", "苹果2", "苹果3"],
+    "expected_output": 3,
+    "steps": ["念 '1' -> 指 苹果1", "念 '2' -> 指 苹果2", "念 '3' -> 指 苹果3", "总数 = 3"]
+  },
+  {
+    "id": "count_ex_2",
+    "description": "数5根手指",
+    "input": ["指1", "指2", "指3", "指4", "指5"],
+    "expected_output": 5,
+    "steps": []
+  },
+  {
+    "id": "count_ex_3",
+    "description": "空集合",
+    "input": [],
+    "expected_output": 0,
+    "steps": []
+  }
+]

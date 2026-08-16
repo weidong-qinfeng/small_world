@@ -1,0 +1,67 @@
+# ============================================================
+# 知识包：1+1=? 基础加法
+# ============================================================
+# 用途：教会大脑解决 "1+1=?" 这一类问题
+# 学习方式：人工执行 learn 1plus1 命令后，大脑逐条读取本文件并学习
+# 未学习此包时，大脑不具备相关知识，无法回答此类问题
+# ============================================================
+
+name: "1plus1基础加法"
+description: "解决 1+1=? 所需的最小知识集合：数字 0-2、加号、等号、问号、4 条算法"
+
+# ---- 数字单词（含义：这个符号代表多少）----
+numbers:
+  - symbol: "0"
+    value: 0
+    aliases: ["零"]
+  - symbol: "1"
+    value: 1
+    aliases: ["一"]
+  - symbol: "2"
+    value: 2
+    aliases: ["二", "两"]
+
+# ---- 操作符单词（含义：这个符号代表什么运算）----
+operators:
+  - symbol: "+"
+    op_type: "add"
+    aliases: ["加", "加上", "＋"]
+
+# ---- 标记符号（含义：等号表示"等同于"，问号表示"求多少"）----
+markers:
+  - symbol: "="
+    marker_kind: "equality"
+    aliases: ["等于", "＝", "是"]
+  - symbol: "?"
+    marker_kind: "question"
+    aliases: ["？", "多少", "几"]
+
+# ---- 程序性记忆（含义：遇到什么词，用什么算法怎么做）----
+procedures:
+  - name: "counting"
+    algorithm_key: "counting"
+    trigger_words: ["多少", "几", "数"]
+    description: "计数：对集合逐个数出总数"
+  - name: "mapping"
+    algorithm_key: "mapping"
+    trigger_words: ["映射", "map"]
+    description: "把数字映射为对应数量的元素集合"
+  - name: "merging"
+    algorithm_key: "merging"
+    trigger_words: ["合并", "merge"]
+    description: "把两个集合合并成一个集合"
+  - name: "adding"
+    algorithm_key: "adding"
+    trigger_words: ["+", "加", "加上"]
+    description: "加法：映射两个数→合并集合→计数"
+    steps:
+      - {action: "mapping", parameters: {operand: "a"}, description: "把 a 映射为集合 A"}
+      - {action: "mapping", parameters: {operand: "b"}, description: "把 b 映射为集合 B"}
+      - {action: "merging", parameters: {sets: ["A", "B"]}, description: "把 A、B 合并成一个集合"}
+      - {action: "counting", parameters: {set: "merged"}, description: "数合并后集合的个数 = a+b"}
+    dependencies: ["mapping", "merging", "counting"]
+
+# ---- 分词样本（教分词器认识多字词和数字合并规则）----
+tokenizer_examples:
+  - input: "1+1=?"
+    expected_tokens: ["1", "+", "1", "=", "?"]

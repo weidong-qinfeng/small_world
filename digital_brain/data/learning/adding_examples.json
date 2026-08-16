@@ -1,0 +1,39 @@
+[
+  {
+    "id": "add_ex_1",
+    "description": "1 + 1 = 2",
+    "a": 1,
+    "b": 1,
+    "expected": 2,
+    "embodied": {
+      "set_a": ["•"],
+      "set_b": ["•"],
+      "merged": ["•", "•"],
+      "count": 2
+    }
+  },
+  {
+    "id": "add_ex_2",
+    "description": "2 + 3 = 5",
+    "a": 2,
+    "b": 3,
+    "expected": 5,
+    "embodied": {}
+  },
+  {
+    "id": "add_ex_3",
+    "description": "0 + 5 = 5",
+    "a": 0,
+    "b": 5,
+    "expected": 5,
+    "embodied": {}
+  },
+  {
+    "id": "add_ex_4",
+    "description": "3 + 2 = 5 交换律",
+    "a": 3,
+    "b": 2,
+    "expected": 5,
+    "embodied": {}
+  }
+]

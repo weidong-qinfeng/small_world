@@ -1,0 +1,22 @@
+[
+  {
+    "id": "tok_ex_1",
+    "input": "1+1=?",
+    "expected_tokens": ["1", "+", "1", "=", "?"]
+  },
+  {
+    "id": "tok_ex_2",
+    "input": "1 + 1 = ？",
+    "expected_tokens": ["1", "+", "1", "=", "？"]
+  },
+  {
+    "id": "tok_ex_3",
+    "input": "一加一等于多少",
+    "expected_tokens": ["一", "加", "一", "等于", "多少"]
+  },
+  {
+    "id": "tok_ex_4",
+    "input": "12+34",
+    "expected_tokens": ["12", "+", "34"]
+  }
+]
