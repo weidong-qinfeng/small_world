@@ -1,0 +1,467 @@
+# ============================================================
+# 知识包：基础知识包（base_curriculum）
+# ============================================================
+# 用途：整合小学一年级数学、一年级语文、分词技能、指代消解
+#       等通用能力为一套"基础课程"，一次 learn 即可习得
+# 学习方式：人工执行 learn base_curriculum 命令
+# 未学习此包时，大脑不具备相关知识，无法回答相关问题
+#
+# 内容覆盖：
+#   - 数学：0-20 数字、加减运算、5 条基础算法
+#   - 语文：一年级 83 个字词（含拼音、释义、词性）
+#   - 分词技能：数字合并、多字词边界、应用题分词
+#   - 指代消解：属性绑定、代词消解、属性检索 3 条算法
+#   - 模式：二元运算、属性绑定、指代求和 3 个模式
+#
+# 兼容性说明：
+#   - 当前 v1 代码的 learn_from_package 只处理前 6 段
+#     (words/numbers/operators/markers/procedures/tokenizer_examples)
+#   - patterns / pattern_samples / procedures_v2 三段为 v2 设计稿，
+#     待变更开发计划 Phase 2-3 实施后被代码处理。
+#     在 Phase 2-3 完成前，YAML 中保留这三段不影响学习（被忽略）：
+#       * patterns          → Phase 2 实施后由 learn_pattern 处理
+#       * pattern_samples   → Phase 2 实施后由 learn_pattern_sample 处理
+#       * procedures_v2     → Phase 3 实施后由扩展的 learn_procedure 处理
+#     （v2 算法需要新的 AlgorithmRegistry 注册 removing/bind_attribute/
+#      resolve_pronoun/retrieve_attr 四个 algorithm_key 后才能学习）
+# ============================================================
+
+name: "基础知识包"
+description: "小学一年级数学 + 一年级语文 + 分词技能 + 指代消解的整合基础课程"
+
+# ============================================================
+# 1. 普通字词（一年级语文识字要求，按教材单元编排）
+# ============================================================
+words:
+
+  # ===== 第一单元：天地人 =====
+  - {symbol: "天", pinyin: "tiān",   meaning: "天空；天",       word_type: "名词"}
+  - {symbol: "地", pinyin: "dì",     meaning: "大地；土地",     word_type: "名词"}
+  - {symbol: "人", pinyin: "rén",    meaning: "人类；人",       word_type: "名词"}
+  - {symbol: "你", pinyin: "nǐ",    meaning: "对方；你",       word_type: "代词"}
+  - {symbol: "我", pinyin: "wǒ",    meaning: "自己；我",       word_type: "代词"}
+  - {symbol: "他", pinyin: "tā",    meaning: "第三人称；他",   word_type: "代词"}
+
+  # ===== 第二单元：金木水火土 =====
+  - {symbol: "金", pinyin: "jīn",   meaning: "金属；金子",     word_type: "名词"}
+  - {symbol: "木", pinyin: "mù",    meaning: "树木；木头",     word_type: "名词"}
+  - {symbol: "水", pinyin: "shuǐ",  meaning: "水；液体",       word_type: "名词"}
+  - {symbol: "火", pinyin: "huǒ",   meaning: "火；火焰",       word_type: "名词"}
+  - {symbol: "土", pinyin: "tǔ",    meaning: "泥土；土壤",     word_type: "名词"}
+
+  # ===== 第三单元：口耳目 =====
+  - {symbol: "口", pinyin: "kǒu",   meaning: "嘴巴；口",       word_type: "名词"}
+  - {symbol: "耳", pinyin: "ěr",    meaning: "耳朵；耳",       word_type: "名词"}
+  - {symbol: "目", pinyin: "mù",    meaning: "眼睛；目光",     word_type: "名词"}
+  - {symbol: "手", pinyin: "shǒu",  meaning: "手；手掌",       word_type: "名词"}
+  - {symbol: "足", pinyin: "zú",    meaning: "脚；足够",       word_type: "名词"}
+
+  # ===== 第四单元：日月山石 =====
+  - {symbol: "日", pinyin: "rì",    meaning: "太阳；日子",     word_type: "名词"}
+  - {symbol: "月", pinyin: "yuè",   meaning: "月亮；月份",     word_type: "名词"}
+  - {symbol: "山", pinyin: "shān",  meaning: "山；山脉",       word_type: "名词"}
+  - {symbol: "石", pinyin: "shí",   meaning: "石头；岩石",     word_type: "名词"}
+  - {symbol: "田", pinyin: "tián",  meaning: "田地；田",       word_type: "名词"}
+  - {symbol: "禾", pinyin: "hé",    meaning: "禾苗；庄稼",     word_type: "名词"}
+
+  # ===== 第五单元：对韵歌（自然现象）=====
+  - {symbol: "云", pinyin: "yún",   meaning: "云彩；云",       word_type: "名词"}
+  - {symbol: "雨", pinyin: "yǔ",    meaning: "雨；雨水",       word_type: "名词"}
+  - {symbol: "风", pinyin: "fēng",  meaning: "风；气流",       word_type: "名词"}
+  - {symbol: "雪", pinyin: "xuě",   meaning: "雪；雪花",       word_type: "名词"}
+  - {symbol: "花", pinyin: "huā",   meaning: "花；花朵",       word_type: "名词"}
+  - {symbol: "树", pinyin: "shù",   meaning: "树；树木",       word_type: "名词"}
+  - {symbol: "鸟", pinyin: "niǎo",  meaning: "鸟；鸟类",       word_type: "名词"}
+  - {symbol: "虫", pinyin: "chóng", meaning: "虫；昆虫",       word_type: "名词"}
+
+  # ===== 方位词 =====
+  - {symbol: "上", pinyin: "shàng", meaning: "上方；上面",     word_type: "方位词"}
+  - {symbol: "下", pinyin: "xià",   meaning: "下方；下面",     word_type: "方位词"}
+  - {symbol: "左", pinyin: "zuǒ",   meaning: "左边；左侧",     word_type: "方位词"}
+  - {symbol: "右", pinyin: "yòu",   meaning: "右边；右侧",     word_type: "方位词"}
+  - {symbol: "前", pinyin: "qián",  meaning: "前方；前面",     word_type: "方位词"}
+  - {symbol: "后", pinyin: "hòu",   meaning: "后方；后面",     word_type: "方位词"}
+
+  # ===== 大小多少（量词与形容词）=====
+  - {symbol: "大", pinyin: "dà",    meaning: "体积大；大",     word_type: "形容词"}
+  - {symbol: "小", pinyin: "xiǎo",  meaning: "体积小；小",     word_type: "形容词"}
+  - {symbol: "多", pinyin: "duō",   meaning: "数量多；多",     word_type: "形容词"}
+  - {symbol: "少", pinyin: "shǎo",  meaning: "数量少；少",     word_type: "形容词"}
+  - {symbol: "个", pinyin: "gè",    meaning: "量词；一个",     word_type: "量词"}
+  - {symbol: "只", pinyin: "zhī",   meaning: "量词；一只",     word_type: "量词"}
+  - {symbol: "头", pinyin: "tóu",   meaning: "量词；头",       word_type: "量词"}
+  - {symbol: "条", pinyin: "tiáo",  meaning: "量词；一条",     word_type: "量词"}
+
+  # ===== 人物称谓 =====
+  - {symbol: "爸", pinyin: "bà",    meaning: "父亲",           word_type: "称谓", aliases: ["爸爸"]}
+  - {symbol: "妈", pinyin: "mā",    meaning: "母亲",           word_type: "称谓", aliases: ["妈妈"]}
+  - {symbol: "老", pinyin: "lǎo",   meaning: "年长；老师中的老", word_type: "形容词"}
+  - {symbol: "师", pinyin: "shī",   meaning: "老师；师傅",     word_type: "名词", aliases: ["老师"]}
+  - {symbol: "同", pinyin: "tóng",  meaning: "相同；一起",     word_type: "形容词"}
+  - {symbol: "学", pinyin: "xué",   meaning: "学习；学问",     word_type: "动词", aliases: ["同学"]}
+
+  # ===== 常用动作 =====
+  - {symbol: "看", pinyin: "kàn",   meaning: "看；观看",       word_type: "动词"}
+  - {symbol: "听", pinyin: "tīng",  meaning: "听；聆听",       word_type: "动词"}
+  - {symbol: "说", pinyin: "shuō",  meaning: "说；说话",       word_type: "动词"}
+  - {symbol: "走", pinyin: "zǒu",   meaning: "走；行走",       word_type: "动词"}
+  - {symbol: "跑", pinyin: "pǎo",   meaning: "跑；奔跑",       word_type: "动词"}
+  - {symbol: "吃", pinyin: "chī",   meaning: "吃；进食",       word_type: "动词"}
+  - {symbol: "喝", pinyin: "hē",    meaning: "喝；饮用",       word_type: "动词"}
+
+  # ===== 季节与时间 =====
+  - {symbol: "春", pinyin: "chūn",  meaning: "春天；春季",     word_type: "名词"}
+  - {symbol: "夏", pinyin: "xià",   meaning: "夏天；夏季",     word_type: "名词"}
+  - {symbol: "秋", pinyin: "qiū",   meaning: "秋天；秋季",     word_type: "名词"}
+  - {symbol: "冬", pinyin: "dōng",  meaning: "冬天；冬季",     word_type: "名词"}
+  - {symbol: "早", pinyin: "zǎo",   meaning: "早晨；早",       word_type: "时间词"}
+  - {symbol: "晚", pinyin: "wǎn",   meaning: "晚上；晚",       word_type: "时间词"}
+
+  # ===== 颜色 =====
+  - {symbol: "红", pinyin: "hóng",  meaning: "红色",           word_type: "形容词"}
+  - {symbol: "黄", pinyin: "huáng", meaning: "黄色",           word_type: "形容词"}
+  - {symbol: "蓝", pinyin: "lán",   meaning: "蓝色",           word_type: "形容词"}
+  - {symbol: "绿", pinyin: "lǜ",    meaning: "绿色",           word_type: "形容词"}
+  - {symbol: "白", pinyin: "bái",   meaning: "白色",           word_type: "形容词"}
+  - {symbol: "黑", pinyin: "hēi",   meaning: "黑色",           word_type: "形容词"}
+
+  # ===== 常用词语（多字词）=====
+  - {symbol: "学校", pinyin: "xué xiào",  meaning: "学习的场所",     word_type: "名词"}
+  - {symbol: "读书", pinyin: "dú shū",    meaning: "看书；阅读",     word_type: "动词"}
+  - {symbol: "写字", pinyin: "xiě zì",    meaning: "书写文字",         word_type: "动词"}
+  - {symbol: "中国", pinyin: "zhōng guó", meaning: "我们的国家",       word_type: "名词"}
+  - {symbol: "大家", pinyin: "dà jiā",    meaning: "所有人；大伙儿",   word_type: "代词"}
+  - {symbol: "朋友", pinyin: "péng yǒu",  meaning: "友好的人；伙伴",   word_type: "名词"}
+  - {symbol: "快乐", pinyin: "kuài lè",   meaning: "高兴；开心",       word_type: "形容词"}
+  - {symbol: "明白", pinyin: "míng bai",   meaning: "懂得；清楚",       word_type: "动词"}
+  - {symbol: "太阳", pinyin: "tài yáng",  meaning: "日；恒星",         word_type: "名词"}
+  - {symbol: "月亮", pinyin: "yuè liang",  meaning: "月球的通称",       word_type: "名词"}
+  - {symbol: "白天", pinyin: "bái tiān",  meaning: "日出到日落的时间", word_type: "名词"}
+  - {symbol: "晚上", pinyin: "wǎn shang",  meaning: "日落后的时间",     word_type: "名词"}
+
+  # ===== 应用题常用词（为指代消解与属性绑定补充）=====
+  - {symbol: "的", pinyin: "de",     meaning: "结构助词，表示所属关系", word_type: "助词"}
+  - {symbol: "年龄", pinyin: "nián líng", meaning: "人或物已生存的年数", word_type: "名词"}
+  - {symbol: "高度", pinyin: "gāo dù",   meaning: "从下到上的距离",     word_type: "名词"}
+  - {symbol: "重量", pinyin: "zhòng liàng", meaning: "物体受到的重力大小", word_type: "名词"}
+  - {symbol: "之和", pinyin: "zhī hé",   meaning: "相加的总数",         word_type: "名词"}
+  - {symbol: "之差", pinyin: "zhī chā",  meaning: "相减的差",           word_type: "名词"}
+  - {symbol: "他们", pinyin: "tā men",   meaning: "代词，指代上文提到的人（复数）", word_type: "代词"}
+  - {symbol: "她们", pinyin: "tā men",   meaning: "代词，指代上文提到的女性（复数）", word_type: "代词"}
+  - {symbol: "它们", pinyin: "tā men",   meaning: "代词，指代上文提到的事物（复数）", word_type: "代词"}
+  - {symbol: "他", pinyin: "tā",        meaning: "代词，指代上文提到的男性（单数）", word_type: "代词"}
+  - {symbol: "她", pinyin: "tā",        meaning: "代词，指代上文提到的女性（单数）", word_type: "代词"}
+  - {symbol: "它", pinyin: "tā",        meaning: "代词，指代上文提到的事物（单数）", word_type: "代词"}
+
+# ============================================================
+# 2. 数字单词（一年级要求认识 0-20）
+# ============================================================
+numbers:
+  - {symbol: "0",  value: 0,  aliases: ["零"]}
+  - {symbol: "1",  value: 1,  aliases: ["一", "壹"]}
+  - {symbol: "2",  value: 2,  aliases: ["二", "两", "贰"]}
+  - {symbol: "3",  value: 3,  aliases: ["三", "叁"]}
+  - {symbol: "4",  value: 4,  aliases: ["四", "肆"]}
+  - {symbol: "5",  value: 5,  aliases: ["五", "伍"]}
+  - {symbol: "6",  value: 6,  aliases: ["六", "陆"]}
+  - {symbol: "7",  value: 7,  aliases: ["七", "柒"]}
+  - {symbol: "8",  value: 8,  aliases: ["八", "捌"]}
+  - {symbol: "9",  value: 9,  aliases: ["九", "玖"]}
+  - {symbol: "10", value: 10, aliases: ["十", "拾"]}
+  - {symbol: "11", value: 11, aliases: ["十一"]}
+  - {symbol: "12", value: 12, aliases: ["十二"]}
+  - {symbol: "13", value: 13, aliases: ["十三"]}
+  - {symbol: "14", value: 14, aliases: ["十四"]}
+  - {symbol: "15", value: 15, aliases: ["十五"]}
+  - {symbol: "16", value: 16, aliases: ["十六"]}
+  - {symbol: "17", value: 17, aliases: ["十七"]}
+  - {symbol: "18", value: 18, aliases: ["十八"]}
+  - {symbol: "19", value: 19, aliases: ["十九"]}
+  - {symbol: "20", value: 20, aliases: ["二十", "廿"]}
+
+# ============================================================
+# 3. 操作符单词
+# ============================================================
+operators:
+  - {symbol: "+", op_type: "add", aliases: ["加", "加上", "加于", "＋"]}
+  - {symbol: "-", op_type: "sub", aliases: ["减", "减去", "－"]}
+
+# ============================================================
+# 4. 标记符号
+# ============================================================
+markers:
+  - {symbol: "=", marker_kind: "equality", aliases: ["等于", "＝", "是"]}
+  - {symbol: "?", marker_kind: "question", aliases: ["？", "多少", "几"]}
+
+# ============================================================
+# 5. 程序性记忆（算法步骤组合）
+# ============================================================
+# 算法层级：
+#   L0 原子操作 (硬件，不学习)：read_memory / write_memory / search_context / call_algorithm / return_value
+#   L1 基础算法 (经验归纳)：counting / mapping / merging / removing
+#   L2 运算算法 (组合 L1)：adding / subtracting
+#   L2 工作记忆算法 (原子操作包装)：bind_attribute / resolve_pronoun / retrieve_attr
+# ============================================================
+procedures:
+
+  # ===== L1 基础算法 =====
+
+  - name: "counting"
+    algorithm_key: "counting"
+    trigger_words: ["多少", "几", "数"]
+    description: "计数：对集合逐个数出总数"
+
+  - name: "mapping"
+    algorithm_key: "mapping"
+    trigger_words: ["映射", "map"]
+    description: "把数字映射为对应数量的元素集合"
+
+  - name: "merging"
+    algorithm_key: "merging"
+    trigger_words: ["合并", "merge"]
+    description: "把两个集合合并成一个集合"
+
+  # ===== L2 运算算法（组合 L1）=====
+  # 注：removing 算法在 v2 才注册到 AlgorithmRegistry，因此
+  #     subtracting 的 steps 中引用 removing 也需 v2 才能完整执行。
+  #     v1 阶段 subtracting 由 SubtractingAlgorithm 类直接实现，steps 仅作设计稿。
+
+  - name: "adding"
+    algorithm_key: "adding"
+    trigger_words: ["+", "加", "加上", "之和"]
+    description: "加法：映射两个数→合并集合→计数"
+    steps:
+      - {action: "mapping", parameters: {operand: "a"}, description: "把 a 映射为集合 A"}
+      - {action: "mapping", parameters: {operand: "b"}, description: "把 b 映射为集合 B"}
+      - {action: "merging", parameters: {sets: ["A", "B"]}, description: "把 A、B 合并成一个集合"}
+      - {action: "counting", parameters: {set: "merged"}, description: "数合并后集合的个数 = a+b"}
+    dependencies: ["mapping", "merging", "counting"]
+
+  - name: "subtracting"
+    algorithm_key: "subtracting"
+    trigger_words: ["-", "减", "减去", "之差"]
+    description: "减法：从大集合中去掉小集合后，数剩余"
+    steps:
+      - {action: "mapping", parameters: {operand: "a"}, description: "把 a 映射为集合 A（被减数）"}
+      - {action: "mapping", parameters: {operand: "b"}, description: "把 b 映射为集合 B（减数）"}
+      - {action: "removing", parameters: {from: "A", remove: "B"}, description: "从 A 中去掉 B 的元素"}
+      - {action: "counting", parameters: {set: "remaining"}, description: "数剩余集合的个数 = a-b"}
+    dependencies: ["mapping", "counting"]
+
+# ============================================================
+# 5b. 程序性记忆 v2（Phase 3 实施后被代码处理，当前被忽略）
+# ============================================================
+# 这部分算法需要 v2 的扩展 AlgorithmRegistry 才能注册：
+#   - removing           : L1 基础算法，subtracting 依赖它
+#   - bind_attribute      : L2 工作记忆算法，对应 write_memory 原子操作
+#   - resolve_pronoun    : L2 工作记忆算法，对应 search_context 原子操作
+#   - retrieve_attr       : L2 工作记忆算法，对应 read_memory 原子操作
+# Phase 3 实施后，把本段合并到 procedures 段即可。
+# ============================================================
+procedures_v2:
+
+  - name: "removing"
+    algorithm_key: "removing"
+    trigger_words: ["移除", "remove"]
+    description: "从一个集合中移除另一个集合的元素"
+
+  - name: "bind_attribute"
+    algorithm_key: "bind_attribute"
+    trigger_words: ["的"]
+    description: "属性绑定：把 entity.attr=value 写入工作记忆（对应原子操作 write_memory）"
+    steps:
+      - {action: "write_memory", parameters: {entity: "$entity", attr: "$attr", value: "$value"}, description: "把 entity 的 attr 属性值写入工作记忆"}
+    dependencies: []
+
+  - name: "resolve_pronoun"
+    algorithm_key: "resolve_pronoun"
+    trigger_words: ["他们", "她们", "它们", "他", "她", "它"]
+    description: "指代消解：把代词解析为工作记忆中的实体集合（对应原子操作 search_context）"
+    steps:
+      - {action: "search_context", parameters: {keyword: "$pronoun"}, description: "依据上下文把代词解析为实体列表"}
+    dependencies: []
+
+  - name: "retrieve_attr"
+    algorithm_key: "retrieve_attr"
+    trigger_words: ["年龄", "高度", "重量"]
+    description: "属性检索：从工作记忆读取某实体的某属性值（对应原子操作 read_memory）"
+    steps:
+      - {action: "read_memory", parameters: {entity: "$entity", attr: "$attr"}, description: "从工作记忆读取 entity 的 attr 属性值"}
+    dependencies: []
+
+# ============================================================
+# 6. 模式定义（v2 新增，Phase 2 实施后被代码处理）
+# ============================================================
+# 模式以实体形式存于陈述性记忆，PatternMatcher 从知识图谱加载。
+# slot 字段：
+#   type     词性约束：N(数字)/OP(操作符)/=/?(标记)/CMP(比较号)/word(任意词)
+#   literal  字面值约束：null 表示任意；非 null 时要求 token 字面相等
+#   capture  捕获变量名：非空时把 token 绑定到该变量
+#   optional 是否可选（默认 false）
+# ============================================================
+patterns:
+
+  # ----- 二元运算提问式：N OP N = ? -----
+  - name: "binary_op_question"
+    description: "二元运算提问式：A op B = ?（如 1+1=? 、 三加二等于多少）"
+    action: "build_dag:binary_op"
+    priority: 1.0
+    slots:
+      - {type: "N",  capture: "left"}
+      - {type: "OP", capture: "op"}
+      - {type: "N",  capture: "right"}
+      - {type: "=",  capture: null}
+      - {type: "?",  capture: null}
+
+  # ----- 属性绑定式：entity 的 attr N -----
+  - name: "attr_value"
+    description: "属性绑定：实体 + 的 + 属性 + 数值（如 爸爸的年龄31）"
+    action: "build_dag:attr_value"
+    priority: 0.9
+    slots:
+      - {type: "word", literal: null, capture: "entity"}
+      - {type: "word", literal: "的", capture: null}
+      - {type: "word", literal: null, capture: "attr"}
+      - {type: "N",    capture: "value"}
+
+  # ----- 指代求和式：pronoun 的 attr 之和 = ? -----
+  - name: "pronoun_sum"
+    description: "指代求和：代词 + 的 + 属性 + 之和 + 是 + 多少（如 他们的年龄之和是多少）"
+    action: "build_dag:pronoun_sum"
+    priority: 0.8
+    slots:
+      - {type: "word", literal: null, capture: "pronoun"}
+      - {type: "word", literal: "的", capture: null}
+      - {type: "word", literal: null, capture: "attr"}
+      - {type: "word", literal: "之和", capture: null}
+      - {type: "=",    capture: null, optional: true}
+      - {type: "?",    capture: null}
+
+  # ----- 指代求差式：pronoun 的 attr 之差 = ? -----
+  - name: "pronoun_diff"
+    description: "指代求差：代词 + 的 + 属性 + 之差 + 是 + 多少（如 他们的年龄之差是多少）"
+    action: "build_dag:pronoun_diff"
+    priority: 0.8
+    slots:
+      - {type: "word", literal: null, capture: "pronoun"}
+      - {type: "word", literal: "的", capture: null}
+      - {type: "word", literal: null, capture: "attr"}
+      - {type: "word", literal: "之差", capture: null}
+      - {type: "=",    capture: null, optional: true}
+      - {type: "?",    capture: null}
+
+# ============================================================
+# 7. 模式样本（v2 新增，Phase 2 实施后被代码处理）
+# ============================================================
+# 每条样本给出：原始输入 → 期望分词 → 命中模式 → 捕获的槽位
+# 用于学习后自测，验证模式匹配正确性
+# ============================================================
+pattern_samples:
+
+  # ----- 二元运算样本 -----
+  - input: "1+1=?"
+    tokens: ["1", "+", "1", "=", "?"]
+    pattern: "binary_op_question"
+    captured: {left: "1", op: "+", right: "1"}
+
+  - input: "10-3=?"
+    tokens: ["10", "-", "3", "=", "?"]
+    pattern: "binary_op_question"
+    captured: {left: "10", op: "-", right: "3"}
+
+  - input: "一加一等于多少"
+    tokens: ["一", "加", "一", "等于", "多少"]
+    pattern: "binary_op_question"
+    captured: {left: "一", op: "加", right: "一"}
+
+  - input: "十减三等于几"
+    tokens: ["十", "减", "三", "等于", "几"]
+    pattern: "binary_op_question"
+    captured: {left: "十", op: "减", right: "三"}
+
+  - input: "5+三=？"
+    tokens: ["5", "+", "三", "=", "？"]
+    pattern: "binary_op_question"
+    captured: {left: "5", op: "+", right: "三"}
+
+  # ----- 属性绑定样本 -----
+  - input: "爸爸的年龄31"
+    tokens: ["爸爸", "的", "年龄", "31"]
+    pattern: "attr_value"
+    captured: {entity: "爸爸", attr: "年龄", value: "31"}
+
+  - input: "妈妈的年龄25"
+    tokens: ["妈妈", "的", "年龄", "25"]
+    pattern: "attr_value"
+    captured: {entity: "妈妈", attr: "年龄", value: "25"}
+
+  - input: "爸爸的高度175"
+    tokens: ["爸爸", "的", "高度", "175"]
+    pattern: "attr_value"
+    captured: {entity: "爸爸", attr: "高度", value: "175"}
+
+  # ----- 指代求和样本 -----
+  - input: "他们的年龄之和是多少"
+    tokens: ["他们", "的", "年龄", "之和", "是", "多少"]
+    pattern: "pronoun_sum"
+    captured: {pronoun: "他们", attr: "年龄"}
+
+  - input: "他们的年龄之和？"
+    tokens: ["他们", "的", "年龄", "之和", "？"]
+    pattern: "pronoun_sum"
+    captured: {pronoun: "他们", attr: "年龄"}
+
+  # ----- 指代求差样本 -----
+  - input: "他们的年龄之差是多少"
+    tokens: ["他们", "的", "年龄", "之差", "是", "多少"]
+    pattern: "pronoun_diff"
+    captured: {pronoun: "他们", attr: "年龄"}
+
+  # ----- 完整应用题样本（多句合并）-----
+  - input: "爸爸的年龄31，妈妈的年龄25，他们的年龄之和是多少？"
+    tokens: ["爸爸", "的", "年龄", "31", "，", "妈妈", "的", "年龄", "25", "，", "他们", "的", "年龄", "之和", "是", "多少", "？"]
+    pattern: "mixed_app_problem"
+    captured: {note: "应同时命中两条 attr_value 与一条 pronoun_sum"}
+
+# ============================================================
+# 8. 分词样本（教分词器认识多字词和数字合并规则）
+# ============================================================
+tokenizer_examples:
+
+  # ----- 阿拉伯数字合并 -----
+  - {input: "1+1=?",    expected_tokens: ["1", "+", "1", "=", "?"]}
+  - {input: "10-3=?",   expected_tokens: ["10", "-", "3", "=", "?"]}
+  - {input: "15+5=?",   expected_tokens: ["15", "+", "5", "=", "?"]}
+  - {input: "20-8=?",   expected_tokens: ["20", "-", "8", "=", "?"]}
+
+  # ----- 中文数字 -----
+  - {input: "一加一等于多少", expected_tokens: ["一", "加", "一", "等于", "多少"]}
+  - {input: "十减三等于几",   expected_tokens: ["十", "减", "三", "等于", "几"]}
+
+  # ----- 混合 -----
+  - {input: "5+三=？", expected_tokens: ["5", "+", "三", "=", "？"]}
+
+  # ----- 语文单字串 -----
+  - {input: "天地人",           expected_tokens: ["天", "地", "人"]}
+  - {input: "金木水火土",       expected_tokens: ["金", "木", "水", "火", "土"]}
+  - {input: "口耳目手足",       expected_tokens: ["口", "耳", "目", "手", "足"]}
+  - {input: "日月山石田禾",     expected_tokens: ["日", "月", "山", "石", "田", "禾"]}
+  - {input: "云雨风雪花鸟树虫", expected_tokens: ["云", "雨", "风", "雪", "花", "鸟", "树", "虫"]}
+  - {input: "上下左右前后",     expected_tokens: ["上", "下", "左", "右", "前", "后"]}
+  - {input: "大小多少",         expected_tokens: ["大", "小", "多", "少"]}
+
+  # ----- 语文多字词 -----
+  - {input: "爸爸妈妈",         expected_tokens: ["爸爸", "妈妈"]}
+  - {input: "学校读书写字",     expected_tokens: ["学校", "读书", "写字"]}
+  - {input: "中国朋友快乐",     expected_tokens: ["中国", "朋友", "快乐"]}
+  - {input: "太阳月亮白天晚上", expected_tokens: ["太阳", "月亮", "白天", "晚上"]}
+  - {input: "春天来了",         expected_tokens: ["春", "天", "来", "了"]}
+
+  # ----- 应用题分词样本（含指代消解关键词）-----
+  - {input: "爸爸的年龄31",                    expected_tokens: ["爸爸", "的", "年龄", "31"]}
+  - {input: "妈妈的年龄25",                    expected_tokens: ["妈妈", "的", "年龄", "25"]}
+  - {input: "他们的年龄之和是多少",             expected_tokens: ["他们", "的", "年龄", "之和", "是", "多少"]}
+  - {input: "爸爸的年龄31，妈妈的年龄25",       expected_tokens: ["爸爸", "的", "年龄", "31", "，", "妈妈", "的", "年龄", "25"]}
+  - {input: "爸爸的年龄31，妈妈的年龄25，他们的年龄之和是多少？",
+     expected_tokens: ["爸爸", "的", "年龄", "31", "，", "妈妈", "的", "年龄", "25", "，", "他们", "的", "年龄", "之和", "是", "多少", "？"]}
+  - {input: "他们的年龄之差是多少",             expected_tokens: ["他们", "的", "年龄", "之差", "是", "多少"]}
