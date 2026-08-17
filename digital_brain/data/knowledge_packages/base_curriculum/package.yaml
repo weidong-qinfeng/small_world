@@ -153,6 +153,38 @@ words:
   - {symbol: "她", pinyin: "tā",        meaning: "代词，指代上文提到的女性（单数）", word_type: "代词"}
   - {symbol: "它", pinyin: "tā",        meaning: "代词，指代上文提到的事物（单数）", word_type: "代词"}
 
+  # ===== 应用题扩展词汇（故事书题、铅笔题等通用句式，Phase 5d 扩展）=====
+  # 人物称谓（person_name 细分类，5d.2 代词消解用）
+  - {symbol: "小明", pinyin: "xiǎo míng", meaning: "人名，男孩名", word_type: "人名", pos: "person_name", aliases: ["明"]}
+  - {symbol: "妈妈", pinyin: "mā ma", meaning: "母亲", word_type: "称谓", pos: "person_name", aliases: ["妈"]}
+  - {symbol: "哥哥", pinyin: "gē ge", meaning: "兄长", word_type: "称谓", pos: "person_name", aliases: ["哥"]}
+  - {symbol: "妹妹", pinyin: "mèi mei", meaning: "比自己小的女孩", word_type: "称谓", pos: "person_name", aliases: ["妹"]}
+  # 普通名词
+  - {symbol: "书包", pinyin: "shū bāo", meaning: "装书的包", word_type: "名词", pos: "noun", aliases: ["背包"]}
+  - {symbol: "故事书", pinyin: "gù shì shū", meaning: "有故事的书", word_type: "名词", pos: "noun"}
+  - {symbol: "铅笔", pinyin: "qiān bǐ", meaning: "用石墨笔芯的书写工具", word_type: "名词", pos: "noun"}
+  - {symbol: "铅笔盒", pinyin: "qiān bǐ hé", meaning: "装铅笔等文具的盒子", word_type: "名词", pos: "noun"}
+  # 方位介词
+  - {symbol: "里", pinyin: "lǐ", meaning: "方位介词，在内部", word_type: "介词", pos: "prep_locative"}
+  - {symbol: "中", pinyin: "zhōng", meaning: "方位介词，中间或内部", word_type: "介词", pos: "prep_locative"}
+  # 所属动词 / 获取动词
+  - {symbol: "有", pinyin: "yǒu", meaning: "拥有、持有", word_type: "动词", pos: "verb_possess"}
+  - {symbol: "买", pinyin: "mǎi", meaning: "花钱购买、获取", word_type: "动词", pos: "verb_acquire", aliases: ["购买"]}
+  - {symbol: "给", pinyin: "gěi", meaning: "交付、与格介词", word_type: "介词", pos: "prep_dative"}
+  # 数量 / 体 / 时间 / 累加 副词
+  - {symbol: "本", pinyin: "běn", meaning: "量词，用于书籍簿册", word_type: "量词", pos: "classifier"}
+  - {symbol: "支", pinyin: "zhī", meaning: "量词，用于杆状物品", word_type: "量词", pos: "classifier"}
+  - {symbol: "了", pinyin: "le", meaning: "动态助词，动作完成", word_type: "助词", pos: "part_aspect"}
+  - {symbol: "又", pinyin: "yòu", meaning: "累加副词，再一次", word_type: "副词", pos: "adv_accumulate"}
+  - {symbol: "现在", pinyin: "xiàn zài", meaning: "当前时间", word_type: "时间词", pos: "adv_temporal"}
+  - {symbol: "一共", pinyin: "yī gòng", meaning: "合计、总共", word_type: "副词", pos: "adv_total"}
+
+  # ===== 追加代词 pos 标注（更新 words 段中已定义的代词）=====
+  - {symbol: "他", pinyin: "tā", meaning: "代词，指代上文提到的男性（单数）", word_type: "代词", pos: "pron_person"}
+  - {symbol: "她", pinyin: "tā", meaning: "代词，指代上文提到的女性（单数）", word_type: "代词", pos: "pron_person"}
+  - {symbol: "它", pinyin: "tā", meaning: "代词，指代上文提到的事物（单数）", word_type: "代词", pos: "pron_person"}
+  - {symbol: "他们", pinyin: "tā men", meaning: "代词，指代上文提到的人（复数）", word_type: "代词", pos: "pron_person_plural"}
+
 # ============================================================
 # 2. 数字单词（一年级要求认识 0-20）
 # ============================================================
@@ -312,6 +344,27 @@ patterns:
       - {type: "N",  capture: "right"}
       - {type: "=",  capture: null}
       - {type: "?",  capture: null}
+    dag_template:
+      nodes:
+        - tpl_id: "call"
+          action: "call_algorithm"
+          params_spec:
+            key:
+              resolve: "op_algorithm"
+              from_captured: "op"
+            args:
+              - resolve: "number_value"
+                from_captured: "left"
+              - resolve: "number_value"
+                from_captured: "right"
+          description_tpl: "调用二元运算算法"
+        - tpl_id: "ret"
+          action: "return_value"
+          params_spec:
+            value:
+              node_out: "call"
+          depends_on_tpl: ["call"]
+          description_tpl: "返回最终结果"
 
   # ----- 属性绑定式：entity 的 attr N -----
   - name: "attr_value"
@@ -323,6 +376,19 @@ patterns:
       - {type: "word", literal: "的", capture: null}
       - {type: "word", literal: null, capture: "attr"}
       - {type: "N",    capture: "value"}
+    dag_template:
+      nodes:
+        - tpl_id: "w"
+          action: "write_memory"
+          params_spec:
+            entity:
+              from_captured: "entity"
+            attr:
+              from_captured: "attr"
+            value:
+              resolve: "number_value"
+              from_captured: "value"
+          description_tpl: "写入工作记忆属性绑定"
 
   # ----- 指代求和式：pronoun 的 attr 之和 = ? -----
   - name: "pronoun_sum"
@@ -336,6 +402,34 @@ patterns:
       - {type: "word", literal: "之和", capture: null}
       - {type: "=",    capture: null, optional: true}
       - {type: "?",    capture: null}
+    dag_template:
+      nodes:
+        - tpl_id: "s"
+          action: "search_context"
+          params_spec:
+            keyword:
+              from_captured: "pronoun"
+          description_tpl: "代词消解获取实体列表"
+          depends_on_all_write_memories: true
+        - tpl_id: "call"
+          action: "call_algorithm"
+          params_spec:
+            key:
+              literal: "adding"
+            collect_from:
+              node:
+                node_ref: "s"
+              attr:
+                from_captured: "attr"
+          depends_on_tpl: ["s"]
+          description_tpl: "调用adding收集属性值并求和"
+        - tpl_id: "ret"
+          action: "return_value"
+          params_spec:
+            value:
+              node_out: "call"
+          depends_on_tpl: ["call"]
+          description_tpl: "返回最终结果"
 
   # ----- 指代求差式：pronoun 的 attr 之差 = ? -----
   - name: "pronoun_diff"
@@ -349,6 +443,144 @@ patterns:
       - {type: "word", literal: "之差", capture: null}
       - {type: "=",    capture: null, optional: true}
       - {type: "?",    capture: null}
+    dag_template:
+      nodes:
+        - tpl_id: "s"
+          action: "search_context"
+          params_spec:
+            keyword:
+              from_captured: "pronoun"
+          description_tpl: "代词消解获取实体列表"
+          depends_on_all_write_memories: true
+        - tpl_id: "call"
+          action: "call_algorithm"
+          params_spec:
+            key:
+              literal: "subtracting"
+            collect_from:
+              node:
+                node_ref: "s"
+              attr:
+                from_captured: "attr"
+          depends_on_tpl: ["s"]
+          description_tpl: "调用subtracting收集属性值并求差"
+        - tpl_id: "ret"
+          action: "return_value"
+          params_spec:
+            value:
+              node_out: "call"
+          depends_on_tpl: ["call"]
+          description_tpl: "返回最终结果"
+
+  # ----- 拥有陈述句：[holder] [container?] [prep_loc?] [verb_possess] N [classifier?] [object] -----
+  - name: "possessive_state"
+    description: "拥有陈述句：人/物 + 容器? + 方位? + 有 + 数 + 量? + 物品（如 小明书包里有4本故事书）"
+    action: "build_dag:possessive_state"
+    priority: 0.95
+    slots:
+      - {type: "word", capture: "holder"}
+      - {type: "word", capture: "container", optional: true}
+      - {type: "word", capture: "prep_loc", optional: true}
+      - {type: "word", literal: "有", capture: null}
+      - {type: "N",    capture: "count"}
+      - {type: "word", capture: "classifier", optional: true}
+      - {type: "word", capture: "object"}
+    dag_template:
+      nodes:
+        - tpl_id: "w"
+          action: "write_memory"
+          params_spec:
+            entity:
+              from_captured: "holder"
+            attr:
+              from_captured: "object"
+            value:
+              resolve: "number_value"
+              from_captured: "count"
+          description_tpl: "拥有陈述：{holder}.{object} = {value}"
+
+  # ----- 获取事件句：[giver?] 又 [prep_dative?] [recipient] [verb_acquire?] [part?] N [classifier?] [object] -----
+  - name: "acquire_event"
+    description: "获取事件：施动者? + 又 + 给? + 接受者 + 买? + 了? + 数 + 量? + 物品（如 妈妈又给他买了3本故事书 / 妹妹又给他2支铅笔）"
+    action: "build_dag:acquire_event"
+    priority: 0.85
+    slots:
+      - {type: "word", capture: "giver", optional: true}
+      - {type: "word", literal: "又", capture: null}
+      - {type: "word", capture: "prep_dative", optional: true}
+      - {type: "word", capture: "recipient"}
+      - {type: "pos:verb_acquire", capture: "verb_acquire", optional: true}
+      - {type: "pos:part_aspect", capture: "part_aspect", optional: true}
+      - {type: "N",    capture: "count"}
+      - {type: "word", capture: "classifier", optional: true}
+      - {type: "word", capture: "object"}
+    dag_template:
+      nodes:
+        - tpl_id: "s"
+          action: "search_context"
+          params_spec:
+            keyword:
+              from_captured: "recipient"
+          description_tpl: "代词消解：接受者 '{recipient}' → 上下文实体"
+          depends_on_all_write_memories: true
+        - tpl_id: "call"
+          action: "call_algorithm"
+          params_spec:
+            key:
+              literal: "adding"
+            collect_from:
+              node:
+                node_ref: "s"
+              attr:
+                from_captured: "object"
+            args:
+              - resolve: "number_value"
+                from_captured: "count"
+          depends_on_tpl: ["s"]
+          description_tpl: "adding(已有值, 新增值)"
+        - tpl_id: "w"
+          action: "write_memory"
+          params_spec:
+            entity:
+              node_ref_first: "s"
+            attr:
+              from_captured: "object"
+            value:
+              node_out: "call"
+          depends_on_tpl: ["call"]
+          description_tpl: "更新 {entity}.{attr} = {value}"
+
+  # ----- 总量提问句：[subject] [adv_temporal?] [adv_total] [verb_possess] [q_word] [classifier?] [object] -----
+  - name: "total_question"
+    description: "总量提问：人/物 + 现在? + 一共 + 有 + 多少/几 + 量? + 物品（如 小明现在一共有多少本故事书）"
+    action: "build_dag:total_question"
+    priority: 0.90
+    slots:
+      - {type: "word", capture: "subject"}
+      - {type: "word", capture: "adv_temporal", optional: true}
+      - {type: "word", literal: "一共", capture: null}
+      - {type: "word", literal: "有", capture: null}
+      - {type: "?",    capture: null}
+      - {type: "word", capture: "classifier", optional: true}
+      - {type: "word", capture: "object"}
+    dag_template:
+      nodes:
+        - tpl_id: "r"
+          action: "read_memory"
+          params_spec:
+            entity:
+              from_captured: "subject"
+            attr:
+              from_captured: "object"
+          description_tpl: "读取 {subject}.{object} 的当前值"
+          depends_on_all_write_memories: true
+        - tpl_id: "ret"
+          action: "return_value"
+          params_spec:
+            value:
+              node_out: "r"
+          depends_on_tpl: ["r"]
+          description_tpl: "返回最终答案"
 
 # ============================================================
 # 7. 模式样本（v2 新增，Phase 2 实施后被代码处理）
@@ -465,3 +697,19 @@ tokenizer_examples:
   - {input: "爸爸的年龄31，妈妈的年龄25，他们的年龄之和是多少？",
      expected_tokens: ["爸爸", "的", "年龄", "31", "，", "妈妈", "的", "年龄", "25", "，", "他们", "的", "年龄", "之和", "是", "多少", "？"]}
   - {input: "他们的年龄之差是多少",             expected_tokens: ["他们", "的", "年龄", "之差", "是", "多少"]}
+
+# ============================================================
+# 9. 词 → 操作神经元语义连接（Phase 5d.6 新增，maps_to 边）
+# ============================================================
+# 学习时建立 MAPS_TO 边：{word} → {op_type} 操作神经元，
+# attributes.param_name 表示"该词表示操作的哪个参数/触发"。
+# Phase 5c/5d 当前仅存边结构，真正的激活扩散触发将在下一阶段启用。
+# ============================================================
+semantic_links:
+  - {word: "有", op_type: "write_memory", param_name: "possessive_trigger"}
+  - {word: "买", op_type: "write_memory", param_name: "acquire_trigger"}
+  - {word: "一共", op_type: "read_memory", param_name: "total_query_trigger"}
+  - {word: "多少", op_type: "return_value", param_name: "question_marker"}
+  - {word: "几", op_type: "return_value", param_name: "question_marker"}
+  - {word: "之和", op_type: "call_algorithm", param_name: "adding_marker"}
+  - {word: "之差", op_type: "call_algorithm", param_name: "subtracting_marker"}

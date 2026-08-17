@@ -167,11 +167,25 @@ class DeclarativeMemory:
         with open(entity_path, "r", encoding="utf-8") as f:
             data = json.load(f)
             for ed in data:
-                self.add_entity(Entity(**ed))
+                entity = Entity(**ed)
+                # upsert 语义：已存在则 update（用于持久化恢复场景，避免 id 冲突）
+                if self.get_entity(entity.id) is not None:
+                    self.update_entity(entity)
+                else:
+                    self.add_entity(entity)
         with open(relation_path, "r", encoding="utf-8") as f:
             data = json.load(f)
             for rd in data:
-                self.add_relation(Relation(**rd))
+                relation = Relation(**rd)
+                # relation upsert：若同 id/source/target 已存在则先删后加
+                existing = self.get_relation(relation.id)
+                if existing is not None:
+                    self.delete_relation(relation.id)
+                try:
+                    self.add_relation(relation)
+                except ValueError:
+                    # source/target 不存在时跳过（恢复场景下的边缘情况，容忍数据不完整）
+                    pass
 
     # ---------- 内部方法 ----------
     def _add_to_name_index(self, entity: Entity) -> None:

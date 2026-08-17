@@ -13,6 +13,7 @@ from __future__ import annotations
 from typing import Any, Dict, List, Optional
 
 from digital_brain.src.core.models import Entity
+from digital_brain.src.core.workspace.ready_queue import ReadyQueue
 
 
 class WorkingMemory:
@@ -24,6 +25,8 @@ class WorkingMemory:
         self.resolved_references: Dict[str, List[str]] = {}     # key: pronoun -> entity names
         self.intermediate_results: Dict[str, Any] = {}          # key: "node_id.out"
         self._entity_write_order: List[str] = []                # 实体写入顺序（代词消解用）
+        self.ready_queue = ReadyQueue()        # Phase 5c: 就绪操作队列（5d 启用）
+        self.recent_entities: List[str] = []  # Phase 5d.5: 跨句实体追踪，最近提及的实体名（按出现序）
 
     # ---- context_entities ----
     def put_context(self, name: str, entity: Entity) -> None:
@@ -123,6 +126,36 @@ class WorkingMemory:
         self.resolved_references.clear()
         self.intermediate_results.clear()
         self._entity_write_order.clear()
+        self.ready_queue.clear()
+        self.recent_entities.clear()
+
+    # ---- 跨句实体追踪辅助（Phase 5d.5）----
+    def register_entity_mention(self, entity_name: str) -> None:
+        """登记最近提及实体（从 tokens 或 属性绑定中的 entity 值提取）"""
+        if entity_name and entity_name not in self.recent_entities:
+            self.recent_entities.append(entity_name)
+        # 最多保留最近 20 个，避免无限增长
+        if len(self.recent_entities) > 20:
+            self.recent_entities = self.recent_entities[-20:]
+
+    def recent_person_names(self, declarative_memory: Optional[Any] = None) -> List[str]:
+        """筛选 recent_entities 中 pos=person_name 的实体名。
+        Phase 5d.5: resolve_pronoun 扩展依据。
+        当前阶段：若 declarative_memory 为 None，直接返回 recent_entities。
+        """
+        if declarative_memory is None:
+            return list(self.recent_entities)
+        result: List[str] = []
+        for name in self.recent_entities:
+            matches = declarative_memory.find_entity_by_name(name)
+            for m in matches:
+                if m.attributes.get("pos") == "person_name":
+                    result.append(name)
+                    break
+            else:
+                # 未标注 pos 时默认保留（兼容旧知识包，未标注 pos 的词）
+                result.append(name)
+        return result
 
     def __repr__(self) -> str:
         return (

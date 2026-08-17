@@ -75,6 +75,11 @@ _V2_ALGORITHM_KEYS = frozenset({
 })
 
 
+class _TemplateResolveError(Exception):
+    """模板解析失败时内部抛出，用于中断实例化"""
+    pass
+
+
 class DAGBuilder:
     """DAG 构建器 - 把模式匹配结果翻译为问题DAG
 
@@ -181,6 +186,14 @@ class DAGBuilder:
         write_node_ids: List[str],
     ) -> None:
         captured = match.captured
+
+        # Phase 5b: 尝试从 pattern 实体的 dag_template 属性加载
+        dag_tpl = self._lookup_dag_template(match.pattern_name)
+        if dag_tpl is not None:
+            self._instantiate_from_template(dag_tpl, captured, dag, missing, write_node_ids)
+            return
+
+        # Fallback: 旧的 elif 链（保持完整向后兼容）
         if template == "binary_op":
             self._build_binary_op(captured, dag, missing)
         elif template == "attr_value":
@@ -190,6 +203,223 @@ class DAGBuilder:
         elif template == "pronoun_diff":
             self._build_pronoun_aggregate(captured, dag, write_node_ids, "subtracting", "之差")
         # 未知模板忽略
+
+    def _lookup_dag_template(self, pattern_name: str) -> Optional[Dict[str, Any]]:
+        """从 declarative memory 查 pattern 实体的 dag_template 属性"""
+        if self.declarative is None:
+            return None
+        # pattern 实体 id 约定为 f"pattern_{pattern_name}"（见 learn_pattern 实现）
+        eid = f"pattern_{pattern_name}"
+        entity = self.declarative.get_entity(eid)
+        if entity is None:
+            # fallback: 按 name 查询
+            matches = self.declarative.find_entity_by_name(pattern_name)
+            for m in matches:
+                if m.attributes.get("kind") == "pattern":
+                    entity = m
+                    break
+        if entity is None:
+            return None
+        return entity.attributes.get("dag_template")
+
+    def _instantiate_from_template(
+        self,
+        dag_tpl: Dict[str, Any],
+        captured: Dict[str, Any],
+        dag: DAGGraph,
+        missing: List[str],
+        write_node_ids: List[str],
+    ) -> None:
+        """从 dag_template 实例化 DAG 节点
+
+        dag_template 结构：
+        {
+          "nodes": [
+            {
+              "tpl_id": "call",
+              "action": "call_algorithm",
+              "params_spec": { ... },
+              "description_tpl": "...",
+              "depends_on_all_write_memories": False,
+              "depends_on_tpl": [...],
+            },
+            ...
+          ]
+        }
+        """
+        nodes_tpl = dag_tpl.get("nodes", [])
+        if not nodes_tpl:
+            return
+
+        # Step 1: 先扫描一遍，解析所有 params 中的 captured 引用和 resolve，确定值
+        # 保存 tpl_id -> (resolved_params_dict, has_error)
+        resolved_params: Dict[str, Dict[str, Any]] = {}
+        tpl_to_node_ids: Dict[str, str] = {}
+
+        # First pass: resolve all params that reference captured values (not node_out yet)
+        for node_tpl in nodes_tpl:
+            tpl_id = node_tpl.get("tpl_id")
+            if not tpl_id:
+                continue
+            params_spec = node_tpl.get("params_spec", {})
+            try:
+                resolved = self._resolve_params_spec(params_spec, captured, missing)
+            except _TemplateResolveError:
+                return
+            resolved_params[tpl_id] = resolved
+            tpl_to_node_ids[tpl_id] = self._new_node_id()
+
+        # Step 2: 第二次扫描，处理 node_out 引用（此时所有 tpl_id->actual_id 映射已就绪）
+        # 然后创建 DAGNode
+        for node_tpl in nodes_tpl:
+            tpl_id = node_tpl.get("tpl_id")
+            if not tpl_id or tpl_id not in tpl_to_node_ids:
+                continue
+
+            actual_id = tpl_to_node_ids[tpl_id]
+            action = node_tpl.get("action", "")
+            params = resolved_params.get(tpl_id, {})
+
+            # 二次替换 params 中的 node_out 引用
+            params = self._replace_node_out_refs(params, tpl_to_node_ids)
+
+            # 构建 depends_on
+            depends_on: List[str] = []
+            depends_on_tpl = node_tpl.get("depends_on_tpl", [])
+            for dep_tpl in depends_on_tpl:
+                if dep_tpl in tpl_to_node_ids:
+                    depends_on.append(tpl_to_node_ids[dep_tpl])
+            if node_tpl.get("depends_on_all_write_memories", False):
+                depends_on.extend(list(write_node_ids))
+
+            # 构建 description
+            description_tpl = node_tpl.get("description_tpl")
+            if description_tpl:
+                try:
+                    description = description_tpl.format(**params)
+                except Exception:
+                    description = description_tpl
+            else:
+                # 简化描述
+                param_strs = [f"{k}={v}" for k, v in params.items()]
+                description = f"{action}(" + ", ".join(param_strs) + ")"
+
+            # 创建节点
+            dag.add_node(DAGNode(
+                id=actual_id,
+                action=action,
+                params=params,
+                depends_on=depends_on,
+                description=description,
+            ))
+
+            # 若是 write_memory，登记到 write_node_ids
+            if action == OP_WRITE_MEMORY:
+                write_node_ids.append(actual_id)
+
+    def _resolve_params_spec(
+        self,
+        params_spec: Dict[str, Any],
+        captured: Dict[str, Any],
+        missing: List[str],
+    ) -> Dict[str, Any]:
+        """递归解析 params_spec，处理 resolve / from_captured / node_out 等规则
+
+        node_out 引用此时先保留为占位符，之后二次扫描再替换。
+        """
+        result: Dict[str, Any] = {}
+        for key, spec in params_spec.items():
+            result[key] = self._resolve_single_spec(spec, captured, missing)
+        return result
+
+    def _resolve_single_spec(
+        self,
+        spec: Any,
+        captured: Dict[str, Any],
+        missing: List[str],
+    ) -> Any:
+        """解析单个参数规范值
+
+        支持：
+        - dict with "resolve" + "from_captured": 使用解析器
+        - dict with only "from_captured": 直接取 captured 值
+        - dict with "node_out": 保留为占位符 (标记 __NODE_OUT__:{tpl_id})
+        - list/dict: 递归处理元素
+        - 其他: 字面量直接返回
+        """
+        if isinstance(spec, dict):
+            if "node_out" in spec:
+                # 保留占位符，二次扫描时替换
+                return f"__NODE_OUT__:{spec['node_out']}"
+            if "node_ref" in spec:
+                # 引用模板中的另一个节点 tpl_id（用于 collect_from.node 等）
+                # 保留占位符，二次扫描时替换为实际 id（非 $ 前缀，直接是 id 字符串）
+                return f"__NODE_REF__:{spec['node_ref']}"
+            if "node_ref_first" in spec:
+                # 取目标节点输出列表的第一个元素（如果是列表）；否则直接取输出值本身
+                # 先存占位符，在 instantiate_from_template 中 DAG 节点创建之后再处理
+                # 这里是第一阶段（params_spec 解析），实际节点输出还不存在。
+                # 所以把它和 node_out 一样先占位，之后在第二阶段和 DAG 执行前做替换。
+                return f"__NODE_REF_FIRST__:{spec['node_ref_first']}"
+            if "literal" in spec:
+                # 字面量直接返回其值（{"literal": "adding"} → "adding"）
+                return spec["literal"]
+            if "from_captured" in spec:
+                from_cap = spec["from_captured"]
+                cap_val = captured.get(from_cap)
+                if cap_val is None:
+                    missing.append(f"模式捕获字段'{from_cap}'缺失")
+                    raise _TemplateResolveError()
+                resolve = spec.get("resolve")
+                if resolve == "number_value":
+                    val = self._resolve_number(str(cap_val))
+                    if val is None:
+                        missing.append(f"数字'{cap_val}'未学")
+                        raise _TemplateResolveError()
+                    return val
+                if resolve == "op_algorithm":
+                    val = self._resolve_op_algorithm(str(cap_val))
+                    if val is None:
+                        missing.append(f"操作符'{cap_val}'未学")
+                        raise _TemplateResolveError()
+                    return val
+                # 无 resolve: 直接返回 captured 值
+                return cap_val
+            # 普通 dict，递归处理每个 value
+            return {k: self._resolve_single_spec(v, captured, missing) for k, v in spec.items()}
+        if isinstance(spec, list):
+            return [self._resolve_single_spec(item, captured, missing) for item in spec]
+        # 字面量
+        return spec
+
+    def _replace_node_out_refs(
+        self,
+        params: Any,
+        tpl_to_node_ids: Dict[str, str],
+    ) -> Any:
+        """替换 params 中的占位符：
+        - __NODE_OUT__:{tpl_id} → $actual_node_id（用于 return_value.value 等输出引用）
+        - __NODE_REF__:{tpl_id} → actual_node_id（用于 collect_from.node 等 ID 引用）
+        """
+        if isinstance(params, str):
+            if params.startswith("__NODE_OUT__:"):
+                tpl_id = params[len("__NODE_OUT__:"):]
+                actual_id = tpl_to_node_ids.get(tpl_id, tpl_id)
+                return f"${actual_id}"
+            if params.startswith("__NODE_REF__:"):
+                tpl_id = params[len("__NODE_REF__:"):]
+                return tpl_to_node_ids.get(tpl_id, tpl_id)
+            if params.startswith("__NODE_REF_FIRST__:"):
+                # 这个值在 DAG 节点创建时尚无法确定（因为依赖上游节点的运行时输出），
+                # 所以把它保留为一个特殊标记 $FIRST:{actual_node_id}，在 DAGExecutor._resolve_arg 中再处理
+                tpl_id = params[len("__NODE_REF_FIRST__:"):]
+                actual_id = tpl_to_node_ids.get(tpl_id, tpl_id)
+                return f"$FIRST:{actual_id}"
+        if isinstance(params, dict):
+            return {k: self._replace_node_out_refs(v, tpl_to_node_ids) for k, v in params.items()}
+        if isinstance(params, list):
+            return [self._replace_node_out_refs(item, tpl_to_node_ids) for item in params]
+        return params
 
     def _build_binary_op(
         self,
@@ -367,10 +597,12 @@ class DAGExecutor:
         algorithm_registry: AlgorithmRegistry,
         procedural_memory: Optional[ProceduralMemory] = None,
         use_embodied: bool = True,
+        declarative_memory: Optional[Any] = None,
     ) -> None:
         self.algorithms = algorithm_registry
         self.procedural = procedural_memory
         self.use_embodied = use_embodied
+        self.declarative = declarative_memory
 
     def execute(
         self,
@@ -423,10 +655,32 @@ class DAGExecutor:
 
         return answer, round(confidence, 3), node_descs
 
+    def _lookup_op_type(self, action: str) -> Optional[str]:
+        if self.declarative is not None:
+            entities = self.declarative.find_entity_by_name(action)
+            for e in entities:
+                if e.attributes.get("kind") == "operation":
+                    return e.attributes.get("op_type")
+        return None
+
     def _execute_node(self, node: DAGNode, wm: Any) -> Any:
         """执行单个节点，分发到对应的原子操作处理器"""
         action = node.action
         params = node.params
+
+        op_type = self._lookup_op_type(action)
+        if op_type is not None:
+            if op_type == "write_memory":
+                return self._op_write_memory(wm, params)
+            if op_type == "read_memory":
+                return self._op_read_memory(wm, params)
+            if op_type == "search_context":
+                return self._op_search_context(wm, params)
+            if op_type == "call_algorithm":
+                return self._op_call_algorithm(wm, params)
+            if op_type == "return_value":
+                return self._op_return_value(wm, params)
+            raise ValueError(f"未知 op_type：{op_type}")
 
         if action == OP_WRITE_MEMORY:
             return self._op_write_memory(wm, params)
@@ -443,28 +697,39 @@ class DAGExecutor:
     # ---- 原子操作实现（L0 硬件指令集）----
 
     def _op_write_memory(self, wm: Any, params: Dict[str, Any]) -> Any:
-        """write_memory(entity, attr, value) → ok"""
-        entity = params.get("entity", "")
-        attr = params.get("attr", "")
-        value = params.get("value")
+        """write_memory(entity, attr, value) → ok
+
+        所有参数支持 $ / $FIRST: 节点输出引用（运行时resolve）。
+        这用于 acquire_event 更新"代词解析后的第一个实体"的属性。
+        """
+        entity = self._resolve_arg(params.get("entity", ""), wm)
+        attr = self._resolve_arg(params.get("attr", ""), wm)
+        value = self._resolve_arg(params.get("value"), wm)
         wm.write_attr(entity, attr, value)
         return value
 
     def _op_read_memory(self, wm: Any, params: Dict[str, Any]) -> Any:
-        """read_memory(entity, attr) → value"""
-        entity = params.get("entity", "")
-        attr = params.get("attr", "")
+        """read_memory(entity, attr) → value（参数支持节点输出引用）"""
+        entity = self._resolve_arg(params.get("entity", ""), wm)
+        attr = self._resolve_arg(params.get("attr", ""), wm)
         return wm.read_attr(entity, attr)
 
     def _op_search_context(self, wm: Any, params: Dict[str, Any]) -> Any:
-        """search_context(keyword) → entities"""
-        keyword = params.get("keyword", "")
+        """search_context(keyword) → entities（参数支持节点输出引用）"""
+        keyword = self._resolve_arg(params.get("keyword", ""), wm)
         return wm.resolve_pronoun(keyword)
 
     def _op_call_algorithm(self, wm: Any, params: Dict[str, Any]) -> Any:
-        """call_algorithm(key, args/collect_from) → result"""
+        """call_algorithm(key, args/collect_from) → result
+
+        支持同时有 collect_from 和 args：最终 args = collect 收集到的列表 + args 参数列表。
+        这用于"获取事件句"等需要"把上下文已有的值 + 新捕获的值 一起传给算法"的场景。
+        """
         key = params.get("key", "")
-        # 收集参数
+        collected_args: List[Any] = []
+        direct_args: List[Any] = []
+
+        # 1) collect_from：从搜索结果（上下文实体列表）中逐个读属性，收集参数
         if "collect_from" in params:
             cf = params["collect_from"]
             ref_node = cf.get("node", "")
@@ -472,14 +737,17 @@ class DAGExecutor:
             entity_names = wm.get_node_output(ref_node)
             if not isinstance(entity_names, list):
                 entity_names = [entity_names] if entity_names else []
-            args = []
             for name in entity_names:
                 val = wm.read_attr_or_none(name, attr)
                 if val is not None:
-                    args.append(val)
-        else:
-            raw_args = params.get("args", [])
-            args = [self._resolve_arg(a, wm) for a in raw_args]
+                    collected_args.append(val)
+
+        # 2) direct args：字面量 args 列表（支持 $ 节点输出引用）
+        raw_args = params.get("args", [])
+        direct_args = [self._resolve_arg(a, wm) for a in raw_args]
+
+        # 3) 合并：collected 在前，direct 在后（语义对应 adding(已有值, 新增加值)）
+        args = collected_args + direct_args
 
         # 门控：算法 key 必须已注册
         algs = self.algorithms.all_algorithms()
@@ -497,7 +765,6 @@ class DAGExecutor:
             result = alg.execute(args[0], args[1], use_embodied=self.use_embodied)
         else:
             result = alg.execute(*args)
-        # 算法返回 dict，取 result 字段
         if isinstance(result, dict):
             return result.get("result")
         return result
@@ -510,10 +777,16 @@ class DAGExecutor:
     # ---- 参数解析 ----
 
     def _resolve_arg(self, arg: Any, wm: Any) -> Any:
-        """解析参数：$开头为节点输出引用，否则为字面量"""
-        if isinstance(arg, str) and arg.startswith("$"):
-            ref_id = arg[1:]
-            return wm.get_node_output(ref_id)
+        if isinstance(arg, str):
+            if arg.startswith("$FIRST:"):
+                ref_id = arg[len("$FIRST:"):]
+                raw = wm.get_node_output(ref_id)
+                if isinstance(raw, list):
+                    return raw[0] if raw else None
+                return raw
+            if arg.startswith("$"):
+                ref_id = arg[1:]
+                return wm.get_node_output(ref_id)
         return arg
 
     def _describe_node(self, node: DAGNode, result: Any) -> str:
@@ -624,7 +897,7 @@ class ReasoningArea:
         )
 
         # DAG 执行（= 求解）
-        executor = DAGExecutor(self.algorithms, self.procedural, self.use_embodied)
+        executor = DAGExecutor(self.algorithms, self.procedural, self.use_embodied, declarative_memory=self.declarative)
         answer, confidence, _ = executor.execute(build_result.dag, wm, out)
 
         out.set_answer(answer, confidence=confidence)

@@ -1,7 +1,7 @@
 """记忆激活机制 - 根据输入词素激活相关记忆并扩散到 1-3 跳邻居"""
 from __future__ import annotations
 
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from digital_brain.src.core.memory.declarative_memory import DeclarativeMemory
 from digital_brain.src.core.memory.procedural_memory import ProceduralMemory
@@ -148,3 +148,24 @@ class MemoryActivation:
             if r not in available_ids and r not in available_names:
                 return False
         return True
+
+    # ---------- Phase 5c: pattern 神经元激活（5d.3 真正并入主流程）----------
+    def activate_pattern(self, pattern_name: str) -> Optional[ActivatedKnowledge]:
+        """激活指定 pattern 的神经元。Phase 5c 仅记录激活，不沿边扩散。"""
+        if self.declarative is None:
+            return None
+        eid = f"pattern_{pattern_name}"
+        entity = self.declarative.get_entity(eid)
+        if entity is None:
+            matches = self.declarative.find_entity_by_name(pattern_name)
+            for m in matches:
+                if m.attributes.get("kind") == "pattern":
+                    entity = m
+                    break
+        if entity is None:
+            return None
+        return ActivatedKnowledge(
+            entity=entity,
+            activation_strength=0.9,
+            source=f"pattern_hit:{pattern_name}",
+        )

@@ -34,6 +34,12 @@ class RelationType(str, Enum):
     CONTAINMENT = "containment"    # 包含：属于
     DEPENDENCY = "dependency"      # 依赖：需要
     SUCCESSOR = "successor"        # 后继：1 的后继是 2
+    TRIGGERS = "triggers"          # 激活触发：pattern → operation
+    PASSES_PARAM = "passes_param"  # 参数传递：词实体 → operation
+    FEEDS = "feeds"                # 数据流：operation A → operation B
+    REQUIRES = "requires"          # 依赖：operation B → operation A（B 需 A 先完成）
+    MAPS_TO = "maps_to"            # 实体映射：概念 → operation（如"有"→write_memory）
+    RESOLVES_TO = "resolves_to"    # 指代消解：代词 → 上下文实体
 
 
 class Entity(BaseModel):

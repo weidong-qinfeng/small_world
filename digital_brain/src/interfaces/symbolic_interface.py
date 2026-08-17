@@ -112,6 +112,9 @@ class SymbolicInterface:
         if auto_restore and storage_dir and MemoryConsolidation.has_saved_state(storage_dir):
             stats = self.consolidation.restore_from_disk(storage_dir)
             restored = stats.get("restored", False)
+        # v2: 先天 operation 神经元入图谱（L0 硬件指令集）—— 恢复后再补，
+        #     保证：① 持久化数据中已存在时不冲突（upsert），② 旧数据缺失时补齐
+        self._ensure_operation_neurons()
         # 3. 激活引擎
         act_cfg = self.config.get("memory", {}).get("activation", {})
         self.memory_activation = MemoryActivation(
@@ -262,6 +265,7 @@ class SymbolicInterface:
         pinyin: str = "",
         word_type: str = "",
         aliases: Optional[Sequence[str]] = None,
+        pos: str = "",
     ) -> str:
         """教大脑一个普通字词及其含义。
 
@@ -278,6 +282,8 @@ class SymbolicInterface:
             "pinyin": pinyin,
             "word_type": word_type,
         }
+        if pos:
+            attrs["pos"] = pos
         entity = Entity(
             id=self._new_entity_id(f"word_{symbol}"),
             name=symbol,
@@ -378,7 +384,33 @@ class SymbolicInterface:
             category=category,
             attributes={"algorithm_key": algorithm_key},
         )
-        return self.procedural.add_procedure(proc)
+        proc_id = self.procedural.add_procedure(proc)
+        # v2: procedure 的陈述性镜像入图谱
+        try:
+            eid = f"ent_proc_{name}"
+            proc_entity = Entity(
+                id=eid,
+                name=name,
+                aliases=[],
+                entity_type=EntityType.ABSTRACT,
+                attributes={
+                    "kind": "procedure",
+                    "procedure_id": proc.id,
+                    "algorithm_key": algorithm_key,
+                    "steps": [s.dict() for s in op_steps],
+                },
+            )
+            existing = self.declarative.get_entity(eid)
+            if existing:
+                self.declarative.update_entity(proc_entity)
+            else:
+                try:
+                    self.declarative.add_entity(proc_entity)
+                except ValueError:
+                    self.declarative.update_entity(proc_entity)
+        except Exception:
+            pass
+        return proc_id
 
     # ============================================================
     # 分词教学接口（§6.2）—— 复用之前能力
@@ -414,6 +446,7 @@ class SymbolicInterface:
         action: str = "",
         priority: float = 0.5,
         description: str = "",
+        dag_template: Optional[Dict[str, Any]] = None,
     ) -> str:
         """教大脑一个模式：把模式作为实体写入知识图谱。
 
@@ -423,6 +456,7 @@ class SymbolicInterface:
             action: 匹配后触发的动作（如 "build_dag:binary_op"）
             priority: 优先级（用于多模式同时命中时排序）
             description: 模式描述
+            dag_template: DAG 模板定义，若提供则 DAGBuilder 优先从该模板构建节点
 
         学习后：PatternMatcher._load_patterns_from_memory() 会自动读到该模式。
         同时，slots 中的字面值（如"的""之和"）也会作为词素写入图谱。
@@ -435,28 +469,118 @@ class SymbolicInterface:
         # 创建或更新 pattern 实体
         eid = f"pattern_{name}"
         existing = self.declarative.get_entity(eid)
+        attrs = {
+            "kind": "pattern",
+            "slots": slots,
+            "action": action,
+            "priority": priority,
+            "description": description,
+        }
+        if dag_template is not None:
+            attrs["dag_template"] = dag_template
         entity = Entity(
             id=eid,
             name=name,
             aliases=[],
             entity_type=EntityType.ABSTRACT,
-            attributes={
-                "kind": "pattern",
-                "slots": slots,
-                "action": action,
-                "priority": priority,
-                "description": description,
-            },
+            attributes=attrs,
         )
         if existing:
             self.declarative.update_entity(entity)
+            # Phase 5c.4: pattern → operation triggers 边（框架铺垫，5d 启用）
+            try:
+                if dag_template:
+                    for node_tpl in dag_template.get("nodes", []):
+                        action_name = node_tpl.get("action", "")
+                        if not action_name:
+                            continue
+                        # 找同 name 的 operation 神经元
+                        op_entities = self.declarative.find_entity_by_name(action_name)
+                        for op_ent in op_entities:
+                            if op_ent.attributes.get("kind") != "operation":
+                                continue
+                            # 已有同名边则跳过
+                            rel_exists = False
+                            for r in self.declarative.find_relations_of(entity.id, "out"):
+                                if r.target_id == op_ent.id and r.relation_type == RelationType.TRIGGERS:
+                                    rel_exists = True
+                                    break
+                            if not rel_exists:
+                                self.declarative.add_relation(Relation(
+                                    id=self._new_relation_id(),
+                                    source_id=entity.id,
+                                    target_id=op_ent.id,
+                                    relation_type=RelationType.TRIGGERS,
+                                    weight=1.0,
+                                    attributes={"from_template": True},
+                                ))
+            except Exception:
+                pass  # 触发器边创建失败不影响学习主流程
             return eid
         try:
             self.declarative.add_entity(entity)
+            # Phase 5c.4: pattern → operation triggers 边（框架铺垫，5d 启用）
+            try:
+                if dag_template:
+                    for node_tpl in dag_template.get("nodes", []):
+                        action_name = node_tpl.get("action", "")
+                        if not action_name:
+                            continue
+                        # 找同 name 的 operation 神经元
+                        op_entities = self.declarative.find_entity_by_name(action_name)
+                        for op_ent in op_entities:
+                            if op_ent.attributes.get("kind") != "operation":
+                                continue
+                            # 已有同名边则跳过
+                            rel_exists = False
+                            for r in self.declarative.find_relations_of(entity.id, "out"):
+                                if r.target_id == op_ent.id and r.relation_type == RelationType.TRIGGERS:
+                                    rel_exists = True
+                                    break
+                            if not rel_exists:
+                                self.declarative.add_relation(Relation(
+                                    id=self._new_relation_id(),
+                                    source_id=entity.id,
+                                    target_id=op_ent.id,
+                                    relation_type=RelationType.TRIGGERS,
+                                    weight=1.0,
+                                    attributes={"from_template": True},
+                                ))
+            except Exception:
+                pass  # 触发器边创建失败不影响学习主流程
             return eid
         except ValueError:
             # 已存在（按 id），走 update
             self.declarative.update_entity(entity)
+            # Phase 5c.4: pattern → operation triggers 边（框架铺垫，5d 启用）
+            try:
+                if dag_template:
+                    for node_tpl in dag_template.get("nodes", []):
+                        action_name = node_tpl.get("action", "")
+                        if not action_name:
+                            continue
+                        # 找同 name 的 operation 神经元
+                        op_entities = self.declarative.find_entity_by_name(action_name)
+                        for op_ent in op_entities:
+                            if op_ent.attributes.get("kind") != "operation":
+                                continue
+                            # 已有同名边则跳过
+                            rel_exists = False
+                            for r in self.declarative.find_relations_of(entity.id, "out"):
+                                if r.target_id == op_ent.id and r.relation_type == RelationType.TRIGGERS:
+                                    rel_exists = True
+                                    break
+                            if not rel_exists:
+                                self.declarative.add_relation(Relation(
+                                    id=self._new_relation_id(),
+                                    source_id=entity.id,
+                                    target_id=op_ent.id,
+                                    relation_type=RelationType.TRIGGERS,
+                                    weight=1.0,
+                                    attributes={"from_template": True},
+                                ))
+            except Exception:
+                pass  # 触发器边创建失败不影响学习主流程
             return eid
 
     def learn_pattern_sample(
@@ -487,6 +611,50 @@ class SymbolicInterface:
         )
         self.declarative.add_entity(entity)
         return eid
+
+    def learn_semantic_link(
+        self,
+        word_symbol: str,
+        op_type: str,
+        param_name: str,
+    ) -> Optional[str]:
+        """教大脑一条"词到操作神经元"的语义连接（maps_to 边）。
+
+        Phase 5d.6: 建立 word_symbol 的实体 → operation 神经元 的 MAPS_TO 关系，
+        attributes 带 param_name 表示"这个词对应操作的哪个参数来源"。
+        例如：learn_semantic_link("有", "write_memory", "entity_value_trigger")
+        表示：看到"有"这个词，触发 write_memory 操作。
+
+        当前阶段（5c/5d框架铺垫）：仅存边，不参与激活扩散。
+        """
+        word_matches = self.declarative.find_entity_by_name(word_symbol)
+        if not word_matches:
+            return None
+        word_ent = word_matches[0]
+
+        op_ent = None
+        op_entities = self.declarative.find_entity_by_name(op_type)
+        for e in op_entities:
+            if e.attributes.get("kind") == "operation":
+                op_ent = e
+                break
+        if op_ent is None:
+            return None
+
+        for r in self.declarative.find_relations_of(word_ent.id, "out"):
+            if r.target_id == op_ent.id and r.relation_type == RelationType.MAPS_TO:
+                r.attributes["param_name"] = param_name
+                return r.id
+
+        rel = Relation(
+            id=self._new_relation_id(),
+            source_id=word_ent.id,
+            target_id=op_ent.id,
+            relation_type=RelationType.MAPS_TO,
+            weight=1.0,
+            attributes={"param_name": param_name},
+        )
+        return self.declarative.add_relation(rel)
 
     # ============================================================
     # 知识包学习：从可读文件加载知识（人工触发）
@@ -523,6 +691,7 @@ class SymbolicInterface:
 
         大脑逐条读取并调用 learn_* 接口学习，和老师讲课一样。
         """
+        self._ensure_operation_neurons()
         # 解析路径
         if os.path.isfile(package_name_or_path):
             pkg_path = package_name_or_path
@@ -544,6 +713,7 @@ class SymbolicInterface:
             "tokenizer_samples": 0,
             "patterns": 0,        # v2: 模式
             "pattern_samples": 0, # v2: 模式样本
+            "semantic_links": 0,  # v2: 词到操作神经元的 maps_to 语义连接
         }
 
         # 1) 数字单词
@@ -581,6 +751,7 @@ class SymbolicInterface:
                 pinyin=item.get("pinyin", ""),
                 word_type=item.get("word_type", ""),
                 aliases=item.get("aliases"),
+                pos=item.get("pos", ""),
             )
             stats["words"] += 1
 
@@ -622,6 +793,7 @@ class SymbolicInterface:
                 action=item.get("action", ""),
                 priority=item.get("priority", 0.5),
                 description=item.get("description", ""),
+                dag_template=item.get("dag_template"),
             )
             stats["patterns"] += 1
 
@@ -634,6 +806,15 @@ class SymbolicInterface:
                 captured=item.get("captured", {}),
             )
             stats["pattern_samples"] += 1
+
+        # 9) v2: 词到操作神经元的 maps_to 语义连接
+        for item in pkg.get("semantic_links", []):
+            self.learn_semantic_link(
+                word_symbol=item["word"],
+                op_type=item["op_type"],
+                param_name=item.get("param_name", ""),
+            )
+            stats["semantic_links"] += 1
 
         self.knowledge_stats = {
             "learned_from_package": stats,
@@ -703,6 +884,7 @@ class SymbolicInterface:
             授课统计：{numbers: int, relations: int, operators: int, markers: int,
                         procedures: int, tokenizer_samples: int}
         """
+        self._ensure_operation_neurons()
         stats = {
             "numbers": 0,
             "relations": 0,
@@ -897,6 +1079,32 @@ class SymbolicInterface:
             return e
         matches = self.declarative.find_entity_by_name(symbol_or_id)
         return matches[0] if matches else None
+
+    # ---- 先天 operation 神经元入图谱（L0 硬件指令集）----
+    def _ensure_operation_neurons(self) -> None:
+        operations = [
+            ("ent_op_write_memory", "write_memory"),
+            ("ent_op_read_memory", "read_memory"),
+            ("ent_op_search_context", "search_context"),
+            ("ent_op_call_algorithm", "call_algorithm"),
+            ("ent_op_return_value", "return_value"),
+        ]
+        try:
+            for eid, op_type in operations:
+                if self.declarative.get_entity(eid) is None:
+                    entity = Entity(
+                        id=eid,
+                        name=op_type,
+                        aliases=[],
+                        entity_type=EntityType.ABSTRACT,
+                        attributes={"kind": "operation", "op_type": op_type},
+                    )
+                    try:
+                        self.declarative.add_entity(entity)
+                    except ValueError:
+                        pass
+        except Exception:
+            pass
 
     # ---- 程序性步骤默认模板 ----
     @staticmethod

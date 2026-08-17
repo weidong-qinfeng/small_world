@@ -190,6 +190,20 @@ class PatternMatcher:
         except (ValueError, TypeError):
             return False
 
+    def classify_token_pos(self, token: str) -> str:
+        """Phase 5d.2: 返回细粒度词性（person_name / noun / verb_possess / prep_locative / ...）。
+        优先查 declarative_memory 中实体的 attributes.pos。
+        未找到 pos 属性时，返回空字符串表示"未标注"。
+        """
+        if self.declarative is None:
+            return ""
+        entities = self.declarative.find_entity_by_name(token)
+        for ent in entities:
+            pos = ent.attributes.get("pos")
+            if pos:
+                return pos
+        return ""
+
     # ---------- 主匹配 ----------
     def match(self, tokens: List[str]) -> List[PatternMatchResult]:
         """对 tokens 应用所有 pattern 做匹配，返回按得分排序的结果列表
@@ -288,6 +302,10 @@ class PatternMatcher:
         type_ = slot.get("type")
         if type_ is None:
             return True
+        if isinstance(type_, str) and type_.startswith("pos:"):
+            expected_pos = type_[len("pos:"):]
+            actual_pos = self.classify_token_pos(token)
+            return actual_pos == expected_pos
         if type_ == "word":
             # word 类型：任何已学实体（含别名）都算
             if self.declarative is None:
