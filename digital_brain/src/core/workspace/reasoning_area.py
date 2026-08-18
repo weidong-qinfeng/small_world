@@ -263,7 +263,7 @@ class DAGBuilder:
                 continue
             params_spec = node_tpl.get("params_spec", {})
             try:
-                resolved = self._resolve_params_spec(params_spec, captured, missing)
+                resolved = self._resolve_params_spec(params_spec, captured, missing, dag=dag)
             except _TemplateResolveError:
                 return
             resolved_params[tpl_id] = resolved
@@ -317,11 +317,65 @@ class DAGBuilder:
             if action == OP_WRITE_MEMORY:
                 write_node_ids.append(actual_id)
 
+    # ---------- M1-R3 object 清洗常量 ----------
+    OBJECT_BAD_POS = {
+        "adv_temporal", "adv_total", "adv_accumulate",
+        "part_aspect", "prep_locative", "prep_dative",
+        "question_marker", "classifier",
+    }
+
+    def _get_word_pos(self, word: str) -> Optional[str]:
+        dm = getattr(self, "declarative", None)
+        if dm is None:
+            wm = getattr(self, "workspace", None)
+            dm = getattr(wm, "declarative", None) if wm else None
+        if dm is None or not word:
+            return None
+        ents = dm.find_entity_by_name(word)
+        if not ents:
+            return None
+        attr = getattr(ents[0], "attributes", None) or {}
+        return attr.get("pos")
+
+    def _is_invalid_object_candidate(self, raw: Any) -> bool:
+        if raw is None:
+            return True
+        if not isinstance(raw, str):
+            return False
+        if raw in ("?", "。", "，", ",", "！", "!", "."):
+            return True
+        if len(raw) == 1:
+            c = raw
+            is_cjk = ('\u4e00' <= c <= '\u9fff') or ('\u3400' <= c <= '\u4dbf')
+            if not (c.isalpha() or c.isdigit() or is_cjk):
+                return True
+        pos = self._get_word_pos(raw)
+        if pos in self.OBJECT_BAD_POS:
+            return True
+        return False
+
+    def _find_last_write_attr(self, dag: Any) -> Optional[str]:
+        """返回当前 DAG 中最后一个 write_memory 节点的 attr 参数（零指代宾语回退用）。"""
+        try:
+            write_op = OP_WRITE_MEMORY
+        except Exception:
+            write_op = "write_memory"
+        last_attr = None
+        nodes_dict = getattr(dag, "nodes", {})
+        nodes_list = list(nodes_dict.values()) if isinstance(nodes_dict, dict) else list(nodes_dict)
+        for node in nodes_list:
+            action = getattr(node, "action", None)
+            params = getattr(node, "params", None) or {}
+            if action == write_op and isinstance(params, dict) and "attr" in params:
+                last_attr = params["attr"]
+        return last_attr
+
     def _resolve_params_spec(
         self,
         params_spec: Dict[str, Any],
         captured: Dict[str, Any],
         missing: List[str],
+        dag: Optional[Any] = None,
     ) -> Dict[str, Any]:
         """递归解析 params_spec，处理 resolve / from_captured / node_out 等规则
 
@@ -329,7 +383,7 @@ class DAGBuilder:
         """
         result: Dict[str, Any] = {}
         for key, spec in params_spec.items():
-            result[key] = self._resolve_single_spec(spec, captured, missing)
+            result[key] = self._resolve_single_spec(spec, captured, missing, dag=dag)
         return result
 
     def _resolve_single_spec(
@@ -337,6 +391,7 @@ class DAGBuilder:
         spec: Any,
         captured: Dict[str, Any],
         missing: List[str],
+        dag: Optional[Any] = None,
     ) -> Any:
         """解析单个参数规范值
 
@@ -366,29 +421,34 @@ class DAGBuilder:
                 return spec["literal"]
             if "from_captured" in spec:
                 from_cap = spec["from_captured"]
-                cap_val = captured.get(from_cap)
-                if cap_val is None:
-                    missing.append(f"模式捕获字段'{from_cap}'缺失")
+                raw = captured.get(from_cap)
+                # M1-R3 扩展：object 为 None 或 语义上不是合法宾语（功能词性/标点）时，回退到最近 write_memory.attr
+                if from_cap == "object" and self._is_invalid_object_candidate(raw) and dag is not None:
+                    last_attr = self._find_last_write_attr(dag)
+                    if last_attr is not None:
+                        raw = last_attr
+                if raw is None:
+                    missing.append(f"模式捕获字段'{from_cap}'缺失（且无可用回退）")
                     raise _TemplateResolveError()
                 resolve = spec.get("resolve")
                 if resolve == "number_value":
-                    val = self._resolve_number(str(cap_val))
+                    val = self._resolve_number(str(raw))
                     if val is None:
-                        missing.append(f"数字'{cap_val}'未学")
+                        missing.append(f"数字'{raw}'未学")
                         raise _TemplateResolveError()
                     return val
                 if resolve == "op_algorithm":
-                    val = self._resolve_op_algorithm(str(cap_val))
+                    val = self._resolve_op_algorithm(str(raw))
                     if val is None:
-                        missing.append(f"操作符'{cap_val}'未学")
+                        missing.append(f"操作符'{raw}'未学")
                         raise _TemplateResolveError()
                     return val
                 # 无 resolve: 直接返回 captured 值
-                return cap_val
+                return raw
             # 普通 dict，递归处理每个 value
-            return {k: self._resolve_single_spec(v, captured, missing) for k, v in spec.items()}
+            return {k: self._resolve_single_spec(v, captured, missing, dag=dag) for k, v in spec.items()}
         if isinstance(spec, list):
-            return [self._resolve_single_spec(item, captured, missing) for item in spec]
+            return [self._resolve_single_spec(item, captured, missing, dag=dag) for item in spec]
         # 字面量
         return spec
 

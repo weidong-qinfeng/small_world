@@ -120,6 +120,60 @@ class PatternMatcher:
             description="比较：A > B",
         )
 
+    # ---------- M1-R2 匹配后清洗 ----------
+    SUBJECT_BAD_POS = {
+        "adv_temporal", "adv_total", "adv_accumulate",
+        "part_aspect", "prep_locative", "prep_dative",
+        "question_marker", "classifier",
+    }
+
+    OBJECT_BAD_POS = {
+        "adv_temporal", "adv_total", "adv_accumulate",
+        "part_aspect", "prep_locative", "prep_dative",
+        "question_marker", "classifier",
+    }
+
+    def _get_pos_of_word(self, word: str) -> Optional[str]:
+        if self.declarative is None or not word:
+            return None
+        ents = self.declarative.find_entity_by_name(word)
+        if not ents:
+            return None
+        attr = getattr(ents[0], "attributes", None) or {}
+        return attr.get("pos")
+
+    def _sanitize_match(self, match: Any) -> Optional[Any]:
+        try:
+            captured = match.captured if match.captured is not None else {}
+            pname = match.pattern_name
+
+            if pname == "total_question":
+                subj = captured.get("subject")
+                if subj:
+                    sp = self._get_pos_of_word(subj)
+                    if sp in self.SUBJECT_BAD_POS:
+                        return None
+                    if subj in ("?", "。", "，", ",", "！", "!", ".") or len(subj) == 1 and not ('\u4e00' <= subj <= '\u9fff' or subj.isalpha() or subj.isdigit()):
+                        return None
+
+            if pname in ("total_question", "acquire_event"):
+                obj = captured.get("object")
+                bad = False
+                if obj is None:
+                    bad = False
+                elif obj in ("?", "。", "，", ",", "！", "!", ".") or (len(obj) == 1 and not ('\u4e00' <= obj <= '\u9fff' or obj.isalpha())):
+                    bad = True
+                else:
+                    op = self._get_pos_of_word(obj)
+                    if op in self.OBJECT_BAD_POS:
+                        bad = True
+                if bad:
+                    captured["object"] = None
+                    match.captured = captured
+        except Exception:
+            pass
+        return match
+
     # ---------- 模式加载：从图谱读取 ----------
     def _load_patterns_from_memory(self) -> Dict[str, dict]:
         """从图谱加载所有 kind=pattern 实体。图谱为空或无模式时返回 v1 fallback。"""
@@ -226,6 +280,15 @@ class PatternMatcher:
             if cur is None or r.match_score > cur.match_score:
                 seen[key] = r
         results = list(seen.values())
+
+        # M1-R2 清洗：丢弃语义错位匹配 + object bad pos → None
+        cleaned = []
+        for m in results:
+            sm = self._sanitize_match(m)
+            if sm is not None:
+                cleaned.append(sm)
+        results = cleaned
+
         results.sort(key=lambda r: -r.match_score)
         return results
 
@@ -307,11 +370,17 @@ class PatternMatcher:
             actual_pos = self.classify_token_pos(token)
             return actual_pos == expected_pos
         if type_ == "word":
-            # word 类型：任何已学实体（含别名）都算
+            # 否则：declarative 中存在该词的实体
             if self.declarative is None:
-                # fallback：任何非空白字符都算（兼容老测试）
                 return bool(token)
-            return bool(self.declarative.find_entity_by_name(token))
+            if self.declarative.find_entity_by_name(token):
+                return True
+            # M1-B 新增：未知单字 CJK 汉字也当作 word 匹配（简化表达容忍，如"包"="书包"；噪声单字也尽量让 slot 通过）
+            if len(token) == 1:
+                # 范围覆盖基本 CJK 统一表意文字 + 扩展 A（几乎所有现代汉语单字）
+                if '\u4e00' <= token <= '\u9fff' or '\u3400' <= token <= '\u4dbf':
+                    return True
+            return False
         # N/OP/=/等：通过 classify_token
         return self.classify_token(token) == type_
 

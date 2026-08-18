@@ -185,6 +185,12 @@ words:
   - {symbol: "它", pinyin: "tā", meaning: "代词，指代上文提到的事物（单数）", word_type: "代词", pos: "pron_person"}
   - {symbol: "他们", pinyin: "tā men", meaning: "代词，指代上文提到的人（复数）", word_type: "代词", pos: "pron_person_plural"}
 
+  # ===== M1 表层鲁棒性补充：常见省略表达变体 + 总量提问副词 =====
+  - {symbol: "包", pinyin: "bāo", meaning: "容器，书包的口语省略", word_type: "名词", pos: "noun", aliases: ["包包", "小包"]}
+  - {symbol: "总", pinyin: "zǒng", meaning: "总量副词（与'共'连用：总共）", word_type: "副词", pos: "adv_total"}
+  - {symbol: "共", pinyin: "gòng", meaning: "合计、总共", word_type: "副词", pos: "adv_total"}
+  - {symbol: "总共", pinyin: "zǒng gòng", meaning: "合计、一共", word_type: "副词", pos: "adv_total", aliases: ["合计", "总计"]}
+
 # ============================================================
 # 2. 数字单词（一年级要求认识 0-20）
 # ============================================================
@@ -513,7 +519,7 @@ patterns:
       - {type: "pos:part_aspect", capture: "part_aspect", optional: true}
       - {type: "N",    capture: "count"}
       - {type: "word", capture: "classifier", optional: true}
-      - {type: "word", capture: "object"}
+      - {type: "word", capture: "object", optional: true}
     dag_template:
       nodes:
         - tpl_id: "s"
@@ -557,8 +563,9 @@ patterns:
     priority: 0.90
     slots:
       - {type: "word", capture: "subject"}
-      - {type: "word", capture: "adv_temporal", optional: true}
-      - {type: "word", literal: "一共", capture: null}
+      - {type: "pos:adv_temporal", capture: "adv_temporal", optional: true}
+      - {type: "pos:adv_total", capture: "adv_total_1", optional: true}
+      - {type: "pos:adv_total", capture: "adv_total_2", optional: true}
       - {type: "word", literal: "有", capture: null}
       - {type: "?",    capture: null}
       - {type: "word", capture: "classifier", optional: true}
