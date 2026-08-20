@@ -128,6 +128,7 @@ class PatternMatcher:
     }
 
     OBJECT_BAD_POS = {
+        "person_name",
         "adv_temporal", "adv_total", "adv_accumulate",
         "part_aspect", "prep_locative", "prep_dative",
         "question_marker", "classifier",
@@ -370,14 +371,27 @@ class PatternMatcher:
             actual_pos = self.classify_token_pos(token)
             return actual_pos == expected_pos
         if type_ == "word":
-            # 否则：declarative 中存在该词的实体
             if self.declarative is None:
                 return bool(token)
-            if self.declarative.find_entity_by_name(token):
+            ents = self.declarative.find_entity_by_name(token)
+            if ents:
+                pos = None
+                for m in ents:
+                    p = (getattr(m, "attributes", None) or {}).get("pos")
+                    if p:
+                        pos = p
+                        break
+                WORD_BLACKLIST = {
+                    "classifier", "part_aspect",
+                    "prep_locative", "prep_dative",
+                    "adv_total", "adv_temporal", "adv_accumulate",
+                    "verb_possess", "verb_acquire", "verb_residual",
+                    "discourse_marker", "question_marker",
+                }
+                if pos in WORD_BLACKLIST:
+                    return False
                 return True
-            # M1-B 新增：未知单字 CJK 汉字也当作 word 匹配（简化表达容忍，如"包"="书包"；噪声单字也尽量让 slot 通过）
             if len(token) == 1:
-                # 范围覆盖基本 CJK 统一表意文字 + 扩展 A（几乎所有现代汉语单字）
                 if '\u4e00' <= token <= '\u9fff' or '\u3400' <= token <= '\u4dbf':
                     return True
             return False

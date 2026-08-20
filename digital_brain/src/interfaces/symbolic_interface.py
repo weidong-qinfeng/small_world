@@ -266,6 +266,7 @@ class SymbolicInterface:
         word_type: str = "",
         aliases: Optional[Sequence[str]] = None,
         pos: str = "",
+        gender: str = "",
     ) -> str:
         """教大脑一个普通字词及其含义。
 
@@ -284,6 +285,8 @@ class SymbolicInterface:
         }
         if pos:
             attrs["pos"] = pos
+        if gender:
+            attrs["gender"] = gender
         entity = Entity(
             id=self._new_entity_id(f"word_{symbol}"),
             name=symbol,
@@ -617,6 +620,7 @@ class SymbolicInterface:
         word_symbol: str,
         op_type: str,
         param_name: str,
+        link_type: str = "MAPS_TO",
     ) -> Optional[str]:
         """教大脑一条"词到操作神经元"的语义连接（maps_to 边）。
 
@@ -626,7 +630,18 @@ class SymbolicInterface:
         表示：看到"有"这个词，触发 write_memory 操作。
 
         当前阶段（5c/5d框架铺垫）：仅存边，不参与激活扩散。
+
+        link_type 支持：MAPS_TO / maps_to / RESOLVES_TO / resolves_to
         """
+        lt_upper = link_type.upper()
+        if lt_upper not in ("MAPS_TO", "RESOLVES_TO"):
+            raise ValueError(
+                f"link_type 必须是 MAPS_TO 或 RESOLVES_TO，收到: {link_type}"
+            )
+        relation_type = (
+            RelationType.MAPS_TO if lt_upper == "MAPS_TO" else RelationType.RESOLVES_TO
+        )
+
         word_matches = self.declarative.find_entity_by_name(word_symbol)
         if not word_matches:
             return None
@@ -642,7 +657,7 @@ class SymbolicInterface:
             return None
 
         for r in self.declarative.find_relations_of(word_ent.id, "out"):
-            if r.target_id == op_ent.id and r.relation_type == RelationType.MAPS_TO:
+            if r.target_id == op_ent.id and r.relation_type == relation_type:
                 r.attributes["param_name"] = param_name
                 return r.id
 
@@ -650,7 +665,7 @@ class SymbolicInterface:
             id=self._new_relation_id(),
             source_id=word_ent.id,
             target_id=op_ent.id,
-            relation_type=RelationType.MAPS_TO,
+            relation_type=relation_type,
             weight=1.0,
             attributes={"param_name": param_name},
         )
@@ -752,6 +767,7 @@ class SymbolicInterface:
                 word_type=item.get("word_type", ""),
                 aliases=item.get("aliases"),
                 pos=item.get("pos", ""),
+                gender=item.get("gender", ""),
             )
             stats["words"] += 1
 

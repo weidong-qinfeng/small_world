@@ -94,9 +94,11 @@ class DAGBuilder:
         self,
         declarative_memory: Optional[Any] = None,
         procedural_memory: Optional[ProceduralMemory] = None,
+        working_memory: Optional[Any] = None,
     ) -> None:
         self.declarative = declarative_memory
         self.procedural = procedural_memory
+        self.working_memory = working_memory
         self._node_counter = 0
 
     def _new_node_id(self, prefix: str = "n") -> str:
@@ -422,11 +424,16 @@ class DAGBuilder:
             if "from_captured" in spec:
                 from_cap = spec["from_captured"]
                 raw = captured.get(from_cap)
-                # M1-R3 扩展：object 为 None 或 语义上不是合法宾语（功能词性/标点）时，回退到最近 write_memory.attr
-                if from_cap == "object" and self._is_invalid_object_candidate(raw) and dag is not None:
-                    last_attr = self._find_last_write_attr(dag)
-                    if last_attr is not None:
-                        raw = last_attr
+                if from_cap == "object" and self._is_invalid_object_candidate(raw):
+                    top_theme = None
+                    if self.working_memory is not None:
+                        top_theme = getattr(self.working_memory, "top_theme", lambda d=None: d)()
+                    if top_theme:
+                        raw = top_theme
+                    elif dag is not None:
+                        last_attr = self._find_last_write_attr(dag)
+                        if last_attr is not None:
+                            raw = last_attr
                 if raw is None:
                     missing.append(f"模式捕获字段'{from_cap}'缺失（且无可用回退）")
                     raise _TemplateResolveError()
@@ -765,7 +772,7 @@ class DAGExecutor:
         entity = self._resolve_arg(params.get("entity", ""), wm)
         attr = self._resolve_arg(params.get("attr", ""), wm)
         value = self._resolve_arg(params.get("value"), wm)
-        wm.write_attr(entity, attr, value)
+        wm.write_attr(entity, attr, value, declarative_memory=self.declarative)
         return value
 
     def _op_read_memory(self, wm: Any, params: Dict[str, Any]) -> Any:
@@ -775,9 +782,12 @@ class DAGExecutor:
         return wm.read_attr(entity, attr)
 
     def _op_search_context(self, wm: Any, params: Dict[str, Any]) -> Any:
-        """search_context(keyword) → entities（参数支持节点输出引用）"""
+        """search_context(keyword) → entities（参数支持节点输出引用）
+
+        Phase M2: 传递 declarative_memory 以启用性别过滤 + 距离衰减排序
+        """
         keyword = self._resolve_arg(params.get("keyword", ""), wm)
-        return wm.resolve_pronoun(keyword)
+        return wm.resolve_pronoun(keyword, declarative_memory=self.declarative)
 
     def _op_call_algorithm(self, wm: Any, params: Dict[str, Any]) -> Any:
         """call_algorithm(key, args/collect_from) → result
@@ -930,7 +940,7 @@ class ReasoningArea:
         wm.clear()
 
         # DAG 构建（= 理解）
-        builder = DAGBuilder(self.declarative, self.procedural)
+        builder = DAGBuilder(self.declarative, self.procedural, working_memory=wm)
         build_result = builder.build(patterns)
 
         if not build_result.success:

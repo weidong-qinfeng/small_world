@@ -155,10 +155,10 @@ words:
 
   # ===== 应用题扩展词汇（故事书题、铅笔题等通用句式，Phase 5d 扩展）=====
   # 人物称谓（person_name 细分类，5d.2 代词消解用）
-  - {symbol: "小明", pinyin: "xiǎo míng", meaning: "人名，男孩名", word_type: "人名", pos: "person_name", aliases: ["明"]}
-  - {symbol: "妈妈", pinyin: "mā ma", meaning: "母亲", word_type: "称谓", pos: "person_name", aliases: ["妈"]}
-  - {symbol: "哥哥", pinyin: "gē ge", meaning: "兄长", word_type: "称谓", pos: "person_name", aliases: ["哥"]}
-  - {symbol: "妹妹", pinyin: "mèi mei", meaning: "比自己小的女孩", word_type: "称谓", pos: "person_name", aliases: ["妹"]}
+  - {symbol: "小明", pinyin: "xiǎo míng", meaning: "人名，男孩名", word_type: "人名", pos: "person_name", gender: "M", aliases: ["明"]}
+  - {symbol: "妈妈", pinyin: "mā ma", meaning: "母亲", word_type: "称谓", pos: "person_name", gender: "F", aliases: ["妈"]}
+  - {symbol: "哥哥", pinyin: "gē ge", meaning: "兄长", word_type: "称谓", pos: "person_name", gender: "M", aliases: ["哥"]}
+  - {symbol: "妹妹", pinyin: "mèi mei", meaning: "比自己小的女孩", word_type: "称谓", pos: "person_name", gender: "F", aliases: ["妹"]}
   # 普通名词
   - {symbol: "书包", pinyin: "shū bāo", meaning: "装书的包", word_type: "名词", pos: "noun", aliases: ["背包"]}
   - {symbol: "故事书", pinyin: "gù shì shū", meaning: "有故事的书", word_type: "名词", pos: "noun"}
@@ -180,16 +180,39 @@ words:
   - {symbol: "一共", pinyin: "yī gòng", meaning: "合计、总共", word_type: "副词", pos: "adv_total"}
 
   # ===== 追加代词 pos 标注（更新 words 段中已定义的代词）=====
-  - {symbol: "他", pinyin: "tā", meaning: "代词，指代上文提到的男性（单数）", word_type: "代词", pos: "pron_person"}
-  - {symbol: "她", pinyin: "tā", meaning: "代词，指代上文提到的女性（单数）", word_type: "代词", pos: "pron_person"}
-  - {symbol: "它", pinyin: "tā", meaning: "代词，指代上文提到的事物（单数）", word_type: "代词", pos: "pron_person"}
-  - {symbol: "他们", pinyin: "tā men", meaning: "代词，指代上文提到的人（复数）", word_type: "代词", pos: "pron_person_plural"}
+  - {symbol: "他", pinyin: "tā", meaning: "第三人称单数男性他", word_type: "代词", pos: "pron_person", gender: "M"}
+  - {symbol: "她", pinyin: "tā", meaning: "第三人称单数女性她", word_type: "代词", pos: "pron_person", gender: "F"}
+  - {symbol: "它", pinyin: "tā", meaning: "第三人称单数中性它", word_type: "代词", pos: "pron_person", gender: "N"}
+  - {symbol: "他们", pinyin: "tā men", meaning: "第三人称复数他们（混合/全男）", word_type: "代词", pos: "pron_person_plural", gender: "PLURAL_MALE"}
+  - {symbol: "她们", pinyin: "tā men", meaning: "第三人称复数全女性她们", word_type: "代词", pos: "pron_person_plural", gender: "PLURAL_FEMALE"}
+  - {symbol: "它们", pinyin: "tā men", meaning: "第三人称复数全物它们", word_type: "代词", pos: "pron_person_plural", gender: "PLURAL_NEUTRAL"}
 
   # ===== M1 表层鲁棒性补充：常见省略表达变体 + 总量提问副词 =====
   - {symbol: "包", pinyin: "bāo", meaning: "容器，书包的口语省略", word_type: "名词", pos: "noun", aliases: ["包包", "小包"]}
   - {symbol: "总", pinyin: "zǒng", meaning: "总量副词（与'共'连用：总共）", word_type: "副词", pos: "adv_total"}
   - {symbol: "共", pinyin: "gòng", meaning: "合计、总共", word_type: "副词", pos: "adv_total"}
   - {symbol: "总共", pinyin: "zǒng gòng", meaning: "合计、一共", word_type: "副词", pos: "adv_total", aliases: ["合计", "总计"]}
+
+  # ===== M2 扩展词汇：人称/物品/动作（补充弟弟/橡皮/小红/钱包等，避免切单字）=====
+  # 人称（gender 用于"她→小红"过滤）
+  - {symbol: "小红", pinyin: "xiǎo hóng", meaning: "人名，女孩名", word_type: "人名", pos: "person_name", gender: "F", aliases: ["红"]}
+  - {symbol: "弟弟", pinyin: "dì di", meaning: "比自己小的男孩", word_type: "称谓", pos: "person_name", gender: "M", aliases: ["弟"]}
+  # 普通名词（M2-b 橡皮 / M2-c 钱包、红包）
+  - {symbol: "橡皮", pinyin: "xiàng pí", meaning: "擦字用的文具", word_type: "名词", pos: "noun", aliases: ["橡皮擦"]}
+  - {symbol: "钱包", pinyin: "qián bāo", meaning: "装钱的包", word_type: "名词", pos: "noun", aliases: ["钱袋"]}
+  - {symbol: "红包", pinyin: "hóng bāo", meaning: "装礼金的红色封袋", word_type: "名词", pos: "noun"}
+  - {symbol: "钱", pinyin: "qián", meaning: "货币", word_type: "名词", pos: "noun"}
+  # 动作动词（verb_acquire 获取类 / verb_residual 剩余类）
+  - {symbol: "收到", pinyin: "shōu dào", meaning: "接收到（获取类动作）", word_type: "动词", pos: "verb_acquire", aliases: ["接到", "领到"]}
+  # 量词扩展（块=量词；元=货币单位）
+  - {symbol: "块", pinyin: "kuài", meaning: "块状量词（用于橡皮/肥皂等）", word_type: "量词", pos: "classifier"}
+  - {symbol: "元", pinyin: "yuán", meaning: "人民币货币单位", word_type: "量词", pos: "classifier", aliases: ["块钱", "元钱"]}
+  # 通用介词/方位（在...里）
+  - {symbol: "在", pinyin: "zài", meaning: "存在的位置介词", word_type: "介词", pos: "prep_locative"}
+  # 给 verb 双写（保证 "妈妈又给弟弟" / "妈妈给" 能正确识别 prep_dative）
+  - {symbol: "给", pinyin: "gěi", meaning: "给予介词", word_type: "介词", pos: "prep_dative", aliases: ["给予"]}
+  # 借走（loss 动词 — M5 减法会用，M2 暂时作为 unknown word 也没事）
+  - {symbol: "借", pinyin: "jiè", meaning: "借出/借入", word_type: "动词", pos: "verb_residual", aliases: ["借走"]}
 
 # ============================================================
 # 2. 数字单词（一年级要求认识 0-20）
@@ -485,12 +508,12 @@ patterns:
     priority: 0.95
     slots:
       - {type: "word", capture: "holder"}
-      - {type: "word", capture: "container", optional: true}
-      - {type: "word", capture: "prep_loc", optional: true}
+      - {type: "pos:noun", capture: "container", optional: true}
+      - {type: "pos:prep_locative", capture: "prep_loc", optional: true}
       - {type: "word", literal: "有", capture: null}
       - {type: "N",    capture: "count"}
-      - {type: "word", capture: "classifier", optional: true}
-      - {type: "word", capture: "object"}
+      - {type: "pos:classifier", capture: "classifier", optional: true}
+      - {type: "pos:noun", capture: "object"}
     dag_template:
       nodes:
         - tpl_id: "w"
@@ -518,8 +541,8 @@ patterns:
       - {type: "pos:verb_acquire", capture: "verb_acquire", optional: true}
       - {type: "pos:part_aspect", capture: "part_aspect", optional: true}
       - {type: "N",    capture: "count"}
-      - {type: "word", capture: "classifier", optional: true}
-      - {type: "word", capture: "object", optional: true}
+      - {type: "pos:classifier", capture: "classifier", optional: true}
+      - {type: "pos:noun", capture: "object", optional: true}
     dag_template:
       nodes:
         - tpl_id: "s"
@@ -568,8 +591,8 @@ patterns:
       - {type: "pos:adv_total", capture: "adv_total_2", optional: true}
       - {type: "word", literal: "有", capture: null}
       - {type: "?",    capture: null}
-      - {type: "word", capture: "classifier", optional: true}
-      - {type: "word", capture: "object"}
+      - {type: "pos:classifier", capture: "classifier", optional: true}
+      - {type: "pos:noun", capture: "object"}
     dag_template:
       nodes:
         - tpl_id: "r"
