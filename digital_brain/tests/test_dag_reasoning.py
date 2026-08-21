@@ -269,6 +269,30 @@ class TestDAGEndToEnd:
         r = brain.solve("哥哥有5支铅笔，弟弟有2支铅笔，妈妈又给哥哥3支铅笔，哥哥现在有几支铅笔？")
         assert r.answer == 8
 
+    # ============================================================
+    # M3 SRL + 事件FSM 验证集（语序自由 / 噪声容忍）
+    # ============================================================
+    def test_m3_srl_word_order(self, brain):
+        """M3-a：语序调换（"…在书包里"后置），SRL 应解出 7"""
+        r = brain.solve("小明有4本故事书在书包里，妈妈又给他买了3本")
+        assert r.answer == 7
+        assert any(s["action"] == "srl_parse" for s in r.reasoning_chain)
+
+    def test_m3_srl_noise_prefix_suffix(self, brain):
+        """M3-b：噪声前置（请问/一下/那个/嗯）+ 后置（呀），答案仍为 7"""
+        r = brain.solve("请问一下那个嗯，小明包里有4本故事书，妈妈又给了他3本，现在总共有几本呀？")
+        assert r.answer == 7
+
+    def test_m3_srl_scrambled_order(self, brain):
+        """M3-c：乱序（数量前置/宾语前置/状语乱放），SRL 应解出 7"""
+        r = brain.solve("4本故事书小明包里有，妈妈他又给了3本买了，总共现在小明几本有？")
+        assert r.answer == 7
+
+    def test_m3_srl_word_order_variant(self, brain):
+        """M3 扩展：'又给了他3本'（给+了+他）语序变体 → 7"""
+        r = brain.solve("小明有4本故事书，妈妈又给了他3本，现在小明总共有几本？")
+        assert r.answer == 7
+
     def test_not_understood(self, brain):
         r = brain.solve("光速是多少？")
         assert r.answer is None

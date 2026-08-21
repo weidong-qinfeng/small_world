@@ -214,6 +214,15 @@ words:
   # 借走（loss 动词 — M5 减法会用，M2 暂时作为 unknown word 也没事）
   - {symbol: "借", pinyin: "jiè", meaning: "借出/借入", word_type: "动词", pos: "verb_residual", aliases: ["借走"]}
 
+  # ===== M3 噪声词（口语前缀/语气词 → discourse_marker，SRL 标注为 NOISE 丢弃）=====
+  - {symbol: "请问", pinyin: "qǐng wèn", meaning: "礼貌提问前缀", word_type: "语气词", pos: "discourse_marker"}
+  - {symbol: "一下", pinyin: "yī xià", meaning: "口语后缀（帮我算一下）", word_type: "语气词", pos: "discourse_marker"}
+  - {symbol: "那个", pinyin: "nà gè", meaning: "口语填充词", word_type: "语气词", pos: "discourse_marker"}
+  - {symbol: "嗯", pinyin: "en", meaning: "口语应答词", word_type: "语气词", pos: "discourse_marker"}
+  - {symbol: "呀", pinyin: "ya", meaning: "语气助词", word_type: "语气词", pos: "discourse_marker"}
+  - {symbol: "帮我", pinyin: "bāng wǒ", meaning: "口语请求前缀", word_type: "语气词", pos: "discourse_marker"}
+  - {symbol: "算一下", pinyin: "suàn yī xià", meaning: "口语请求后缀", word_type: "语气词", pos: "discourse_marker"}
+
 # ============================================================
 # 2. 数字单词（一年级要求认识 0-20）
 # ============================================================

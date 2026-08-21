@@ -950,12 +950,22 @@ class ReasoningArea:
 
     # ---------- 主入口 ----------
     def run(self, workspace: Workspace) -> OutputBuffer:
-        """对 workspace 执行完整推理流程，写回 output_buffer 并返回"""
+        """对 workspace 执行完整推理流程，写回 output_buffer 并返回
+
+        M3 变更：SRL（语义角色标注 + 事件状态机）优先——语序自由/噪声容忍；
+        PatternMatcher 滑窗保留为兼容模式（fallback）。
+        """
         workspace.mark_reasoning()
         out = workspace.output_buffer
 
-        # 1. 模式匹配
         tokens = workspace.input_buffer.tokens
+
+        # 1. SRL 优先：语序无关的语义理解（用 raw_text 还原子句边界）
+        srl_dag = self._try_srl(tokens, workspace.input_buffer.raw_text)
+        if srl_dag is not None:
+            return self._run_dag_exec(workspace, srl_dag, source="srl")
+
+        # 2. PatternMatcher（兼容模式 fallback）
         patterns = self.pattern_matcher.match(tokens)
         out.add_step(
             action="pattern_match",
@@ -966,13 +976,19 @@ class ReasoningArea:
             },
         )
 
-        # 2. 检查是否有 build_dag 模式命中 → DAG 推理路径
+        # 3. 检查是否有 build_dag 模式命中 → DAG 推理路径
         dag_matches = [p for p in patterns if p.action and p.action.startswith("build_dag:")]
         if dag_matches:
             return self._run_dag(workspace, patterns)
 
-        # 3. 旧单步推理路径（无 build_dag 模式时回退）
+        # 4. 旧单步推理路径（无 build_dag 模式时回退）
         return self._run_single_step(workspace, patterns)
+
+    def _try_srl(self, tokens: List[str], raw_text: Optional[str] = None):
+        """M3: 语义角色标注 + 事件状态机 → DAG。无法完整识别返回 None。"""
+        from digital_brain.src.core.pattern.event_state_machine import EventFSM
+        fsm = EventFSM(self.declarative)
+        return fsm.build_dag(tokens, raw_text=raw_text)
 
     # ---------- DAG 推理路径 ----------
     def _run_dag(self, workspace: Workspace, patterns: List[PatternMatchResult]) -> OutputBuffer:
@@ -1006,10 +1022,32 @@ class ReasoningArea:
                 "dag_text": build_result.dag.to_text() if build_result.dag else "",
             },
         )
+        return self._run_dag_exec(workspace, build_result.dag, source="pattern")
+
+    def _run_dag_exec(
+        self, workspace: Workspace, dag: Any, source: str = "srl",
+    ) -> OutputBuffer:
+        """执行已构建好的 DAG（SRL 与 PatternMatcher 共用）"""
+        out = workspace.output_buffer
+        wm = workspace.working_memory
+        wm.clear()
+
+        if source == "srl":
+            out.add_step(
+                action="srl_parse",
+                description="SRL语义角色解析：语序无关的事件状态机 → DAG",
+                outputs={"node_count": dag.node_count, "dag_text": dag.to_text()},
+            )
+        else:
+            out.add_step(
+                action="dag_build",
+                description=f"DAG构建成功：{dag.node_count}个节点",
+                outputs={"node_count": dag.node_count, "dag_text": dag.to_text()},
+            )
 
         # DAG 执行（= 求解）
         executor = DAGExecutor(self.algorithms, self.procedural, self.use_embodied, declarative_memory=self.declarative)
-        answer, confidence, _ = executor.execute(build_result.dag, wm, out)
+        answer, confidence, _ = executor.execute(dag, wm, out)
 
         out.set_answer(answer, confidence=confidence)
         workspace.mark_done()
