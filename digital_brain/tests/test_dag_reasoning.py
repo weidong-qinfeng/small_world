@@ -218,6 +218,57 @@ class TestDAGEndToEnd:
         r = brain.solve("爸爸的年龄31，妈妈的年龄25，他们的年龄之差是多少？")
         assert r.answer == 6
 
+    # ============================================================
+    # M1 表层鲁棒性回归（含同义词/省略/总量提问）
+    # ============================================================
+    def test_m1_regression_simplified_bag(self, brain):
+        """M1 回归：'包'代替'书包' + 宾语省略 + 总/共拆分，答案应为 7"""
+        r = brain.solve("小明包里有4本故事书,妈妈又给他了3本,现在小明总共有几本?")
+        assert r.answer == 7
+
+    def test_m1_regression_full_version(self, brain):
+        """M1 回归：完整版（书包/买了/一共），答案应为 7"""
+        r = brain.solve("小明书包里有4本故事书,妈妈又给他买了3本,现在小明一共有几本?")
+        assert r.answer == 7
+
+    def test_m1_regression_pencil(self, brain):
+        """M1 回归：哥哥铅笔题（显式接受者+对象），答案应为 7"""
+        r = brain.solve("哥哥有5支铅笔,妈妈又给哥哥买了2支铅笔,现在哥哥一共有几支铅笔?")
+        assert r.answer == 7
+
+    def test_no_duplicate_possessive_match(self, brain):
+        """M1-R4 回归：'小明包里有4本' 只应建立 小明.故事书=4，不应再写 包.故事书=4"""
+        from digital_brain.src.core.pattern.pattern_matcher import PatternMatcher
+        pm = brain.pattern_matcher
+        tokens = brain.tokenizer.tokenize("小明包里有4本故事书,妈妈又给他了3本,现在小明总共有几本?")
+        matches = pm.match(tokens)
+        poss = [m for m in matches if m.pattern_name == "possessive_state"]
+        assert len(poss) == 1, f"possessive_state 应只命中1条，实际 {len(poss)}"
+        assert poss[0].captured.get("holder") == "小明"
+
+    # ============================================================
+    # M2 语义栈验证集
+    # ============================================================
+    def test_m2_loss_event_borrow(self, brain):
+        """M2-a：借走（减法事件），宾语故事书贯穿 3 句 → 6"""
+        r = brain.solve("小明有4本故事书，妈妈又给他了3本，弟弟又借走了1本，小明现在总共有几本？")
+        assert r.answer == 6
+
+    def test_m2_theme_not_mixed(self, brain):
+        """M2-b：两物交替（橡皮≠铅笔），弟弟.铅笔 = 2（不可把橡皮混入铅笔）"""
+        r = brain.solve("哥哥有5支铅笔，弟弟有3支橡皮，妈妈又给弟弟2支铅笔，弟弟现在有几支铅笔？")
+        assert r.answer == 2
+
+    def test_m2_gender_resolution(self, brain):
+        """M2-c：她→小红（性别过滤），货币量词 元→钱 → 150"""
+        r = brain.solve("小红钱包里有100元，她又收到了50元红包，小红现在一共有多少钱？")
+        assert r.answer == 150
+
+    def test_m2_concrete_name_not_resolved_by_recency(self, brain):
+        """M2 回归：search_context('哥哥') 必须返回哥哥本身，不能按最近提及解析成弟弟"""
+        r = brain.solve("哥哥有5支铅笔，弟弟有2支铅笔，妈妈又给哥哥3支铅笔，哥哥现在有几支铅笔？")
+        assert r.answer == 8
+
     def test_not_understood(self, brain):
         r = brain.solve("光速是多少？")
         assert r.answer is None

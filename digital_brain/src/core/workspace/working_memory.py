@@ -199,11 +199,20 @@ class WorkingMemory:
             "大家": "PLURAL", "这些": "PLURAL", "那些": "PLURAL",
             "这": "NEAR", "那": "FAR", "其": "NEAR",
         }
+        plural_prons = {"他们", "她们", "它们", "大家", "这些", "那些"}
+        singular_prons = {"他", "她", "它", "这", "那", "其"}
+        pronoun_vocab = set(pron_to_gender) | plural_prons | singular_prons
+
+        # 具体名词/人名（哥哥/弟弟/小明/妈妈…）不是代词：直接返回其本身。
+        # （M2 回归：不可用"最近提及"排序，否则 search_context("哥哥") 会错解成"弟弟"）
+        if pronoun not in pronoun_vocab:
+            result = [pronoun] if self.has_context(pronoun) else [pronoun]
+            self.resolved_references[pronoun] = result
+            return result
+
         if require_gender is None:
             require_gender = pron_to_gender.get(pronoun)
 
-        plural_prons = {"他们", "她们", "它们", "大家", "这些", "那些"}
-        singular_prons = {"他", "她", "它", "这", "那", "其"}
         is_plural = pronoun in plural_prons or (
             isinstance(require_gender, str) and require_gender.startswith("PLURAL")
         )

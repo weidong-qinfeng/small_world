@@ -282,6 +282,23 @@ class PatternMatcher:
                 seen[key] = r
         results = list(seen.values())
 
+        # M1-R4 重叠抑制：同一 pattern 在重叠 span 上多次命中时（如 possessive_state
+        # 从 holder 滑到容器上重复匹配），只保留最完整（token 数最多、起始最早）的一条。
+        # 非重叠的多句命中（如两条独立拥有陈述）不受影响。
+        by_pattern: Dict[str, List[PatternMatchResult]] = {}
+        for r in results:
+            by_pattern.setdefault(r.pattern_name, []).append(r)
+        suppressed: List[PatternMatchResult] = []
+        for pname, group in by_pattern.items():
+            group.sort(key=lambda r: (-len(r.matched_tokens), r.span[0]))
+            kept: List[PatternMatchResult] = []
+            for r in group:
+                overlap = any(r.span[0] < k.span[1] and k.span[0] < r.span[1] for k in kept)
+                if not overlap:
+                    kept.append(r)
+            suppressed.extend(kept)
+        results = suppressed
+
         # M1-R2 清洗：丢弃语义错位匹配 + object bad pos → None
         cleaned = []
         for m in results:

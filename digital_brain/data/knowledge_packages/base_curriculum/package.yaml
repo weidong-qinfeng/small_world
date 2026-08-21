@@ -513,7 +513,7 @@ patterns:
       - {type: "word", literal: "有", capture: null}
       - {type: "N",    capture: "count"}
       - {type: "pos:classifier", capture: "classifier", optional: true}
-      - {type: "pos:noun", capture: "object"}
+      - {type: "pos:noun", capture: "object", optional: true}
     dag_template:
       nodes:
         - tpl_id: "w"
@@ -536,8 +536,58 @@ patterns:
     slots:
       - {type: "word", capture: "giver", optional: true}
       - {type: "word", literal: "又", capture: null}
-      - {type: "word", capture: "prep_dative", optional: true}
+      - {type: "pos:prep_dative", capture: "prep_dative", optional: true}
       - {type: "word", capture: "recipient"}
+      - {type: "pos:verb_acquire", capture: "verb_acquire", optional: true}
+      - {type: "pos:part_aspect", capture: "part_aspect", optional: true}
+      - {type: "N",    capture: "count"}
+      - {type: "pos:classifier", capture: "classifier", optional: true}
+      - {type: "pos:noun", capture: "object", optional: true}
+    dag_template:
+      nodes:
+        - tpl_id: "s"
+          action: "search_context"
+          params_spec:
+            keyword:
+              from_captured: "recipient"
+          description_tpl: "代词消解：接受者 '{recipient}' → 上下文实体"
+          depends_on_all_write_memories: true
+        - tpl_id: "call"
+          action: "call_algorithm"
+          params_spec:
+            key:
+              literal: "adding"
+            collect_from:
+              node:
+                node_ref: "s"
+              attr:
+                from_captured: "object"
+            args:
+              - resolve: "number_value"
+                from_captured: "count"
+          depends_on_tpl: ["s"]
+          description_tpl: "adding(已有值, 新增值)"
+        - tpl_id: "w"
+          action: "write_memory"
+          params_spec:
+            entity:
+              node_ref_first: "s"
+            attr:
+              from_captured: "object"
+            value:
+              node_out: "call"
+          depends_on_tpl: ["call"]
+          description_tpl: "更新 {entity}.{attr} = {value}"
+
+  # ----- 获取事件句（接受者前置）：[recipient] 又 [verb_acquire] [part?] N [classifier?] [object] -----
+  # 例："她又收到了50元红包"（她=接受者，收到=verb_acquire），无"给"字结构。
+  - name: "acquire_event_recipient_first"
+    description: "获取事件（接受者前置）：接受者 + 又 + 收到/得到 + 了? + 数 + 量? + 物品（如 她又收到了50元红包）"
+    action: "build_dag:acquire_event_recipient_first"
+    priority: 0.80
+    slots:
+      - {type: "word", capture: "recipient"}
+      - {type: "word", literal: "又", capture: null}
       - {type: "pos:verb_acquire", capture: "verb_acquire", optional: true}
       - {type: "pos:part_aspect", capture: "part_aspect", optional: true}
       - {type: "N",    capture: "count"}
@@ -592,7 +642,7 @@ patterns:
       - {type: "word", literal: "有", capture: null}
       - {type: "?",    capture: null}
       - {type: "pos:classifier", capture: "classifier", optional: true}
-      - {type: "pos:noun", capture: "object"}
+      - {type: "pos:noun", capture: "object", optional: true}
     dag_template:
       nodes:
         - tpl_id: "r"
@@ -611,6 +661,53 @@ patterns:
               node_out: "r"
           depends_on_tpl: ["r"]
           description_tpl: "返回最终答案"
+
+  # ----- 失去事件句：[loser?] 又 [verb_residual] [part?] N [classifier?] [object?] -----
+  - name: "loss_event"
+    description: "失去事件：主语? + 又 + 失去动词（借走/用掉/吃了）+ 了? + 数 + 量? + 物品（如 弟弟又借走了1本）"
+    action: "build_dag:loss_event"
+    priority: 0.85
+    slots:
+      - {type: "word", capture: "loser", optional: true}
+      - {type: "word", literal: "又", capture: null}
+      - {type: "pos:verb_residual", capture: "verb_residual"}
+      - {type: "pos:part_aspect", capture: "part_aspect", optional: true}
+      - {type: "N",    capture: "count"}
+      - {type: "pos:classifier", capture: "classifier", optional: true}
+      - {type: "pos:noun", capture: "object", optional: true}
+    dag_template:
+      nodes:
+        - tpl_id: "r"
+          action: "read_memory"
+          params_spec:
+            entity:
+              from_last_write: "entity"
+            attr:
+              from_last_write: "attr"
+          description_tpl: "读取最近拥有者的 {attr}"
+          depends_on_all_write_memories: true
+        - tpl_id: "call"
+          action: "call_algorithm"
+          params_spec:
+            key:
+              literal: "subtracting"
+            args:
+              - node_out: "r"
+              - resolve: "number_value"
+                from_captured: "count"
+          depends_on_tpl: ["r"]
+          description_tpl: "subtracting(现有值, 失去值)"
+        - tpl_id: "w"
+          action: "write_memory"
+          params_spec:
+            entity:
+              from_last_write: "entity"
+            attr:
+              from_last_write: "attr"
+            value:
+              node_out: "call"
+          depends_on_tpl: ["call"]
+          description_tpl: "更新最近拥有者的 {attr} = {value}"
 
 # ============================================================
 # 7. 模式样本（v2 新增，Phase 2 实施后被代码处理）

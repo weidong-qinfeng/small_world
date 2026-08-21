@@ -326,6 +326,9 @@ class DAGBuilder:
         "question_marker", "classifier",
     }
 
+    # M2-c：货币量词 → 隐含宾语（"100元" → 钱；"50元红包" → 钱）
+    MONEY_CLASSIFIERS = {"元", "块钱", "元钱"}
+
     def _get_word_pos(self, word: str) -> Optional[str]:
         dm = getattr(self, "declarative", None)
         if dm is None:
@@ -371,6 +374,26 @@ class DAGBuilder:
             if action == write_op and isinstance(params, dict) and "attr" in params:
                 last_attr = params["attr"]
         return last_attr
+
+    def _find_last_write(self, dag: Any) -> Optional[Dict[str, Any]]:
+        """返回当前 DAG 中最后一个 write_memory 节点的完整参数（entity/attr 等）。
+
+        loss_event 用它定位"最近拥有者"：如 小明.故事书=7 之后出现 弟弟又借走了1本，
+        减去的应是 小明.故事书 而不是 弟弟.故事书。
+        """
+        try:
+            write_op = OP_WRITE_MEMORY
+        except Exception:
+            write_op = "write_memory"
+        last: Optional[Dict[str, Any]] = None
+        nodes_dict = getattr(dag, "nodes", {})
+        nodes_list = list(nodes_dict.values()) if isinstance(nodes_dict, dict) else list(nodes_dict)
+        for node in nodes_list:
+            action = getattr(node, "action", None)
+            params = getattr(node, "params", None) or {}
+            if action == write_op and isinstance(params, dict):
+                last = dict(params)
+        return last
 
     def _resolve_params_spec(
         self,
@@ -418,22 +441,36 @@ class DAGBuilder:
                 # 这里是第一阶段（params_spec 解析），实际节点输出还不存在。
                 # 所以把它和 node_out 一样先占位，之后在第二阶段和 DAG 执行前做替换。
                 return f"__NODE_REF_FIRST__:{spec['node_ref_first']}"
+            if "from_last_write" in spec:
+                # 引用当前 DAG 中最后一个 write_memory 节点的参数
+                # （loss_event 用它定位"最近拥有者"的 entity/attr）
+                if dag is None:
+                    raise _TemplateResolveError()
+                last = self._find_last_write(dag)
+                if last is None:
+                    raise _TemplateResolveError()
+                return last.get(spec["from_last_write"])
             if "literal" in spec:
                 # 字面量直接返回其值（{"literal": "adding"} → "adding"）
                 return spec["literal"]
             if "from_captured" in spec:
                 from_cap = spec["from_captured"]
                 raw = captured.get(from_cap)
-                if from_cap == "object" and self._is_invalid_object_candidate(raw):
-                    top_theme = None
-                    if self.working_memory is not None:
-                        top_theme = getattr(self.working_memory, "top_theme", lambda d=None: d)()
-                    if top_theme:
-                        raw = top_theme
-                    elif dag is not None:
-                        last_attr = self._find_last_write_attr(dag)
-                        if last_attr is not None:
-                            raw = last_attr
+                if from_cap == "object":
+                    # M2-c：货币量词（元/块钱/元钱）→ 隐含宾语"钱"（"100元"→钱、"50元红包"→钱）
+                    cls = captured.get("classifier")
+                    if cls in self.MONEY_CLASSIFIERS:
+                        raw = "钱"
+                    elif self._is_invalid_object_candidate(raw):
+                        top_theme = None
+                        if self.working_memory is not None:
+                            top_theme = getattr(self.working_memory, "top_theme", lambda d=None: d)()
+                        if top_theme:
+                            raw = top_theme
+                        elif dag is not None:
+                            last_attr = self._find_last_write_attr(dag)
+                            if last_attr is not None:
+                                raw = last_attr
                 if raw is None:
                     missing.append(f"模式捕获字段'{from_cap}'缺失（且无可用回退）")
                     raise _TemplateResolveError()
@@ -831,7 +868,11 @@ class DAGExecutor:
         # adding/subtracting 接受两个位置参数
         if key in ("adding", "subtracting"):
             if len(args) < 2:
-                raise ValueError(f"算法 '{key}' 需要至少2个参数，得到 {args}")
+                # M2-b：已有值缺失（如"妈妈又给弟弟2支铅笔"而弟弟.铅笔从未写入）→ 视为 0
+                if key == "adding":
+                    args = [0] + args
+                else:
+                    raise ValueError(f"算法 '{key}' 需要至少2个参数，得到 {args}")
             result = alg.execute(args[0], args[1], use_embodied=self.use_embodied)
         else:
             result = alg.execute(*args)
