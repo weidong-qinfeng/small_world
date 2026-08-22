@@ -61,6 +61,9 @@ class MultiCompartmentNeuron:
         t_total_ms: float = 100.0,
         name: str = "m1_neuron",
         channel_overrides: Optional[Dict[str, Dict[str, float]]] = None,
+        extra_im_terms: str = "",
+        extra_eqs: str = "",
+        stim_var: str = "stim",
     ):
         self.spec: MorphologySpec = load_morphology(csv_path)
         self.dt_ms = dt_ms
@@ -72,6 +75,11 @@ class MultiCompartmentNeuron:
         #: 区段级参数覆盖（键: 区段名 → {'gna','gk','gl','cm'}，单位同 CSV）。
         #: 每次 build 时在 CSV 赋值之后应用（供参数扫描/调参，M1 报告记录最终值）。
         self.channel_overrides: Dict[str, Dict[str, float]] = channel_overrides or {}
+        #: M2 扩展钩子：突触方程片段（见 ion_channels.hh_equations），默认空 = M1 原行为
+        self.extra_im_terms = extra_im_terms
+        self.extra_eqs = extra_eqs
+        #: 注入电流 TimedArray 变量名（M2 神经元对分别命名，避免共享 stim）
+        self.stim_var = stim_var
         self._built = False
 
     # ------------------------------------------------------------------ #
@@ -87,7 +95,12 @@ class MultiCompartmentNeuron:
         defaultclock.dt = self.dt_ms * ms
 
         morpho, index_map = build_brian2_morphology(self.spec)
-        eqs = hh_equations(with_point_current=True)
+        eqs = hh_equations(
+            with_point_current=True,
+            extra_im_terms=self.extra_im_terms,
+            extra_eqs=self.extra_eqs,
+            stim_var=self.stim_var,
+        )
 
         neuron = SpatialNeuron(
             morphology=morpho,

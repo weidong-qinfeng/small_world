@@ -66,9 +66,9 @@ betan = {BETA_N} : Hz
 """
 
 #: 注入电流（point current，每隔室、单位 amp；NEURON IClamp 同单位，便于参考解对齐）
-POINT_CURRENT = """
-I = stim(t, i) : amp (point current)
-"""
+#: M2 起变量名可配置（stim_var），供多神经元对分别注入（避免共享同一 TimedArray）。
+def _point_current(stim_var: str) -> str:
+    return f"I = {stim_var}(t, i) : amp (point current)"
 
 
 @dataclass
@@ -85,14 +85,24 @@ def hh_equations(
     el: float = _EL,
     ena: float = _ENA,
     ek: float = _EK,
+    extra_im_terms: str = "",
+    extra_eqs: str = "",
+    stim_var: str = "stim",
 ) -> str:
     """组装 Brian2 方程串（SpatialNeuron 用）。
 
     膜电流 Im 采用 Brian2 文档约定的**内向正**写法（Im = g·(E-v)），
     与工具 current() 的“外向正”差一个整体符号；物理与数值等价。
+
+    M2 扩展钩子（默认空串 = M1 原行为）：
+      - extra_im_terms：追加到 Im 求和式内的项（如突触电导电流
+        `+ g_ampa*(E_ampa-v)`，单位 amp/meter²，注意内向正约定）；
+      - extra_eqs：追加的整段方程（如突触电导 ODE、缝隙连接
+        point current 变量）。
     """
     eqs = [
-        "Im = gL*(EL-v) + gNa*m**3*h*(ENa-v) + gK*n**4*(EK-v) : amp/meter**2",
+        "Im = gL*(EL-v) + gNa*m**3*h*(ENa-v) + gK*n**4*(EK-v)"
+        f"{extra_im_terms} : amp/meter**2",
         CHANNEL_PARAMS,
         REVERSAL_POTENTIALS.format(EL=el, ENA=ena, EK=ek),
         GATING_DYNAMICS.format(
@@ -101,7 +111,9 @@ def hh_equations(
         ),
     ]
     if with_point_current:
-        eqs.append(POINT_CURRENT)
+        eqs.append(_point_current(stim_var))
+    if extra_eqs:
+        eqs.append(extra_eqs)
     return "\n".join(eqs)
 
 

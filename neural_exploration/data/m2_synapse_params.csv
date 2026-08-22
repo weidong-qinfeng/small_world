@@ -1,0 +1,19 @@
+# M2 突触参数定稿（清单 §2.3 数据文件 + L3 文献支撑）
+# 单位：g_max_ns=点电导(nS)、tau_ms=衰减时间常数(ms)、e_rev_mv=反转电位(mV)、
+#       p_release=单囊泡释放概率、n_vesicles=可用囊泡数（二项量子释放）、
+#       mg_mm=NMDA Mg²⁺浓度(mM)、u0/tau_fac_ms/tau_rec_ms=STP 三参数。
+# 文献依据：
+#   - AMPA τ≈2–5ms、E≈0mV（Hestrin et al. 1990；Jones & Baughman 1991）
+#   - GABA_A τ≈5ms、E≈-70mV（Cl⁻，Edwards et al. 1990）
+#   - NMDA τ≈80–150ms、Mg²⁺阻断 B(V)=1/(1+[Mg]·exp(-0.062V)/3.57)
+#     （Jahr & Stevens 1990，[Mg²⁺]=1.2mM 常用值）
+#   - 量子释放：q≈0.5–1mV/量子 → 本模型胞体 0.3nS 量子电导产生 ~1.3mV EPSP；
+#     p/n 取自清单 §5.2（p_release=0.3、n=3 → 失败率 0.7³≈0.34）
+#   - 缝隙连接 g≈0.1–1nS（C. elegans 典型值，White et al. 1986）
+#   - STP：Tsodyks & Markram 1998；易化 U≈0.02–0.05/τ_fac≈100–500ms，
+#     抑制 U≈0.5–0.9/τ_rec≈500–1000ms
+synapse_type,g_max_ns,tau_ms,e_rev_mv,p_release,n_vesicles,mg_mm,u0,tau_fac_ms,tau_rec_ms
+ampa,0.30,3.0,0.0,1.0,1,0.0,0.0,0.0,0.0
+gaba,1.50,5.0,-70.0,1.0,1,0.0,0.0,0.0,0.0
+nmda,1.00,100.0,0.0,1.0,1,1.2,0.0,0.0,0.0
+gap,0.50,0.0,0.0,1.0,1,0.0,0.0,0.0,0.0
