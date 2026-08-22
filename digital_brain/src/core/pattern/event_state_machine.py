@@ -286,6 +286,10 @@ class EventFSM:
             if c.first() in pron:
                 return c.first()
         if len(agents) == 1:
+            # 唯一 AGENT：若它是"给"的施动者（有 DATIVE），则接受者被省略
+            # （"妈妈又给3本" → 给谁？→ 语用默认：当前主题拥有者）
+            if dative_idx is not None:
+                return None
             return agents[0].first()
         # 多个非代词：取最后一个（妈妈给弟弟 → 弟弟是接受者）
         return agents[-1].first()
@@ -326,12 +330,17 @@ class EventFSM:
     ) -> bool:
         """获取事件 → search(recipient) → adding(collect theme, count) → write
 
-        theme 缺失（零指代，如"妈妈又给他买了3本"）→ 回退最近写入的 attr。
+        零指代回退（语用默认）：
+          - theme 缺失（"妈妈又给他买了3本"）→ 回退最近写入的 attr
+          - recipient 缺失（"妈妈又给3本" → 给谁？）→ 回退最近写入的 entity
+            （当前主题拥有者 = 小明），而不是把"妈妈"当接受者
         """
         recipient = params["recipient"]
         theme = params["theme"]
         if theme is None and last_write is not None:
             theme = last_write["attr"]
+        if recipient is None and last_write is not None:
+            recipient = last_write["entity"]
         count = params["count"]
         if recipient is None or theme is None or count is None:
             return False
