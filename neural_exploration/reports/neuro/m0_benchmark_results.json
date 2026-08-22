@@ -1,0 +1,38 @@
+{
+  "brian2": {
+    "installed": true,
+    "hh_time_s": 0.08019662500000013,
+    "hh_spikes": 4,
+    "hh_first_spike_ms": 1.8200000000000003,
+    "hh_rmse_mv": 2.482580718376506e-12,
+    "hh_rmse_pct": 2.1502038822893232e-12,
+    "v_peak_mv": 40.267268509582514,
+    "v_min_mv": -75.1906533555665,
+    "ref_spikes": 4,
+    "ref_first_spike_ms": 1.82,
+    "engine": "brian2",
+    "n_net": 20,
+    "net_time_s": 0.1347251250000001,
+    "net_spikes_probe": 4
+  },
+  "neuron": {
+    "installed": true,
+    "hh_time_s": 0.023314833000000146,
+    "hh_spikes": 4,
+    "hh_first_spike_ms": 1.829999999999983,
+    "hh_rmse_mv": 0.5966537894569406,
+    "hh_rmse_pct": 0.5167716340405342,
+    "v_peak_mv": 40.07433728156081,
+    "v_min_mv": -75.22063329002768,
+    "ref_spikes": 4,
+    "ref_first_spike_ms": 1.82,
+    "engine": "neuron",
+    "n_net": 20,
+    "net_time_s": 0.036198583000000006,
+    "net_spikes_probe": null
+  },
+  "nest": {
+    "installed": false,
+    "reason": "import nest 失败"
+  }
+}

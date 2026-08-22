@@ -8,6 +8,7 @@ target/
 *.tar.gz
 *.log
 .DS_Store
+.venv-neuro/
 
 # 数字大脑运行时记忆持久化
 digital_brain/data/memory_store/
