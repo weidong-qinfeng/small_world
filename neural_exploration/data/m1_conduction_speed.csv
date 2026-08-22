@@ -1,0 +1,4 @@
+segment,distance_um,t_first_ms,prev_segment,seg_cv_mps
+node1,241.000,7.9,soma,1.095454545455001
+node2,443.000,8.13,node1,0.8782608695656503
+node3,645.000,8.200000000000001,node2,2.8857142857157028

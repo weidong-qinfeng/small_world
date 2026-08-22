@@ -1,0 +1,187 @@
+{
+  "results": {
+    "p2_waveform": {
+      "pass_": true,
+      "threshold": 0.05,
+      "per_location": {
+        "soma": {
+          "rmse_mv": 0.3702744706562468,
+          "norm_rmse": 0.0034424791358399144,
+          "v_ref_span_mv": 107.56041098442424,
+          "pass_": true
+        },
+        "dend_end": {
+          "rmse_mv": 0.297348672934298,
+          "norm_rmse": 0.0030119972372240726,
+          "v_ref_span_mv": 98.72142950846181,
+          "pass_": true
+        },
+        "axon_end_node3": {
+          "rmse_mv": 0.28082313236539985,
+          "norm_rmse": 0.0033787287124094185,
+          "v_ref_span_mv": 83.11502824538434,
+          "pass_": true
+        }
+      },
+      "report_png": "/Users/weidong/ai/small_world/neural_exploration/reports/neuro/m1_p2_waveform.png",
+      "report_csv": "/Users/weidong/ai/small_world/neural_exploration/data/m1_p2_waveform.csv"
+    },
+    "p3_fi_curve": {
+      "pass_": true,
+      "monotonic": true,
+      "threshold_ua_cm2": 15.0,
+      "has_threshold": true,
+      "slope_hz_per_ua_cm2": 1.0375486386759827,
+      "amps": [
+        0.0,
+        5.0,
+        10.0,
+        15.0,
+        20.0,
+        30.0,
+        40.0,
+        50.0
+      ],
+      "freqs": [
+        0.0,
+        0.0,
+        0.0,
+        61.24254315331049,
+        70.49855698266175,
+        81.94423479179696,
+        90.48408988086261,
+        97.55674550696989
+      ],
+      "freqs_single_comp": [
+        0.0,
+        0.0,
+        68.27583437085826,
+        78.57991980818439,
+        86.37833711657056,
+        98.60940612988267,
+        108.4272031805313,
+        116.808313529625
+      ],
+      "report_csv": "/Users/weidong/ai/small_world/neural_exploration/data/m1_fi_curve.csv",
+      "report_png": "/Users/weidong/ai/small_world/neural_exploration/reports/neuro/m1_fi_curve.png"
+    },
+    "p4_psp": {
+      "pass_": true,
+      "proximal_psp_mv": 1.7313265841198344,
+      "proximal_t_peak_ms": 101.0,
+      "distal_psp_mv": 0.20844726162698635,
+      "distal_t_peak_ms": 101.46000000000001,
+      "local_psp_mv": 0.9235052102202488,
+      "attenuation_ratio": 0.12039742445990108,
+      "delay_ms": 0.46000000000000796,
+      "tau_ms": 11.157871645973847,
+      "tau_range": [
+        1.0,
+        20.0
+      ],
+      "report_png": "/Users/weidong/ai/small_world/neural_exploration/reports/neuro/m1_psp_propagation.png",
+      "report_csv": "/Users/weidong/ai/small_world/neural_exploration/data/m1_psp.csv"
+    },
+    "p5_speed": {
+      "pass_": true,
+      "mean_cv_mps": 1.6198099002454516,
+      "cv_list_mps": [
+        1.095454545455001,
+        0.8782608695656503,
+        2.8857142857157028
+      ],
+      "t_soma_ms": 7.680000000000001,
+      "per_node": [
+        {
+          "segment": "node1",
+          "distance_um": 241.0000000001,
+          "t_first_ms": 7.9,
+          "seg_cv_mps": 1.095454545455001,
+          "prev_segment": "soma"
+        },
+        {
+          "segment": "node2",
+          "distance_um": 443.0000000002,
+          "t_first_ms": 8.13,
+          "seg_cv_mps": 0.8782608695656503,
+          "prev_segment": "node1"
+        },
+        {
+          "segment": "node3",
+          "distance_um": 645.0000000003,
+          "t_first_ms": 8.200000000000001,
+          "seg_cv_mps": 2.8857142857157028,
+          "prev_segment": "node2"
+        }
+      ],
+      "cv_range_mps": [
+        1.0,
+        20.0
+      ],
+      "report_csv": "/Users/weidong/ai/small_world/neural_exploration/data/m1_conduction_speed.csv"
+    },
+    "p6_saltatory": {
+      "pass_": true,
+      "nodes": {
+        "node1": {
+          "n_spikes": 1,
+          "t_first": 7.9,
+          "peak": 11.65636545854741,
+          "dvdt": 110.90600272215383
+        },
+        "node2": {
+          "n_spikes": 1,
+          "t_first": 8.13,
+          "peak": 11.670764434944285,
+          "dvdt": 84.74620196533084
+        },
+        "node3": {
+          "n_spikes": 1,
+          "t_first": 8.200000000000001,
+          "peak": 16.054915201040934,
+          "dvdt": 106.87139665421785
+        }
+      },
+      "myelin": {
+        "myelin1": {
+          "peak_max": 21.500793586633637,
+          "dvdt_max": 175.9021550742018,
+          "n_spikes": 3,
+          "peaks": [
+            21.500793586633637,
+            13.11015990542766,
+            10.756111903793949
+          ]
+        },
+        "myelin2": {
+          "peak_max": 9.618799013824436,
+          "dvdt_max": 99.04177717495841,
+          "n_spikes": 3,
+          "peaks": [
+            9.314979768560283,
+            8.068158824840417,
+            9.618799013824436
+          ]
+        },
+        "myelin3": {
+          "peak_max": 13.445140156308359,
+          "dvdt_max": 99.91154284880785,
+          "n_spikes": 3,
+          "peaks": [
+            10.563193924223638,
+            10.823791880091798,
+            13.445140156308359
+          ]
+        }
+      },
+      "all_nodes_fire": true,
+      "monotonic": true,
+      "no_active_channels": true,
+      "no_full_amplitude": true,
+      "full_amp_ratio": 0.75,
+      "source_peak_mv": 31.345750424344626,
+      "myelin_peak_max_mv": 21.500793586633637,
+      "report_png": "/Users/weidong/ai/small_world/neural_exploration/reports/neuro/m1_saltatory.png"
+    }
+  }
+}

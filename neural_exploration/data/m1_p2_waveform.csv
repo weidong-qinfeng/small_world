@@ -1,0 +1,4 @@
+location,rmse_mv,norm_rmse,v_ref_span_mv,pass
+soma,0.370274,0.003442,107.560,True
+dend_end,0.297349,0.003012,98.721,True
+axon_end_node3,0.280823,0.003379,83.115,True

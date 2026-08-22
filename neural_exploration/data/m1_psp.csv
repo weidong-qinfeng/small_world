@@ -1,0 +1,4 @@
+case,psp_amp_mv,t_peak_ms,tau_ms
+proximal_soma,1.7313,101.0000,
+distal_dendrite,0.2084,101.4600,11.157871645973847
+local_dendrite,0.9235,,11.157871645973847
