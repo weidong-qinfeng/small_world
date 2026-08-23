@@ -1,7 +1,7 @@
 # 会话恢复上下文（Session Context）
 
 > 用途：新会话（或清理上下文后）快速恢复项目状态。让新会话**先读本文件**再工作。
-> 最后更新：M1 验收通过、M2 清单产出时。
+> 最后更新：M2 验收通过时（M0→M2 已完成，M3 清单待产出）。
 
 ---
 
@@ -9,7 +9,7 @@
 
 | 线 | 目录 | 状态 | 说明 |
 |---|---|---|---|
-| **神经仿真（当前主线）** | `neural_exploration/` | M0 ✅ M1 ✅ M2 清单就绪 | 自底向上复刻真实生物神经系统 |
+| **神经仿真（当前主线）** | `neural_exploration/` | M0 ✅ M1 ✅ M2 ✅ | 自底向上复刻真实生物神经系统 |
 | **符号认知层（旧线/旁线）** | `digital_brain/` | M1-M3 已完成，已推送 | 知识图谱+激活扩散+程序性记忆，小学应用题 |
 
 两者相互独立；神经仿真的 M7 计划把生物机制回迁数字大脑。
@@ -33,7 +33,7 @@
 **角色分工（重要）**：主规划节点 session **只做规划与验收，不做执行**。
 执行由独立执行节点按清单实施；完成后回到规划节点验收（复跑测试、核对 Pass、查产物真实性）。
 
-`tests/neuro/` 下 M2 测试、`docs/m2_report.md` 三项尚未完成——代码层已就绪，补齐即可验收。
+M2 已验收（P1–P7 全达标，25/25 测试）；M3 交接点（NeuronPair 多神经元链扩展）已就绪。
 
 ---
 
@@ -44,14 +44,14 @@
 source .venv-neuro/bin/activate
 # 或直接 .venv-neuro/bin/python ...
 
-# 全量测试（M0 smoke 4 + M1 10 + M2 新增；~2-6 分钟）
+# 全量测试（M0 4 + M1 10 + M2 11 = 25；~1-6 分钟，冷缓存首次编译更久）
 .venv-neuro/bin/python -m pytest neural_exploration/tests
 
 # M1 验证复现（P2-P6 全跑）
 .venv-neuro/bin/python -m neural_exploration.tools.run_m1_validation
 
-# M1 报告重新生成
-.venv-neuro/bin/python -m neural_exploration.tools.gen_m1_report
+# M2 验证复现（P1-P5 全跑）
+.venv-neuro/bin/python -m neural_exploration.tools.run_m2_validation
 ```
 
 **环境关键版本**：brian2 2.6.0（主线引擎）、NEURON 9.0.1（参考解）、numpy 1.26.4、
@@ -66,16 +66,20 @@ cython 0.29.37（brian2 需 <3.x）、Python 3.9.6（接近 EOL，py3.11 迁移�
 3. **HH 静息瞬态漂移污染 PSP 基线**——用本地基线（非全局基线）解决
 4. **HH 神经元统一加 refractory=2ms**（否则每个时间步都发尖峰）
 5. **Brian2 多隔室**：SpatialNeuron/Soma/Cylinder 可用（M1 已验证）
-6. **M2 注意**：Synapses 的 on_pre 与多隔室耦合复杂——先单隔室突触对跑通再挂 node3
+6. **NEURON 点过程电流按 nA 注入**：mod 里 i (pA) 无单位换算会放大 1000×（M2 踩坑，NMDA 假性发放）
+7. **NEURON Python 点过程会被 GC 回收**：需保留引用，否则 50Hz 训练只剩最后一脉冲（M2）
+8. **Brian2 编译缓存**：TimedArray 形状/名字与 Synapses 参数进入代码串，变化触发 80–120s 重编译——固定形状+显式命名+namespace 传参（M2，也修复了 M1 同类问题）
+9. **NEURON 9.0.1 不支持经典 gap.mod 的 EXTERNAL vother**——缝隙连接参考改用 scipy solve_ivp 独立解（M2）
+10. **M3 注意**：反射弧多神经元链复用 ChemicalSynapse/GapJunction，注意突触前触发事件与多隔室耦合
 
 ---
 
 ## 五、当前待办
 
-1. **M2 执行**：按 `docs/生物仿真M2实施清单.md` 步骤 1→5 实施（执行节点）
-2. **M2 验收**：完成后回规划节点复跑测试、核对 P1–P7
-3. **M3 清单**：M2 验收通过后由规划节点产出
-4. **git**：每个里程碑独立提交（沿 M0/M1 惯例），推送 origin/main
+1. **M3 清单**：由规划节点产出（触觉反射弧——感觉→中间→运动，交接点已就绪）
+2. **M3 执行**：按 M3 清单实施（执行节点）
+3. **M3 验收**：完成后回规划节点复跑测试、核对 Pass
+4. **git**：每个里程碑独立提交（沿 M0/M1/M2 惯例），推送 origin/main
 
 ---
 
