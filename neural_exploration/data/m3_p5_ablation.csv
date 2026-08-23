@@ -1,0 +1,13 @@
+metric,full,ablated,pass
+vb_spikes_in_window,2,3,1
+c_fwd_window_mean,0.187032,0.197811,
+c_fwd_window_mean_ratio,1.0,1.057631,0
+c_fwd_response_component,-0.010779,0.000000,1
+d_peak,0.368865,0.368865,,
+c_back_peak,0.600000,0.600000,,
+vb_total_spikes,9,9,,
+window_ms,50.0,90.0,,
+summary,count_ok,1,,
+summary,resp_component_sign_ok,1,,
+summary,mean_ratio_info_ok,0,,
+summary,pass,1,,

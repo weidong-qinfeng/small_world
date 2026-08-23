@@ -1,0 +1,14 @@
+trial,da_spikes,d_peak,direction,failed
+0,1,0.35210,back,0
+1,0,0.00000,failed,1
+2,1,0.35210,back,0
+3,1,0.35210,back,0
+4,1,0.35210,back,0
+5,1,0.35210,back,0
+6,1,0.35210,back,0
+7,1,0.36063,back,0
+control,c_back_peak,0.00000,silent,1
+control,c_fwd_steady,0.20571,,0
+summary,n_valid_used,5,n_failures,1
+summary,valid_ok,1,ctrl_ok,1
+summary,pass,1,,0

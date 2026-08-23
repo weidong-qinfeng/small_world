@@ -1,0 +1,16 @@
+metric,value,pass
+t_plm_ms,53.65,True
+t_avm_ms,56.64,True
+t_da_ms,59.63,True
+order_strict_increasing,1,,
+chain_time_sim_ms,5.98000,,
+chain_time_ref_ms,5.94000,,
+chain_time_ref_i0_ms,5.93000,,
+chain_err_rel,0.00673,True
+psp_norm_rmse_idx3,0.000367,True
+psp_norm_rmse_idx2_i0,0.000560,,
+n_chemical,3,True
+n_muscle_drives,2,True
+synapse_types,{'PLM->AVM': 'ampa', 'AVM->DA': 'ampa', 'AVM->VB': 'gaba'},True
+vb_tonic_uA_cm2,14.0,True
+pass,1,,

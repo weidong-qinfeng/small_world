@@ -1,0 +1,64 @@
+# M3 反射弧链参数定稿（唯一定稿源，可修改复现）——B1a 执行节点按 NEURON 全链参考实测定稿，
+# 实测依据与踩坑记录见 docs/m3_env_notes.md §L5–L10（本文件为 B1b 运行期唯一参数源）。
+# 列：role, neuron_class, synapse_from, synapse_to, synapse_type, g_max_ns,
+#     delay_ms, tonic_uA_cm2, value, note
+# 行语义：
+#   - 神经元行：role=<PLM|AVM|DA|VB>（neuron_class 全部=multicomp，共用 M1 形态学）；
+#     tonic_uA_cm2 为该神经元的恒定张力注入密度（µA/cm²，按注入位点面积换算 nA；仅 VB 用）。
+#   - 突触行：synapse_from + synapse_to + synapse_type(ampa|gaba|nmda|muscle)
+#     + g_max_ns(化学突触=链点电导 nS；muscle 行=每次发放的收缩增量 w)
+#     + delay_ms(ms)；化学突触 pre_site=node3 → post_site=soma。
+#   - 参数行：role=param, neuron_class=<参数名>, value=<值>。
+#
+# 拓扑/极性（清单 §2.1，White 1986 语义简化）：
+#   PLM --AMPA--> AVM --AMPA--> DA --muscle--> C_back（后退）
+#                AVM --GABA--> VB --muscle--> C_fwd（前进，张力维持基线≈0.2）
+# 静息态：VB 张力注入维持前进基线收缩；触刺激后 AVM→DA 兴奋链 → C_back 上升，
+#         同时 AVM→VB GABA 抑制压过张力 → C_fwd 回落 → 净方向 = 后退（D_peak>0.3）。
+#
+# 文献依据（参数定稿理由，实测数据见 m3_env_notes.md）：
+#   - AMPA E≈0mV、τ≈3ms（Hestrin et al. 1990）；GABA_A E≈-70mV、τ≈5ms（Edwards et al. 1990）——
+#     电学基础沿用 data/m2_synapse_params.csv 的 ampa/gaba 行（量子电导 0.3/1.5nS）。
+#   - 链级权重定稿：0.3nS 实测仅产生 ~0.7mV EPSP（与 M2 一致），不足以驱动下一级；5.0nS（≈17 量子）
+#     使 AVM 可靠发放（阈值 ~2.5–3nS 的 1.7–2×）；15.0nS GABA（10×量子）使 60Hz 张力下 VB 跳过 1 个发放
+#     （m3_env_notes §L6）。
+#   - 突触延迟 0.5ms（突触延迟 0.5–1ms 生理量级；参考解 NetCon delay 同值，保证与 Brian2 可比）。
+#   - 触觉逃避潜伏期 30–50ms（Chalfie et al. 1985）→ 参考窗 [30,50]；P3 判据容差窗 [25,60]。
+#     ⚠ 实测行为潜伏期≈神经潜伏期（8–14ms），结构性落不到窗内——定义/窗口待规划节点复核（m3_env_notes §L7）。
+#   - I0=60µA/cm²×5ms @ t=50ms：树突端注入实测 20µA 不发放/40µA 临界/60µA 可靠（m3_env_notes §L5；
+#     M2 的 20µA/cm² 为胞体注入值）。触刺激开始 ≥40ms（HH 静息瞬态漂移，M1/M2 结论）。
+#   - VB 张力 tonic=14µA/cm²（soma 恒定电流，实测 ~60Hz 稳定区；12µA 亚阈值、13–13.75µA 触发 NEURON
+#     cvode 近阈值挂起——m3_env_notes §L9）；C_fwd 静息基线 ≈0.2。
+#   - 肌肉 TAU=20ms（M0 惯例）；w_back=0.60 → C_back 峰值 0.6、D_peak=0.36–0.42>0.3（P1 方向）；
+#     w_fwd=0.18 → C_fwd 基线≈0.21、无抑制时峰值≈0.31（P5 消融判据敏感性问题见 m3_env_notes §L8）。
+role,neuron_class,synapse_from,synapse_to,synapse_type,g_max_ns,delay_ms,tonic_uA_cm2,value,note
+# ---- 神经元 ----
+PLM,multicomp,,,,,,,,感觉神经元（触刺激注入树突端 dend2#1）
+AVM,multicomp,,,,,,,,中间神经元
+DA,multicomp,,,,,,,,后退运动神经元（驱动 C_back）
+VB,multicomp,,,,,,14.0,,前进运动神经元（张力注入维持 C_fwd 基线≈0.2）
+# ---- 化学突触（node3 → soma）----
+, ,PLM,AVM,ampa,5.0,0.5,,,感觉→中间 谷氨酸兴奋（≈17×m2 ampa 量子）
+, ,AVM,DA,ampa,5.0,0.5,,,中间→后退运动 谷氨酸兴奋（≈17×m2 ampa 量子）
+, ,AVM,VB,gaba,15.0,0.5,,,中间→前进运动 GABA 抑制（互斥方向机制；10×m2 gaba 量子）
+# ---- 肌肉驱动（运动神经元发放 → 收缩增量 w）----
+, ,DA,muscle_back,muscle,0.60,0.1,,,DA 发放 → C_back 增 0.60（后退；D_peak>0.3 定稿）
+, ,VB,muscle_fwd,muscle,0.18,0.1,,,VB 发放 → C_fwd 增 0.18（前进基线≈0.2 定稿）
+# ---- 全局参数 ----
+param,touch_site,,,,,,,dend2#1
+param,touch_start_ms,,,,,,,50.0
+param,touch_dur_ms,,,,,,,5.0
+param,i0_uA_cm2,,,,,,,60.0
+param,muscle_tau_ms,,,,,,,20.0
+param,muscle_w_back,,,,,,,0.60
+param,muscle_w_fwd,,,,,,,0.18
+param,muscle_cap,,,,,,,1.0
+param,intensity_levels,,,,,,,"0,0.5,1,2,4,8"
+param,latency_lo_ms,,,,,,,25.0
+param,latency_hi_ms,,,,,,,60.0
+param,chalfie_lo_ms,,,,,,,30.0
+param,chalfie_hi_ms,,,,,,,50.0
+param,t_total_ms,,,,,,,150.0
+param,dt_ms,,,,,,,0.01
+param,method,,,,,,,rk4
+param,seed,,,,,,,0

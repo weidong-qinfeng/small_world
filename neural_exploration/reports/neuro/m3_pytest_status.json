@@ -1,0 +1,6 @@
+{
+  "passed": 32,
+  "total": 32,
+  "milestone": "M3",
+  "command": "python -m pytest neural_exploration/tests -q"
+}

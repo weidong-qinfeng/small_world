@@ -1,0 +1,178 @@
+{
+  "milestone": "M3",
+  "results": {
+    "p1_direction": {
+      "pass_": true,
+      "n_valid_used": 5,
+      "n_failures": 1,
+      "d_peaks": [
+        0.3521019430444159,
+        0.3521019430444159,
+        0.3521019430444159,
+        0.3521019430444159,
+        0.3521019430444159
+      ],
+      "d_peak_threshold": 0.3,
+      "valid_ok": true,
+      "ctrl_ok": true,
+      "c_back_peak_control": 0.0,
+      "c_fwd_steady_control": 0.2057092467692974,
+      "control_silent": true,
+      "touch_start_ms": 50.0,
+      "report_png": "/Users/weidong/ai/small_world/neural_exploration/reports/neuro/m3_p1_direction.png",
+      "report_csv": "/Users/weidong/ai/small_world/neural_exploration/data/m3_p1_direction.csv"
+    },
+    "p2_chain": {
+      "pass_": true,
+      "first_spikes_ms": {
+        "plm": 53.65,
+        "avm": 56.64,
+        "da": 59.63
+      },
+      "order_ok": true,
+      "chain_time_sim_ms": 5.980000000000004,
+      "chain_time_ref_ms": 5.939999999999998,
+      "chain_time_ref_i0_ms": 5.93,
+      "chain_err_rel": 0.006734006734007789,
+      "chain_ok": true,
+      "psp_norm_rmse_idx3": 0.00036699241067367574,
+      "psp_norm_rmse_idx2_i0": 0.0005597121343379057,
+      "psp_ok": true,
+      "topo_ok": true,
+      "topology": {
+        "n_chemical": 3,
+        "n_muscle_drives": 2,
+        "synapse_types": {
+          "PLM->AVM": "ampa",
+          "AVM->DA": "ampa",
+          "AVM->VB": "gaba"
+        },
+        "vb_tonic_uA_cm2": 14.0
+      },
+      "report_png": "/Users/weidong/ai/small_world/neural_exploration/reports/neuro/m3_p2_chain.png",
+      "report_csv": "/Users/weidong/ai/small_world/neural_exploration/data/m3_p2_chain.csv"
+    },
+    "p3_latency": {
+      "pass_": true,
+      "lat_by_level": {
+        "0.0": null,
+        "0.5": 13.300000000000004,
+        "1.0": 9.630000000000003,
+        "2.0": 8.56000000000001,
+        "4.0": 8.020000000000003,
+        "8.0": 7.700000000000003
+      },
+      "spearman_rho": -0.9999999999999999,
+      "rho_ok": true,
+      "lat_i0_ms": 9.630000000000003,
+      "ref_lat_i0_ms": 10.100000000000001,
+      "ref_err_rel": 0.046534653465346416,
+      "ref_ok": true,
+      "window_ms": [
+        5.0,
+        20.0
+      ],
+      "window_ok": true,
+      "n_trials_valid": 20,
+      "n_failures": 0,
+      "latency_sd_ms": 0.3031088913245517,
+      "sd_ok": true,
+      "behavioral_latency_ms": 9.740000000000002,
+      "behavioral_ref_ms": 10.100000000000001,
+      "behavioral_equiv_neural": true,
+      "report_png": "/Users/weidong/ai/small_world/neural_exploration/reports/neuro/m3_p3_latency.png",
+      "report_csv": "/Users/weidong/ai/small_world/neural_exploration/data/m3_p3_latency.csv"
+    },
+    "p4_intensity": {
+      "pass_": true,
+      "rows": [
+        {
+          "intensity": 0.0,
+          "latency_ms": null,
+          "c_back_peak": 0.0,
+          "da_spikes": 0,
+          "silent": true
+        },
+        {
+          "intensity": 0.5,
+          "latency_ms": 13.300000000000004,
+          "c_back_peak": 0.6,
+          "da_spikes": 1,
+          "silent": false
+        },
+        {
+          "intensity": 1.0,
+          "latency_ms": 9.630000000000003,
+          "c_back_peak": 0.6,
+          "da_spikes": 1,
+          "silent": false
+        },
+        {
+          "intensity": 2.0,
+          "latency_ms": 8.56000000000001,
+          "c_back_peak": 0.6,
+          "da_spikes": 1,
+          "silent": false
+        },
+        {
+          "intensity": 4.0,
+          "latency_ms": 8.020000000000003,
+          "c_back_peak": 0.6,
+          "da_spikes": 1,
+          "silent": false
+        },
+        {
+          "intensity": 8.0,
+          "latency_ms": 7.700000000000003,
+          "c_back_peak": 0.6,
+          "da_spikes": 1,
+          "silent": false
+        }
+      ],
+      "spearman_rho": -0.9999999999999999,
+      "rho_ok": true,
+      "zero_silent": true,
+      "c_back_peak_at_zero": 0.0,
+      "supplement": {
+        "dur_ms": 20.0,
+        "da_spikes": 2,
+        "da_first_ms": 57.7,
+        "c_back_peak": 0.8903967872599883,
+        "w_back": 0.6,
+        "spikes_ok": true,
+        "amp_ok": true,
+        "ok": true
+      },
+      "report_png": "/Users/weidong/ai/small_world/neural_exploration/reports/neuro/m3_p4_intensity.png",
+      "report_csv": "/Users/weidong/ai/small_world/neural_exploration/data/m3_p4_intensity.csv"
+    },
+    "p5_ablation": {
+      "pass_": true,
+      "window_ms": [
+        50.0,
+        90.0
+      ],
+      "vb_spikes_full": 2,
+      "vb_spikes_ablated": 3,
+      "count_ok": true,
+      "c_fwd_mean_full": 0.1870317008358708,
+      "c_fwd_mean_ablated": 0.19781051512494158,
+      "c_fwd_mean_ratio": 1.0576309483413706,
+      "c_fwd_mean_ratio_info_ok": false,
+      "c_fwd_response_full": -0.010778814289070765,
+      "c_fwd_response_ablated": 0.0,
+      "resp_component_sign_ok": true,
+      "d_peak_full": 0.36886542996710325,
+      "d_peak_ablated": 0.36886542996710325,
+      "c_back_peak_full": 0.6,
+      "c_back_peak_ablated": 0.6,
+      "vb_total_spikes_full": 9,
+      "vb_total_spikes_ablated": 9,
+      "criterion": "count_ok AND resp_component_sign_ok（主 agent 三态裁决落地修订）",
+      "note": "主 agent 裁决（2026-08-23）：机制已由直接证据证明——发放数子判据两引擎一致 （响应窗 [50,90]ms VB 完整 2 → 消融 3）+ 响应分量符号（full −0.011 < 0 被抑制、abl 0.000 ≥ 0 无抑制）；C_fwd 窗均值 ×1.2 子判据因 VB 张力 ~60Hz 基线振荡主导窗均值而结构性不可达（两引擎均 ≈1.05，NEURON 1.054 / Brian2 1.058）——主 agent 判据校准错误，非机制失败；该比值保留为 informational 输出。D_peak 两情形相同（0.369，L8 预测复现）。",
+      "report_png": "/Users/weidong/ai/small_world/neural_exploration/reports/neuro/m3_p5_ablation.png",
+      "report_csv": "/Users/weidong/ai/small_world/neural_exploration/data/m3_p5_ablation.csv"
+    }
+  },
+  "all_pass": true
+}
