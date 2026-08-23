@@ -151,18 +151,28 @@ def gap_im_term(_params=None) -> str:
 # --------------------------------------------------------------------- #
 # 突触前触发（on_pre 语句生成）
 # --------------------------------------------------------------------- #
-def _release_statements(post_var: str, g_dens_s_m2: float, p: float, n_ves: int) -> List[str]:
+# 运行期参数标识符（经 Synapses namespace 传入；值不进入生成代码串，
+# 保证不同参数组合共享同一编译产物——M2 实测：格式化进字符串的数值
+# 每变一次就触发 80–120s 重编译，见 m2_env_notes §L2）
+NS_GMAX = "GMAXD"     # 释放电导密度 S/m²
+NS_PREL = "PREL"      # 单囊泡释放概率
+NS_MG = "MGMM"        # NMDA [Mg²⁺] mM
+NS_U0 = "U0"          # STP 基准利用度
+NS_TAUFAC = "TAUFAC"  # STP 易化时间常数 ms
+NS_TAUREC = "TAUREC"  # STP 恢复时间常数 ms
+
+
+def _release_statements(post_var: str, p: float, n_ves: int) -> List[str]:
     """量子释放：k ~ Binomial(n_ves, p) 个量子，各以单条语句累加。
 
     p=1 → 确定性语句（无 rand，无 abstract-code 警告）。
     """
     if p >= 1.0:
-        return [f"{post_var}_post = {post_var}_post + {g_dens_s_m2!r}*siemens/meter**2"
-                f"*{n_ves}"]
+        return [f"{post_var}_post = {post_var}_post + {NS_GMAX}*{n_ves}"]
     stmts = []
     for _ in range(n_ves):
         stmts.append(f"{post_var}_post = {post_var}_post + "
-                     f"{g_dens_s_m2!r}*siemens/meter**2*int(rand() < {p})")
+                     f"{NS_GMAX}*int(rand() < {NS_PREL})")
     return stmts
 
 
@@ -201,27 +211,40 @@ class ChemicalSynapse:
     def _build_on_pre(self) -> str:
         p = self.params
         var = p.post_var
-        gd = self._g_density()
         stmts: List[str] = []
         if p.stp_enabled:
             # Tsodyks–Markram：先易化、再按 u·x 释放、后耗竭
-            stmts.append(f"u = u + {p.u0}*(1-u)")
+            stmts.append(f"u = u + {NS_U0}*(1-u)")
             rel = f"u*x"
             if p.n_vesicles > 1:
                 rel = f"({rel})*{p.n_vesicles}"
             if p.p_release < 1.0:
-                rel = f"{rel}*int(rand() < {p.p_release})"
+                rel = f"{rel}*int(rand() < {NS_PREL})"
             if p.synapse_type == "nmda":
-                rel = f"{rel}*(1/(1+{p.mg_mm}*exp(-{MG_BLOCK_A}*v_post/mV)/{MG_BLOCK_B}))"
-            stmts.append(f"{var}_post = {var}_post + {gd!r}*siemens/meter**2*{rel}")
+                rel = f"{rel}*(1/(1+{NS_MG}*exp(-{MG_BLOCK_A}*v_post/mV)/{MG_BLOCK_B}))"
+            stmts.append(f"{var}_post = {var}_post + {NS_GMAX}*{rel}")
             stmts.append(f"x = x - u*x")
         else:
-            rel = _release_statements(var, gd, p.p_release, p.n_vesicles)
+            rel = _release_statements(var, p.p_release, p.n_vesicles)
             if p.synapse_type == "nmda":
-                b = (f"*(1/(1+{p.mg_mm}*exp(-{MG_BLOCK_A}*v_post/mV)/{MG_BLOCK_B}))")
+                b = (f"*(1/(1+{NS_MG}*exp(-{MG_BLOCK_A}*v_post/mV)/{MG_BLOCK_B}))")
                 rel = [s + b for s in rel]
             stmts.extend(rel)
         return "\n".join(stmts)
+
+    def _namespace(self) -> dict:
+        from brian2 import meter, siemens
+
+        p = self.params
+        ns = {
+            NS_GMAX: self._g_density() * siemens / meter ** 2,
+            NS_PREL: p.p_release,
+            NS_MG: p.mg_mm,
+            NS_U0: p.u0,
+            NS_TAUFAC: p.tau_fac_ms,
+            NS_TAUREC: p.tau_rec_ms,
+        }
+        return ns
 
     def build(self):
         """创建 Brian2 Synapses 并连接（pre_site → post_site 单突触）。"""
@@ -231,14 +254,13 @@ class ChemicalSynapse:
         model = ""
         if p.stp_enabled:
             model = f"""
-u : 1
-x : 1
-du/dt = ({p.u0}-u)/({p.tau_fac_ms}*ms) : 1 (clock-driven)
-dx/dt = (1-x)/({p.tau_rec_ms}*ms) : 1 (clock-driven)
+du/dt = ({NS_U0}-u)/({NS_TAUFAC}*ms) : 1 (clock-driven)
+dx/dt = (1-x)/({NS_TAUREC}*ms) : 1 (clock-driven)
 """
         on_pre = self._build_on_pre()
         syn = Synapses(self.pre_neuron.neuron, self.post_neuron.neuron,
-                       model=model, on_pre=on_pre, name=self.name)
+                       model=model, on_pre=on_pre, name=self.name,
+                       namespace=self._namespace())
         i = self.pre_neuron.label_of(self.pre_site)
         j = self.post_neuron.label_of(self.post_site)
         syn.connect(i=i, j=j)

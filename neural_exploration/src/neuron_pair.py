@@ -40,6 +40,11 @@ from neural_exploration.src.synapse_model import (  # noqa: E402
 # 脉冲元组： (start_ms, dur_ms, amp_uA_cm2, site)
 Pulse = Tuple[float, float, float, str]
 
+#: TimedArray 固定时间窗（ms）——所有运行的刺激数组同形、同名，
+#: 保证 Brian2 cython 编译缓存跨进程命中（M2 实测：TimedArray 行数/对象名
+#: 进入生成代码串，变化即触发 80–120s 重编译，见 m2_env_notes §L2）
+STIM_WINDOW_MS = 500.0
+
 
 @dataclass
 class PairResult:
@@ -171,10 +176,14 @@ class NeuronPair:
     # 刺激与运行
     # ------------------------------------------------------------------ #
     def _stim_arrays(self, pre_pulses, post_pulses, t_total_ms):
-        """按神经元各自形态学生成 (stim_pre, stim_post) 两个 TimedArray。"""
+        """按神经元各自形态学生成 (stim_pre, stim_post) 两个 TimedArray。
+
+        数组固定 STIM_WINDOW_MS 长（同形）且显式命名（同名），保证编译缓存命中；
+        net.run 的实际时长由 t_total_ms 决定，与数组长度无关。
+        """
         from brian2 import TimedArray, amp, ms, nA
 
-        n_steps = int(round(t_total_ms / self.dt_ms))
+        n_steps = int(round(STIM_WINDOW_MS / self.dt_ms))
         arr_p = np.zeros((n_steps, self.pre.spec.total_compartments)) * amp
         arr_q = np.zeros((n_steps, self.post.spec.total_compartments)) * amp
         for (s0, dur, amp_uA, site) in pre_pulses:
@@ -185,8 +194,8 @@ class NeuronPair:
             i0, i1 = int(round(s0 / self.dt_ms)), int(round((s0 + dur) / self.dt_ms))
             idx = self.post.label_of(site)
             arr_q[i0:i1, idx] = self.post.density_to_nA(amp_uA, idx) * nA
-        return (TimedArray(arr_p, dt=self.dt_ms * ms),
-                TimedArray(arr_q, dt=self.dt_ms * ms))
+        return (TimedArray(arr_p, dt=self.dt_ms * ms, name="stim_pre"),
+                TimedArray(arr_q, dt=self.dt_ms * ms, name="stim_post"))
 
     def _record_spec(self, record: Sequence[str]):
         """'pre_soma'/'post_node3' 等标签 → (group, 隔室索引, 标签) 列表。"""
@@ -246,7 +255,8 @@ class NeuronPair:
         stim_pre, stim_post = self._stim_arrays(pre_pulses, post_pulses, t_total)
 
         rec = self._record_spec(record)
-        # 逐组记录（pre/post 分别建 monitor，避免跨组 record 混用）
+        # 逐组记录（pre/post 分别建 monitor，避免跨组 record 混用；
+        # 显式命名保证编译缓存跨进程命中）
         monos = []
         pre_ids = [r[1] for r in rec if r[0] is self.pre.neuron]
         post_ids = [r[1] for r in rec if r[0] is self.post.neuron]
@@ -254,18 +264,19 @@ class NeuronPair:
         post_labels = [r[2] for r in rec if r[0] is self.post.neuron]
         if pre_ids:
             monos.append(StateMonitor(self.pre.neuron, "v", record=pre_ids,
-                                      dt=self.dt_ms * ms))
+                                      dt=self.dt_ms * ms, name="mon_pre_v"))
         if post_ids:
             monos.append(StateMonitor(self.post.neuron, "v", record=post_ids,
-                                      dt=self.dt_ms * ms))
+                                      dt=self.dt_ms * ms, name="mon_post_v"))
         gmons = []
-        for gvar in record_g:
+        for k, gvar in enumerate(record_g):
             if hasattr(self.post.neuron, gvar):
                 gmons.append(StateMonitor(self.post.neuron, gvar,
                                           record=[self.post.label_of("soma")],
-                                          dt=self.dt_ms * ms))
-        sp_pre = SpikeMonitor(self.pre.neuron, "v")
-        sp_post = SpikeMonitor(self.post.neuron, "v")
+                                          dt=self.dt_ms * ms,
+                                          name=f"mon_{gvar}"))
+        sp_pre = SpikeMonitor(self.pre.neuron, "v", name="sp_pre")
+        sp_post = SpikeMonitor(self.post.neuron, "v", name="sp_post")
 
         net = Network(self.pre.neuron, self.post.neuron)
         for cs in self.chemicals.values():
@@ -290,7 +301,7 @@ class NeuronPair:
                 v[lab] = np.array(mon_post_v.v[pos] / mV)
         g = {}
         for m, gvar in zip(gmons, record_g):
-            g[gvar] = np.array(m.v[0])
+            g[gvar] = np.array(getattr(m, gvar)[0])
         spikes = {}
         spikes.update(self._spike_times(sp_pre, self.pre, "pre"))
         spikes.update(self._spike_times(sp_post, self.post, "post"))
@@ -331,18 +342,19 @@ class NeuronPair:
         monos = []
         if pre_ids:
             monos.append(StateMonitor(self.pre.neuron, "v", record=pre_ids,
-                                      dt=self.dt_ms * ms))
+                                      dt=self.dt_ms * ms, name="mon_pre_v"))
         if post_ids:
             monos.append(StateMonitor(self.post.neuron, "v", record=post_ids,
-                                      dt=self.dt_ms * ms))
+                                      dt=self.dt_ms * ms, name="mon_post_v"))
         gmons = []
-        for gvar in record_g:
+        for k, gvar in enumerate(record_g):
             if hasattr(self.post.neuron, gvar):
                 gmons.append(StateMonitor(self.post.neuron, gvar,
                                           record=[self.post.label_of("soma")],
-                                          dt=self.dt_ms * ms))
-        sp_pre = SpikeMonitor(self.pre.neuron, "v")
-        sp_post = SpikeMonitor(self.post.neuron, "v")
+                                          dt=self.dt_ms * ms,
+                                          name=f"mon_{gvar}"))
+        sp_pre = SpikeMonitor(self.pre.neuron, "v", name="sp_pre")
+        sp_post = SpikeMonitor(self.post.neuron, "v", name="sp_post")
 
         net = Network(self.pre.neuron, self.post.neuron)
         for cs in self.chemicals.values():
@@ -370,14 +382,12 @@ class NeuronPair:
                 mon_post_v = monos[1] if len(monos) > 1 and post_ids else (
                     monos[0] if post_ids else None)
                 for pos, lab in enumerate(pre_labels):
-                    v[lab] = np.array(mon_pre_v.v[pos] / mV)[
-                        trial * n_steps:(trial + 1) * n_steps]
+                    v[lab] = np.array(mon_pre_v.v[pos] / mV)
                 for pos, lab in enumerate(post_labels):
-                    v[lab] = np.array(mon_post_v.v[pos] / mV)[
-                        trial * n_steps:(trial + 1) * n_steps]
+                    v[lab] = np.array(mon_post_v.v[pos] / mV)
             g = {}
             for m, gvar in zip(gmons, record_g):
-                g[gvar] = np.array(m.v[0])[trial * n_steps:(trial + 1) * n_steps]
+                g[gvar] = np.array(getattr(m, gvar)[0])
             results.append(PairResult(
                 t_ms=np.arange(0, t_total, self.dt_ms),
                 v_mv=v, spike_times_ms={}, g=g,

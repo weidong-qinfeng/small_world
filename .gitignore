@@ -15,3 +15,5 @@ digital_brain/data/memory_store/
 __pycache__/
 *.pyc
 .pytest_cache/
+.cache/
+neural_exploration/tools/nmodl/arm64/

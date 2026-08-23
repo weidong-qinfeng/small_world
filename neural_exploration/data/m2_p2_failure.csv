@@ -1,0 +1,13 @@
+metric,value
+n_trials,60
+p_release,0.3
+n_vesicles,3
+failures,19
+failure_rate,0.3167
+expected_failure,0.3430
+ci_lo,0.2131
+ci_hi,0.4423
+mean_quanta,0.8667
+expected_mean_quanta,0.9000
+ref_failure_rate,0.2800
+pass,True

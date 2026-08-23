@@ -198,7 +198,7 @@ class MultiCompartmentNeuron:
             i0 = int(round(stim_start_ms / self.dt_ms))
             i1 = int(round(stim_end / self.dt_ms))
             stim2d[i0:i1, self.label_of(inject_at, inject_compartment)] = i_total_nA * nA
-        stim = TimedArray(stim2d, dt=self.dt_ms * ms)
+        stim = TimedArray(stim2d, dt=self.dt_ms * ms, name="m1_stim")
 
         # 记录目标
         rec_idx: List[int] = []

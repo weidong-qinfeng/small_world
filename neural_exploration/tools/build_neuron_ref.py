@@ -45,15 +45,20 @@ SOMA_DIAM_UM = 20.0
 SOMA_AREA_CM2 = np.pi * (SOMA_DIAM_UM * 1e-4) ** 2
 
 
-def build_neuron(spec: MorphologySpec):
-    """按规格在 NEURON 中构建多隔室神经元，返回 sections dict。"""
+def build_neuron(spec: MorphologySpec, clear: bool = True, name_prefix: str = ""):
+    """按规格在 NEURON 中构建多隔室神经元，返回 sections dict。
+
+    clear=False：不删除既有 section（M2 需要同一进程内构建两个神经元）；
+    name_prefix：区段 hoc 名加前缀（避免两个神经元同名冲突）。
+    """
     from neuron import h
 
-    h("forall delete_section()")
+    if clear:
+        h("forall delete_section()")
     sections = {}
 
     soma_seg = spec.by_name("soma")
-    soma = h.Section(name="soma")
+    soma = h.Section(name=f"{name_prefix}soma")
     soma.L = soma_seg.length_um
     soma.diam = soma_seg.diameter_um
     soma.nseg = 1
@@ -63,7 +68,7 @@ def build_neuron(spec: MorphologySpec):
     for seg in spec.segments:
         if seg.is_soma:
             continue
-        sec = h.Section(name=seg.name)
+        sec = h.Section(name=f"{name_prefix}{seg.name}")
         sec.L = seg.length_um
         sec.diam = seg.diameter_um
         sec.nseg = seg.n

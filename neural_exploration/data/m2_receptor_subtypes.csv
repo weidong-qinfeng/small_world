@@ -1,0 +1,9 @@
+metric,value
+ampa_tau_ms,3.0000000000030966
+nmda_tau_ms,99.9999999999996
+nmda_epsp_mg0_mv,5.4366
+nmda_epsp_mg12_mv,0.2130
+mg_ratio,0.0392
+b_theory_rest,0.0561
+vdep_max_err,0.00000
+pass,True

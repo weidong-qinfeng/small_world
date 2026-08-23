@@ -1,0 +1,11 @@
+metric,value
+g_gap_ns,0.5
+pre_to_post_amp_mv,1.7489
+pre_to_post_delay_ms,1.1600
+post_to_pre_amp_mv,1.7489
+post_to_pre_delay_ms,1.1600
+coupled_halfwidth_ms,53.2400
+driver_amp_mv,95.0668
+onset_delay_ms,-0.0300
+ref_coupled_amp_mv,4.6343
+pass,True
