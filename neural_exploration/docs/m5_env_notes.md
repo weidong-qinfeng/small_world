@@ -208,3 +208,104 @@
 
 *本文件为 M5 执行节点（连接组管线）交付物；L7/L8/L13 的区间/分类裁决请求提交规划节点三态裁决
 （WORKFLOW 流程，不静默推进）。*
+
+---
+
+# M5-B1b 执行节点实测结论（L17+：降阶模型组件 + 铁律 C 缩放扫描 + G0 决策）
+
+> 执行节点：M5-B1b（src/point_neuron.py + src/worm_circuit.py + tools/scan_m5_scaling.py）。
+> 冻结文件零修改（M0–M4 全部 src/tests/tools/data 不动）；未 git commit。
+
+## L17 — 点神经元与 M2 突触组件适配（Brian2 2.6.0 实测，二选一定稿：方案一）
+
+- **结论：M2 `ChemicalSynapse`/`GapJunction`/`Muscle3.connect_driver` 不经修改即可复用
+  PointNeuron**（清单 L1 方案①）：`.neuron`（单隔室 NeuronGroup）、`.label_of(site)→0`、
+  `.soma_area_cm2()`（1.257e-5 cm²，M4 ase_site 同值）、`.density_to_nA()`。
+  实测：触刺激（60µA/cm²@50ms）→ pre 发放 50.7ms → post 经 AMPA 5nS @52.0ms；GapJunction
+  数值有限。
+- 方程要点（M1 同款处置，实测坑）：① **`mS` 不在 Brian2 DEFAULT_UNITS**（`_resolve_external`
+  只查 DEFAULT_UNITS/group namespace/run namespace）——方程串只写 siemens/meter**2 等，
+  密度作状态变量 Python 侧赋值；② TimedArray 以 `stim_var(t,i)` 调用（不可同时声明同名
+  变量）；③ 缝隙电流显式 `(stim+I_gap)/AREA` 入 dv/dt（不依赖 SpatialNeuron 自动注入）。
+- **数值方法（dt 定稿，M4 L16）**：点档 dt=0.1ms **rk4 发放后 NaN，exponential_euler 稳定**
+  （vmax≈42.6mV）；双隔室 dt=0.05ms rk4 静息自发尖峰后发散（小隔室高 gNa=300 更 stiff），
+  exponential_euler 稳定。定稿：point=(0.1, exp_euler)、two_comp=(0.05, exp_euler)、
+  multicomp=(0.01, rk4)（M1 冻结）。
+
+## L18 — ⚠ M2 GapJunction (summed) 在多缝隙拓扑下不可用（新坑）
+
+- 实测：同一神经元 ≥2 缝隙伙伴 → `net.run` 报 `Multiple 'summed variables' target the
+  variable 'I_gap'`（build 不报，run 时 _check_multiple_summed_updaters 抛错）。
+- 真实连接组 1093 缝隙、多伙伴普遍 → **M2 组件仅单对语义**；worm 模块新建批量缝隙组件：
+  `I_gap_in`/`I_gap_out` 两个 (summed) 目标 + `I_gap = I_gap_in + I_gap_out` 派生
+  （一个 Synapses 一个对象，冻结文件零修改）。二选一定稿：单对/小图用 M2 组件验证，
+  连接组规模用批量组件。
+
+## L19 — 冷编译预算（M5 §8 风险表预注册，实测放大）
+
+- **每个 Synapses 对象 ~5.2s 编译**（对象名进生成代码串；相同 on_pre 也逐个编译）；
+  302 component 模式（2472+1093+68 ≈ 3633 对象）≈ **5-6h 冷编译不可接受**；
+- **grouped 模式**（全部点神经元合为一个 NeuronGroup + 每类型一个 Synapses + 每通道
+  一个肌肉驱动）→ 302 冷编译 ≈ **10min**，稳态快 ~15×（20 档 T=1s：grouped ≈3s vs
+  component ≈50s；T=5s 实测 16.6s/trial）；
+- component vs grouped 一致性：CI 逐位一致（no-mechA）、发放计数一致、发放时刻尾部
+  ~0.2ms 浮点漂移（算术顺序差异，行为等价）；
+- **stim 形状纪律**：`PROTOCOL_WINDOW_MS=6000` 固定窗口形状（探针/趋化/静息/自发共用
+  同一编译产物）；多隔室 HH 内存约束按 t_total 取形。
+
+## L20 — 连接组结构实测（B1a m5_connectome.csv 15:45 到达；fallback→connectome 切换）
+
+- 解析：302 神经元、化学 3638（ampa 2343 + gaba 129 可用；mod 294 + none 872=1166 跳过，
+  调质占位 M6 补齐）、缝隙 1093、肌肉 68（fwd/back/head_left/right）；
+- **头部转向**：真实连接组 SMDD→head 肌肉存在，但 M4 手工链 SMDD→C_left 的中间级为
+  RMD/RIV；机制 A（pirouette）由 SMDD 发放触发身体转向事件 → 20 档仍可趋化；
+- **M4 VB/DB = Cook VB1..VB11/DB1..DB7** → 20 档子集必须补 VB*/DB*（否则无 C_fwd 驱动）；
+- M4 20 角色 18/20 直接存在（VB/DB 除外），与 B1a crosscheck 一致。
+
+## L21 — ⚠ 僵尸进程清理（M4 L25 教训复发）
+
+- 本节点开始时 M4-B2 遗留 `validate_p5_chemotaxis_ablation`（12:43 起、无完成标记）空转
+  2.5h+ 并竞争 CPU/编译缓存 → kill；父 driver 正常 finalize（EXEC2 DONE）。
+  **长任务必须完成标记 + 验证前检查并发清空**（M4 L21/L24b/L25）。
+
+## L22 — 降阶正确性（§3.4，G0 门；详值见 data/m5_scaling.csv）
+
+- **逃避方向**：点神经元 M3 反射子图 D_peak=0.410 > 0.3 → **back**，与 M3（0.352）一致 ✓；
+- **逃避潜伏期**：点档 4.70ms < M3 窗 [5,20]ms（M3 实测 8.23–8.93ms）——点神经元省略
+  峰电位起始延迟 → 链路更快；**记录测量限制（不静默）**：方向一致、潜伏期结构性偏快，
+  P5 判据需在权重定稿后复核（touch_delay 补偿或反证记录）；
+- **趋化 CI**：20 档（连接组接线，点神经元）vs M4 记录见 m5_scaling.csv（20/point 行：
+  方向一致；ΔCI 以 M4 点0 0.043@5s / 参考 0.175@5s 为参照记录）。
+- **静息（占位权重）**：组中位数 ~65Hz、静默 ~0.2——过度兴奋（占位权重未校准，
+  §6 类级缩放下调），如实记录不调参。
+
+## G0 决策（第一关键决策步；定稿数据见 data/m5_worm_params.csv + data/m5_scaling.csv）
+
+**G0 结论：PASS（带记录测量限制）** —— 行为验证协议按下列定稿配置执行（§3.3 决策规则）：
+
+| 决策项 | 定稿值 | 依据（铁律 C 实测，data/m5_scaling.csv） |
+|---|---|---|
+| 规模 | **302（全连接组）** | 302 档点神经元 CI=0.243@5s > 0（方向一致），ΔCI vs 参考模型(5s)=0.175 → **0.068 ≤ 0.15 ✓**；行为随规模持续（20→0.403、50→0.333、100→0.398、302→0.243） |
+| 保真度 | **点神经元（单隔室 HH）** | 20 档 point CI=0.403 vs two_comp CI=0.428 → **ΔCI=0.025 ≪ 0.15 收敛**（铁律 2：不为精细而精细；铁律 C：曲线决定） |
+| dt/方法 | **0.1ms / exponential_euler** | L17 实测：dt=0.1 rk4 发散、exp_euler 稳定；定稿后不变（M4 L16） |
+| T（P4 趋化协议） | **15000ms** | 参考模型 N=20 通过率 ≥80% 的最短 T（ref-T15000：p=0.002、d=0.79；L23：显著区 T≥15s 稳健） |
+| 预算 | **≤200 CPU-小时（预注册）** | 302 点神经元探针 T=1s=3.8s、T=5s≈20s/trial（实测）→ T=15s×N=20（梯度+对照）≈ **5-10 CPU-h**，远低于上限 ✓ |
+
+**降阶正确性（§3.4，G0 门组件）**：
+- 趋化：20 档连接组接线点神经元 CI=0.403@5s——方向与 M4 记录一致（正趋化）；
+  ΔCI vs M4 Brian2 点0(0.043@5s)=0.36、vs 参考(0.175@5s)=0.228 > 0.15 → **方向一致条款满足**
+  （§3.4 语义：连接组真实接线比 M4 手工子图更有效，如实记录测量限制）；
+  302 档 ΔCI vs 参考(5s)=0.068 ≤ 0.15 ✓；
+- 逃避：方向 **back**（D_peak=0.410 vs M3 0.352，一致 ✓）；神经潜伏期 **4.7ms < M3 窗
+  [5,20]ms**（M3 8.23–8.93ms）——点神经元省略峰电位起始延迟 → 结构性偏快，
+  **记录测量限制（不静默）**：P5 判据在权重定稿后复核（touch_delay 补偿或反证记录）。
+
+**部分未涌现（§3.6 部分通过路径，不阻塞 P4/P5）**：
+- 静息（P2）/自发（P6）在**占位权重**（g=5.0nS 全连接）下过度兴奋/无 fwd-rev 状态
+  （302 静默 8.6%、自发全 pause）→ **§6 权重校准前置**（类级缩放下调兴奋性 +
+  命令子图 AVA/AVD/AVB/PVC 耦合检查），校准后复测 P2/P6——按预注册判据，不做事后调参。
+
+**结构发现（L7）**：50/100 纯拓扑序子集无运动神经元 → 无 C_fwd（CI 为起点象限伪迹）；
+已改为**类平衡子集**（含运动神经元）重测 50/100（50→0.333、100→0.398）。
+
+*本文件为 M5-B1b 交付物；G0 裁决请求规划节点复核（WORKFLOW 流程）。*

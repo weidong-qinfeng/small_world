@@ -1,0 +1,15 @@
+# M5 铁律 C 缩放扫描结果（tools/scan_m5_scaling.py 生成，G0 门）
+# 列语义：scale=规模轴；fidelity=保真度轴（point/two_comp/multicomp）；
+#   source=connectome（m5_connectome.csv 子集）/ m4_fallback（M4 参数源）；
+#   ci_delta_vs_m4_brian2_5s = |CI − M4 点0(0.043@5s)|；
+#   ci_delta_vs_m4_ref_5s = |CI − 参考模型(0.175@5s)|；§3.4 判据 ΔCI≤0.15 或方向一致；
+#   escape_* 来自同保真度 M3 反射子图（ReflexCircuit，方向/潜伏期 vs M3）；
+#   chem_wall_s_mean = 趋化短协议单试次墙钟（含编译后的稳态）；probe = T=1s 探针。
+scale,fidelity,source,dt_ms,method,status,n_neurons,n_chem,n_gap,n_muscle,build_wall_s,probe_T_ms,probe_wall_s,ci_mean,ci_sem,ci_n,ci_control_mean,ci_delta_vs_m4_brian2_5s,ci_delta_vs_m4_ref_5s,ci_direction_same,escape_direction,escape_d_peak,escape_lat_ms,escape_lat_ok,resting_median_hz,resting_silent_frac,resting_max_hz,spont_fwd,spont_rev,spont_turn,spont_pause,chem_wall_s_mean,total_wall_s,notes
+50,point,connectome,0.1,exponential_euler,done,50,90,36,19,0.5679917919999999,1000.0,2.1756018340000005,0.3333333333333333,0.33333333333333337,3,nan,0.2903,0.1583,True,back,0.4098,4.7,False,0.0,1.0,0.0,0.0,0.0,0.0,1.0,9.258079597,42.2,命令/运动上下文扩展（grouped）
+100,point,connectome,0.1,exponential_euler,done,100,433,186,28,0.05672100000000313,1000.0,2.957788624999999,0.3983333333333334,0.2687367567796495,3,nan,0.3553,0.2233,True,back,0.4098,4.7,False,1.0,0.13,2.0,0.0,0.0,0.005,0.995,15.16010026366667,64.1,100 规模（grouped）
+50,two_comp,connectome,0.05,exponential_euler,done,50,94,44,0,105.045562583,1000.0,104.144892875,0.0,0.0,2,nan,0.043,0.175,True,back,0.4084,3.6,False,0.0,1.0,0.0,0.0,0.0,0.0,1.0,210.4939528335001,2183.0,50 双隔室（纯拓扑序子集：无运动神经元 → 无 C_fwd，CI 为起点象限伪迹——L7 结构发现；逃逸/静息仍记录）
+20,point,connectome,0.1,exponential_euler,done,20,81,16,6,0.395307917,1000.0,3.314746959,0.4033333333333333,0.25666666666666665,3,0.265,0.3603,0.2283,True,back,0.4098,4.7,False,65.0,0.2,66.0,0.895,0.0,0.105,0.0,15.147988083666666,99.0,M4 趋化子图（连接组真实接线，grouped）；ΔCI vs 参考(5s)=0.228>0.15 但方向一致（§3.4 方向条款）
+20,two_comp,connectome,0.05,exponential_euler,done,20,81,16,6,1.469730958,1000.0,58.859961792,0.4275,0.4275,2,0.18,0.3845,0.2525,True,back,0.4084,3.6,False,114.0,0.3,115.0,0.93,0.0,0.07,0.0,274.24884843750004,1672.0,M4 趋化子图 + 双隔室（component）；20 档 point↔two_comp ΔCI=0.024 ≪0.15 → 保真度收敛
+20,multicomp,m4_fallback,0.01,rk4,done,20,18,0,6,4.1128115,1000.0,nan,0.043,nan,10,-0.0725,0.0,0.132,reuse_m4_record,,nan,nan,,nan,nan,nan,nan,nan,nan,nan,nan,0.0,CI/对照 = M4 记录复用（L22a 点0：CI=0.043±0.199@5s/N=10；决定性点 0.099@10s——见 m5_env_notes L8）；multicomp 探针未重跑（预算纪律，M4 L25 记录 1194-1888s/T1s）
+302,point,connectome,0.1,exponential_euler,done,302,2472,1093,68,6.6565345,1000.0,3.800049292,0.24333333333333332,0.32661564227357176,3,nan,0.2003,0.0683,True,back,0.4098,4.7,False,1.0,0.086,1.0,0.0,0.0,0.0,1.0,20.048177527999542,104.0,全连接组（grouped；冷编译 ~10min）；302 探针 T=1s=3.8s——vs M4 20 神经元 HH 1194-1888s/T1s（L25）≈300-500× 加速；ΔCI vs 参考(5s)=0.068 ≤0.15 ✓；静息占位权重过兴奋（silent 8.6%，§6 校准）

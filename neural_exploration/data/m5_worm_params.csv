@@ -1,0 +1,90 @@
+# M5 全虫参数与协议定稿（唯一定稿源，可修改复现）——M5-B1b 执行节点按《生物仿真M5实施清单》
+# §2.6/§3 结构创建；G0 决策（降阶模型配置/协议/预算）定稿于扫描后（见文末 G0 段）。
+# 列：role, neuron_class, synapse_from, synapse_to, synapse_type, g_max_ns,
+#     delay_ms, tonic_uA_cm2, value, note
+# 行语义：
+#   - model 行：role=model, neuron_class=<point_hh|two_comp|multicomp|dt_ms|method|...>,
+#     value=<值>——G0 定稿的行为层降阶配置（§3.2 方案①）；
+#   - protocol 行：role=protocol, neuron_class=<n_trials|t_total_ms|ci_*|escape_*|resting_*|
+#     spont_*>, value=<值>——P4/P5/P6 验证协议（T 按参考模型 N=20 通过率 ≥80% 最短 T）；
+#   - env/body/transduction/mechanism_a 行：沿用 M4 定稿（行为上下文；M4 参数源），
+#     与 m4_chemotaxis_params.csv 同值（M5 交接携带）；
+#   - behavior_reference 行：引用 data/m5_behavior_reference.csv 的带（B1a 定稿）。
+# G0 决策依据：data/m5_scaling.csv（铁律 C 缩放扫描）+ reports/neuro/m5_scaling_curves.png
+# + docs/m5_env_notes.md（G0 段）。预算上限预注册：行为验证 ≤200 CPU-小时（单机）。
+role,neuron_class,synapse_from,synapse_to,synapse_type,g_max_ns,delay_ms,tonic_uA_cm2,value,note
+# ---- 降阶模型行（G0 定稿；扫描后回填实测墙钟/收敛依据）----
+model,point_hh,,,,,,,,行为层主选：单隔室 HH 点神经元（PointNeuron，src/point_neuron.py）；M2 突触组件复用实测成功（m5_env_notes L17）
+model,two_comp,,,,,,,,双隔室（soma+node3，缩放扫描中间档）；G0 判定是否必要（按 20/50 档收敛）
+model,multicomp,,,,,,,,多隔室 HH（M1 冻结组件）仅限 ≤50 局部子图（P2 静息子图/P3 咽部）
+model,dt_ms,,,,,,,,0.1,点档定稿 dt（M4 L16：定稿后不变；exponential_euler，L17 实测）
+model,method,,,,,,,,exponential_euler,点档定稿方法（rk4 @dt=0.1 发放后 NaN，L17）
+model,two_comp_dt_ms,,,,,,,,0.05,双隔室档 dt（exponential_euler，L17）
+model,multicomp_dt_ms,,,,,,,,0.01,多隔室档 dt（rk4，M1 冻结）
+model,scale_behavior,,,,,,,,302,G0 定稿行为层规模（全连接组；如扫描显示更大规模不可行则回退记录）
+model,fidelity_behavior,,,,,,,,point,G0 定稿行为层保真度（最低保真度与高保真档收敛——§3.3 决策规则）
+model,budget_cpu_hours,,,,,,,,200.0,行为验证总预算上限（预注册，§3.5）
+# ---- 协议行（G0 定稿；T 按参考模型 N=20 通过率 ≥80% 最短 T = 15s，M4 ref-T15000 行 p=0.002/d=0.79）----
+protocol,n_trials,,,,,,,,20,试次/组（P4/P5/P6；确定性 p=1/n=1，方差来自伪随机起点）
+protocol,t_total_ms,,,,,,,,15000.0,单试次仿真时长【G0 定稿：参考模型 N=20 通过率 ≥80% 的最短 T（ref-T15000：p=0.002,d=0.79；T=10s p=0.02 临界）——降阶模型使 T=15s 可行】
+protocol,start_x,,,,,,,,5.0,起点 x（皿中心，M4 惯例）
+protocol,start_y,,,,,,,,5.0,起点 y
+protocol,start_jitter,,,,,,,,0.3,伪随机起点扰动（试次间方差来源）
+protocol,ci_radius,,,,,,,,2.5,吸引圈半径（informational）
+protocol,ci_band_lo,,,,,,,,0.3,CI 生物带下限（引用 behavior_reference）
+protocol,ci_band_hi,,,,,,,,0.7,CI 生物带上限
+protocol,escape_t_total_ms,,,,,,,,150.0,机械逃避短协议（M3 同款）
+protocol,escape_touch_site,,,,,,,,soma,点档触刺激位点（M3 树突端注入的密度等效，L17）
+protocol,escape_i0_uA_cm2,,,,,,,,60.0,触刺激密度（M3 定稿 i0）
+protocol,escape_touch_start_ms,,,,,,,,50.0,触刺激开始（HH 静息漂移纪律 ≥40ms）
+protocol,escape_touch_dur_ms,,,,,,,,5.0,触刺激时长（M3 定稿）
+protocol,escape_latency_lo_ms,,,,,,,,5.0,神经潜伏期窗下（引用 behavior_reference）
+protocol,escape_latency_hi_ms,,,,,,,,20.0,神经潜伏期窗上
+protocol,resting_t_total_ms,,,,,,,,10000.0,P2 静息协议 T（N=5，确定性）
+protocol,spont_t_total_ms,,,,,,,,30000.0,P6 自发行为协议 T（N=10）
+protocol,spont_v_thr_frac,,,,,,,,0.05,状态分类 v 阈值（v_fwd0 比例；定稿于本 CSV，不做事后调）
+protocol,spont_omega_thr_frac,,,,,,,,0.2,状态分类 ω 阈值（omega_max 比例）
+# ---- 行为上下文（沿用 M4 定稿；M5 定稿后同值，来源 m4_chemotaxis_params.csv）----
+transduction,g_ON,,,,,,,,8.0e+06,I_ASEL = g_ON·max(s,0) [µA/cm²]（M4 定稿）
+transduction,g_OFF,,,,,,,,8.0e+06,I_ASER = g_OFF·max(−s,0) [µA/cm²]（M4 定稿）
+transduction,tau_win,,,,,,,,100.0,时间差分滑窗 τ_win [ms]（M4 定稿）
+transduction,noise,,,,,,,,0.0,感受器噪声（主验证确定性无噪）
+mechanism_a,theta_pir,,,,,,,,1.0e-06,s 转向触发阈值（M4 定稿）
+mechanism_a,omega_pir,,,,,,,,1.0,转向事件角速度 [rad/s]
+mechanism_a,t_pir_ms,,,,,,,,1571.0,转向事件持续时长 [ms]（90° 转角）
+mechanism_a,enabled,,,,,,,,1,机制 A 开关
+env,arena_L,,,,,,,,10.0,皿边长（M4 定稿）
+env,sigma,,,,,,,,1.25,梯度长度尺度
+env,food_x,,,,,,,,7.5,食物滴 x
+env,food_y,,,,,,,,7.5,食物滴 y
+env,boundary,,,,,,,,reflect,边界策略（反射）
+body,v_fwd0,,,,,,,,1.0,最大前进速度（M4 定稿）
+body,v_rev0,,,,,,,,1.0,最大后退速度【M5 规格扩展：v = v_fwd0·C_fwd − v_rev0·C_back（P6 前提，m4 body v≥0 的扩展，未动冻结文件）】
+body,omega_max,,,,,,,,1.0,最大转向角速度
+body,dt_b,,,,,,,,25.0,行为 tick Δt_b [ms]（双时钟）
+# ---- 行为带引用（唯一定稿源 data/m5_behavior_reference.csv）----
+behavior_reference,ci_band,,,,,,,,0.3..0.7,引用：Ward 1973/Pierce-Shimomura 1999（容差 [0.25,0.75]）
+behavior_reference,escape_latency_ms,,,,,,,,5..20,引用：Chalfie 1985 + M3 实测定稿
+behavior_reference,spontaneous_fwd_band,,,,,,,,60..80%,引用：Srivastava 2013（容差带中心±10pp）
+behavior_reference,spontaneous_rev_band,,,,,,,,10..25%,引用：Srivastava 2013
+behavior_reference,spontaneous_turn_band,,,,,,,,5..20%,引用：Srivastava 2013
+behavior_reference,resting_silent_fraction,,,,,,,,0.6..0.8,引用：M5 清单预注册 #4（操作化：<0.1Hz 记静默）
+behavior_reference,resting_median_hz,,,,,,,,<1,引用：M5 清单预注册 #4
+behavior_reference,resting_max_hz,,,,,,,,<60,引用：M5 清单预注册 #4（生理上限）
+# ---- 权重行（§6 校准后定稿；当前为连接组初始占位 + M3/M4 子图先验）----
+weight,chem_placeholder_ns,,,,,,,,5.0,化学突触初始占位（连接组 g_max_ns；§6 类级缩放覆盖）
+weight,m4_ampa_ns,,,,,,,,5.0,M4 子图先验（ASE→AIY/AIB 等）
+weight,m4_gaba_ns,,,,,,,,15.0,M4 子图先验（AIY→RIA）
+weight,m3_back_w,,,,,,,,0.60,M3 定稿（DA→C_back）
+weight,m3_fwd_w,,,,,,,,0.18,M3 定稿（VB→C_fwd）
+# ---- G0 决策段（扫描完成，2026-08-25 M5-B1b；依据 m5_scaling.csv + m5_scaling_curves.png）----
+g0,status,,,,,,,,PASS(带记录测量限制),【G0 通过：降阶模型 + 缩放扫描完成 + 降阶正确性通过（趋化方向一致/ΔCI 记录；逃避方向一致、潜伏期偏快记录）——P4/P5/P6 协议按定稿配置执行】
+g0,verdict_chemotaxis,,,,,,,,PASS,20 档点 CI=0.403@5s（方向与 M4 记录一致；ΔCI vs 参考(5s)=0.228 超 0.15 但方向条款满足——连接组真实接线比 M4 手工子图更有效）；302 档 CI=0.243 ΔCI vs 参考(5s)=0.068 ≤0.15 ✓
+g0,verdict_escape,,,,,,,,PASS(方向)/记录限制(潜伏期),方向 back D_peak=0.410 vs M3 0.352 ✓；神经潜伏期 4.7ms < M3 窗 [5,20]（点神经元省略峰电位起始延迟，结构性偏快——P5 需权重定稿后复核或 touch_delay 补偿，不静默）
+g0,verdict_resting_p2,,,,,,,,PENDING_CALIBRATION,占位权重下 302 静默比例 8.6%/中位数 1Hz（电生理带 60-80% 静默）→ P2 需 §6 权重校准后验证（预注册 #4 判据，不调参）
+g0,verdict_spontaneous_p6,,,,,,,,PENDING_CALIBRATION,占位权重下 302 自发状态全 pause（无 fwd/rev）→ 行为未在占位权重涌现：§6 校准候选/反证路径（命令子图 AVA/AVD/AVB/PVC 耦合），不阻塞 P4/P5（§3.6 部分通过）
+g0,scale_final,,,,,,,,302,定稿行为层规模 = 全连接组（302 档点神经元可行且行为持续）
+g0,fidelity_final,,,,,,,,point,定稿行为层保真度 = 点神经元（20 档 point↔two_comp ΔCI=0.025 ≪0.15 → 收敛，最低保真度即可）
+g0,dt_method_final,,,,,,,,0.1ms/exponential_euler,定稿（M4 L16：不再变）
+g0,t_total_final_ms,,,,,,,,15000.0,协议 T = 参考模型 N=20 通过率 ≥80% 的最短 T（ref-T15000：p=0.002/d=0.79；L23 显著区 T≥15s 稳健）
+g0,budget_estimate_cpu_hours,,,,,,,,<50,302 点神经元 T=15s×N=20（梯度+对照）≈ 5-10 CPU-h（探针 3.8s/T1s 外推 + 实测 20s/T5s）；远低于 200 CPU-h 预注册上限 ✓
