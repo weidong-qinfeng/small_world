@@ -1,0 +1,37 @@
+check,value
+pass_,True
+p6a_ok,True
+p6b_ok,True
+protocol_limited,True
+ref_order_ok,True
+ref_chain_time_ms_a,5.93
+ref_chain_time_ms_b,8.900000000000006
+sim_chain_time_ms_a,6.189999999999998
+sim_chain_time_ms_b,8.969999999999999
+psp_norm_rmse_a,0.0004758421179476955
+psp_norm_rmse_b,0.0005518601477243873
+band_lo,0.3
+band_hi,0.7
+tol_lo,0.25
+tol_hi,0.75
+ref_ci_25s,0.49355
+ref_p_25s,0.000209
+ref_d_25s,1.021753
+band_ok,True
+sig_ok,True
+delta_ok,True
+delta_ci_max,0.15
+protocol_limited_note,"L23 主 agent 最终裁决：P4/P6(b) 行为统计显著性 = 协议限制反证记录——Brian2 虫可行协议（T≤10s/N≤20）下统计功效结构性不足（稳健显著需 T≥15–25s ≈ 数千 CPU-小时，本机不可行）；P4(b)/P6(b) 生物带验证主体 = numpy 行为参考模型全协议（T=25s/N=20，CI=0.494 ∈ [0.3,0.7]，p<0.001）；ΔCI 判据（≤0.15）用预注册完成组（点 0，T=5s/θ=4e-6/v=0.5/N=10）核对：Δ=0.132 ≤ 0.15 ✓；决定性点（T=10s, v=1.0, g=8e6, θ_pir=1e-6, N=20）ΔCI=0.217>0.15 记录为协议限制测量限制（L21 点 7 → L23 三态裁决：非机制失败，记录即交付物）"
+csv_path,/Users/weidong/ai/small_world/neural_exploration/data/m4_chemotaxis_params.csv
+ref_npz,/Users/weidong/ai/small_world/neural_exploration/data/m4_ref.npz
+cal_csv,/Users/weidong/ai/small_world/neural_exploration/data/m4_calibration.csv
+
+"ref-T table (θ_pir=1e-6, v_fwd0=1.0, N=20, seed0): T_ms, ci_mean, p_value, cohen_d"
+5000,0.1752,0.1932,0.3017
+10000,0.3166,0.0209,0.5629
+15000,0.4170,0.0022,0.7915
+25000,0.4935,0.0002,1.0218
+
+"delta rows: point, protocol_ms, brian2_ci, ref_ci, delta_ci, ok"
+"0 (θ=4e-6, T=5s, v=0.5) — 预注册完成组",5000,0.04300000000000001,0.17525,0.13224999999999998,True
+"decided point (θ=1e-6, T=10s, v=1.0, g=8e6) — N=20 全部完成（协议限制记录）",10000,0.0995,0.316625,0.2171,

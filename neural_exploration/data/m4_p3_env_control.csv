@@ -1,0 +1,7 @@
+trial,ci_brian2,ci_numpy,bounded,no_nan,v_in_range,omega_in_range,n_turn_events
+0,-1.000000,-1.000000,True,True,True,True,0
+1,1.000000,1.000000,True,True,True,True,0
+
+stats,ci_mean_numpy_5s,-0.195500,ci_p_numpy_5s,0.425340,ci_mean_brian2,0.000000,ci_p_brian2,1.000000
+deterministic,True
+wall_s,2270.5

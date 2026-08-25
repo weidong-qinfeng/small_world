@@ -1,0 +1,2 @@
+check,n_asel_rise,n_aser_rise,n_aser_fall,n_asel_fall_late,n_stat_asel,n_stat_aser,n_stat_down,deterministic,first_asel_ms,first_aser_ms,pass_
+P1 ASE ON/OFF encoding,26,0,26,0,0,0,0,True,40.230000000000004,140.23000000000002,True

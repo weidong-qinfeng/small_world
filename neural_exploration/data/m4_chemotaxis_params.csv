@@ -1,0 +1,143 @@
+# M4 嗅觉趋化回路参数定稿（唯一定稿源，可修改复现）——B1a 执行节点按清单 §2.5 结构定稿，
+# 初值沿 M3 量级（AMPA 5.0nS/0.5ms、GABA 15.0nS/0.5ms、肌肉 TAU=20ms），文献依据与
+# 处置记录见 docs/m4_env_notes.md §L3/L4；步骤 4（参数定稿与 CI 校准）全量 6 维扫描由验证节点联动，
+# 本文件为 B1b 运行期唯一参数源。
+# 列：role, neuron_class, synapse_from, synapse_to, synapse_type, g_max_ns,
+#     delay_ms, tonic_uA_cm2, value, note
+# 行语义：
+#   - 神经元行：role=<20 角色>（neuron_class=multicomp，共用 M1 形态学）；tonic_uA_cm2 为该神经元
+#     恒定张力注入密度（µA/cm²，按注入位点面积换算 nA；仅 AVBL/AVBR 用——维持前进基线爬行）。
+#   - 突触行：synapse_from + synapse_to + synapse_type(ampa|gaba|muscle) + g_max_ns
+#     + delay_ms(ms)；化学突触 pre_site=node3 → post_site=soma；muscle 行 g_max_ns=收缩增量 w。
+#   - 转导行：role=transduction, neuron_class=<g_ON|g_OFF|tau_win|ase_site|noise>, value=<值>。
+#   - 机制 A 行：role=mechanism_a, neuron_class=<theta_pir|omega_pir|t_pir_ms|enabled>, value=<值>
+#     （pirouette 转向事件，清单 §2.4 落地修订，主 agent 裁决 2026-08-23）。
+#   - 环境行：role=env, neuron_class=<arena_L|sigma|C_max|C_bg|food_x|food_y|boundary>, value=<值>。
+#   - 身体行：role=body, neuron_class=<v_fwd0|omega_max|dt_b|v_osc>, value=<值>。
+#   - 协议行：role=protocol, neuron_class=<n_trials|t_total_ms|start_x|start_y|start_jitter|
+#             ci_radius|ci_band_lo|ci_band_hi|p1_*>, value=<值>。
+#   - 全局行：role=param, neuron_class=<t_total_ms|dt_ms|method|seed>, value=<值>。
+#
+# 拓扑/极性（清单 §2.1，White 1986 / Cook 2019 连接组语义简化 + Chalasani 2007 + Suzuki 2008）：
+#   食物梯度 C(x,y) → ASE 感觉对（时间差分编码，电流注入功能模型）
+#     ASEL（ON：浓度↑→去极化）──AMPA──> AIYL/AIYR（前进促进：抑制转向、保持直行）
+#     ASER（OFF：浓度↓→去极化）──AMPA──> AIBL/AIBR（转向促进：促发 pirouette）
+#   → AIYL/AIYR ──GABA──> RIAL/RIAR（前进促进压制转向执行——互斥：直行 vs 转向）
+#   → AIBL/AIBR ──AMPA──> RIAL/RIAR（转向促进驱动转向执行）
+#   → RIAL ──AMPA──> SMDDL/SMDVL（左摆运动）──muscle──> C_left
+#   → RIAR ──AMPA──> SMDDR/SMDVR（右摆运动）──muscle──> C_right
+#   → AVBL/AVBR ──AMPA──> VB/DB（身体运动）──muscle──> C_fwd（正弦爬行推进）
+#   → 虚拟身体：v = v_fwd0·clip(C_fwd,0,1)，ω = ω_max·(C_left − C_right) → 位置更新 → 闭环
+# 静息态：AVB 张力维持前进基线爬行（C_fwd≈0.216 → v≈0.2 u/s，与行为参考 v_fwd=0.2 一致）；
+#         浓度下降 → ASER→AIB→RIA→SMDD 驱动转向（pirouette）；浓度上升 → ASEL→AIY 压制转向保持直行。
+#
+# 文献依据（参数定稿理由，见 m4_env_notes.md §L3）：
+#   - CI≈0.3–0.7（Ward 1973 PNAS 70:817-821；Pierce-Shimomura et al. 1999 J Neurosci 19:9557-9569）
+#     ——P4 生物带，容差窗 [0.25,0.75]；趋化经浓度时间差分（pirouette，Pierce-Shimomura 1999）。
+#   - ASEL=ON / ASER=OFF 功能不对称，时间差分编码（Suzuki et al. 2008 Nature 454:114-117）。
+#   - ASE→AIY/AIB 谷氨酸能；AIY 前进促进/抑制转向、AIB 转向促进（Chalasani et al. 2007 Nature 450:63-70）。
+#   - 突触电学基础沿用 data/m2_synapse_params.csv（ampa 0.3nS/τ3ms/E0mV；gaba 1.5nS/τ5ms/E-70mV）；
+#     链级权重初值沿 M3 实测定稿（m3_env_notes §L6：AMPA 5.0nS 使下游可靠发放、GABA 15.0nS 明显抑制）。
+#   - 转导增益 g_ON=g_OFF=4.0e5 µA/cm² per (ΔC/ms)：P1 阶跃 ΔC=0.5（s=5e-3/ms）→ I≈2000 µA/cm²
+#     可靠发放；闭环最大 |s|≈1e-4/ms（r≲2.5 处）→ I≈40 µA/cm² 触发；远离食物梯度平坦 → 亚阈值。
+#   - 环境：drop assay 简化（Ward 1973），L=10 相对单位、食物滴=右上象限中心、σ=L/8、反射边界（P3 有界）。
+#   - 双时钟：行为 tick Δt_b=25ms（闭环 epoch）vs 神经 dt=0.01ms（Brian2 rk4）；CI 象限式 + 统计协议见 §L4。
+role,neuron_class,synapse_from,synapse_to,synapse_type,g_max_ns,delay_ms,tonic_uA_cm2,value,note
+# ---- 神经元（20 角色，MulticompartCompartment 共用 M1 形态学）----
+ASEL,multicomp,,,,,,,,感觉神经元 ON（浓度上升→去极化；转导电流注入 soma）
+ASER,multicomp,,,,,,,,感觉神经元 OFF（浓度下降→去极化；转导电流注入 soma）
+AIYL,multicomp,,,,,,,,中间-前进促进（左；抑制转向、保持直行）
+AIYR,multicomp,,,,,,,,中间-前进促进（右；抑制转向、保持直行）
+AIBL,multicomp,,,,,,,,中间-转向促进（左；促发 pirouette）
+AIBR,multicomp,,,,,,,,中间-转向促进（右；促发 pirouette）
+RIAL,multicomp,,,,,,,,中间-转向执行（左；头摆转向指令）
+RIAR,multicomp,,,,,,,,中间-转向执行（右；头摆转向指令）
+AVBL,multicomp,,,,,,14.0,,命令-前进（左；驱动正弦爬行；张力维持基线 v≈0.2 u/s）
+AVBR,multicomp,,,,,,14.0,,命令-前进（右；驱动正弦爬行；张力维持基线 v≈0.2 u/s）
+SMDDL,multicomp,,,,,,,,运动-头（左背；左摆→C_left）
+SMDDR,multicomp,,,,,,,,运动-头（右背；右摆→C_right）
+SMDVL,multicomp,,,,,,,,运动-头（左腹；左摆→C_left）
+SMDVR,multicomp,,,,,,,,运动-头（右腹；右摆→C_right）
+VB,multicomp,,,,,,,,运动-身体（腹；身体运动→C_fwd）
+DB,multicomp,,,,,,,,运动-身体（背；身体运动→C_fwd）
+AVAL,multicomp,,,,,,,,运动-反向（左；反向命令，竞争机制对照/备用，无输出）
+AVAR,multicomp,,,,,,,,运动-反向（右；反向命令，竞争机制对照/备用，无输出）
+RMED,multicomp,,,,,,,,缝隙-调节（背；头运动缝隙耦合，默认关闭）
+RMEV,multicomp,,,,,,,,缝隙-调节（腹；头运动缝隙耦合，默认关闭）
+# ---- 化学突触（node3 → soma；主链，初值沿 M3 量级）----
+, ,ASEL,AIYL,ampa,5.0,0.5,,,ON→前进促进（左）谷氨酸兴奋（≈17×m2 ampa 量子）
+, ,ASEL,AIYR,ampa,5.0,0.5,,,ON→前进促进（右）谷氨酸兴奋
+, ,AIYL,AVBL,ampa,5.0,0.5,,,前进促进→前进命令（左）谷氨酸兴奋（链 A 第三级）
+, ,AIYR,AVBR,ampa,5.0,0.5,,,前进促进→前进命令（右）谷氨酸兴奋
+, ,AIYL,RIAL,gaba,15.0,0.5,,,前进促进压制转向执行（互斥方向机制；10×m2 gaba 量子）
+, ,AIYL,RIAR,gaba,15.0,0.5,,,前进促进压制转向执行（交叉）
+, ,AIYR,RIAL,gaba,15.0,0.5,,,前进促进压制转向执行（交叉）
+, ,AIYR,RIAR,gaba,15.0,0.5,,,前进促进压制转向执行
+, ,ASER,AIBL,ampa,5.0,0.5,,,OFF→转向促进（左）谷氨酸兴奋（链 B 第二级）
+, ,ASER,AIBR,ampa,5.0,0.5,,,OFF→转向促进（右）谷氨酸兴奋
+, ,AIBL,RIAL,ampa,5.0,0.5,,,转向促进→转向执行（左，同侧）
+, ,AIBR,RIAR,ampa,5.0,0.5,,,转向促进→转向执行（右，同侧）
+, ,RIAL,SMDDL,ampa,5.0,0.5,,,左转向→左摆（背）
+, ,RIAL,SMDVL,ampa,5.0,0.5,,,左转向→左摆（腹）
+, ,RIAR,SMDDR,ampa,5.0,0.5,,,右转向→右摆（背）
+, ,RIAR,SMDVR,ampa,5.0,0.5,,,右转向→右摆（腹）
+, ,AVBL,VB,ampa,5.0,0.5,,,前进命令→身体运动（腹）
+, ,AVBR,DB,ampa,5.0,0.5,,,前进命令→身体运动（背）
+# ---- 可选交叉（默认关闭；真实 ASE 交叉投影 Suzuki 2008，步骤 4 校准备用）----
+# , ,ASER,AIYL,ampa,1.0,0.5,,,可选：ASER→AIYL 弱交叉投影（默认不启用）
+# ---- 缝隙连接（RME 头运动调节，默认关闭；如需开启走 scipy solve_ivp 或 Brian2 (summed) 写回，M2 L2）----
+# ---- 肌肉驱动（运动神经元发放 → 收缩增量 w；delay 0.1ms 沿 M3）----
+, ,VB,muscle_fwd,muscle,0.18,0.1,,,VB 发放→C_fwd 增 0.18（前进基线≈0.216 定稿，M3 值）
+, ,DB,muscle_fwd,muscle,0.18,0.1,,,DB 发放→C_fwd 增 0.18
+, ,SMDDL,muscle_left,muscle,0.50,0.1,,,SMDDL 发放→C_left 增 0.50（左转向初值，步骤 4 校准）
+, ,SMDVL,muscle_left,muscle,0.50,0.1,,,SMDVL 发放→C_left 增 0.50
+, ,SMDDR,muscle_right,muscle,0.50,0.1,,,SMDDR 发放→C_right 增 0.50（右转向初值，步骤 4 校准）
+, ,SMDVR,muscle_right,muscle,0.50,0.1,,,SMDVR 发放→C_right 增 0.50
+# ---- 转导行（ASE 时间差分编码，清单 §2.2）----
+transduction,g_ON,,,,,,,,8.0e+06,I_ASEL = g_ON·max(s,0) [µA/cm²]；P1 阶跃可靠发放；闭环校准 g=8e+06（L16/L22，B1c2 定稿）
+transduction,g_OFF,,,,,,,,8.0e+06,I_ASER = g_OFF·max(−s,0) [µA/cm²]；θ_eff=I_thresh/g_off≈1.9e-06；闭环校准 g=8e+06（L16/L22，B1c2 定稿）
+transduction,tau_win,,,,,,,,100.0,时间差分滑窗 τ_win [ms]（ASE 感受时间常数量级；s=(ΔC)/τ_win）
+transduction,ase_site,,,,,,,,soma,转导注入位点（density_to_nA 按 soma 面积 1.257e-5 cm² 换算）
+transduction,noise,,,,,,,,0.0,感受器噪声幅度（informational；主验证确定性无噪）
+# ---- 机制 A（pirouette 转向事件；清单 §2.4 落地修订，主 agent 裁决 2026-08-23）----
+# 落地语义（B1c 实现，docs/m4_env_notes.md §L16）：
+#   - 转向方向 = 试次种子确定性伪随机：闭环每试次 numpy RNG seed=trial_seed 固定 →
+#     转向方向（左/右）可复现（确定性铁律）；试次间方向随机（真实虫 pirouette 方向随机）。
+#   - s 调制转向频率：s < −θ_pir 且 ASER→AIB→RIA→SMDD 激活（本 epoch 内 SMDD 发放，
+#     电路耦合）→ 转向事件（持续 T_pir，ω=±ω_pir）；s > 0 → ASEL→AIY 压制（无触发）；
+#     偏置来自直行/转向时长不对称（Pierce-Shimomura 1999）。事件进行中不重叠触发。
+mechanism_a,theta_pir,,,,,,,,1.0e-06,s 转向触发阈值 [ΔC/ms]（s<−θ_pir 且 SMDD 激活 → 转向事件；B1c2 定稿 1e-06，L22 θ_eff=max(θ_pir, I_thresh/g_off) 门限）
+mechanism_a,omega_pir,,,,,,,,1.0,转向事件角速度 [rad/s]（ω=±ω_pir；方向=试次种子伪随机）
+mechanism_a,t_pir_ms,,,,,,,,1571.0,转向事件持续时长 [ms]（π/2 / ω_pir = 90° 转角；步骤 4 校准）
+mechanism_a,enabled,,,,,,,,1,机制 A 开关（1=落地；0=关闭→退回对称电路 ω≡0，仅诊断/消融对照用）
+# ---- 环境行（清单 §2.3）----
+env,arena_L,,,,,,,,10.0,方形培养皿边长（相对单位，drop assay 简化）
+env,sigma,,,,,,,,1.25,梯度长度尺度 σ=L/8（C=exp(−r²/2σ²)）
+env,C_max,,,,,,,,1.0,梯度峰值（相对浓度）
+env,C_bg,,,,,,,,0.0,背景浓度（无梯度对照时 C≡C_bg，C_max 段置 0）
+env,food_x,,,,,,,,7.5,食物滴 x（右上象限中心，Ward 1973 惯例）
+env,food_y,,,,,,,,7.5,食物滴 y（右上象限中心）
+env,boundary,,,,,,,,reflect,边界策略（反射；P3 要求轨迹有界）
+# ---- 身体行（清单 §2.4）----
+body,v_fwd0,,,,,,,,1.0,最大前进速度 [units/s]；基线 v≈v_fwd0·C_fwd_baseline（B1c 实测 0.41）；B1c2 定稿 v_fwd0=1.0
+body,omega_max,,,,,,,,1.0,最大转向角速度 [rad/s]（ω=ω_max·(C_left−C_right)）
+body,dt_b,,,,,,,,25.0,行为 tick（闭环 epoch ΔT [ms]；双时钟 vs 神经 dt=0.01ms）
+body,v_osc,,,,,,,,0.0,正弦爬行步态速度振荡幅度（informational，0=关闭）
+# ---- 协议行（清单 §2.4/§2.5）----
+protocol,n_trials,,,,,,,,20,试次/组（伪随机起点扰动 + 确定性神经网络）
+protocol,t_total_ms,,,,,,,,10000.0,单试次仿真时长 [ms]【主 agent 预算裁决 2026-08-24：Brian2 闭环协议缩减 25s→5s（dt=0.01ms 保持）；B1c2 定稿 10000ms（扫描点实测）】
+protocol,start_x,,,,,,,,5.0,起点 x（皿中心）
+protocol,start_y,,,,,,,,5.0,起点 y（皿中心）
+protocol,start_jitter,,,,,,,,0.3,伪随机起点扰动幅度 [units]（试次间方差来源）
+protocol,ci_radius,,,,,,,,2.5,吸引圈半径 [units]=2σ（圈式双指标，informational）
+protocol,ci_band_lo,,,,,,,,0.3,CI 生物带下限（Ward 1973；Pierce-Shimomura 1999；容差窗 [0.25,0.75]）
+protocol,ci_band_hi,,,,,,,,0.7,CI 生物带上限
+protocol,p1_baseline_ms,,,,,,,,40.0,P1 阶跃协议：静止基线期 [ms]（HH 静息瞬态漂移，M1/M2 结论）
+protocol,p1_seg_ms,,,,,,,,50.0,P1 阶跃协议：每段时长 [ms]（上升/静止/下降各 ≥50ms）
+protocol,p1_step_dc,,,,,,,,0.5,P1 阶跃协议：ΔC 幅度（±0.5）
+# ---- 全局（沿 M3 惯例）----
+param,t_total_ms,,,,,,,,10000.0
+param,dt_ms,,,,,,,,0.01
+param,method,,,,,,,,rk4
+param,seed,,,,,,,,0
+param,muscle_tau_ms,,,,,,,,20.0,肌肉收缩时间常数 TAU_MUSCLE [ms]（M0 惯例）
