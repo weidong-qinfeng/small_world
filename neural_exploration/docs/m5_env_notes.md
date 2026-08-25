@@ -404,3 +404,85 @@
 
 *本文件为 M5-B1d 交付物（清单步骤 4 收尾）；L23/L27 的 CSV schema 与窗口-协议冲突
 请求规划节点裁决（WORKFLOW 流程，不静默推进）。*
+
+---
+
+# M5-B1c 执行节点实测结论（L31+：参考解——NEURON 咽部子图 P3 + 行为参考扩展 P5/P6，清单步骤 3）
+
+> 执行节点：M5-B1c（`tools/build_m5_ref.py` → `data/m5_ref.npz`，161 键）。
+> 冻结文件零修改（M0–M4 与 B1a/B1b/B1d 交付均未动）；未 git commit。
+> 两级参考：Stage-A NEURON 化学子图（cvode atol/rtol=1e-8、celsius=6.3、v_init=V0）+
+> Stage-B scipy 缝隙网络（solve_ivp LSODA rtol=1e-9/atol=1e-11，M2 gap.mod 限制独立解）+
+> 行为参考模型（纯 numpy，引擎无关）。
+
+## L31 — P3 咽部参考设计（Stage-A 化学 + Stage-B 缝隙节奏）与落带结果
+
+- **Stage-A（NEURON）**：20 神经元（build_neuron + ExpSyn + NetCon；87 条 g>0 化学突触——
+  other/serotonin 行 g=0 调质占位跳过，M6 补齐；33 条缝隙不建入 NEURON），T=30s；
+  无食物协议静默（0 发放，诚实记录）/ 有食物协议 tonic 12µA/cm² 驱动全部 20 神经元 → 各级发放序列。
+- **Stage-B（scipy solve_ivp）**：20 点 HH（hh_spec 参数与 Brian2 点神经元同源）+ 33 缝隙（g=0.5nS，
+  M2 值）+ 泵马达池 {MCL,MCR,M4} slow-AHP 突发放电机制（I_sahp=−g_sahp·w·(V−EK)、
+  dw/dt=(w_inf(V)−w)/τ_sahp；功能参考，Avery & Horvitz 1989：MC 定泵速）→ 泵节律；参数校准落带：
+  - 无食物（I=15µA/cm²、g_sahp=4、τ=1500ms）→ **主频 0.400Hz（簇率 0.477/s）∈ [0.1,2] ✓**
+  - 有食物（I=18µA/cm²、g_sahp=8、τ=200ms）→ **主频 2.167Hz（簇率 2.835/s）∈ [2,5] ✓**
+  - 节律稳定：半窗簇率漂移 0.44 / 0.07 < 0.5 ✓；T=30s ≥ P3 的 10s；无发散（全 trace 有限）。
+- 行为带对照：`pharynx_peak_freq_{no_food,food}`（稳健主频）落带 ✓（meta.bands 引用
+  `data/m5_behavior_reference.csv`）。
+
+## L32 — Stage-A 化学子图实测（新坑：shunting 与化学隔离）
+
+- **M5 在咽部子图中无化学输入**（仅缝隙 I5/M5/M4-自）→ NEURON 化学子图里是孤立驱动神经元：
+  ≥14µA/cm² 时 M5 达 58–62Hz，而其余神经元（4 条 5nS 化学输入分流 soma，g=5nS ≈ soma gL 3.8nS）
+  仅 1–4Hz；12µA 时每神经元仅 1 个瞬态发放（rheobase 边界）。
+- 中间神经元驱动（I1/I2/MI @25µA）→ 全兴奋化学网络 runaway（全体 ~85Hz，T=5s 墙钟 111s）——
+  **化学分量本身不产生节律**；泵节律由 Stage-B 缝隙 + 起搏机制产生（记录为功能参考机制，不伪造波形）。
+- 15µA 全 20 驱动在部分拓扑触发 cvode 近阈值 stall（M3 L9；实测 30µA@5 神经元 23s/s）→ 食物驱动定稿 12µA。
+
+## L33 — Stage-B 起搏不同步与主频估计（新坑）
+
+- 三起搏神经元未完全同步（0.5nS 缝隙弱、连接组无 MCL↔MCR 直接缝隙）：food 下 MCL 2.94 / MCR 1.89 /
+  M4 2.21Hz；泵率 = 发放池聚合**簇率**（burst_rate，泵事件频率 = Avery & Horvitz 泵率定义）→ 判定首选。
+- **周期图 argmax 锁次谐波**（food 1.87Hz vs 簇率 2.84Hz）→ 主频估计改为稳健估计
+  `robust_peak_freq`：周期图局部极大 × 自相关 ±25% 消歧 → no_food 0.400 / food 2.167 落带；
+  原始 argmax / welch / acf 全部入 npz（informational）。
+- **LSODA 容差敏感**（1e-8 vs 1e-9 → no_food 主频 0.63 vs 0.30Hz，发放计数同量级；1e-7 定性错误）——
+  HH 网络混沌敏感，记录测量限制；定稿 rtol=1e-9（20 神经元高精度档；M2 的 1e-10 为 2 神经元先例）。
+
+## L34 — P5 逃避参考（M3 一致性 + 转导补齐）与 τ_trans 操作化（**请求裁决**）
+
+- 神经潜伏期 = M3 实测 `latency_nerve` 抽样（8.18–13.63ms，∈ [5,20]，入窗率 1.0）；
+  行为潜伏期 = τ_trans(23±2ms) + 神经链 + 肌肉上升（τ_mus=20ms，C_back≥0.3·peak 定义）→
+  **39.6±2.8ms ∈ [30,50]（容差 [25,60]，入容差率 1.0）**；v<0 版 37.1ms 同窗。
+  方向 back（D_peak=0.599>0.3、C_back_peak 0.599 > C_fwd 基线 0.197 ✓）；反应概率 1.0 ≥ 0.8 ✓。
+  M3 结构性落不到 [25,60]（无转导，m3_env_notes L7）由 M5 补齐 ✓。
+- **τ_trans 未定稿于 `data/m5_worm_params.csv`**（B1b/G0 无此行）→ 本参考锚 23ms
+  （行为 40 − 神经 9.8 − 肌肉 7.1）；**请求 P5 协议节点写入 CSV**。
+- 操作化提醒：P5 神经潜伏期窗 [5,20] **不含转导延迟**（清单 §5.2 #4：行为 − 神经 ≈ 转导+肌肉 10-30ms）；
+  Brian2 全虫侧（worm_loop.run_escape 的 touch_window τ_trans 语义）计时须以触电流注入时刻
+  （t0+τ_trans）为神经链起点，或对 t0 计时减 τ_trans——否则测量值 = τ_trans+链 ∉ [5,20]。
+
+## L35 — P6 自发参考校准（坑与处置）
+
+- bout 半马尔可夫（嵌入链转移矩阵 + 指数 bout 时长）→ 校准落带：
+  **前进 73.3±5.8% / 后退 16.3±6.1% / 转弯 9.7±3.2% / 暂停 0.8%**（带 [60,80]/[10,25]/[5,20]
+  全部落带 ✓）；bout 均值 fwd 6.7s / rev 2.5s / turn 1.6s（Srivastava 2013 量级，informational）。
+- 校准坑：① fwd bout 15s + P_FF 自锁 → fwd 时间比例 87–99% 不可达（需 fwd 8s + 低 P_FF：
+  每前进 bout 后 ~1 后退 + ~1 转弯结构）；② 单试次校准噪声 → 转弯 3.2% 掉带
+  （改每组合 N=10 校准试次 + **带宽裕度最大化**选择）；③ 转弯 bout 1.5s 不足 → 2.5s。
+- classify_state 语义与 B1d `src/virtual_body.py`（turn→fwd→rev→pause 顺序）在参考状态上
+  **逐位一致（100% 验证）**、`body_velocity` ≡ `VirtualBody.speed`（Δ=0）——P6 判定统一用
+  virtual_body 实现（共用约定满足，M5 清单 §9 风险表）。
+
+## L36 — 交付清单与复现
+
+- `tools/build_m5_ref.py`（可复现重跑；确定性 seed=0 仅行为参考抽样，NEURON/scipy 无随机性；
+  总墙钟 ~35min：NEURON ~3min + Stage-B 校准/终跑 ~30min）。
+- `data/m5_ref.npz`（161 键）：`pharynx_spike_times_{no_food,food}[_{20 神经元}]`、
+  `pharynx_v_{KEY}_{proto}`、`pharynx_gap_v_{20 神经元}_{proto}`、`pharynx_psd_{proto}`、
+  `pharynx_peak_freq_{proto}`（稳健主频，判定用）/`argmax`/`welch`/`acf`、`pharynx_burst_rate_{proto}`、
+  `pharynx_drift_{proto}`、`escape_ref_*`（方向/潜伏期/概率/D_peak）、`spontaneous_ref_*`
+  （比例/转移矩阵/平稳分布/bout 均值/示例 trace）、`meta`。
+- 趋化参考（P4）复用 `data/m4_ref.npz`（本文件不重复，meta 引用）。
+
+*本文件为 M5-B1c 交付物（清单步骤 3：参考解）；L34 的 τ_trans CSV 定稿请求规划节点裁决
+（WORKFLOW 流程，不静默推进）。*
