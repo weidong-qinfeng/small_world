@@ -308,4 +308,99 @@
 **结构发现（L7）**：50/100 纯拓扑序子集无运动神经元 → 无 C_fwd（CI 为起点象限伪迹）；
 已改为**类平衡子集**（含运动神经元）重测 50/100（50→0.333、100→0.398）。
 
-*本文件为 M5-B1b 交付物；G0 裁决请求规划节点复核（WORKFLOW 流程）。*
+---
+
+# M5-B1d 执行节点实测结论（L23+：全虫闭环实现 + 冒烟测试，清单步骤 4 收尾）
+
+> 执行节点：M5-B1d（src/virtual_body.py + src/worm_loop.py + tests/neuro/test_worm_smoke.py
+> + reports/neuro/m5_smoke.png）。冻结文件零修改（M0–M4 不动；m5 数据 CSV 不动）；
+> worm_circuit.py 有 2 处 API 兼容微调（L24/L25，未改签名/数值）；未 git commit。
+
+## L23 — ⚠ m5_worm_params.csv 的 value 列错位（数据行 11+ 字段 vs 列头 10 列）
+
+- 列头 10 列（value 在 fields[8]），但数据行 **11+ 字段**（fields[2..8] 共 7 个空列 +
+  value 在 **fields[9]** + note 在 fields[10:]）——DictReader 会把 value 读成空、
+  真值落进 note（实测 `body,v_fwd0,...,1.0,最大前进速度...` 的 value 读到 ''）。
+- **处置**：`worm_loop.load_m5_worm_params` 按位置解析（value=fields[9]，len<11 行
+  视为无 value——仅 model 描述行）；**下游 P4/P5/P6 验证脚本解析该 CSV 必须用同一
+  位置语义或先修 CSV**（B1b 数据文件未动）。
+- 附带：CSV 的 `escape_touch_delay_ms`（τ_trans）行**缺失** → worm_loop 机械刺激
+  协议默认 τ_trans=0（触刺激在 t0=50ms 开始）；P5 节点需在 CSV 定稿
+  （行为潜伏期 30-50 − 神经 5-20 ≈ 10-30ms）。
+
+## L24 — 子图 CSV 列头带引号 → load_connectome 解析为 0 神经元（新坑）
+
+- m5_pharynx/command/chemotaxis_subgraph.csv 的列头行是 `"role,...,note"`（**带引号**），
+  `_parse_connectome_csv` 的 `startswith('"')` 过滤把列头丢掉 → DictReader 误把首数据行
+  当列头 → 0 神经元。主 m5_connectome.csv 列头无引号不受影响（B1b 未踩到此坑）。
+- **微调（API 兼容）**：`_parse_connectome_csv` 增加 `_clean_line()`（去行外层引号后
+  再按 `#` 过滤）；解析结果不变（主 CSV 计数 302/2472/1093 与 B1a counts.json 一致）。
+
+## L25 — 子图 CSV 无 receptor 列 → 化学突触全跳过（微调回退）
+
+- 子图 CSV 只有 neurotransmitter 列（无 receptor）→ 原解析器 receptor='' → 全部按
+  mod/none 跳过（咽部 128 化学 → 0 可用）。**微调（API 兼容）**：receptor 空时按 L4
+  递质→受体映射回退（ach/glut→ampa、gaba→gaba、dopamine/serotonin→mod、other→none）。
+  咽部子图现解析 87 ampa/gaba 可用 + 33 缝隙；命令子图 245 化学 + 156 缝隙 + 39 肌肉；
+  主连接组 2472 化学 + 1093 缝隙 + 68 肌肉不变。
+
+## L26 — 咽部子图占位权重：无自发发放；MC 驱动只激活 MCL/MCR
+
+- 无刺激咽部子图 10s（占位 g=5nS + gap=0.5nS）：**0 发放**；MC（MCL/MCR）驱动
+  60µA/cm² → MC ~115Hz 节律发放，**其余 18 角色静默**（子图未校准 → P3 需 §6
+  权重校准后才有网络级泵动节律）。冒烟以 MC 驱动断言"节律发放存在（spike>0）"，
+  不预注册节律窗（P3 协议节点职责）。
+
+## L27 — ⚠ PROTOCOL_WINDOW_MS=6000 < G0 P4 T=15s（编译形状与协议冲突，请求裁决）
+
+- B1b 定稿 `PROTOCOL_WINDOW_MS=6000`（扫描 ≤5s 时定），G0 定稿 P4 T=15000ms →
+  闭环 epoch 在 t>6000ms 时 `stim.values[i0:i1]` **越界 IndexError**（固定形状纪律
+  M4 L16 与 G0 协议的冲突）。冒烟短协议（≤2s）不受影响；
+  **P4/P6 验证节点需：扩展窗口（一次性冷编译 ~10min/302）或规划节点裁决缩短 T**。
+- worm_loop `run_escape` 的触刺激注入已做窗口越界钳位（i0/i1 min 到窗口），
+  但 `GroupedWormSession.run_epoch` 的 ASE 写入（B1b 文件）未钳——长协议前必须解决 L27。
+
+## L28 — 冒烟实测数值（tests/neuro/test_worm_smoke.py 全绿，详见回报）
+
+- 点神经元脉冲（60µA/cm²@50-55ms）→ 发放 @50.7ms，同参数重跑逐位一致（L17 复核）；
+- 20 规模 WormLoop 趋化短协议（T=2s）：CI=0.0 ∈[−1,1]、轨迹有界无 NaN、状态比例
+  {fwd 0.94, turn 0.06}（M4 张力携带下前进主导，与 B1b 观察一致）；
+- 闭环确定性：同参数重跑 **r1==r2 逐位一致**（ChemotaxisResult.__eq__）；
+- 静息 20 规模 T=1s：中位数 65Hz/静默 20%/最大 66Hz，无 NaN（占位权重过度兴奋，
+  G0 L22 已记录 → P2 校准后判带）；自发：fwd 0.9/turn 0.1（无 rev——命令子图
+  耦合未校准，P6 前置 §6，G0 部分通过路径）；
+- 机械逃避：M3 反射子图降阶 D_peak=0.410 → back（与 G0 L22 一致）；worm_loop
+  触刺激窗 τ_trans 语义验证通过（τ_trans=10ms 时窗右移 100 步）。
+
+## L29 — virtual_body 行波参数未定稿于 CSV
+
+- body 行只有 v_fwd0/v_rev0/omega_max/dt_b；`gait_period_ms`/`wave_amp`/`wave_lambda`
+  /`head_turn_gain` **缺失** → `VirtualBody` 默认（gait 500ms、wave_amp=0 关闭、
+  head_turn_gain=0 informational——G0 未提升为验证级）。P6 节点如需验证级行波
+  需在 CSV 定稿；`classify_state` 阈值已定稿（spont_v_thr_frac=0.05、
+  spont_omega_thr_frac=0.2 ✓ 读取成功）。
+
+## L30 — 新增 API（供 B2 写验证脚本）
+
+- `virtual_body.py`：`VirtualBody(v_fwd0, v_rev0, omega_max, dt_b, arena_L, boundary,
+  gait_period_ms, wave_amp, wave_lambda, body_len, head_turn_gain, turn_omega_pir,
+  turn_duration_ms)`；`speed(c_fwd, c_back)`、`turn_rate(c_left, c_right, t_ms)`、
+  `step(c_fwd, c_back, c_left, c_right, dt_ms, t_ms)`、`pose_y(x, t_ms)`、
+  `head_sway(t_ms)`、`integrate(c_fwd, c_back, c_left, c_right, dt_ms)`、
+  `reset(x, y, theta)`、`assert_trajectory(x, y)`；
+  `classify_state(v, omega, c_fwd, c_back, v_thr_frac=0.05, omega_thr_frac=0.2,
+  v_fwd0=1.0, omega_max=1.0)`（阈值 CSV 定稿，不做事后调）；
+  `state_fractions(states)`；`StateThresholds(v_thr_frac, omega_thr_frac)`。
+- `worm_loop.py`：`load_m5_worm_params(csv_path=None)`（位置解析，L23）；
+  `WormLoop(circuit, env=None, body=None, seed=None, params_csv=None)`——
+  `run_trial(start_x, start_y, theta0, t_total_ms, seed, s_override)`、
+  `run_trials(n_trials, seed_base, t_total_ms, start_jitter, s_override)`、
+  `run_control(...)`、`run_spontaneous(t_total_ms, seed)`（→ frac/states/v/omega）、
+  `run_escape(t_total_ms, seed, touch_roles, backward_roles)`（→ d_peak/direction/
+  c_back/c_fwd/neural_latency_ms）、`run_resting(t_total_ms, seed)`（委托 circuit）、
+  `touch_window()`（→ (i0, i1, n_steps)，τ_trans 语义）。
+- 冒烟断言 ≥10（清单要求 ≥8）：302 计数/交叉核对/点神经元/趋化短协议/逃避方向/
+  咽部节律/静息无 NaN/闭环确定性/出图/virtual_body 后退与分类。
+
+*本文件为 M5-B1d 交付物（清单步骤 4 收尾）；L23/L27 的 CSV schema 与窗口-协议冲突
+请求规划节点裁决（WORKFLOW 流程，不静默推进）。*
