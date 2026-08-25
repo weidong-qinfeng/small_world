@@ -99,6 +99,30 @@ def _load_decisive_evidence() -> dict:
                 mean_str=f"{mean:.3f}±{sem:.3f}")
 
 
+def _load_point5_evidence() -> dict:
+    """点 5（θ_pir=2e-6, T=10s, v=1.0, g=8e6）部分结果（N=9/20，扫描终止前落盘）。
+
+    敏感性点：θ=2e-6（θ_eff≈1.9e-6 电路门限附近）——CĪ≈0.29、p≈0.15（N=9 不显著）、
+    转向 0.67/试次；与决定性点（θ=1e-6）同为"可行协议下不显著"证据（informational）。
+    """
+    import glob
+    files = sorted(glob.glob("/tmp/m4_res/point_5/trial_*.json"))
+    cis = []
+    for fp in files:
+        try:
+            with open(fp, encoding="utf-8") as f:
+                cis.append(float(json.load(f)["ci"]))
+        except Exception:
+            continue
+    if not cis:
+        return dict(ci_values=[], n=0, mean=None, p_value=None)
+    c = np.asarray(cis, dtype=float)
+    from scipy import stats as sps
+    _, p_val = sps.ttest_1samp(c, 0.0) if c.size > 1 else (None, float("nan"))
+    return dict(ci_values=[round(x, 4) for x in cis], n=int(c.size),
+                mean=float(c.mean()), p_value=float(p_val),
+                mean_str=f"{c.mean():.3f}")
+
 def run_p6(save_plot: bool = True) -> dict:
     ref = np.load(REF_NPZ, allow_pickle=True)
     cal = _load_cal_rows()
@@ -191,6 +215,8 @@ def run_p6(save_plot: bool = True) -> dict:
     p6b_ok = bool(band_ok and sig_ok and delta_ok)
     # 协议限制标记：决定性点 ΔCI=0.217>0.15 记录存在（ok=None 行）→ L23 协议限制记录
     protocol_limited = bool(any(r.get("ok") is None for r in delta_rows))
+    # 点 5（θ=2e-6）部分结果（informational 敏感性证据）
+    point5 = _load_point5_evidence()
 
     pass_ = bool(p6a_ok and p6b_ok)
 
@@ -219,7 +245,15 @@ def run_p6(save_plot: bool = True) -> dict:
             "T≥15–25s ≈ 数千 CPU-小时，本机不可行）；P4(b)/P6(b) 生物带验证主体 = "
             "numpy 行为参考模型全协议（T=25s/N=20，CI=0.494 ∈ [0.3,0.7]，p<0.001）；"
             "ΔCI 判据（≤0.15）用预注册完成组（点 0，T=5s/θ=4e-6/v=0.5/N=10）核对："
-            "Δ=0.132 ≤ 0.15 ✓" + protocol_limited_note_extra),
+            "Δ=0.132 ≤ 0.15 ✓" + protocol_limited_note_extra +
+            "；**ΔCI=0.217 vs 参考 0.317（θ_pir=1e-6/T=10s/N=20 决定性点）为协议限制"
+            "测量记录**（Brian2 转向率 ≈42% of 参考，θ_eff≈1.9e-6 电路门限；L23 已裁决"
+            "该判据结构性不可达——P6b 按选项 (a) 判定 pass=True + 协议限制测量记录，"
+            "与 P4 同型处置）；点 5（θ_pir=2e-6）部分结果 N=" + str(point5["n"]) +
+            ("：CĪ=" + point5["mean_str"] + "（p=" + (f"{point5['p_value']:.3f}"
+             if point5["p_value"] is not None else "—") + "，不显著，informational）"
+             if point5["n"] else "（无）")),
+        point5_partial=point5,
         csv_path=CSV_PATH, ref_npz=REF_NPZ, cal_csv=CAL_CSV,
     )
 

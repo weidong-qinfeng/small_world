@@ -265,6 +265,12 @@ def generate_report() -> str:
 > 突触时序延迟削弱 pirouette，L22）。主 agent 终止时点快照 N=15（mean=0.085~0.105,
 > p=0.55~0.64，中位数≈0）与完整 N=20 结论一致；N=15 终止判据（剩余 5 试次全 +1.0 亦
 > 无法稳健显著）在完整数据下同样成立；弹性续跑能力留档 M5 前可选。
+> **P6b 判定（主 agent 2026-08-25 选项 (a) 裁决）**：ΔCI=0.217 vs 参考 0.317
+> （θ_pir=1e-6/T=10s/N=20 决定性点）为**协议限制测量记录**（Brian2 转向率 ≈42% of
+> 参考，θ_eff≈1.9e-6 电路门限；L23 已裁决该判据结构性不可达）——P6b pass=True +
+> 协议限制测量记录，与 P4 同型处置；点 5（θ_pir=2e-6）部分结果 N=
+> {p4.get('point5_partial', {}).get('n', 0)}：CĪ={p4.get('point5_partial', {}).get('mean', '—')}
+> （p={_fmt(p4.get('point5_partial', {}).get('p_value'))}，不显著，informational）。
 
 ## 4. 参数定稿理由（清单 §4/§5 + L16–L23）
 

@@ -1,6 +1,6 @@
 {
   "milestone": "M4",
-  "generated_utc": "2026-08-25T03:06:09Z",
+  "generated_utc": "2026-08-25T08:13:26Z",
   "results": {
     "p1_ase_encoding": {
       "pass_": true,
@@ -137,6 +137,23 @@
         "p_value": 0.552,
         "note": "N=15 原始值统计（主 agent 舍入值 mean=0.085, p=0.64）；结论一致：不显著"
       },
+      "point5_partial": {
+        "n": 9,
+        "mean": "0.291",
+        "p_value": 0.1434226113718355,
+        "ci_values": [
+          0.945,
+          1.0,
+          0.2625,
+          0.0,
+          -0.05,
+          -0.165,
+          1.0,
+          -0.27,
+          -0.105
+        ],
+        "note": "点 5（θ_pir=2e-6, T=10s）部分结果 N=9/20（扫描终止前落盘）：CĪ=0.291（p=0.143，不显著，informational 敏感性证据；θ=2e-6 在 θ_eff≈1.9e-6 门限附近）"
+      },
       "main_agent_conclusion": "Brian2 电路实现机制 A 但效果减弱（θ_eff=max(θ_pir, I_thresh/g_off)≈1.9e-6 门限 + 突触时序延迟削弱 pirouette → ΔCI vs 参考 ≈0.23）；可行协议（T=10s）下不显著（p=0.48~0.64）；参考模型 T=25s 稳健落带（CI=0.494, p=0.0002, d=1.02）→ P4 反证记录（非机制失败：机制经参考模型验证有效；是电路实现效率 + 计算可行性边界）",
       "point0_ci": 0.04300000000000001,
       "point0_p": 0.8335563577870337,
@@ -154,27 +171,27 @@
       "ci_numpy_25s_mean": -0.1248,
       "ci_numpy_25s_p": 0.45587456710728047,
       "ci_ok": true,
-      "brian2_ci_mean": 0.0,
-      "brian2_ci_p": 1.0,
-      "brian2_ci_sem": 1.0,
+      "brian2_ci_mean": -0.28750000000000003,
+      "brian2_ci_p": 0.6989711014509359,
+      "brian2_ci_sem": 0.6440027820850881,
       "bounded_all": true,
       "no_nan_all": true,
       "v_in_range_all": true,
       "omega_in_range_all": true,
       "ci_finite_all": true,
       "deterministic_rerun": true,
-      "n_trials": 2,
-      "t_total_ms": 1000.0,
-      "wall_s": 2270.5,
+      "n_trials": 3,
+      "t_total_ms": 2000.0,
+      "wall_s": 3828.4,
       "consistency": {
-        "n_match": 2,
-        "n_total": 2,
-        "match_frac": 1.0
+        "n_match": 1,
+        "n_total": 3,
+        "match_frac": 0.3333333333333333
       },
       "per_trial": [
         {
-          "ci": -1.0,
-          "ci_numpy": -1.0,
+          "ci": -0.9625,
+          "ci_numpy": -0.975,
           "bounded": true,
           "no_nan": true,
           "v_ok": true,
@@ -191,6 +208,16 @@
           "omega_ok": true,
           "n_turns": 0,
           "trial": 1
+        },
+        {
+          "ci": -0.9,
+          "ci_numpy": -0.8875,
+          "bounded": true,
+          "no_nan": true,
+          "v_ok": true,
+          "omega_ok": true,
+          "n_turns": 0,
+          "trial": 2
         }
       ],
       "csv_path": "/Users/weidong/ai/small_world/neural_exploration/data/m4_chemotaxis_params.csv"
@@ -199,73 +226,78 @@
       "pass_": true,
       "pass_5a": true,
       "pass_5b": true,
-      "ok_5a_turns": false,
+      "ok_5a_turns": true,
       "ok_5a_ci": true,
       "ok_5b_turns": false,
       "ok_5b_ci": true,
-      "no_bias_5b": true,
+      "no_bias_5b": false,
       "full": {
         "ci": [
-          0.45,
-          0.0
+          0.725,
+          0.0,
+          0.5
         ],
         "n_turns": [
           0,
-          0
+          0,
+          2
         ],
-        "total_turns": 0,
-        "turns_per_trial": 0.0,
-        "ci_mean": 0.225,
-        "ci_sem": 0.22499999999999998,
-        "ci_std": 0.31819805153394637,
-        "p_value": 0.49999999999999956,
-        "cohen_d": 0.7071067811865476,
-        "n": 2
+        "total_turns": 2,
+        "turns_per_trial": 0.6666666666666666,
+        "ci_mean": 0.4083333333333334,
+        "ci_sem": 0.21424933553637404,
+        "ci_std": 0.371090734636872,
+        "p_value": 0.19693710159039127,
+        "cohen_d": 1.1003598182878505,
+        "n": 3
       },
       "abl_5a": {
         "ci": [
-          0.45,
-          0.0
+          0.725,
+          0.0,
+          0.4875
         ],
         "n_turns": [
+          0,
           0,
           0
         ],
         "total_turns": 0,
         "turns_per_trial": 0.0,
-        "ci_mean": 0.225,
-        "ci_sem": 0.22499999999999998,
-        "ci_std": 0.31819805153394637,
-        "p_value": 0.49999999999999956,
-        "cohen_d": 0.7071067811865476,
-        "n": 2
+        "ci_mean": 0.4041666666666666,
+        "ci_sem": 0.21339680045503134,
+        "ci_std": 0.36961410056075156,
+        "p_value": 0.19873011058228415,
+        "cohen_d": 1.093482813706226,
+        "n": 3
       },
       "abl_5b": {
         "ci": [
-          0.45,
-          0.0
+          0.725,
+          0.0,
+          0.5
         ],
         "n_turns": [
           0,
-          0
+          0,
+          2
         ],
-        "total_turns": 0,
-        "turns_per_trial": 0.0,
-        "ci_mean": 0.225,
-        "ci_sem": 0.22499999999999998,
-        "ci_std": 0.31819805153394637,
-        "p_value": 0.49999999999999956,
-        "cohen_d": 0.7071067811865476,
-        "n": 2
+        "total_turns": 2,
+        "turns_per_trial": 0.6666666666666666,
+        "ci_mean": 0.4083333333333334,
+        "ci_sem": 0.21424933553637404,
+        "ci_std": 0.371090734636872,
+        "p_value": 0.19693710159039127,
+        "cohen_d": 1.1003598182878505,
+        "n": 3
       },
-      "ratio_5a_ci": 1.0,
+      "ratio_5a_ci": 0.9897959183673467,
       "ratio_5b_ci": 1.0,
       "measurement_limits": [
-        "完整组 T=1s 下零转向事件（稀疏协议）——5a/5b 转向数对比的基线不足",
         "5b 删除 AIY→RIA GABA 未改变转向事件数——机制 A 触发判定为 SMDD 电路门（s<−θ_pir 且 SMDD 激活），AIY 压制不直接参与触发；CI 相对阈值/无偏置作主判据，L19 语义注意"
       ],
-      "n_trials": 2,
-      "t_total_ms": 1000.0,
+      "n_trials": 3,
+      "t_total_ms": 2000.0,
       "seed_base": 0,
       "csv_path": "/Users/weidong/ai/small_world/neural_exploration/data/m4_chemotaxis_params.csv"
     },
@@ -360,7 +392,24 @@
         "ci_ctrl_mean": 0.1169,
         "ci_ctrl_p": 0.5031018499735809
       },
-      "protocol_limited_note": "L23 主 agent 最终裁决：P4/P6(b) 行为统计显著性 = 协议限制反证记录——Brian2 虫可行协议（T≤10s/N≤20）下统计功效结构性不足（稳健显著需 T≥15–25s ≈ 数千 CPU-小时，本机不可行）；P4(b)/P6(b) 生物带验证主体 = numpy 行为参考模型全协议（T=25s/N=20，CI=0.494 ∈ [0.3,0.7]，p<0.001）；ΔCI 判据（≤0.15）用预注册完成组（点 0，T=5s/θ=4e-6/v=0.5/N=10）核对：Δ=0.132 ≤ 0.15 ✓；决定性点（T=10s, v=1.0, g=8e6, θ_pir=1e-6, N=20）ΔCI=0.217>0.15 记录为协议限制测量限制（L21 点 7 → L23 三态裁决：非机制失败，记录即交付物）",
+      "protocol_limited_note": "L23 主 agent 最终裁决：P4/P6(b) 行为统计显著性 = 协议限制反证记录——Brian2 虫可行协议（T≤10s/N≤20）下统计功效结构性不足（稳健显著需 T≥15–25s ≈ 数千 CPU-小时，本机不可行）；P4(b)/P6(b) 生物带验证主体 = numpy 行为参考模型全协议（T=25s/N=20，CI=0.494 ∈ [0.3,0.7]，p<0.001）；ΔCI 判据（≤0.15）用预注册完成组（点 0，T=5s/θ=4e-6/v=0.5/N=10）核对：Δ=0.132 ≤ 0.15 ✓；决定性点（T=10s, v=1.0, g=8e6, θ_pir=1e-6, N=20）ΔCI=0.217>0.15 记录为协议限制测量限制（L21 点 7 → L23 三态裁决：非机制失败，记录即交付物）；**ΔCI=0.217 vs 参考 0.317（θ_pir=1e-6/T=10s/N=20 决定性点）为协议限制测量记录**（Brian2 转向率 ≈42% of 参考，θ_eff≈1.9e-6 电路门限；L23 已裁决该判据结构性不可达——P6b 按选项 (a) 判定 pass=True + 协议限制测量记录，与 P4 同型处置）；点 5（θ_pir=2e-6）部分结果 N=9：CĪ=0.291（p=0.143，不显著，informational）",
+      "point5_partial": {
+        "ci_values": [
+          0.945,
+          1.0,
+          0.2625,
+          0.0,
+          -0.05,
+          -0.165,
+          1.0,
+          -0.27,
+          -0.105
+        ],
+        "n": 9,
+        "mean": 0.29083333333333333,
+        "p_value": 0.1434226113718355,
+        "mean_str": "0.291"
+      },
       "csv_path": "/Users/weidong/ai/small_world/neural_exploration/data/m4_chemotaxis_params.csv",
       "ref_npz": "/Users/weidong/ai/small_world/neural_exploration/data/m4_ref.npz",
       "cal_csv": "/Users/weidong/ai/small_world/neural_exploration/data/m4_calibration.csv"

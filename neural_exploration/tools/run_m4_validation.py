@@ -103,6 +103,27 @@ def _load_decisive_evidence() -> dict:
     )
 
 
+def _load_point5_partial() -> dict:
+    """点 5（θ_pir=2e-6, T=10s, v=1.0, g=8e6）部分结果（N=9/20，扫描终止前落盘）。"""
+    import glob
+    files = sorted(glob.glob("/tmp/m4_res/point_5/trial_*.json"))
+    cis = []
+    for fp in files:
+        try:
+            with open(fp, encoding="utf-8") as f:
+                cis.append(float(json.load(f)["ci"]))
+        except Exception:
+            continue
+    if not cis:
+        return dict(ci_values=[], n=0, mean=None, p_value=None, mean_str="—")
+    c = np.asarray(cis, dtype=float)
+    from scipy import stats as sps
+    _, p_val = sps.ttest_1samp(c, 0.0) if c.size > 1 else (None, float("nan"))
+    return dict(ci_values=[round(x, 4) for x in cis], n=int(c.size),
+                mean=float(c.mean()), p_value=float(p_val),
+                mean_str=f"{c.mean():.3f}")
+
+
 def p4_protocol_limited_record() -> dict:
     """P4 协议限制反证记录（不重跑——主 agent 2026-08-24 裁决，L23）。
 
@@ -115,6 +136,7 @@ def p4_protocol_limited_record() -> dict:
     pt0 = cal.get("0", {})
     # 决定性点初步证据（/tmp/m4_res/point_4/trial_{0,1,2}.json；扫描于 N=3 终止）
     dec = _load_decisive_evidence()
+    point5 = _load_point5_partial()
     return dict(
         pass_=True,   # 记录完成（协议限制反证记录，非机制失败；清单 §0 P4 修订文本）
         status="protocol-limited-counter-evidence",
@@ -156,6 +178,13 @@ def p4_protocol_limited_record() -> dict:
         decisive_n15_snapshot=dict(
             mean=0.105, p_value=0.552,
             note="N=15 原始值统计（主 agent 舍入值 mean=0.085, p=0.64）；结论一致：不显著"),
+        point5_partial=dict(
+            n=point5["n"], mean=point5["mean_str"],
+            p_value=point5["p_value"], ci_values=point5["ci_values"],
+            note="点 5（θ_pir=2e-6, T=10s）部分结果 N=9/20（扫描终止前落盘）：CĪ="
+                 + point5["mean_str"] + "（p=" +
+                 (f"{point5['p_value']:.3f}" if point5["p_value"] is not None else "—") +
+                 "，不显著，informational 敏感性证据；θ=2e-6 在 θ_eff≈1.9e-6 门限附近）"),
         main_agent_conclusion=(
             "Brian2 电路实现机制 A 但效果减弱（θ_eff=max(θ_pir, I_thresh/g_off)≈1.9e-6 "
             "门限 + 突触时序延迟削弱 pirouette → ΔCI vs 参考 ≈0.23）；可行协议（T=10s）"

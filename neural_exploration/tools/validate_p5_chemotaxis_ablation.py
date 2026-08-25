@@ -142,6 +142,50 @@ def _reuse_p5_from_csv() -> dict:
     )
 
 
+def _append_group_csv(label: str, m: dict):
+    """分块模式：把一组的逐试次行 + 组统计行追加到 CSV（幂等，重跑同组覆盖该组行）。"""
+    import csv as _csv
+    os.makedirs(DATA_DIR, exist_ok=True)
+    # 读出现有行（去掉该组旧行），保持 header
+    existing = []
+    if os.path.exists(REPORT_CSV):
+        with open(REPORT_CSV, encoding="utf-8") as f:
+            existing = [r for r in _csv.reader(f) if r]
+    header = ["group", "trial", "ci", "n_turn_events"]
+    stats_head = ["group", "ci_mean", "ci_sem", "p_value", "cohen_d",
+                  "total_turns", "turns_per_trial", "pass"]
+    keep = [r for r in existing if not (r and r[0] == label)]
+    with open(REPORT_CSV, "w", encoding="utf-8", newline="") as f:
+        w = _csv.writer(f)
+        w.writerow(header)
+        for r in keep:
+            if r != header and r != stats_head:
+                w.writerow(r)
+        for i, (ci, tn) in enumerate(zip(m["ci"], m["n_turns"])):
+            w.writerow([label, i, f"{ci:.6f}", tn])
+        w.writerow([label, f"{m['ci_mean']:.6f}", f"{m['ci_sem']:.6f}",
+                    f"{m['p_value']:.6f}", f"{m['cohen_d']:.6f}",
+                    m["total_turns"], f"{m['turns_per_trial']:.3f}", ""])
+
+
+def run_p5_chunk(group_label: str) -> dict:
+    """M4_P5_GROUP=<full|5a|5b>：只跑一组（分块防节流 kill，~1h/块）并追加写 CSV。
+
+    三块跑完后 M4_REUSE=1 的 run_p5 会读全 CSV 重算判据。
+    """
+    assert group_label in ("full", "5a", "5b"), group_label
+    circ = ChemotaxisCircuit(csv_path=CSV_PATH)
+    if group_label == "5a":
+        for f, t in ASER_REMOVALS_5A:
+            circ.remove_synapse(f, t)
+    elif group_label == "5b":
+        for f, t in GABA_REMOVALS_5B:
+            circ.remove_synapse(f, t)
+    m = _group_metrics(_run_group(circ))
+    _append_group_csv(group_label, m)
+    return dict(pass_=None, group=group_label, **m)
+
+
 def run_p5(save_plot: bool = True) -> dict:
     if os.environ.get("M4_REUSE") and os.path.exists(REPORT_CSV):
         return _reuse_p5_from_csv()
@@ -306,25 +350,34 @@ def _plot(out, circ_full):
 
 if __name__ == "__main__":
     import argparse
+    import os as _os
     ap = argparse.ArgumentParser(description="M4 P5 机制消融验证")
     ap.add_argument("--skip-plot", action="store_true")
     args = ap.parse_args()
-    res = run_p5(save_plot=not args.skip_plot)
-    print("==== M4 P5 机制消融 ====")
-    for k, label in (("full", "完整"), ("abl_5a", "5a 删 ASER OFF"),
-                     ("abl_5b", "5b 删 AIY→RIA GABA")):
-        m = res[k]
-        print(f"  {label:16s}: CĪ={m['ci_mean']:+.3f}±{m['ci_sem']:.3f} "
-              f"(p={m['p_value']:.3f}) turns={m['total_turns']}/{m['n']} "
-              f"({m['turns_per_trial']:.2f}/试次)")
-    print(f"  5a: turns={res['abl_5a']['total_turns']} vs full="
-          f"{res['full']['total_turns']} → {'OK' if res['pass_5a'] else 'FAIL'} "
-          f"(ci相对 {res['ok_5a_ci']})")
-    print(f"  5b: turns={res['abl_5b']['total_turns']} vs full="
-          f"{res['full']['total_turns']} → {'OK' if res['pass_5b'] else 'FAIL'} "
-          f"(ci相对 {res['ok_5b_ci']} 无偏置 {res['no_bias_5b']})")
-    if res["measurement_limits"]:
-        print("  测量限制：")
-        for m_ in res["measurement_limits"]:
-            print(f"    - {m_}")
-    print(f"  P5 pass_ = {res['pass_']}")
+    chunk = _os.environ.get("M4_P5_GROUP")
+    if chunk:
+        res = run_p5_chunk(chunk)
+        print(f"==== M4 P5 分块 {chunk} ====")
+        print(f"  CĪ={res['ci_mean']:+.3f}±{res['ci_sem']:.3f} "
+              f"(p={res['p_value']:.3f}) turns={res['total_turns']}/{res['n']} "
+              f"({res['turns_per_trial']:.2f}/试次) → CSV 已追加")
+    else:
+        res = run_p5(save_plot=not args.skip_plot)
+        print("==== M4 P5 机制消融 ====")
+        for k, label in (("full", "完整"), ("abl_5a", "5a 删 ASER OFF"),
+                         ("abl_5b", "5b 删 AIY→RIA GABA")):
+            m = res[k]
+            print(f"  {label:16s}: CĪ={m['ci_mean']:+.3f}±{m['ci_sem']:.3f} "
+                  f"(p={m['p_value']:.3f}) turns={m['total_turns']}/{m['n']} "
+                  f"({m['turns_per_trial']:.2f}/试次)")
+        print(f"  5a: turns={res['abl_5a']['total_turns']} vs full="
+              f"{res['full']['total_turns']} → {'OK' if res['pass_5a'] else 'FAIL'} "
+              f"(ci相对 {res['ok_5a_ci']})")
+        print(f"  5b: turns={res['abl_5b']['total_turns']} vs full="
+              f"{res['full']['total_turns']} → {'OK' if res['pass_5b'] else 'FAIL'} "
+              f"(ci相对 {res['ok_5b_ci']} 无偏置 {res['no_bias_5b']})")
+        if res["measurement_limits"]:
+            print("  测量限制：")
+            for m_ in res["measurement_limits"]:
+                print(f"    - {m_}")
+        print(f"  P5 pass_ = {res['pass_']}")

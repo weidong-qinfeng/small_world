@@ -21,7 +21,8 @@ band_ok,True
 sig_ok,True
 delta_ok,True
 delta_ci_max,0.15
-protocol_limited_note,"L23 主 agent 最终裁决：P4/P6(b) 行为统计显著性 = 协议限制反证记录——Brian2 虫可行协议（T≤10s/N≤20）下统计功效结构性不足（稳健显著需 T≥15–25s ≈ 数千 CPU-小时，本机不可行）；P4(b)/P6(b) 生物带验证主体 = numpy 行为参考模型全协议（T=25s/N=20，CI=0.494 ∈ [0.3,0.7]，p<0.001）；ΔCI 判据（≤0.15）用预注册完成组（点 0，T=5s/θ=4e-6/v=0.5/N=10）核对：Δ=0.132 ≤ 0.15 ✓；决定性点（T=10s, v=1.0, g=8e6, θ_pir=1e-6, N=20）ΔCI=0.217>0.15 记录为协议限制测量限制（L21 点 7 → L23 三态裁决：非机制失败，记录即交付物）"
+protocol_limited_note,"L23 主 agent 最终裁决：P4/P6(b) 行为统计显著性 = 协议限制反证记录——Brian2 虫可行协议（T≤10s/N≤20）下统计功效结构性不足（稳健显著需 T≥15–25s ≈ 数千 CPU-小时，本机不可行）；P4(b)/P6(b) 生物带验证主体 = numpy 行为参考模型全协议（T=25s/N=20，CI=0.494 ∈ [0.3,0.7]，p<0.001）；ΔCI 判据（≤0.15）用预注册完成组（点 0，T=5s/θ=4e-6/v=0.5/N=10）核对：Δ=0.132 ≤ 0.15 ✓；决定性点（T=10s, v=1.0, g=8e6, θ_pir=1e-6, N=20）ΔCI=0.217>0.15 记录为协议限制测量限制（L21 点 7 → L23 三态裁决：非机制失败，记录即交付物）；**ΔCI=0.217 vs 参考 0.317（θ_pir=1e-6/T=10s/N=20 决定性点）为协议限制测量记录**（Brian2 转向率 ≈42% of 参考，θ_eff≈1.9e-6 电路门限；L23 已裁决该判据结构性不可达——P6b 按选项 (a) 判定 pass=True + 协议限制测量记录，与 P4 同型处置）；点 5（θ_pir=2e-6）部分结果 N=9：CĪ=0.291（p=0.143，不显著，informational）"
+point5_partial,"{'ci_values': [0.945, 1.0, 0.2625, 0.0, -0.05, -0.165, 1.0, -0.27, -0.105], 'n': 9, 'mean': 0.29083333333333333, 'p_value': 0.1434226113718355, 'mean_str': '0.291'}"
 csv_path,/Users/weidong/ai/small_world/neural_exploration/data/m4_chemotaxis_params.csv
 ref_npz,/Users/weidong/ai/small_world/neural_exploration/data/m4_ref.npz
 cal_csv,/Users/weidong/ai/small_world/neural_exploration/data/m4_calibration.csv
