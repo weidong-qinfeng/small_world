@@ -1,0 +1,37 @@
+# M5 行为学/电生理对照带（唯一定稿源，含 provenance）——B1a 执行节点按《生物仿真M5实施清单》
+# §0 预注册 #3/#4 + §7 P2-P6 判据整理；P2/P3/P4/P5/P6 判定脚本唯一对照源。
+# 列：role, neuron_class, lo, hi, unit, tol_lo, tol_hi, target, provenance, note
+# 语义：
+#   - role=<behavior|escape|spontaneous|pharynx|resting>（行为域）
+#   - neuron_class=<指标名>；lo/hi=生物学带；tol_lo/tol_hi=判定容差窗（预注册，不做事后调）；
+#   - target=带中心（参考值）；provenance=文献来源（作者+年份+期刊）；note=操作化语义。
+# 预注册纪律（清单 §0）：
+#   #3 咽部节律窗口操作化：无食物带 [0.1,2]Hz（设计文档带，Avery & Horvitz 1989）vs
+#      有食物带 [2,5]Hz（Avery & Horvitz 1989 食物下）——协议在 data/m5_worm_params.csv 定稿，
+#      报告注明所选窗口，不事后选窗口。
+#   #4 电生理发放率对照操作化：本文件为唯一定稿源；静默比例/组中位数/峰值上限预注册；
+#      不声称复现逐神经元电生理，只对照分布统计（P2 判据语义）。
+#   #5 行为带容差预注册：带中心 ±10 个百分点或相对 50%（P6 判据）。
+# 文献：
+#   - Ward 1973 *PNAS* 70:817-821；Pierce-Shimomura et al. 1999 *J Neurosci* 19:9557-9569（CI 生物带）
+#   - Chalfie et al. 1985 *J Neurosci* 5:956-964（触觉逃避行为潜伏期 30-50ms；神经潜伏期窗由 M3 实测验证）
+#   - Srivastava et al. 2013 *PLoS ONE*（自发行为时间比例：前进/后退/转弯）
+#   - Avery & Horvitz 1989 *Neuron* 2（咽部泵动节律：静息 0.1-2Hz，食物下 ~2-5Hz）
+#   - 电生理静息发放率操作化：C. elegans 神经元静息发放率低（多数 <1Hz 静默；峰值 <60Hz 生理上限），
+#     来源/品系/温度一致性按本项目惯例（celsius=6.3，M0 环境）在 note 记录。
+role,neuron_class,lo,hi,unit,tol_lo,tol_hi,target,provenance,note
+chemotaxis,ci_band,0.3,0.7,dimensionless,0.25,0.75,0.5,"Ward 1973 PNAS 70:817-821; Pierce-Shimomura et al. 1999 J Neurosci 19:9557-9569","趋化指数 CI=(T_in-T_out)/T_total 生物带；P4 判据 (a) 显著>0（t p<0.05 且 d>=0.5）(b) 落带且与行为参考模型 ΔCI<=0.15 (c) 终态偏向 (d) 无梯度对照 p>0.05（|CI|<0.1 informational）"
+chemotaxis,ci_band_tolerance,0.25,0.75,dimensionless,,,,同上,"P4 落带判据容差窗（清单 §0 P4 b）"
+escape,nerve_latency_ms,5.0,20.0,ms,,,,"Chalfie et al. 1985 J Neurosci 5:956-964; M3 实测定稿（m3_reflex_params.csv latency 窗）","神经潜伏期（触刺激开始→运动神经元发放）生物窗；P5 判据"
+escape,behavior_latency_ms,30.0,50.0,ms,25.0,60.0,40.0,"Chalfie et al. 1985 J Neurosci 5:956-964","行为潜伏期（含转导延迟+肌肉，30-50ms）；P5 判据容差窗 [25,60]；M3 实测神经潜伏期 8-14ms 结构性落窗说明见 m3_env_notes L7"
+escape,reaction_probability,0.8,1.0,fraction,,,0.8,"Chalfie et al. 1985; M5 清单 §0 P5","机械刺激后退反应概率 >=0.8（N=20）"
+escape,direction_peak,0.3,1.0,dimensionless,,,,"M3 P1 判据升级版（m3_reflex_params.csv D_peak>0.3）","后退方向正确：C_back 峰值 > C_fwd 或 D_peak>0.3；P5 判据"
+spontaneous,time_fraction_fwd,60.0,80.0,percent,50.0,90.0,70.0,"Srivastava et al. 2013 PLoS ONE","自发行为时间比例：前进；P6 判据带 [60,80]%，容差=带中心±10 个百分点（预注册 §0 #5）"
+spontaneous,time_fraction_rev,10.0,25.0,percent,0.0,35.0,17.5,"Srivastava et al. 2013 PLoS ONE","自发行为时间比例：后退；P6 判据带 [10,25]%"
+spontaneous,time_fraction_turn,5.0,20.0,percent,0.0,30.0,12.5,"Srivastava et al. 2013 PLoS ONE","自发行为时间比例：转弯（pirouette/头摆）；P6 判据带 [5,20]%"
+pharynx,rhythm_no_food_hz,0.1,2.0,Hz,,,,"Avery & Horvitz 1989 Neuron 2","咽部泵动节律（无食物静息）：主频 [0.1,2]Hz；P3 判据（操作协议预注册 §0 #3，不事后选窗口）"
+pharynx,rhythm_with_food_hz,2.0,5.0,Hz,,,,"Avery & Horvitz 1989 Neuron 2","咽部泵动节律（有食物驱动）：主频 [2,5]Hz；P3 判据（食物下协议，报告注明）"
+pharynx,rhythm_stability_drift,0.0,0.5,fraction,,,,"M5 清单 §0 P3","节律稳定：T>=10s 主频漂移 <50%（相对首窗主频）"
+resting,silent_fraction_target,0.6,0.8,fraction,0.6,0.8,0.7,"M5 清单 §0 预注册 #4（操作化）","静息态静默神经元比例 >=70%±10%（P2 判据；操作化：发放率 <0.1Hz 记静默）"
+resting,median_firing_hz,0.0,1.0,Hz,,,,"M5 清单 §0 预注册 #4（操作化）","静息态组中位数发放率 <1Hz（P2 判据）"
+resting,max_firing_hz,0.0,60.0,Hz,,,,"M5 清单 §0 预注册 #4（操作化；生理上限）","静息态最大发放率 <60Hz 生理上限（P2 判据；无 NaN/无发散前置）"

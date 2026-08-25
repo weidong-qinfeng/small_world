@@ -1,0 +1,105 @@
+{
+  "generated_by": "tools/build_m5_connectome.py",
+  "generated_at": "2026-08-25T15:45:25",
+  "primary_source": "openworm/c302 c302/data/herm_full_edgelist.csv (Cook et al. 2019, Nature 571:63-71; MIT)",
+  "output_sha256": "1ac182c11eb24c1775b53d982a257e32f2766c0b3c244e11899433dd3fe9f801",
+  "p1": {
+    "n_neurons": 302,
+    "class_counts": {
+      "inter": 85,
+      "sensory": 81,
+      "motor": 116,
+      "pharyngeal": 20
+    },
+    "class_authority_cook": {
+      "inter": 81,
+      "sensory": 81,
+      "motor": 116,
+      "pharyngeal": 20
+    },
+    "class_sensory": 81,
+    "class_sensory_authority": 81,
+    "class_sensory_folklore_band": [
+      63.0,
+      77.0
+    ],
+    "class_sensory_in_folklore_band": false,
+    "class_inter": 85,
+    "class_inter_authority": 81,
+    "class_inter_folklore_band": [
+      72.0,
+      88.0
+    ],
+    "class_inter_in_folklore_band": true,
+    "class_motor": 116,
+    "class_motor_authority": 116,
+    "class_motor_folklore_band": [
+      99.0,
+      121.0
+    ],
+    "class_motor_in_folklore_band": true,
+    "class_pharyngeal": 20,
+    "class_pharyngeal_authority": 20,
+    "class_pharyngeal_folklore_band": [
+      18.0,
+      22.0
+    ],
+    "class_pharyngeal_in_folklore_band": true,
+    "chem_directed_pairs": 3638,
+    "chem_synapse_total": 20589,
+    "gap_unique_pairs": 1093,
+    "gap_synapse_total": 8642,
+    "chem_allnodes_edges": 4681,
+    "gap_allnodes_pairs": 1359,
+    "cook_published_chem_edges": 4887,
+    "cook_published_gap_edges": 1447,
+    "chem_allnodes_vs_published_rel": 0.0422,
+    "prereg_chem_band": [
+      6300,
+      7700
+    ],
+    "prereg_gap_band": [
+      630,
+      770
+    ],
+    "chem_in_prereg_band": false,
+    "gap_in_prereg_band": false,
+    "chem_pairs_in_prereg_band": false,
+    "gap_pairs_in_prereg_band": false,
+    "self_connections": 47,
+    "self_connections_whitelisted": true,
+    "isolated_neurons": [
+      "CANL",
+      "CANR"
+    ],
+    "isolated_whitelisted": true,
+    "neurotransmitter_counts": {
+      "glut": 76,
+      "dopamine": 8,
+      "serotonin": 7,
+      "other": 56,
+      "ach": 129,
+      "gaba": 26
+    },
+    "annotation_coverage_pct": 100.0,
+    "deterministic": true
+  },
+  "crosscheck": {
+    "total": 53,
+    "ok": 43,
+    "diff": 10,
+    "detail_file": "m5_crosscheck_m3m4.csv"
+  },
+  "subgraphs": {
+    "pharynx": 20,
+    "pharynx_chem": 128,
+    "pharynx_gap": 33,
+    "command_nodes": 53,
+    "command_chem": 245,
+    "command_gap": 156,
+    "chemotaxis_nodes": 240,
+    "chemotaxis_chem": 830,
+    "chemotaxis_gap": 241
+  },
+  "prereg_interval_note": "预注册区间 [6300,7700]/[630,770] 基于民俗 '~7000/~700'；权威计数（Cook 2019 权重和）为化学 20,589 / 缝隙 8,642，不在区间内——如实记录，请规划节点按 §0 #5 三态裁决复核区间语义。"
+}

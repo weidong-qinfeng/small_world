@@ -1,0 +1,60 @@
+# M3/M4 子图交叉核对（逐层验证铁律的接线检查；《生物仿真M5实施清单》§2.4）
+"# 列：milestone, kind, edge, status, detail, expected, verdict"
+# status 语义：OK=存在且极性一致；TYPE_DIFF=存在但为缝隙连接/类型不同；
+#            MISSING=权威连接组（Cook 2019）中不存在该直接连接（M3/M4 为功能链简化）；
+#            present=肌肉驱动存在。verdict: OK/DIFF（差异清单）
+# 原则：连接组是事实，不得为过 Pass 改动权威连接；差异如实记录（§0 #5）。
+"milestone,kind,edge,status,detail,expected,verdict"
+M4,role,ASEL,present,sensory,M4 20 角色须在 302 roster 中存在,OK
+M4,role,ASER,present,sensory,M4 20 角色须在 302 roster 中存在,OK
+M4,role,AIYL,present,inter,M4 20 角色须在 302 roster 中存在,OK
+M4,role,AIYR,present,inter,M4 20 角色须在 302 roster 中存在,OK
+M4,role,AIBL,present,inter,M4 20 角色须在 302 roster 中存在,OK
+M4,role,AIBR,present,inter,M4 20 角色须在 302 roster 中存在,OK
+M4,role,RIAL,present,inter,M4 20 角色须在 302 roster 中存在,OK
+M4,role,RIAR,present,inter,M4 20 角色须在 302 roster 中存在,OK
+M4,role,SMDDL,present,motor,M4 20 角色须在 302 roster 中存在,OK
+M4,role,SMDDR,present,motor,M4 20 角色须在 302 roster 中存在,OK
+M4,role,SMDVL,present,motor,M4 20 角色须在 302 roster 中存在,OK
+M4,role,SMDVR,present,motor,M4 20 角色须在 302 roster 中存在,OK
+M4,role,AVBL,present,inter,M4 20 角色须在 302 roster 中存在,OK
+M4,role,AVBR,present,inter,M4 20 角色须在 302 roster 中存在,OK
+M4,role,VB,present,motor,M4 20 角色须在 302 roster 中存在,OK
+M4,role,DB,present,motor,M4 20 角色须在 302 roster 中存在,OK
+M4,role,AVAL,present,inter,M4 20 角色须在 302 roster 中存在,OK
+M4,role,AVAR,present,inter,M4 20 角色须在 302 roster 中存在,OK
+M4,role,RMED,present,motor,M4 20 角色须在 302 roster 中存在,OK
+M4,role,RMEV,present,motor,M4 20 角色须在 302 roster 中存在,OK
+M4,chem,ASEL→AIYL,OK,化学突触 ASEL→AIYL weight=32，递质=glut→ampa（excitatory），与建模极性一致,M4 建模极性 ampa（m4_chemotaxis_params.csv）,OK
+M4,chem,ASEL→AIYR,OK,化学突触 ASEL→AIYR weight=21，递质=glut→ampa（excitatory），与建模极性一致,M4 建模极性 ampa（m4_chemotaxis_params.csv）,OK
+M4,chem,AIYL→AVBL,MISSING,权威连接组（Cook 2019）中无该直接连接——M3/M4 为功能链简化（真实通路经中间神经元/缝隙耦合）,M4 建模极性 ampa（m4_chemotaxis_params.csv）,DIFF
+M4,chem,AIYR→AVBR,MISSING,权威连接组（Cook 2019）中无该直接连接——M3/M4 为功能链简化（真实通路经中间神经元/缝隙耦合）,M4 建模极性 ampa（m4_chemotaxis_params.csv）,DIFF
+M4,chem,AIYL→RIAL,TYPE_DIFF,化学突触 AIYL→RIAL weight=51，但递质=ach→ampa（excitatory），建模极性=inhibitory——递质语义差异（真实递质为准，M3/M4 为简化）,M4 建模极性 gaba（m4_chemotaxis_params.csv）,DIFF
+M4,chem,AIYL→RIAR,MISSING,权威连接组（Cook 2019）中无该直接连接——M3/M4 为功能链简化（真实通路经中间神经元/缝隙耦合）,M4 建模极性 gaba（m4_chemotaxis_params.csv）,DIFF
+M4,chem,AIYR→RIAL,MISSING,权威连接组（Cook 2019）中无该直接连接——M3/M4 为功能链简化（真实通路经中间神经元/缝隙耦合）,M4 建模极性 gaba（m4_chemotaxis_params.csv）,DIFF
+M4,chem,AIYR→RIAR,TYPE_DIFF,化学突触 AIYR→RIAR weight=50，但递质=ach→ampa（excitatory），建模极性=inhibitory——递质语义差异（真实递质为准，M3/M4 为简化）,M4 建模极性 gaba（m4_chemotaxis_params.csv）,DIFF
+M4,chem,ASER→AIBL,OK,化学突触 ASER→AIBL weight=4，递质=glut→ampa（excitatory），与建模极性一致,M4 建模极性 ampa（m4_chemotaxis_params.csv）,OK
+M4,chem,ASER→AIBR,OK,化学突触 ASER→AIBR weight=32，递质=glut→ampa（excitatory），与建模极性一致,M4 建模极性 ampa（m4_chemotaxis_params.csv）,OK
+M4,chem,AIBL→RIAL,MISSING,权威连接组（Cook 2019）中无该直接连接——M3/M4 为功能链简化（真实通路经中间神经元/缝隙耦合）,M4 建模极性 ampa（m4_chemotaxis_params.csv）,DIFF
+M4,chem,AIBR→RIAR,MISSING,权威连接组（Cook 2019）中无该直接连接——M3/M4 为功能链简化（真实通路经中间神经元/缝隙耦合）,M4 建模极性 ampa（m4_chemotaxis_params.csv）,DIFF
+M4,chem,RIAL→SMDDL,OK,化学突触 RIAL→SMDDL weight=22，递质=glut→ampa（excitatory），与建模极性一致,M4 建模极性 ampa（m4_chemotaxis_params.csv）,OK
+M4,chem,RIAL→SMDVL,OK,化学突触 RIAL→SMDVL weight=14，递质=glut→ampa（excitatory），与建模极性一致,M4 建模极性 ampa（m4_chemotaxis_params.csv）,OK
+M4,chem,RIAR→SMDDR,OK,化学突触 RIAR→SMDDR weight=26，递质=glut→ampa（excitatory），与建模极性一致,M4 建模极性 ampa（m4_chemotaxis_params.csv）,OK
+M4,chem,RIAR→SMDVR,OK,化学突触 RIAR→SMDVR weight=26，递质=glut→ampa（excitatory），与建模极性一致,M4 建模极性 ampa（m4_chemotaxis_params.csv）,OK
+M4,chem,AVBL→VB,OK,化学突触 AVBL→VB2 weight=3，递质=ach→ampa（excitatory），与建模极性一致,M4 建模极性 ampa（m4_chemotaxis_params.csv）,OK
+M4,chem,AVBR→DB,OK,化学突触 AVBR→DB4 weight=1，递质=ach→ampa（excitatory），与建模极性一致,M4 建模极性 ampa（m4_chemotaxis_params.csv）,OK
+M4,muscle,VB→muscle_fwd,present,"成员: ['VB1', 'VB10', 'VB11', 'VB2']… 映射通道 body_fwd",M4 肌肉驱动（m4_chemotaxis_params.csv）,OK
+M4,muscle,DB→muscle_fwd,present,"成员: ['DB1', 'DB2', 'DB3', 'DB4']… 映射通道 body_fwd",M4 肌肉驱动（m4_chemotaxis_params.csv）,OK
+M4,muscle,SMDDL→muscle_left,present,成员: [] 映射通道 head_left,M4 肌肉驱动（m4_chemotaxis_params.csv）,OK
+M4,muscle,SMDVL→muscle_left,present,成员: [] 映射通道 head_left,M4 肌肉驱动（m4_chemotaxis_params.csv）,OK
+M4,muscle,SMDDR→muscle_right,present,成员: [] 映射通道 head_right,M4 肌肉驱动（m4_chemotaxis_params.csv）,OK
+M4,muscle,SMDVR→muscle_right,present,成员: [] 映射通道 head_right,M4 肌肉驱动（m4_chemotaxis_params.csv）,OK
+M3,role,PLM,present,-,M3 4 角色须在 302 roster 中存在,OK
+M3,role,AVM,present,inter,M3 4 角色须在 302 roster 中存在,OK
+M3,role,DA,present,motor,M3 4 角色须在 302 roster 中存在,OK
+M3,role,VB,present,motor,M3 4 角色须在 302 roster 中存在,OK
+M3,chem,PLM→AVM,MISSING,权威连接组（Cook 2019）中无该直接连接——M3/M4 为功能链简化（真实通路经中间神经元/缝隙耦合）,M3 建模极性 ampa（m3_reflex_params.csv）,DIFF
+M3,chem,AVM→DA,OK,化学突触 AVM→DA1 weight=2，递质=glut→ampa（excitatory），与建模极性一致,M3 建模极性 ampa（m3_reflex_params.csv）,OK
+M3,chem,AVM→VB,TYPE_DIFF,化学突触 AVM→VB3 weight=1，但递质=glut→ampa（excitatory），建模极性=inhibitory——递质语义差异（真实递质为准，M3/M4 为简化）,M3 建模极性 gaba（m3_reflex_params.csv）,DIFF
+M3,muscle,DA→muscle_back,present,"成员: ['DA1', 'DA2', 'DA3', 'DA4']… 映射通道 body_back",M3 肌肉驱动（m3_reflex_params.csv）,OK
+M3,muscle,VB→muscle_fwd,present,"成员: ['VB1', 'VB10', 'VB11', 'VB2']… 映射通道 body_fwd",M3 肌肉驱动（m3_reflex_params.csv）,OK
