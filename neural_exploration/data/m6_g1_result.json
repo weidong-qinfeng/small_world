@@ -1,0 +1,167 @@
+{
+ "milestone": "M6-B1a",
+ "g1_verdict": "PARTIAL",
+ "g1_rubric": "方向相位修复（P5 touch@73ms→back，G1 关键前置满足）→ P3 习惯化协议可进入；P2/P4 未缓解、P6 部分（rev 落带/fwd·turn 近带）",
+ "direction_fixed": true,
+ "p5_phase": {
+  "tau_trans_0_ms": {
+   "d_peak": 0.21,
+   "direction": "not_back"
+  },
+  "tau_trans_23_ms": {
+   "d_peak": 0.355,
+   "direction": "back",
+   "criterion": "back>0.3 ✓ FIXED（M5: not_back，L40#5 解除）"
+  },
+  "n": 5,
+  "note": "确定性网络，逐 seed 同值（0.355）"
+ },
+ "p2_resting": {
+  "silent_post_settle500ms": 0.103,
+  "band": [
+   0.6,
+   0.8
+  ],
+  "in_band": false,
+  "median_post_hz": 22.5,
+  "band_median": "<1Hz",
+  "in_band_median": false,
+  "max_post_hz": 33.2,
+  "band_max": "<60Hz",
+  "in_band_max": true,
+  "verdict": "未缓解（静息协议下运动池自发脉冲仍点燃全互兴奋共振环；M5 反证 L40#3 升级为结构性限制）"
+ },
+ "p6_spontaneous": {
+  "T_8_10s_probe": {
+   "fwd": 0.36,
+   "rev": 0.11,
+   "turn": 0.034,
+   "pause": 0.5
+  },
+  "bands": {
+   "fwd": [
+    60,
+    80
+   ],
+   "rev": [
+    10,
+    25
+   ],
+   "turn": [
+    5,
+    20
+   ]
+  },
+  "in_band": {
+   "fwd": false,
+   "rev": true,
+   "turn": false
+  },
+  "verdict": "部分缓解（rev 落带；fwd/turn 近带；M5 反证 25.5/3.0/0.5% → 36-43/9-11/3.4-4.3%；方向分离结构涌现）",
+  "note": "确定性 p=1/n=1：逐 seed 同值；T=8s/10s 探测，全协议 T=30s×N=10 复核挂起（本节点预算内未完成，见 L11）"
+ },
+ "p4_chemotaxis": {
+  "T_5s_N_5_probe": {
+   "ci_grad": -0.263,
+   "ci_ctrl": 0.384,
+   "direction": "neg"
+  },
+  "verdict": "未缓解（与 M5 同符号反证：夹带网络 fwd/back 共同发放 → v≈0，无净趋化位移）；全协议 T=15s×N=20 复核挂起（L11）",
+  "note": "M5 全协议基线 CĪ=-0.065@15s（fail + 反证）；本配置 5s 点估计 -0.263 同号"
+ },
+ "ablation_sanity": {
+  "tyramine_off": {
+   "gate": 1.0,
+   "escape_d_peak_73ms": 0.355,
+   "note": "组件级 gate≡1 ✓；escape 仍 back——方向修复非①单独承载（L7b：多机制联合，④ bout 驱动为主）"
+  },
+  "mutual_inh_off": {
+   "escape_d_peak_73ms": 0.355,
+   "note": "escape 仍 back——方向修复非②单独承载（L7b）"
+  },
+  "gaba_chain_off": {
+   "spont_rev_T6s_5ms": [
+    0.1,
+    0.146
+   ],
+   "dd_vd_spikes_T3s": [
+    1703,
+    1703
+   ],
+   "note": "组件级链驱动 ✓（0.80nA 单调/删链恒 0）；网络级不可观测（O2 夹带态淹没，L9 #7 如实记录）"
+  },
+  "spont_off": {
+   "frac_off": {
+    "pause": 1.0
+   },
+   "note": "bout 消失 ✓（现象消失 sanity）"
+  },
+  "frozen_regression": {
+   "enabled_false_rates_identical": true,
+   "note": "M5 冻结基线逐位一致（silent 10.6%/median 14Hz）——组合复用纪律 ✓"
+  }
+ },
+ "final_params": {
+  "enabled": true,
+  "tyramine_enabled": true,
+  "mutual_inh_enabled": true,
+  "gaba_chain_enabled": true,
+  "spont_enabled": true,
+  "da_enabled": true,
+  "ht_enabled": true,
+  "tau_da_ms": 500.0,
+  "tau_5ht_ms": 500.0,
+  "tau_tyr_ms": 500.0,
+  "rate_norm_hz": 30.0,
+  "da_baseline": 0.05,
+  "ht_baseline": 0.05,
+  "tyr_gain": 0.6,
+  "tyr_floor": 0.3,
+  "tyr_baseline": 1.0,
+  "inh_gain_nA": 0.15,
+  "inh_back_on_fwd_gain_nA": 0.8,
+  "inh_fwd_on_back_gain_nA": 0.05,
+  "gaba_chain_gain_nA": 0.8,
+  "spont_rate_hz": 2.0,
+  "spont_amp_nA": 0.1,
+  "spont_dur_ms": 3.0,
+  "spont_roles": [
+   "DA1",
+   "DA2",
+   "DA3",
+   "DA4",
+   "DA5",
+   "DA6",
+   "DA7",
+   "DA8",
+   "DA9",
+   "VA1",
+   "VA2",
+   "VA3",
+   "VA4",
+   "VA5",
+   "VA6",
+   "VA7",
+   "VA8",
+   "VA9",
+   "VA10",
+   "VA11",
+   "VA12",
+   "SMDDL",
+   "SMDDR"
+  ],
+  "spont_seed": 20260826.0,
+  "da_gain": 0.3,
+  "ht_gain": 0.2,
+  "chunk_ms": 25.0,
+  "mod_dt_ms": 5.0
+ },
+ "frozen_integrity": "M0-M5 冻结文件零修改（src/ 既有、tests/、tools/validate_*、data/m0-m5 定稿 CSV 不动）；m5_connectome.csv 内容不变；未 git commit",
+ "m6_new_files": [
+  "src/neuromod.py",
+  "data/m6_learning_params.csv",
+  "tools/validate_p6_modulation.py",
+  "tests/neuro/test_m6_neuromod.py",
+  "docs/m6_env_notes.md"
+ ]
+}
