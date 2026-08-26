@@ -351,7 +351,8 @@ class WormLoop:
         t0 = self.touch["start_ms"] + self.touch["tau_trans_ms"]
         i0 = int(round(t0 / dt))
         i1 = int(round((t0 + self.touch["dur_ms"]) / dt))
-        n_steps = int(round(max(500.0, 6000.0) / dt))  # PROTOCOL_WINDOW_MS 语义
+        from neural_exploration.src.worm_circuit import PROTOCOL_WINDOW_MS
+        n_steps = int(round(max(500.0, PROTOCOL_WINDOW_MS) / dt))
         return i0, i1, n_steps
 
     def run_escape(self, t_total_ms: Optional[float] = None,
@@ -400,8 +401,10 @@ class WormLoop:
         i_nA = (self.touch["i0_uA_cm2"] * 1e-6 * 1.257e-5 * 1e9)  # µA/cm² → nA
         grouped = hasattr(sess, "stim")  # GroupedWormSession: 单组 stim (n_steps, N)
         stim_ta = sess.stim if grouped else None
+        from neural_exploration.src.worm_circuit import PROTOCOL_WINDOW_MS
         n_steps_actual = (stim_ta.values.shape[0] if grouped
-                          else int(round(max(500.0, 6000.0) / circ.dt_ms)))
+                          else int(round(max(500.0, PROTOCOL_WINDOW_MS)
+                                         / circ.dt_ms)))
         i0 = max(0, min(i0, n_steps_actual))
         i1 = max(i0, min(i1, n_steps_actual))
         for r in roles:

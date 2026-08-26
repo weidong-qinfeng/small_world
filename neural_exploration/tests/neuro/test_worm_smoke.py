@@ -245,18 +245,20 @@ def test_escape_direction_backward(reflex, wcirc):
     assert np.all(np.isfinite(reflex.c_back)) and np.all(np.isfinite(reflex.c_fwd))
 
     # WormLoop 机械刺激协议窗（P5）：I0·1[t0+τ_trans, t0+τ_trans+dur]
-    # τ_trans = CSV escape_touch_delay_ms（B1b 定稿 CSV 暂无 → 默认 0，L23）
+    # τ_trans = CSV escape_touch_delay_ms（M5-B1e2 §6 定稿 23.0，L34 参考锚）
     wl = WormLoop(wcirc)
     i0, i1, n_steps = wl.touch_window()
-    assert i0 == int(round(wl.touch["start_ms"] / wcirc.dt_ms)), \
-        "触刺激窗起点 = t0+τ_trans"
+    assert i0 == int(round((wl.touch["start_ms"] + wl.touch["tau_trans_ms"])
+                           / wcirc.dt_ms)), "触刺激窗起点 = t0+τ_trans"
     assert i1 - i0 == int(round(wl.touch["dur_ms"] / wcirc.dt_ms)), \
         "触刺激窗长 = dur"
-    assert wl.touch["tau_trans_ms"] == 0.0, "CSV 未定稿 τ_trans → 默认 0"
+    assert wl.touch["tau_trans_ms"] == 23.0, \
+        "CSV escape_touch_delay_ms 定稿 = 23.0（L34 参考锚：行为 40 − 神经 9.8 − 肌肉 7.1）"
     # τ_trans 语义：显式设置后窗右移
     wl.touch["tau_trans_ms"] = 10.0
     i0t, i1t, _ = wl.touch_window()
-    assert i0t - i0 == int(round(10.0 / wcirc.dt_ms)), "τ_trans 应右移刺激窗起点"
+    assert i0t - i0 == int(round((10.0 - 23.0) / wcirc.dt_ms)), \
+        "τ_trans 右移刺激窗起点（相对定稿 23ms）"
 
 
 # --------------------------------------------------------------------- #
