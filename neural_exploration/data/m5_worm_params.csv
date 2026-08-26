@@ -97,10 +97,10 @@ weight,tonic_scale,,,,,,,,1.0,AVB 张力缩放（M4 14µA/cm² 携带；定稿 1
 weight,gL_scale,,,,,,,,1.0,点神经元漏电缩放（风险表"漏电增强"杠杆实测：gL 2-3× → 全网络静默 100%、行为靠 t=0 波——不可用，L38）
 weight,syn_type_scale_gaba,,,,,,,,1.0,GABA 突触类型缩放（gaba 2× 实测 fwd↑/rev↓ 出带——不可用，L38）
 # ---- §6 校准决策记录（四目标 vs 带，逐组合详值 data/m5_calibration.csv）----
-weight,calib_verdict,,,,,,,,PARTIAL,【D4 定稿 g1_gap005 N=5：P2 静默 10.6%（带 [60,80] ✗）/ P4 CI +0.078 方向 ✓（ΔCI vs 参考 0.175 = 0.097 ≤0.15）/ P5 逃避 back D_peak 0.61 ✓（神经潜伏期 4.5ms 点神经元结构性偏快 G0 L22）/ P6 fwd 25.5% ✗ rev 3% ✗ turn 0.5% ✗（参考 73/16/10）】——P2 与 P6 结构性不可达（反证笔记 docs/m5_env_notes.md L37-L41），三态裁决请求已提交
-weight,calib_ruling_request,,,,,,,,THREE_STATE,【请求规划节点三态裁决】：① 接受本定稿（P4/P5 PASS + P2/P6 反证记录，M6 调质层后复核）② 提前引入 RIM 酪胺/命令互抑（AVA-AVB 互抑 + AVA→DD GABA 链）重新校准 ③ P2/P6 验证主体改为行为参考模型（M4 P4(b) 同款处置）
+weight,calib_verdict,,,,,,,,PARTIAL,【D4 定稿 g1_gap005 N=5：P2 静默 10.6%（带 [60,80] ✗）/ P4 CI +0.078 方向 ✓（ΔCI vs 参考 0.175 = 0.097 ≤0.15）/ P5 方向 back 仅 τ_trans=0（touch@50ms，D_peak 0.61 确定性）；τ_trans=23 定稿协议下 not_back（网络 ~72ms 节律相位污染，见 L39/L40 #5）——行为潜伏期 23+4.5+7≈34.5ms ∈ [30,50] ✓ / P6 fwd 25.5% ✗ rev 3% ✗ turn 0.5% ✗】——P2/P6 结构性不可达 + P5 方向相位敏感（反证笔记 docs/m5_env_notes.md L37-L41），三态裁决请求已提交
+weight,calib_ruling_request,,,,,,,,THREE_STATE,【请求规划节点三态裁决】：① 接受本定稿（P4 方向 PASS + P5 行为潜伏期 PASS/方向反证 + P2/P6 反证记录，M6 调质层后复核）② 提前引入 RIM 酪胺/命令互抑（AVA-AVB 互抑 + AVA→DD GABA 链）重新校准 ③ P2/P6 验证主体改为行为参考模型（M4 P4(b) 同款处置）
 # ---- 协议补丁（L34 请求：τ_trans 定稿）----
-protocol,escape_touch_delay_ms,,,,,,,,23.0,转导延迟 τ_trans 定稿（L34 参考锚 23ms = 行为潜伏期 40 − 神经 9.8 − 肌肉 7.1；P5 计时操作化：神经潜伏期以触电流注入时刻 t0+τ_trans 为起点，见 L34）
+protocol,escape_touch_delay_ms,,,,,,,,23.0,转导延迟 τ_trans 定稿（L34 参考锚 23ms = 行为潜伏期 40 − 神经 9.8 − 肌肉 7.1；302 点神经元实测行为潜伏期 23+4.5+7≈34.5ms ∈ [30,50] ✓；P5 计时操作化：神经潜伏期以触电流注入时刻 t0+τ_trans 为起点；⚠ 方向相位敏感：touch@50ms（τ_trans=0）back、touch@73ms（τ_trans=23）not_back——网络 ~72ms 节律污染，L39/L40）
 # ---- G0 决策段（扫描完成，2026-08-25 M5-B1b；依据 m5_scaling.csv + m5_scaling_curves.png）----
 g0,status,,,,,,,,PASS(带记录测量限制),【G0 通过：降阶模型 + 缩放扫描完成 + 降阶正确性通过（趋化方向一致/ΔCI 记录；逃避方向一致、潜伏期偏快记录）——P4/P5/P6 协议按定稿配置执行】
 g0,verdict_chemotaxis,,,,,,,,PASS,20 档点 CI=0.403@5s（方向与 M4 记录一致；ΔCI vs 参考(5s)=0.228 超 0.15 但方向条款满足——连接组真实接线比 M4 手工子图更有效）；302 档 CI=0.243 ΔCI vs 参考(5s)=0.068 ≤0.15 ✓
