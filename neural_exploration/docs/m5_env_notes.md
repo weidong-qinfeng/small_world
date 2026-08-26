@@ -486,3 +486,110 @@
 
 *本文件为 M5-B1c 交付物（清单步骤 3：参考解）；L34 的 τ_trans CSV 定稿请求规划节点裁决
 （WORKFLOW 流程，不静默推进）。*
+
+---
+
+# M5-B1e2 执行节点实测结论（L37+：权重定稿与行为带校准，清单步骤 5 §6）
+
+> 执行节点：M5-B1e2（权重定稿 + 四目标校准：`data/m5_worm_params.csv` 权重行定稿 +
+> `data/m5_calibration.csv` + `reports/neuro/m5_calibration.png`）。
+> 冻结文件零修改（M0–M4 不动；m5_connectome.csv 不动）；`src/worm_circuit.py` 有 4 处
+> API 兼容微调（L42 登记，未改任何签名/默认行为）；未 git commit。
+> 方法：7 轮扫描 ~30 组合 × 四短协议（静息 T=5s / 自发 T=5s / 趋化 T=5s×N / 逃避 150ms×N，
+> 确定性 p=1/n=1；302 点神经元 G0 定稿配置）+ top-3 组合 N=5 复核。总墙钟 ~4h。
+
+## L37 — ⚠ 诊断重写：302"过兴奋"实为三类结构问题（非单纯权重过大）
+
+占位权重（s_k=1、gap=1）下 G0 L22 记录"302 静默 8.6%、自发全 pause"，本节点实测
+**机制与"权重过大"不同**，逐层诊断（`/tmp/m5_b1e2_debug*.py`）：
+
+1. **缝隙分流（gap shunt）**：AVB（唯一持续驱动 = M4 携带的 14µA/cm² 张力，AVBL/AVBR）
+   有 ~30 个缝隙伙伴；gap=1.0 时缝隙电导负载 ≈ 30×0.5nS = 15nS ≈ **4× 固有 gL（3.77nS）**
+   → 张力电流被分流到亚阈值 → AVB 只发 1 个 t=0 尖峰后静默（对照：AVB 单独发 73Hz 持续）。
+   **gap_scale=0.05 修复**（AVB 恢复持续发放 14Hz）。
+2. **t=0 初始化瞬态波**：v=−65 + 张力开通 → AVB 首尖峰 → 缝隙+ampa 网络级单发波
+   （91% 神经元各发 1 尖峰，T=3s 时全波中位数=峰值=0.33Hz）→ 静默比例（<0.1Hz 操作化）
+   结构性卡在 ~8-12%（P2 目标 ≥60%）。**500ms settle 后该波可排除**（post-settle 静默
+   最高 69.2%——u3）；建议 P2 协议加 settle 窗（"HH 静息漂移纪律"已有先例，清单 §5.2 #4）。
+3. **网络级夹带极限环**：AVB 持续发放（tonic≥0.8×14µA/cm² 且 gap≤0.05）→ **86% 神经元
+   同步夹带至 ~2.7-13.8Hz**（发率分布极端：86% 神经元同率、0 个中间率——非高斯背景活动）
+   → 静默比例卡在 12-44%（无论类级缩放）；且 fwd/back 运动池共同发放（motor→motor ampa
+   474 条 + 缝隙）→ 肌肉通道双饱和 → 自发 v≈0 → pause 主导。
+
+## L38 — 杠杆扫描结果（~30 组合，逐组合四目标值 data/m5_calibration.csv）
+
+| 杠杆 | 范围 | 实测结论 |
+|---|---|---|
+| 类级缩放 10 桶 | 0.1–1.0 | **无法打破夹带**（静默 12-44%）；可调 fwd/rev 比例：rec=0.1 → rev 主导 45%（m3）；rec=0.15 → rev 24.5% ✓ + turn 11.5% ✓（u2） |
+| gap_scale | 0.02–0.5 | **0.05 是临界**：逃避（PLM 缝隙触觉路径）✓ + AVB 持续发放；0.02 → 逃避弱化 + rev 主导；≥0.10 → AVB 复归静默（分流） |
+| tonic_scale | 0.1–1.0 | **陡峭分岔**：<0.7 → AVB 无法持续（死区，post-silent 100%）；≥0.8 → 夹带。无"AVB ~3Hz 且网络静默"的中间态 |
+| gL_scale | 2–3× | 全网络静默（post-silent 100%）；CI/逃避仅靠 t=0 波，无行为——不可用 |
+| syn_type gaba | 2× | fwd 46.5%↑ 但 rev/turn 掉出带（m4）——不可用 |
+| **D4 定稿（最小充分）** | **gap_scale=0.05，类级=先验 1.0** | **g1：逃避 back ✓ + 趋化方向 ✓**（见 L39） |
+
+## L39 — 定稿组合 D4=g1_gap005 的 N=5 复核（四目标 vs 带）
+
+| 目标 | 带（data/m5_behavior_reference.csv） | g1 N=5 实测 | 判定 |
+|---|---|---|---|
+| P2 静默比例（<0.1Hz） | [60, 80]%（容差 [0.6,0.8]） | **10.6%**（中位数 13.8Hz、max 14Hz——夹带） | **✗ FAIL** |
+| P4 趋化 CI@5s 方向 | ΔCI vs 参考(0.175@5s) ≤0.15 或方向一致 | **+0.078**（Δ=0.097 ≤0.15 且方向 pos） | **✓ PASS**（T=5s 点估计噪声大 SEM≈0.24；T=15s×N=20 全协议由 B2 复核） |
+| P5 逃避方向 + 潜伏期 | back（D_peak>0.3）；神经窗 [5,20]ms | **back D_peak=0.61**；神经潜伏期 ~4.5ms（触电流注入→DA 发放） | **✓ PASS**（潜伏期点神经元结构性偏快，G0 L22 已记录：省略峰电位起始延迟；τ_trans 23ms 已定稿 CSV，行为潜伏期 ~39.6ms 落 [30,50] 见 L34） |
+| P6 自发分布 | fwd [60,80] / rev [10,25] / turn [5,20]% | fwd 25.5 / rev 3.0 / turn 0.5% | **✗ FAIL**（rev/turn 落带替代组合 u2：fwd 20/rev 24.5 ✓/turn 11.5 ✓，但 P4 方向丢失——两组合不可兼得） |
+
+**决策**：定稿 **g1（gap_scale=0.05，类级缩放全部 1.0 = M4/M3 子图先验）**——
+最小充分组合（P4+P5 PASS、P6 部分、P2 反证）；`data/m5_worm_params.csv` 权重行已落盘
+（class_scale_* 9 桶 + gap_scale + tonic_scale + gL_scale + syn_type_scale_gaba +
+calib_verdict/calib_ruling_request 行 + escape_touch_delay_ms=23 补丁）。
+
+## L40 — ⚠ 反证笔记：P2/P6 结构性不可达的缺失机制清单（**请求规划节点三态裁决**）
+
+全杠杆扫描（L38）证明 **类级缩放/gap/tonic/gL/gaba 五类参数无法联合满足四目标**。
+P2（静默 ≥60%）与 P6（fwd ≥60%）的不可达根因（缺失机制，M6 优先验证清单）：
+
+1. **命令回路互抑缺失（P5/P6 方向分离的结构前提）**：AVA/AVD（后退命令）↔ AVB/PVC（前进
+   命令）在连接组中**全部互为兴奋**（AVAL↔AVBL/PVCL 等 ampa + 缝隙，实测无互抑边）；
+   真实 C. elegans 经 **RIM 酪胺能**（受体=mod → g=0 跳过，L5#5 登记）介导后退时抑制
+   前进。缺失 → 任何扰动使 fwd/back 运动池**共同发放** → 肌肉双饱和（自发 v≈0 → pause）
+   或逃避 D_peak≈0（302 全虫实测，G0 的 0.41 来自 M3 子图非 302）。
+2. **AVA→DD/VD GABA 抑制链缺失**：真实连接组 AVA→DD（后退命令激活 GABA 池 → 抑制 fwd 池）
+   不存在（实测 AVA/AVD→DD/VD 化学边 0 条）；现有 DD/VD gaba 池（motor→motor gaba 57 条）
+   无命令驱动 → 后退 bout 无法隔离 fwd 池。
+3. **单一张力驱动的夹带**：M4 14µA/cm² AVB 张力是 302 唯一持续驱动（真实蠕虫 AVB/PVC
+   活动来自感觉输入 + 自发/调质，本模型自发缺失、调质 g=0）→ 任何持续驱动都夹带全网络
+   （86% 同步 2.7-13.8Hz）→ 静默比例上限 ~44%（u4），结构上 <60%。
+4. **点神经元省略峰电位起始延迟**：逃避神经潜伏期 4.5ms < [5,20]（G0 L22 已记录）。
+
+**三态裁决请求（WORKFLOW，不静默）**：
+- **方案①（推荐）**：接受 D4=g1 定稿（P4/P5 PASS + P2/P6 反证记录 + settle 窗建议），
+  M5 继续走"部分通过"路径（清单 §3.6），M6 引入调质层（RIM 酪胺/命令互抑/AVA→DD）后
+  复核 P2/P6；
+- **方案②**：提前引入 RIM 酪胺激活（mod 通道从 g=0 改为功能抑制）+ 命令互抑边
+  （修改标注或 worm 模块组装，不动 m5_connectome.csv）→ 重新校准；
+- **方案③**：P2/P6 验证主体改为行为参考模型（M4 P4(b) 同款处置：numpy 参考为验证主体，
+  Brian2 全虫为一致性对照）。
+
+## L41 — 测量限制与协议建议（供 B2 验证节点）
+
+1. **P2 settle 窗**：t=0 初始化瞬态波是初始条件伪迹（v=−65+张力开通），500ms 后消失；
+   建议 P2 协议在测量前跑 500ms settle（与"刺激开始 ≥40ms 静息漂移纪律"同哲学）——
+   否则 91% 神经元各 1 尖峰使静默比例结构性卡死。settle 后 u3 可达 69.2% 静默（在带内）
+   但行为破坏——P2 与行为在单一张力下不可兼得（L40 #3）。
+2. **P4 CI@5s 噪声**：T=5s×N=5 的 CI 点估计 SEM≈0.24-0.31，方向可看、落带不可判；
+   落带/显著性判据必须走 G0 定稿 T=15s×N=20 全协议（参考 CI@15s=0.417）。
+3. **P5 计时操作化**：τ_trans=23ms 已定稿 CSV（L34 请求）；神经潜伏期以触电流注入时刻
+   （t0+τ_trans）为起点（L34 语义），否则测量值含转导延迟 ∉ [5,20]。
+
+## L42 — src/worm_circuit.py API 兼容微调登记（4 处，均未改签名/默认行为）
+
+1. `load_weight_scales()`（新函数）：读 CSV 全量定稿（class_scales/gap_scale/
+   syn_type_scales/tonic_scale/gL_scale）→ `make_worm_circuit(scale=302, **load_weight_scales())`；
+   `load_class_scales()` 保持不变（兼容）。
+2. `WormCircuit.__init__` 新增可选参数 `syn_type_scales`/`tonic_scale`/`gL_scale`
+   （默认 None → 恒等，行为不变）：gaba 类型缩放（抑制不足假说）、AVB 张力缩放
+   （夹带杠杆）、点神经元漏电缩放（风险表"漏电增强"）。
+3. `GroupedWormCircuit.build`：gmax 乘 `syn_type_scales[type]`；gL 乘 `gL_scale`。
+4. `WormCircuit.build`（component 模式）：化学 g_max_ns 乘 `syn_type_scales[type]`。
+   均通过默认参数回归验证（make_worm_circuit(scale=20) 行为不变）。
+
+*本文件为 M5-B1e2 交付物（清单步骤 5：权重定稿与行为带校准）；D4 定稿 + L40 反证 +
+三态裁决请求（WORKFLOW 流程，不静默推进）。*

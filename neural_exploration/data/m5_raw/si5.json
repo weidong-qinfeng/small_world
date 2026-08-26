@@ -1,0 +1,18 @@
+{
+  "name": "SI 5 Connectome adjacency matrices.xlsx",
+  "path": "c302/data/SI 5 Connectome adjacency matrices.xlsx",
+  "sha": "aa97d0434f24e7f5010c5a89e6b530ffba4f93f0",
+  "size": 4171572,
+  "url": "https://api.github.com/repos/openworm/c302/contents/c302/data/SI%205%20Connectome%20adjacency%20matrices.xlsx?ref=master",
+  "html_url": "https://github.com/openworm/c302/blob/master/c302/data/SI%205%20Connectome%20adjacency%20matrices.xlsx",
+  "git_url": "https://api.github.com/repos/openworm/c302/git/blobs/aa97d0434f24e7f5010c5a89e6b530ffba4f93f0",
+  "download_url": "https://raw.githubusercontent.com/openworm/c302/master/c302/data/SI%205%20Connectome%20adjacency%20matrices.xlsx",
+  "type": "file",
+  "content": "",
+  "encoding": "none",
+  "_links": {
+    "self": "https://api.github.com/repos/openworm/c302/contents/c302/data/SI%205%20Connectome%20adjacency%20matrices.xlsx?ref=master",
+    "git": "https://api.github.com/repos/openworm/c302/git/blobs/aa97d0434f24e7f5010c5a89e6b530ffba4f93f0",
+    "html": "https://github.com/openworm/c302/blob/master/c302/data/SI%205%20Connectome%20adjacency%20matrices.xlsx"
+  }
+}
