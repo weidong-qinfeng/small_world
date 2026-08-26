@@ -80,8 +80,12 @@ DEFAULT_M3_PARAMS_CSV = os.path.join(ROOT, "neural_exploration", "data",
                                      "m3_reflex_params.csv")
 STIM_WINDOW_MS = 500.0        # 固定形状下限（M3/M4 惯例）
 #: 协议窗口（固定 stim 形状上限，ms）：探针/趋化/静息/自发共用同一 TimedArray 形状
-#: （M4 L16：形状变化触发全量重编译——窗口内任意 T 复用同一编译产物，L7 实测）
-PROTOCOL_WINDOW_MS = 6000.0
+#: （M4 L16：形状变化触发全量重编译——窗口内任意 T 复用同一编译产物，L7 实测）。
+#: B1e 处置（m5_env_notes L27 请求）：G0 定稿 P4 T=15s、P6 T=30s > 6000ms →
+#: 扩展窗口至 30000ms（覆盖最长自发协议；一次性冷编译预算预注册 §8，
+#: grouped 模式 302 实测 ~10min 冷编译 / 稳态 ~6.6s，见 m5_scaling.csv build_wall_s）。
+#: 20000 <= T < 30000 的协议仍复用同一编译产物；shape 定稿后不再变（M4 L16）。
+PROTOCOL_WINDOW_MS = 30000.0
 
 #: 规模轴（清单 §3.3：20=M4 趋化子图；50/100=命令/运动上下文扩展；302=全连接组）
 SCALE_AXIS = (20, 50, 100, 302)
@@ -91,6 +95,92 @@ FIDELITY_AXIS = ("point", "two_comp", "multicomp")
 FIDELITY_DT = {"point": (0.1, "exponential_euler"),
                "two_comp": (0.05, "exponential_euler"),
                "multicomp": (0.01, "rk4")}
+
+#: 类级缩放桶（§6 权重策略 #2：按 (pre 类, post 类) 分桶，每桶一个 s_k，
+#: w_ij = w0_class · s_k；w0_class = 连接组 g_max_ns 占位 = M3/M4 子图先验
+#: （ampa 5.0nS / gaba 15.0nS，L4）。连接组 302 中**非空化学类对**（B1e 实测，
+#: 见 m5_connectome_counts 类对统计；mod/none 调质占位跳过不参与缩放）。
+CLASS_PAIRS = (
+    ("sensory", "sensory"), ("sensory", "inter"), ("sensory", "motor"),
+    ("inter", "inter"), ("inter", "motor"), ("inter", "sensory"),
+    ("motor", "inter"), ("motor", "motor"), ("motor", "sensory"),
+    ("pharyngeal", "pharyngeal"),
+)
+
+#: 默认类级缩放（全部 1.0 = 占位权重恒等；定稿值写入 data/m5_worm_params.csv
+#: weight 行 role=weight, neuron_class=class_scale_<pre>_<post>, value=s_k）
+DEFAULT_CLASS_SCALES: Dict[Tuple[str, str], float] = {
+    pair: 1.0 for pair in CLASS_PAIRS}
+
+
+def load_class_scales(csv_path: Optional[str] = None
+                      ) -> Dict[Tuple[str, str], float]:
+    """读 data/m5_worm_params.csv 的类级缩放定稿（§6 定稿消费入口）。
+
+    - weight 行：role=weight, neuron_class=class_scale_<pre>_<post>, value=s_k
+      （列 schema 同 m5_worm_params.csv：value 在 fields[9]，L23 位置解析语义）；
+    - 缺失桶 → 1.0（恒等）；非 class_scale_* 的 weight 行忽略。
+    - 供 P2/P4/P5/P6 验证脚本消费：``cs = load_class_scales()`` →
+      ``make_worm_circuit(scale=302, class_scales=cs)``（行为层降阶配置 G0）。
+    """
+    from neural_exploration.src.worm_loop import load_m5_worm_params
+
+    wp = load_m5_worm_params(csv_path)
+    out = dict(DEFAULT_CLASS_SCALES)
+    for key, val in wp.get("weight", {}).items():
+        if key.startswith("class_scale_") and isinstance(val, (int, float)):
+            rest = key[len("class_scale_"):]     # "<pre>_<post>"
+            pre, _, post = rest.rpartition("_")
+            if (pre, post) in out:
+                out[(pre, post)] = float(val)
+    return out
+
+
+def load_weight_scales(csv_path: Optional[str] = None) -> Dict[str, dict]:
+    """读 data/m5_worm_params.csv 的 §6 权重定稿全量（类级 + 缝隙 + 突触类型）。
+
+    返回 {"class_scales": {(pre,post): s_k}, "gap_scale": float,
+          "syn_type_scales": {type: s_t}, "tonic_scale": float,
+          "gL_scale": float}——可直接
+    ``make_worm_circuit(scale=302, **load_weight_scales())``（M5-B1e2 校准定稿
+    消费入口；行为层 P2/P4/P5/P6 验证脚本统一用它，保证 CSV 为唯一定稿源）。
+    列 schema 同 m5_worm_params.csv（value 在 fields[9]，L23 位置解析语义）：
+      - weight 行 neuron_class=class_scale_<pre>_<post> → 类级缩放 s_k；
+      - weight 行 neuron_class=gap_scale → 缝隙全局缩放（默认 1.0）；
+      - weight 行 neuron_class=syn_type_scale_<ampa|gaba|nmda> → 突触类型缩放
+        （默认 1.0；M5-B1e2 校准扩展，API 兼容——缺省恒等）；
+      - weight 行 neuron_class=tonic_scale → AVB 张力缩放（默认 1.0，同上）；
+      - weight 行 neuron_class=gL_scale → 点神经元漏电缩放（默认 1.0，同上）。
+    """
+    from neural_exploration.src.worm_loop import load_m5_worm_params
+
+    wp = load_m5_worm_params(csv_path)
+    class_scales = dict(DEFAULT_CLASS_SCALES)
+    gap_scale = 1.0
+    syn_type_scales: Dict[str, float] = {}
+    tonic_scale = 1.0
+    gL_scale = 1.0
+    for key, val in wp.get("weight", {}).items():
+        if not isinstance(val, (int, float)):
+            continue
+        if key.startswith("class_scale_"):
+            rest = key[len("class_scale_"):]
+            pre, _, post = rest.rpartition("_")
+            if (pre, post) in class_scales:
+                class_scales[(pre, post)] = float(val)
+        elif key == "gap_scale":
+            gap_scale = float(val)
+        elif key == "tonic_scale":
+            tonic_scale = float(val)
+        elif key == "gL_scale":
+            gL_scale = float(val)
+        elif key.startswith("syn_type_scale_"):
+            stype = key[len("syn_type_scale_"):]
+            if stype in ("ampa", "gaba", "nmda"):
+                syn_type_scales[stype] = float(val)
+    return {"class_scales": class_scales, "gap_scale": gap_scale,
+            "syn_type_scales": syn_type_scales, "tonic_scale": tonic_scale,
+            "gL_scale": gL_scale}
 
 #: M4 趋化子图 20 角色 roster（连接组模式下 20 档优先取此集合；M4 冻结参数源的角色序）
 M4_ROSTER = ("ASEL", "ASER", "AIYL", "AIYR", "AIBL", "AIBR", "RIAL", "RIAR",
@@ -210,10 +300,20 @@ def _parse_connectome_csv(path: str) -> ConnectomeSpec:
 
     spec = ConnectomeSpec(source=path)
     skipped_mod_none = 0
+
+    def _clean_line(ln: str) -> str:
+        """去注释/头行外层引号：子图 CSV（B1a）的列头行为 `"role,...,note"`
+        带引号——直接过滤会把列头行丢掉 → DictReader 误把首数据行当列头
+        （M5-B1d 实测，L23）；主 connectome CSV 列头无引号不受影响。"""
+        s = ln.strip()
+        if s.startswith('"'):
+            s = s.strip('"')
+        return s
+
     with open(path, newline="", encoding="utf-8") as f:
-        rows = list(_csv.DictReader(r for r in f
-                                    if not r.strip().startswith("#")
-                                    and not r.strip().startswith('"')))
+        rows = list(_csv.DictReader(
+            _clean_line(ln) for ln in f
+            if _clean_line(ln) and not _clean_line(ln).startswith("#")))
     for r in rows:
         role = (r.get("role") or "").strip().upper()
         frm = (r.get("synapse_from") or "").strip().upper()
@@ -223,6 +323,15 @@ def _parse_connectome_csv(path: str) -> ConnectomeSpec:
             spec.neurons[role] = cls
         if stype == "chem" and frm:
             receptor = (r.get("receptor") or "").strip().lower()
+            if not receptor:
+                # 子图 CSV（m5_pharynx/command/chemotaxis_subgraph.csv）无 receptor 列
+                # → 按 L4 递质→受体映射回退（ach/glut→ampa、gaba→gaba、调质→mod）——
+                # M5-B1d 微调（API 兼容：主 connectome CSV 有 receptor 列不受影响，L23）
+                receptor = {"ach": "ampa", "glut": "ampa", "gaba": "gaba",
+                            "dopamine": "mod", "serotonin": "mod",
+                            "other": "none"}.get(
+                                (r.get("neurotransmitter") or "").strip().lower(),
+                                "none")
             if receptor in ("ampa", "gaba"):
                 spec.chem.append(ChemRow(
                     pre=frm, post=(r.get("synapse_to") or "").strip().upper(),
@@ -354,6 +463,11 @@ class WormCircuit:
         muscle_tau_ms: Optional[float] = None,
         muscle_cap: Optional[float] = 1.0,
         gap_mode: str = "auto",
+        class_scales: Optional[Dict[Tuple[str, str], float]] = None,
+        gap_scale: Optional[float] = None,
+        syn_type_scales: Optional[Dict[str, float]] = None,
+        tonic_scale: Optional[float] = None,
+        gL_scale: Optional[float] = None,
     ):
         if scale not in SCALE_AXIS:
             raise ValueError(f"规模需为 {SCALE_AXIS}：{scale}")
@@ -367,6 +481,24 @@ class WormCircuit:
         self.seed = 0 if seed is None else int(seed)
         self.connectome_poll_s = connectome_poll_s
         self.connectome_timeout_s = connectome_timeout_s
+        # 类级缩放（§6 权重策略 #2；None → 恒等占位权重，行为不变——API 兼容）
+        self.class_scales: Dict[Tuple[str, str], float] = dict(
+            DEFAULT_CLASS_SCALES if class_scales is None else class_scales)
+        self.gap_scale = 1.0 if gap_scale is None else float(gap_scale)
+        # 突触类型缩放（M5-B1e2 校准扩展：syn_type_scales={"ampa":s_a,"gaba":s_g}，
+        # 在类级缩放后额外乘；None → 恒等——API 兼容，默认行为不变）。
+        # 依据：连接组 gaba 化学突触仅 129/2472（L20），占位 gaba=15nS 相对
+        # ampa=5nS 仅 3×，静息过兴奋的"抑制不足"假说需要独立 gaba 杠杆（§6 校准）。
+        self.syn_type_scales: Dict[str, float] = dict(
+            syn_type_scales or {})
+        # 张力缩放（M5-B1e2 校准扩展：M4 定稿 tonic=14µA/cm²（AVBL/AVBR）在 302
+        # 全网络下把 AVB 推成 14-27Hz 网络级夹带振荡引擎——实测 86% 神经元同步
+        # 13.8Hz（静息 P2 静默比例结构性不可达）。tonic_scale 把 AVB 降至 ~3Hz
+        # 目标（C_fwd 基线 ≈0.2 参考值所需 VB/DB 总率 ~55Hz）；None → 1.0 恒等，
+        # API 兼容默认行为不变）
+        self.tonic_scale = 1.0 if tonic_scale is None else float(tonic_scale)
+        # 漏电缩放（风险表"漏电增强"杠杆；None → 1.0 恒等，API 兼容）
+        self.gL_scale = 1.0 if gL_scale is None else float(gL_scale)
 
         # 连接组规格（运行期读取；缺省回退 M4 骨架）
         self.spec: ConnectomeSpec = load_connectome(
@@ -393,7 +525,7 @@ class WormCircuit:
                 os.path.abspath(DEFAULT_M4_PARAMS_CSV):
             for r, v in self.params.tonic_uA_cm2.items():
                 if r in self.sub.neurons and v > 0:
-                    self.sub.tonic_uA_cm2[r] = v
+                    self.sub.tonic_uA_cm2[r] = v * self.tonic_scale
         if dt_ms is not None:
             self.params.dt_ms = dt_ms
         if method is not None:
@@ -429,6 +561,16 @@ class WormCircuit:
         for r in self.sub.chem:
             post[r.post].add(r.syn_type)
         return post
+
+    def _class_scale_for(self, pre: str, post: str) -> float:
+        """类级缩放 s_k(bucket)：w_ij = w0_class · s_k（§6 权重策略 #2）。
+
+        桶 = (pre 类, post 类)（四类 sensory/inter/motor/pharyngeal）；
+        缺省/未知类对 → 1.0（恒等）。
+        """
+        return self.class_scales.get(
+            (self.sub.neurons.get(pre, ""), self.sub.neurons.get(post, "")),
+            1.0)
 
     def _make_neuron(self, role: str, extra_eqs: str, extra_im: str,
                      stim_var: str) -> object:
@@ -471,7 +613,9 @@ class WormCircuit:
         for k, r in enumerate(self.sub.chem):
             base = self._m2[r.syn_type]
             sp = SynapseParams(
-                synapse_type=r.syn_type, g_max_ns=r.g_ns,
+                synapse_type=r.syn_type, g_max_ns=r.g_ns
+                * self._class_scale_for(r.pre, r.post)
+                * self.syn_type_scales.get(r.syn_type, 1.0),
                 tau_ms=base.tau_ms, e_rev_mv=base.e_rev_mv,
                 p_release=1.0, n_vesicles=1,          # 确定性铁律
                 mg_mm=base.mg_mm, u0=base.u0,
@@ -491,7 +635,7 @@ class WormCircuit:
             if self.gap_mode == "none":
                 break
             gj = GapJunction(self.neurons[g.a], self.neurons[g.b],
-                             g_gap_ns=g.g_ns,
+                             g_gap_ns=g.g_ns * self.gap_scale,
                              name=f"{self.name_prefix}_gap{k}")
             gj.build()
             self.gaps.append(gj)
@@ -1319,7 +1463,9 @@ class GroupedWormCircuit(WormCircuit):
         self.group.m, self.group.h, self.group.n = m0, h0, n0
         self.group.gNa = 120.0 * mS / cm ** 2
         self.group.gK = 36.0 * mS / cm ** 2
-        self.group.gL = 0.3 * mS / cm ** 2
+        # 漏电缩放（M5-B1e2 校准扩展：gL=0.3mS/cm² 基准；风险表"漏电增强"杠杆——
+        # 提高阈值 → 抑制网络级夹带；None → 1.0 恒等，API 兼容）
+        self.group.gL = (0.3 * self.gL_scale) * mS / cm ** 2
         self.group.AREA = np.full(n, 1.257e-5 * 1e-4) * meter ** 2
         self.role_index = {r: k for k, r in enumerate(self.names)}
 
@@ -1331,7 +1477,9 @@ class GroupedWormCircuit(WormCircuit):
                 continue
             pre_i = np.array([self.role_index[r.pre] for r in rows])
             post_i = np.array([self.role_index[r.post] for r in rows])
-            gmax = np.array([r.g_ns * 1e-9 / (1.257e-5 * 1e-4)
+            gmax = np.array([r.g_ns * self._class_scale_for(r.pre, r.post)
+                             * self.syn_type_scales.get(r.syn_type, 1.0)
+                             * 1e-9 / (1.257e-5 * 1e-4)
                              for r in rows]) * siemens / meter ** 2
             delays = np.array([r.delay_ms for r in rows]) * ms
             syn = Synapses(self.group, self.group,
@@ -1348,7 +1496,8 @@ class GroupedWormCircuit(WormCircuit):
         if self.sub.gaps and self.gap_mode == "grouped":
             a_i = np.array([self.role_index[r.a] for r in self.sub.gaps])
             b_i = np.array([self.role_index[r.b] for r in self.sub.gaps])
-            gg = np.array([r.g_ns for r in self.sub.gaps]) * 1e-9 * siemens
+            gg = np.array([r.g_ns * self.gap_scale
+                           for r in self.sub.gaps]) * 1e-9 * siemens
             syn = Synapses(self.group, self.group,
                            model="g_gap : siemens\n" + _GAP_MODEL_GROUPED,
                            name=f"{self.name_prefix}_gaps")
