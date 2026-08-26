@@ -1,6 +1,6 @@
 # M5 P2 静息验证（tools/validate_p2_resting.py）
 metric,value,band,verdict
-pass_,True,反证记录型,ok
+pass_,False,False（反证记录：记录本身即科学交付物，主 agent 最终裁决）,record
 status,counter-evidence-record,counter-evidence-record,ok
 silent_frac_01,0.1060,"[0.6,0.8]",OUT（反证记录）
 silent_frac_05,0.1060,"[0.6,0.8]",informational
