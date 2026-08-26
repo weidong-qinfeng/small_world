@@ -131,14 +131,15 @@ def run_p4(save_plot: bool = True, n_trials: int = N_TRIALS,
     print(f"  确定性抽查（seed_base=0 重跑 trial0）: {deterministic}"
           f"（CI={r_det.ci:.4f} vs {res_grad[0].ci:.4f}，{det_wall:.0f}s）")
 
-    # ---- 判定（主 agent 裁决 2026-08-26：P4 = 反证记录型 pass）----
+    # ---- 判定（主 agent 最终裁决 2026-08-26：P4 = fail + 反证记录）----
     # 预注册指标：显著性 p<0.05 且 d≥0.5；ΔCI≤0.15 或方向一致；对照 p>0.05。
     # 实测（T=15s×N=20 全协议，M5 定稿 WormLoop/VirtualBody）：CĪ=-0.065, p=0.71,
-    # d=-0.08，方向负 → 预注册指标不满足（indicator_pass=False）。
-    # 主 agent 裁决：M5 定稿闭环是设计最终身体（virtual_body.py §5.2 #3），M4 前向身体
-    # 仅作对照记录（换身体规避失败 = 不诚实，不改变判据主体）→ **P4 判为反证记录型**
-    # （与 P2/P6 同型：记录本身即交付物）：302 全虫在连接组+简化权重下不产生净趋化位移，
-    # 根因 = fwd/back 运动池夹带共同发放（L39/L40），缺失命令互抑 → M6 优先验证清单。
+    # d=-0.08，方向负 → 预注册指标不满足。主 agent 最终裁决：趋化在 302 网络中确实
+    # 不涌现（CI=-0.065），**如实判 fail（pass_=False）+ 反证记录**——M5 部分达标。
+    # 反证记录内容（M6 优先验证清单）：根因 = fwd/back 运动池夹带共同发放 → v≈0
+    # （L39/L40，与 P2/P6 同根因：夹带极限环 + 缺失调质/异质权重 + 命令互抑缺失）；
+    # M4 前向身体对照（data/m5_p4_body_comparison.csv：+0.360 vs -0.407）仅作记录，
+    # 不改变判据主体（换身体规避失败 = 不诚实）。
     sig_ok = bool(s_grad["p_value"] < 0.05 and s_grad["cohen_d"] >= 0.5)
     in_band = bool(CI_TOL[0] <= s_grad["mean"] <= CI_TOL[1])
     delta_ci = abs(s_grad["mean"] - ref_ci_15s)
@@ -148,19 +149,23 @@ def run_p4(save_plot: bool = True, n_trials: int = N_TRIALS,
     finite_ok = bool(np.all(np.isfinite(ci_grad)) and np.all(np.isfinite(ci_ctrl)))
 
     indicator_pass = bool(finite_ok and sig_ok and (delta_ok or dir_ok) and ctrl_ok)
-    pass_ = True   # 反证记录型 pass（主 agent 裁决 2026-08-26；记录本身即交付物）
+    # 主 agent 最终裁决 2026-08-26：P2/P4/P6 编码统一 pass_=False，
+    # status=counter-evidence-record（反证记录：记录本身即科学交付物）；
+    # P4 判据主体 = M5 定稿闭环（VirtualBody），负 CI 是真实网络行为。
+    pass_ = False
     status = "counter-evidence-record"
 
     verdict = (
-        "P4 趋化 = 反证记录型 pass（主 agent 裁决 2026-08-26）：全协议（T=15s×N=20，"
-        "302 全虫 D4 权重，M5 定稿 WormLoop/VirtualBody）实测 CĪ="
-        f"{s_grad['mean']:.3f}±{s_grad['sem']:.3f}（p={s_grad['p_value']:.3f}, "
-        f"d={s_grad['cohen_d']:.2f}）方向负/不显著，ΔCI vs 参考(15s="
-        f"{ref_ci_15s:.3f})={delta_ci:.3f}——预注册指标不满足（indicator_pass=False），"
-        "记录为反证：302 全虫在连接组+简化权重下不产生净趋化位移（根因 = fwd/back 运动池"
-        "夹带共同发放 → v≈0，L39/L40；缺失命令互抑 → M6 优先验证清单）；M4 前向身体对照"
-        "仅作记录（换身体规避失败 = 不诚实，不改变判据主体）；对照 p="
-        f"{s_ctrl['p_value']:.3f} > 0.05 ✓（无梯度无漂移）"
+        "P4 趋化 = 反证记录（pass_=False, status=counter-evidence-record，主 agent "
+        "最终裁决 2026-08-26）：302 网络趋化不涌现——全协议（T=15s×N=20，M5 定稿 "
+        "WormLoop/VirtualBody 为判据主体）实测 CĪ="
+        f"{s_grad['mean']:.3f}±{s_grad['sem']:.3f}（p={s_grad['p_value']:.3f}，"
+        f"d={s_grad['cohen_d']:.2f}），ΔCI vs 参考(0.417@15s)="
+        f"{delta_ci:.3f}；对照 CI={s_ctrl['mean']:+.3f}（p={s_ctrl['p_value']:.3f} "
+        "正常）——负 CI 是真实网络行为（fwd/back 夹带共同发放 → v≈0，L39/L40）；"
+        "→ 反证记录（夹带极限环 + 缺失调质/异质权重 + 命令互抑缺失 → M6 优先验证）；"
+        "M4 前向身体对照（data/m5_p4_body_comparison.csv：CĪ +0.360 vs -0.407）"
+        "仅作对照记录，不改变判据主体（换身体规避失败 = 不诚实）"
     )
 
     out = dict(
@@ -209,10 +214,11 @@ def run_p4(save_plot: bool = True, n_trials: int = N_TRIALS,
                 evidence="tools/validate_p4_chemotaxis.run_p4_body_comparison"
                          "（data/m5_p4_body_comparison.csv，2026-08-26）",
                 adjudication=(
-                    "主 agent 裁决 2026-08-26（三态选项 ①）：M5 定稿闭环（VirtualBody）是"
-                    "设计最终身体 → P4 判为**反证记录型 pass**（与 P2/P6 同型：记录本身即"
-                    "交付物）；M4 前向身体语义仅作对照记录，不改变判据主体（换身体规避失败"
-                    "= 不诚实）；M6 命令互抑/调质后复核。"),
+                    "主 agent 最终裁决 2026-08-26（三态选项 ①）：M5 定稿闭环（VirtualBody）是"
+                    "设计最终身体、P4 判据主体 → 负 CI 是真实网络行为；编码统一 "
+                    "pass_=False + status=counter-evidence-record（反证记录：记录本身即"
+                    "科学交付物，与 P2/P6 同型）；M4 前向身体语义仅作对照记录，不改变判据"
+                    "主体（换身体规避失败 = 不诚实）；M6 命令互抑/调质后复核。"),
             ),
             diagnosis_evidence=(
                 "/tmp/m5_b2_p4diag.py：6 试次位移 [0.36,0.22,0.45,0.19,0.30,0.35] 皿单位，"
@@ -225,7 +231,9 @@ def run_p4(save_plot: bool = True, n_trials: int = N_TRIALS,
         w = _csv.writer(f, lineterminator="\n")
         w.writerow(["# M5 P4 趋化验证（tools/validate_p4_chemotaxis.py；T=15s×N=20 全协议）"])
         w.writerow(["metric", "value", "criterion", "verdict"])
-        w.writerow(["pass_", out["pass_"], "反证记录型 pass（主 agent 裁决）", "ok"])
+        w.writerow(["pass_", out["pass_"],
+                    "False（反证记录：记录本身即科学交付物，主 agent 最终裁决）",
+                    "record"])
         w.writerow(["status", out["status"], "counter-evidence-record", "ok"])
         w.writerow(["indicator_pass", out["indicator_pass"],
                     "预注册指标（p<0.05 且 d≥0.5 且方向一致/ΔCI≤0.15）",

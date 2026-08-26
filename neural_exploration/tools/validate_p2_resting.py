@@ -143,15 +143,18 @@ def run_p2(save_plot: bool = True) -> dict:
         recheck_m6="M6 引入 RIM 酪胺/命令互抑/AVA→DD GABA 链后复核（M6 优先验证清单 #1/#2/#3）",
     )
 
-    pass_ = True  # 反证记录型 pass（记录本身即交付物；与 M4 P4 同型）
+    pass_ = False  # 主 agent 最终裁决 2026-08-26：P2/P4/P6 编码统一 pass_=False，
+    #                status=counter-evidence-record（反证记录：记录本身即科学交付物）
     out = dict(
         pass_=pass_,
         status=counter_evidence["status"],
         verdict=(
-            "P2 静息 = 反证记录型 pass：无 NaN/无发散 ✓（max " +
+            "P2 静息 = 反证记录（pass_=False, status=counter-evidence-record）："
+            "无 NaN/无发散 ✓（max " +
             f"{max_hz:.1f}Hz < 60Hz 生理上限 ✓）；静默比例 {silent:.1%}（中位数 "
             f"{median:.1f}Hz）不在带 [60,80]%（预期：夹带极限环结构性不可达，L39）——"
-            "反证记录完成（缺失机制：调质/异质权重/命令互抑，M6 复核）"),
+            "反证记录完成（缺失机制：调质/异质权重/命令互抑，M6 复核；"
+            "**与 P4 同根因：夹带极限环 + 缺失调质/异质权重**）"),
         indicator_pass=indicator_pass,
         in_band_silent=in_band_silent,
         in_band_median=in_band_median,
@@ -180,7 +183,8 @@ def run_p2(save_plot: bool = True) -> dict:
         w = _csv.writer(f, lineterminator="\n")
         w.writerow(["# M5 P2 静息验证（tools/validate_p2_resting.py）"])
         w.writerow(["metric", "value", "band", "verdict"])
-        w.writerow(["pass_", out["pass_"], "反证记录型", "ok"])
+        w.writerow(["pass_", out["pass_"], "False（反证记录：记录本身即科学交付物，主 agent 最终裁决）",
+                    "record"])
         w.writerow(["status", out["status"], "counter-evidence-record", "ok"])
         w.writerow(["silent_frac_01", f"{silent:.4f}", "[0.6,0.8]",
                     "in" if in_band_silent else "OUT（反证记录）"])

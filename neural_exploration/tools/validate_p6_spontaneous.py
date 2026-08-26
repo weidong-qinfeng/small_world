@@ -110,16 +110,18 @@ def run_p6(save_plot: bool = True) -> dict:
         recheck_m6="M6 引入 RIM 酪胺/命令互抑/AVA→DD GABA 链后复核（M6 优先验证清单 #1/#2/#3）",
     )
 
-    pass_ = True  # 反证记录型 pass（记录本身即交付物；与 M4 P4 同型）
+    pass_ = False  # 主 agent 最终裁决 2026-08-26：P2/P4/P6 编码统一 pass_=False，
+    #                status=counter-evidence-record（反证记录：记录本身即科学交付物）
     out = dict(
         pass_=pass_, status=counter_evidence["status"],
         verdict=(
-            "P6 自发 = 反证记录型 pass：无 NaN ✓；状态比例 fwd "
+            "P6 自发 = 反证记录（pass_=False, status=counter-evidence-record）："
+            "无 NaN ✓；状态比例 fwd "
             f"{mean_frac['fwd']:.1%}/rev {mean_frac['rev']:.1%}/turn "
             f"{mean_frac['turn']:.1%}/pause {mean_frac['pause']:.1%}——不在带 "
             "[60,80]/[10,25]/[5,20]%（pause 主导：fwd/back 运动池共同发放 → 肌肉双饱和"
             " → v≈0，L39/L40）；反证记录完成（缺失机制：RIM 酪胺/命令互抑/AVA→DD "
-            "GABA 链，M6 复核）"),
+            "GABA 链，M6 复核；**与 P4 同根因：夹带极限环 + 缺失调质/异质权重**）"),
         indicator_pass=indicator_pass, no_nan=no_nan,
         deterministic=deterministic, n_runs=N_RUNS, t_total_ms=SPONT_T_MS,
         frac_mean=mean_frac, frac_sem=sem_frac, frac_pct={s: v * 100
@@ -138,7 +140,8 @@ def run_p6(save_plot: bool = True) -> dict:
         w = _csv.writer(f, lineterminator="\n")
         w.writerow(["# M5 P6 自发行为验证（tools/validate_p6_spontaneous.py）"])
         w.writerow(["metric", "value", "band", "verdict"])
-        w.writerow(["pass_", out["pass_"], "反证记录型", "ok"])
+        w.writerow(["pass_", out["pass_"], "False（反证记录：记录本身即科学交付物，主 agent 最终裁决）",
+                    "record"])
         w.writerow(["status", out["status"], "counter-evidence-record", "ok"])
         for s in ("fwd", "rev", "turn", "pause"):
             w.writerow([f"frac_{s}_pct", f"{mean_frac[s] * 100:.2f}",

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M3 触觉反射弧 · 交互实验台</title>
+<style>
+  :root {
+    --bg: #f5f7fa; --panel: #ffffff; --line: #e0e6ed; --ink: #263238; --sub: #607d8b;
+    --accent: #1565c0; --ok: #2e7d32; --warn: #e65100; --red: #c62828;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; }
+  .wrap { max-width: 1720px; margin: 0 auto; padding: 14px; }
+  header { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-bottom: 12px; }
+  header h1 { font-size: 20px; margin: 0; }
+  header .tag { font-size: 12px; color: var(--sub); }
+  .cols { display: flex; gap: 14px; align-items: flex-start; }
+  .canvas-panel { flex: 1 1 auto; background: var(--panel); border: 1px solid var(--line);
+                  border-radius: 10px; padding: 10px; min-width: 0; }
+  #circuit { width: 100%; height: auto; display: block; }
+  .side { width: 392px; flex: 0 0 392px; display: flex; flex-direction: column; gap: 12px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+  .card h2 { font-size: 13px; margin: 0 0 8px; color: var(--sub); letter-spacing: .5px; }
+  .card h2 .hint { font-weight: normal; font-size: 11px; color: #90a4ae; margin-left: 6px; }
+  .btn { border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 7px;
+         padding: 6px 10px; font-size: 12.5px; cursor: pointer; font-family: inherit; }
+  .btn:hover { background: #f0f4f8; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.primary:hover { background: #0d47a1; }
+  .btn.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .stim-btn { min-width: 62px; }
+  .dur-btn { min-width: 74px; }
+  .row { display: flex; align-items: center; gap: 8px; margin: 6px 0; font-size: 12.5px; }
+  .row label { color: var(--sub); min-width: 66px; }
+  input[type=range] { flex: 1; }
+  select { font-family: inherit; font-size: 12.5px; padding: 4px; border: 1px solid var(--line); border-radius: 6px; }
+  .playbar { display: flex; gap: 8px; align-items: center; }
+  #scrub { flex: 1; }
+  table#log { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+  #log th, #log td { border-bottom: 1px solid var(--line); padding: 4px 5px; text-align: center; }
+  #log th { color: var(--sub); font-weight: 600; background: #fafbfc; }
+  #log tr.cur td { background: #e8f0fe; font-weight: 600; }
+  .readout { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 12px; font-size: 12.5px; }
+  .readout .k { color: var(--sub); }
+  .readout .v { text-align: right; font-variant-numeric: tabular-nums; word-break: break-all; }
+  .readout .full { grid-column: 1 / -1; }
+  .verdict { font-weight: 700; font-size: 13px; }
+  .verdict.ok { color: var(--ok); }
+  .verdict.warn { color: var(--red); }
+  .verdict.idle { color: #78909c; }
+  .game-box { background: #fff8e1; border: 1px solid #ffd54f; border-radius: 8px; padding: 8px 10px; }
+  #game-msg { font-size: 12px; color: #6d4c00; min-height: 30px; margin: 4px 0; }
+  .hidden { display: none; }
+  .foot { margin-top: 12px; font-size: 11px; color: #90a4ae; line-height: 1.7; }
+  .foot b { color: #546e7a; }
+  .chip { display: inline-block; background: #e8f0fe; color: var(--accent); border-radius: 10px;
+          padding: 1px 8px; font-size: 11px; margin-right: 4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>M3 最小行为回路 · 触觉反射弧 交互实验台</h1>
+    <span class="tag">数据 = Brian2 2.6.0 确定性仿真（p=1）· 非示意图 · 数字与 m3_report P1–P5 一致</span>
+  </header>
+
+  <div class="cols">
+    <!-- 左：真实神经元连接画布 -->
+    <div class="canvas-panel">
+      <svg id="circuit" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 680"></svg>
+    </div>
+
+    <!-- 右：控制面板 -->
+    <div class="side">
+      <div class="card">
+        <h2>① 施加刺激<span class="hint">点击即切换至该档真实仿真</span></h2>
+        <div class="btn-row">
+          <button class="btn stim-btn" data-v="0">无刺激 0×</button>
+          <button class="btn stim-btn" data-v="0.5">轻触 0.5×</button>
+          <button class="btn stim-btn" data-v="1">基准 1×</button>
+          <button class="btn stim-btn" data-v="2">2×</button>
+          <button class="btn stim-btn" data-v="4">重触 4×</button>
+          <button class="btn stim-btn" data-v="8">重压 8×</button>
+        </div>
+        <div class="row">
+          <label>强度微调</label>
+          <input type="range" id="sl-intensity" min="0" max="8" step="0.5" value="1" list="iSteps">
+          <datalist id="iSteps"><option value="0"></option><option value="0.5"></option><option value="1"></option><option value="2"></option><option value="4"></option><option value="8"></option></datalist>
+        </div>
+        <div class="btn-row">
+          <button class="btn dur-btn" data-dur="5">时程 5ms</button>
+          <button class="btn dur-btn" data-dur="20">长按 20ms</button>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <input type="checkbox" id="chk-ablation">
+          <label for="chk-ablation" style="min-width:0">✂️ 切除 AVM→VB（GABA 抑制）· 反证实验</label>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>② 播放控制</h2>
+        <div class="playbar">
+          <button class="btn primary" id="btn-play">▶ 播放</button>
+          <button class="btn" id="btn-reset">⟲ 回到 0ms</button>
+          <select id="speed">
+            <option value="0.25">0.25× 慢镜</option>
+            <option value="0.5">0.5×</option>
+            <option value="1" selected>1×</option>
+            <option value="2">2×</option>
+            <option value="4">4× 快进</option>
+          </select>
+        </div>
+        <div class="row">
+          <label>时间轴</label>
+          <input type="range" id="scrub" min="0" max="150" step="0.1" value="46">
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>③ 实时读数<span class="hint">当前实验：<b id="rd-run" style="color:var(--accent)"></b></span></h2>
+        <div class="readout">
+          <span class="k">时刻 t</span><span class="v" id="rd-t">—</span>
+          <span class="k">PLM 发放</span><span class="v" id="rd-PLM">—</span>
+          <span class="k">AVM 发放</span><span class="v" id="rd-AVM">—</span>
+          <span class="k">DA 发放</span><span class="v" id="rd-DA">—</span>
+          <span class="k">VB 发放</span><span class="v" id="rd-VB">—</span>
+          <span class="k">神经潜伏期</span><span class="v" id="rd-lat">—</span>
+          <span class="k">D_peak</span><span class="v" id="rd-dpeak">—</span>
+          <span class="k">C_back（后退）</span><span class="v" id="rd-cback">—</span>
+          <span class="k">C_fwd（前进）</span><span class="v" id="rd-cfwd">—</span>
+          <span class="k">方向判定</span><span class="v" id="rd-verdict">—</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>④ 实验记录<span class="hint">自动记录每次操作 <button class="btn" id="btn-clear" style="padding:1px 8px;font-size:11px">清空</button></span></h2>
+        <table id="log">
+          <thead><tr><th>配置</th><th>潜伏期ms</th><th>D_peak</th><th>C_back峰</th><th>VB窗发放</th><th>判定</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <div class="foot" style="margin-top:6px">提示：从 0.5× 到 8× 连续试，潜伏期会单调变短（P4 强度-响应，Spearman ρ = −1.0）。</div>
+      </div>
+
+      <div class="card game-box">
+        <h2>⑤ 小游戏 · 反应速度挑战<span class="hint">娱乐向</span></h2>
+        <div id="game-msg">点【触摸！】后立刻盯着线虫 —— 它会在 9.6ms 内缩身。</div>
+        <div class="btn-row">
+          <button class="btn primary" id="btn-game">🪱 触摸！</button>
+          <button class="btn" id="btn-react" disabled>我缩了！</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>真实来源说明</h2>
+        <div class="foot">
+          <span class="chip">引擎</span>Brian2 2.6.0（rk4, dt=0.01ms），确定性 p=1，同 M3 验收基线，逐位可复现（<code>gen_m3_lab.py</code>）。<br>
+          <span class="chip">形态</span>M1 定稿 18 隔室（Mainen-Sejnowski 简化）：soma → 树突链 dend1×2→dend2×2 + 轴突链 ais→myelin1→node1→myelin2→node2→myelin3→node3（郎飞结 300 mS/cm²）。<br>
+          <span class="chip">连接</span>突触按 CSV 唯一定稿源：node3（轴突末段）→ soma；触刺激注入 PLM dend2#1；VB soma 张力 14µA/cm²。绘制为形态结构示意（隔室位置/顺序/类型真实，尺寸为可视化缩放）。<br>
+          <span class="chip">对照</span>潜伏期/D_peak/C_back 峰与 <code>m3_report.md</code> §3、<code>m3_validation_summary.json</code> 一致。
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="runs.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

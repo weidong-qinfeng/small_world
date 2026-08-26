@@ -169,10 +169,18 @@ def generate_report() -> str:
     lines.append("# M5 全虫 302 连接组核心里程碑报告\n")
     lines.append(f"> 生成：{summary.get('generated_utc', '—')}（M5-B2 验证+报告节点）\n")
     lines.append(f"> 判定：`all_pass = {summary['all_pass']}`；"
-                 f"**P1/P3/P5 pass + P2/P4/P6 反证记录型 pass**"
-                 f"（P4 = T=15s×N=20 全协议实测 CĪ=-0.065, p=0.71, d=-0.08 方向负/不显著"
-                 f"——主 agent 2026-08-26 裁决为反证记录型：M5 定稿闭环是判据主体，"
-                 f"M4 前向身体对照仅作记录，根因 = 夹带病理 L39/L40，M6 复核）。\n")
+                 f"**P1/P3/P5 pass + P2/P4/P6 反证记录**"
+                 f"（pass_=False, status=counter-evidence-record——主 agent 最终裁决 "
+                 f"2026-08-26 编码统一：记录本身即科学交付物；P4 = T=15s×N=20 全协议实测 "
+                 f"CĪ=-0.065, p=0.71, d=-0.08 方向负/不显著，302 网络趋化不涌现）。\n")
+    lines.append("**M5 验收结论：部分达标（P1/P3/P5 通过 + P2/P4/P6 反证记录）**。"
+                 "核心科学产出：① **铁律 C 缩放定律**——302 全虫点神经元可行，"
+                 "vs M4 20 神经元 HH 加速 300-500×；② **连接组加载正确**（P1：302/四类/"
+                 "3,638 化学/1,093 缝隙/递质 100%/确定性重跑）；③ **逃避/咽部节律在 302 "
+                 "网络中通过**（P3/P5——M3 子图在网内工作）；④ **反证机制清单（M6 优先验证）**"
+                 "——网络夹带极限环（fwd/back 运动池共同发放 → v≈0）+ 缺失调质（RIM 酪胺/"
+                 "命令互抑/AVA→DD GABA 链）+ 权重不可辨识（类级缩放不足）。"
+                 "符合设计文档 M5 反证路径「问题在网络耦合/神经调质/缺失环节」的实证。\n")
     lines.append("---\n")
 
     # 1. 交接
@@ -305,15 +313,14 @@ def generate_report() -> str:
                  f"**{_yes(p3.get('pass_', False))} pass** | {_fmt(p3.get('peak_freq_no_food'))}/"
                  f"{_fmt(p3.get('peak_freq_food'))}Hz（vs 参考解） |\n")
     lines.append(f"| **P4 趋化** | 显著性 p<0.05 且 d≥0.5；ΔCI vs 参考(15s)≤0.15 或方向一致；"
-                 f"对照 p>0.05 | **{_yes(p4.get('pass_', False))} "
-                 f"反证记录型 pass（主 agent 裁决 2026-08-26：M5 定稿闭环为判据主体）**"
+                 f"对照 p>0.05 | **❌ fail（含反证记录，主 agent 最终裁决 2026-08-26）**"
                  f" | CĪ={_fmt(p4.get('ci_mean'))}±{_fmt(p4.get('ci_sem'))}（p="
                  f"{_fmt(p4.get('p_value'))}, d={_fmt(p4.get('cohen_d'))}）方向负/不显著"
                  f"（ΔCI vs 参考={_fmt(p4.get('delta_ci_vs_reference'))}）；对照 p="
                  f"{_fmt(p4.get('ctrl_p'))} ✓；T=15s×N=20 全协议；"
-                 "根因=夹带病理（fwd/back 共同发放 → v≈0，L39/L40）；"
-                 "M4 前向身体对照（+0.360@N=6）vs M5 定稿 VirtualBody（-0.407@N=6）"
-                 "仅作记录，不改变判据主体——反证记录完成，M6 复核 |\n")
+                 "趋化在 302 网络中不涌现（根因=夹带病理：fwd/back 共同发放 → v≈0，"
+                 "L39/L40，与 P2/P6 同根因）；M4 前向身体对照（+0.360@N=6）vs M5 定稿 "
+                 "VirtualBody（-0.407@N=6）仅作记录——fail + 反证记录，M6 复核 |\n")
     lines.append(f"| **P5 逃避** | 行为潜伏期 [30,50]ms（容差 [25,60]）；方向 back（D_peak>0.3）；"
                  f"反应概率 ≥0.8；神经窗 [5,20] | **{_yes(p5.get('pass_', False))} "
                  f"pass（含测量限制记录）** | 行为潜伏期 {_fmt(p5.get('behavior_latency_ms'))}ms"
@@ -330,10 +337,11 @@ def generate_report() -> str:
                  f"{_pct2(p6.get('frac_mean', {}).get('turn'))} / pause "
                  f"{_pct2(p6.get('frac_mean', {}).get('pause'))}——pause 主导（肌肉双饱和 → "
                  "v≈0，L39/L40）；反证记录完成，M6 复核 |\n")
-    lines.append(f"\n**汇总**：`all_pass = {summary['all_pass']}`；P2/P4/P6 = "
-                 "**反证记录型 pass**（与 M4 P4 同型：记录本身即交付物，缺失机制清单见 §6.3）"
-                 "——P4 由主 agent 2026-08-26 裁决（M5 定稿闭环为判据主体，M4 前向身体"
-                 "仅作对照记录）。\n")
+    lines.append(f"\n**汇总**：`all_pass = {summary['all_pass']}`；P1/P3/P5 pass + "
+                 "P2/P6 **反证记录型 pass** + **P4 = fail（含反证记录）**——"
+                 "M5 部分达标（主 agent 最终裁决 2026-08-26：趋化在 302 网络中不涌现，"
+                 "如实 fail；P4 与 P2/P6 同根因：夹带极限环 + 缺失调质/异质权重，"
+                 "缺失机制清单见 §6.3）。\n")
 
     # 6. 权重定稿
     lines.append("## 6. 权重定稿（§6 校准：D4=g1_gap005，B1e2）\n")
@@ -342,8 +350,8 @@ def generate_report() -> str:
     lines.append("| P2 静默比例 | [60,80]% | 10.6%（中位数 13.8Hz——夹带） | ✗ → 反证记录 |\n")
     lines.append("| P4 趋化 CI | ΔCI vs 参考 ≤0.15 或方向一致 | +0.465@5s（校准，M4 前向身体）/B2 全协议 "
                  f"CĪ={_fmt(p4.get('ci_mean'))}@15s（M5 定稿 VirtualBody） | "
-                 "**反证记录型（主 agent 裁决）**——预注册指标不满足（方向负/不显著），"
-                 "M5 定稿闭环为判据主体；协议语义差异见 §5/§6.3 |\n")
+                 "**✗ FAIL（主 agent 最终裁决）**——趋化在 302 网络中不涌现（方向负/不显著），"
+                 "如实 fail + 反证记录；协议语义差异见 §5/§6.3 |\n")
     lines.append("| P5 逃避 | back + 行为窗 [30,50] | 方向 back 仅 τ=0；τ=23 not_back；"
                  "行为潜伏期 ≈34.5ms | △ 部分（相位敏感测量限制，B2 记录）|\n")
     lines.append("| P6 自发 | fwd[60,80]/rev[10,25]/turn[5,20]% | fwd 25.5/rev 3.0/turn 0.5%"
@@ -366,9 +374,11 @@ def generate_report() -> str:
     lines.append("- **P4 协议语义差异（B2 实测，L46）**：B1e2 校准 CI@5s（g1=0.465、L39 "
                  "+0.078）用 WormCircuit.run_chemotaxis_trials（M4 前向身体，忽略 C_back，"
                  "同种子 N=6 均值 +0.360）；M5 定稿 WormLoop/VirtualBody（含后退通道）同种子 "
-                 "N=6 均值 -0.407、全协议 CĪ=-0.065——**主 agent 2026-08-26 裁决（选项 ①）**："
-                 "M5 定稿闭环是判据主体 → P4 反证记录型；M4 前向身体仅作对照记录，不改变"
-                 "判据主体（换身体规避失败 = 不诚实）。对照表：`data/m5_p4_body_comparison.csv`。\n")
+                 "N=6 均值 -0.407、全协议 CĪ=-0.065——**主 agent 最终裁决 2026-08-26**："
+                 "M5 定稿闭环是判据主体 → **P4 如实 fail + 反证记录**（趋化在 302 网络中"
+                 "不涌现；与 P2/P6 同根因：夹带极限环 + 缺失调质/异质权重）；M4 前向身体"
+                 "仅作对照记录，不改变判据主体（换身体规避失败 = 不诚实）。对照表："
+                 "`data/m5_p4_body_comparison.csv`。\n")
     lines.append(f"- 定稿 `data/m5_worm_params.csv` 权重行：gap_scale=0.05、类级缩放全部 "
                  "1.0（M4/M3 子图先验恒等）、tonic=1.0、gL=1.0、gaba=1.0；"
                  "`escape_touch_delay_ms=23` 协议补丁。\n")
@@ -412,8 +422,8 @@ def generate_report() -> str:
     lines.append("| **L46** | **B2 实测：P4 全协议（T=15s×N=20）CĪ=-0.065（p=0.71, d=-0.08）"
                  "——校准的 CI@5s 正值来自 M4 前向身体（忽略 C_back）协议语义；M5 定稿 "
                  "VirtualBody 下 fwd/back 共同发放 → v≈0、位移 0.2-0.5/15s → 方向负/不显著**"
-                 " | 主 agent 2026-08-26 裁决：M5 定稿闭环为判据主体 → P4 反证记录型（对照"
-                 "表 data/m5_p4_body_comparison.csv 仅作记录）|\n")
+                 " | 主 agent 最终裁决 2026-08-26：M5 定稿闭环为判据主体 → P4 如实 fail + "
+                 "反证记录（对照表 data/m5_p4_body_comparison.csv 仅作记录）|\n")
 
     # 8. M6 交接
     lines.append("## 8. M6 交接\n")
@@ -435,12 +445,12 @@ def generate_report() -> str:
     lines.append("- P3 咽部（0.400/2.167Hz）、P5 逃避行为潜伏期 "
                  f"{_fmt(p5.get('behavior_latency_ms'))}ms（含测量限制记录）为冻结基线；"
                  "P4 趋化全协议基线 = CĪ="
-                 f"{_fmt(p4.get('ci_mean'))}@15s×N=20（反证记录型：M5 定稿闭环无净趋化位移，"
-                 "M6 命令互抑/调质后复核）；\n")
+                 f"{_fmt(p4.get('ci_mean'))}@15s×N=20（fail + 反证记录：M5 定稿闭环无净"
+                 "趋化位移，M6 命令互抑/调质后复核）；\n")
     lines.append("- 习惯化协议母版 = **P5 逃避协议**（T=150ms、touch@50ms/τ_trans=23、"
                  "PLM/ALM 注入 60µA/cm²、DA/VA 计时、C_back≥0.3·peak 行为定义）；\n")
-    lines.append("- P2/P4/P6 反证记录（静默 10.6%、趋化 CĪ=-0.065、pause 主导）为 M6 "
-                 "复核起点，复核通过前判据保持 'counter-evidence-record' 状态。\n")
+    lines.append("- P2/P4/P6 反证记录（静默 10.6%、趋化 CĪ=-0.065、pause 主导；"
+                 "同根因：夹带极限环 + 缺失调质/异质权重）为 M6 复核起点。\n")
 
     lines.append("---\n")
     lines.append(f"*报告生成：M5-B2 验证+报告节点；{p7_status}；"

@@ -1,6 +1,8 @@
-# M5 P4 趋化验证（tools/validate_p4_chemotaxis.py；T=15s×N=20 全协议）
+# M5 P4 趋化验证（tools/validate_p4_chemotaxis.py；T=15s×N=20 全协议；判定 = fail + 反证记录，主 agent 最终裁决 2026-08-26）
 metric,value,criterion,verdict
-pass_,False,true,FAIL
+status,fail-with-counter-evidence-record,fail + 记录,FAIL
+indicator_pass,False,预注册指标（p<0.05 且 d≥0.5 且方向一致/ΔCI≤0.15）,OUT（→ fail + 反证记录）
+pass_,False,fail + 反证记录（主 agent 最终裁决）,FAIL
 n_trials,20,20,ok
 t_total_ms,15000.0,15000,ok
 ci_mean,-0.0651,>0,OUT

@@ -160,18 +160,19 @@ def run_all(skip_p2p6: bool = False, skip_plot: bool = False,
             "p6_spontaneous": "counter-evidence-record",
         },
         "note": (
-            "P1/P3/P5 pass；P2/P4/P6 = 反证记录型 pass（与 M4 P4 同型：记录本身即交付物；"
-            "缺失机制清单 → M6 优先验证清单，docs/m5_env_notes.md L40）。"
-            "**P4 = 全协议（T=15s×N=20 梯度+对照，M5 定稿 WormLoop/VirtualBody）实测 "
-            "CĪ=" + str(results["p4_chemotaxis"].get("ci_mean")) + "（p=" +
+            "P1/P3/P5 pass；**P2/P4/P6 = 反证记录（pass_=False, "
+            "status=counter-evidence-record）**——主 agent 最终裁决 2026-08-26 编码统一"
+            "（记录本身即科学交付物；all_pass=False 如实反映 M5 部分达标）。"
+            "P4 全协议（T=15s×N=20 梯度+对照，M5 定稿 WormLoop/VirtualBody 为判据主体）"
+            "实测 CĪ=" + str(results["p4_chemotaxis"].get("ci_mean")) + "（p=" +
             str(results["p4_chemotaxis"].get("p_value")) + "，d=" +
-            str(results["p4_chemotaxis"].get("cohen_d")) + "）方向负/不显著——预注册指标"
-            "不满足，主 agent 裁决 2026-08-26 判为反证记录型：根因 = 夹带病理（fwd/back "
-            "运动池共同发放 → v≈0 → 位移 0.2-0.5 皿单位/15s，L39/L40）；M4 前向身体对照"
-            "（同种子 N=6 均值 +0.360 vs M5 -0.407）仅作记录，不改变判据主体（换身体规避"
-            "失败 = 不诚实）。预算纪律 OK：单试次 ~53s < 5min。"
-            "P5 方向相位敏感测量限制（L40 #5）：定稿 τ_trans=23（touch@73ms）→ not_back；"
-            "touch@50ms（τ_trans=0）→ back。"),
+            str(results["p4_chemotaxis"].get("cohen_d")) + "）方向负/不显著——302 网络"
+            "趋化不涌现（负 CI 是真实网络行为：fwd/back 夹带共同发放 → v≈0，L39/L40）；"
+            "M4 前向身体对照（同种子 N=6 均值 +0.360 vs M5 -0.407，data/"
+            "m5_p4_body_comparison.csv）仅作记录，不改变判据主体。P2/P4/P6 同根因："
+            "夹带极限环 + 缺失调质/异质权重（→ M6 优先验证清单）。预算纪律 OK："
+            "单试次 ~53s < 5min。P5 方向相位敏感测量限制（L40 #5）：定稿 τ_trans=23"
+            "（touch@73ms）→ not_back；touch@50ms（τ_trans=0）→ back。"),
     }
     with open(SUMMARY_JSON, "w", encoding="utf-8") as f:
         json.dump(summary, f, indent=2, ensure_ascii=False, default=str)
