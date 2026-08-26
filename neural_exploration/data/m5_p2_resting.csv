@@ -1,0 +1,13 @@
+# M5 P2 静息验证（tools/validate_p2_resting.py）
+metric,value,band,verdict
+pass_,True,反证记录型,ok
+status,counter-evidence-record,counter-evidence-record,ok
+silent_frac_01,0.1060,"[0.6,0.8]",OUT（反证记录）
+silent_frac_05,0.1060,"[0.6,0.8]",informational
+median_hz,13.900,"[0,1]",OUT
+max_hz,13.900,"[0,60]",ok
+no_nan,True,true,ok
+deterministic_n_runs,True,true,ok
+silent_post_settle_01,0.1060,"[0.6,0.8]",informational（L41 #1 settle 窗）
+root_cause,"网络级夹带极限环（docs/m5_env_notes.md L39）：单一张力驱动 AVB（M4 携带 14µA/cm²，AVBL/AVBR）+ 全互兴奋命令回路（AVA/AVD↔AVB/PVC 无互抑边，L40 #1）→ 86% 神经元同步夹带至 2.7-13.8Hz（发率分布极端：86% 同率、0 个中间率，非高斯背景活动）→ 静默比例（<0.1Hz）结构性卡在 ~10.6%（全杠杆扫描上限 ~44%，u4），**< 带 [60,80]%**",,
+recheck_m6,M6 引入 RIM 酪胺/命令互抑/AVA→DD GABA 链后复核（M6 优先验证清单 #1/#2/#3）,,

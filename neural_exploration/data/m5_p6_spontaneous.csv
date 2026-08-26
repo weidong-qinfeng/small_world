@@ -1,0 +1,14 @@
+# M5 P6 自发行为验证（tools/validate_p6_spontaneous.py）
+metric,value,band,verdict
+pass_,True,反证记录型,ok
+status,counter-evidence-record,counter-evidence-record,ok
+frac_fwd_pct,26.00,"(60.0, 80.0)（容差 (50.0, 90.0)）",OUT（反证记录）
+frac_rev_pct,2.42,"(10.0, 25.0)（容差 (0.0, 35.0)）",tol
+frac_turn_pct,0.58,"(5.0, 20.0)（容差 (0.0, 30.0)）",tol
+frac_pause_pct,71.00,"(0.0, 40.0)（容差 (0.0, 40.0)）",OUT（反证记录）
+n_band_hits,0,3/3,out
+no_nan,True,true,ok
+deterministic,True,true,ok
+pause_dominant,True,反证信号,recorded
+root_cause,pause 主导（L39/L40）：网络级夹带极限环下 fwd/back 运动池共同发放（motor→motor ampa 474 条 + 缝隙）→ 肌肉通道双饱和（C_fwd≈C_back≈1）→ 自发 v≈0 → pause 主导；后退 bout 无法隔离 fwd 池（AVA→DD/VD GABA 抑制链在真实连接组不存在，L40 #2）；单一张力驱动 + 无自发输入/调质 （g=0，L40 #3）→ 任何持续驱动都夹带全网络,,
+recheck_m6,M6 引入 RIM 酪胺/命令互抑/AVA→DD GABA 链后复核（M6 优先验证清单 #1/#2/#3）,,

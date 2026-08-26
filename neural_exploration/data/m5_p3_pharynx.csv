@@ -1,0 +1,12 @@
+# M5 P3 咽部节律验证（tools/validate_p3_pharynx.py；vs m5_ref.npz）
+metric,value,band,verdict
+pass_,True,true,ok
+peak_freq_no_food_hz,0.4000,"[0.1,2]",in
+burst_rate_no_food_hz,0.4768,informational,ok
+peak_freq_food_hz,2.1666,"[2,5]",in
+burst_rate_food_hz,2.8347,informational,ok
+drift_no_food,0.4364,<0.5,ok
+drift_food,0.0726,<0.5,ok
+stage_a_no_food_spikes,0,0（诚实记录）,ok
+brian2_consistency_n_spiking,2,≥1（冒烟已断言）,informational
+brian2_consistency_note,L26：子图未校准 → 仅 MC 驱动发放，其余 18 角色静默；无网络级泵节律（P3 判定以参考解为主，本项 informational）,,

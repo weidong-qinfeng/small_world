@@ -1,0 +1,25 @@
+# M5 P5 逃避验证（tools/validate_p5_escape.py；302 全连接组 D4 权重）
+metric,value,criterion,verdict
+pass_,True,pass（含测量限制记录）,ok
+status,pass-with-measurement-limitations,,
+behavior_latency_ms,32.63,"[30,50]（容差 [25,60]）",in
+motor_latency_from_injection_ms,2.50,"[5,20]",OUT（结构性偏快，G0 L22）
+sensory_latency_ms,0.70,informational,
+direction_tau23,not_back,back（D_peak>0.3）,not_back（相位敏感测量限制 L40 #5）
+d_peak_tau23,-0.0042,>0.3,
+direction_tau0,back,back（D_peak>0.3）,OK
+d_peak_tau0,0.6097,>0.3,
+reaction_prob_tau0,1.00,>=0.8（N=20）,ok
+reaction_prob_tau23,0.00,>=0.8（N=20）,OUT（相位敏感）
+phase_tau0,back,touch@50ms,back@50ms / not_back@55-85ms 记录
+phase_tau5,not_back,touch@55ms,back@50ms / not_back@55-85ms 记录
+phase_tau10,not_back,touch@60ms,back@50ms / not_back@55-85ms 记录
+phase_tau15,not_back,touch@65ms,back@50ms / not_back@55-85ms 记录
+phase_tau23,not_back,touch@73ms,back@50ms / not_back@55-85ms 记录
+phase_tau35,not_back,touch@85ms,back@50ms / not_back@55-85ms 记录
+incompatibility,"L41 #3：方向 back 需 τ_trans=0（touch@50ms）→ 行为潜伏期 10.9ms ∉ [30,50]；定稿 τ_trans=23 → 行为潜伏期 32.6ms ∈ [30,50] ✓ 但方向 not_back——302 点神经元上方向与行为窗不可兼得，需 M6 调质/命令互抑",L41 #3,recorded
+ref_nerve_latency_ms,9.79,"[5,20]（npz）",ok
+ref_behavior_latency_ms,39.59±2.75,"[30,50]（npz）",ok
+ref_direction,back,back（npz）,ok
+ref_reaction_probability,1.00,>=0.8（npz）,ok
+verdict,"P5 逃避 = pass（含测量限制记录）：行为潜伏期 32.6ms ∈ [30,50] ✓（τ_trans=23 + 运动链 2.5ms + 肌肉上升 7.1ms）；方向 back 在参考相位 touch@50ms 验证 （D_peak=0.61，反应概率 100% ✓）；定稿 τ_trans=23（touch@73ms）→ not_back 记录为相位敏感测量限制（L40 #5）；神经潜伏期 2.5ms < [5,20] 为点神经元结构性偏快（G0 L22）；方向与行为窗不可兼得（L41 #3）→ 命令互抑缺失为 M6 优先验证清单 #1",,

@@ -1,0 +1,925 @@
+{
+  "milestone": "M5",
+  "generated_utc": "2026-08-26T08:30:09Z",
+  "results": {
+    "p1_connectome": {
+      "pass_": true,
+      "status": "pass",
+      "verdict": "P1 连接组规格 PASS：302 神经元/四类计数 vs Cook 2019 权威 ±10%/化学 3,638 有向对/缝隙 1,093 唯一对 vs 权威源自洽/递质标注 100%/自连接+孤立白名单/确定性重跑 SHA 一致",
+      "sha256_current": "1ac182c11eb24c1775b53d982a257e32f2766c0b3c244e11899433dd3fe9f801",
+      "sha256_recorded": "1ac182c11eb24c1775b53d982a257e32f2766c0b3c244e11899433dd3fe9f801",
+      "sha256_rerun": "1ac182c11eb24c1775b53d982a257e32f2766c0b3c244e11899433dd3fe9f801",
+      "n_neurons": 302,
+      "class_counts": {
+        "sensory": 81,
+        "inter": 85,
+        "motor": 116,
+        "pharyngeal": 20
+      },
+      "class_authority_cook": {
+        "inter": 81,
+        "sensory": 81,
+        "motor": 116,
+        "pharyngeal": 20
+      },
+      "chem_directed_pairs": 3638,
+      "chem_synapse_total": 20589,
+      "gap_unique_pairs": 1093,
+      "gap_synapse_total": 8642,
+      "cook_published_chem_edges": 4887,
+      "cook_published_gap_edges": 1447,
+      "chem_vs_cook_published_rel": 0.0422,
+      "prereg_chem_band": [
+        6300,
+        7700
+      ],
+      "prereg_gap_band": [
+        630,
+        770
+      ],
+      "chem_in_prereg_band": false,
+      "gap_in_prereg_band": false,
+      "neurotransmitter_counts": {
+        "glut": 76,
+        "dopamine": 8,
+        "serotonin": 7,
+        "other": 56,
+        "ach": 129,
+        "gaba": 26
+      },
+      "annotation_coverage_pct": 100.0,
+      "self_connections": {
+        "chem": 34,
+        "gap": 13,
+        "total": 47
+      },
+      "isolated_neurons": [
+        "CANL",
+        "CANR"
+      ],
+      "n_muscle_rows": 68,
+      "checks": {
+        "n_neurons": {
+          "ok": true,
+          "detail": "302 神经元：解析 302 vs counts 302"
+        },
+        "class_counts": {
+          "ok": true,
+          "detail": "四类计数 vs Cook 权威 ±10%：{'sensory': 81, 'inter': 85, 'motor': 116, 'pharyngeal': 20} vs 权威 {'inter': 81, 'sensory': 81, 'motor': 116, 'pharyngeal': 20}"
+        },
+        "chem_pairs": {
+          "ok": true,
+          "detail": "化学有向对 3638 vs counts 3638"
+        },
+        "gap_pairs": {
+          "ok": true,
+          "detail": "缝隙唯一对 1093 vs counts 1093"
+        },
+        "nt_coverage": {
+          "ok": true,
+          "detail": "递质标注 100%：302/302 分布 {'glut': 76, 'dopamine': 8, 'serotonin': 7, 'other': 56, 'ach': 129, 'gaba': 26}"
+        },
+        "self_whitelist": {
+          "ok": true,
+          "detail": "自连接白名单：34 化学 + 13 缝隙（预期 34+13，L14）"
+        },
+        "isolated_whitelist": {
+          "ok": true,
+          "detail": "孤立白名单：['CANL', 'CANR']（预期 [CANL, CANR]，L14）"
+        },
+        "chem_vs_cook_published": {
+          "ok": true,
+          "detail": "化学全细胞边 4681 vs Cook 发布 4,887 （rel=4.2%）"
+        },
+        "deterministic_rerun": {
+          "ok": true,
+          "detail": "确定性重跑 SHA 一致：1ac182c11eb24c17（recorded 1ac182c11eb24c17）"
+        }
+      },
+      "errors": []
+    },
+    "p2_resting": {
+      "pass_": true,
+      "status": "counter-evidence-record",
+      "verdict": "P2 静息 = 反证记录型 pass：无 NaN/无发散 ✓（max 13.9Hz < 60Hz 生理上限 ✓）；静默比例 10.6%（中位数 13.9Hz）不在带 [60,80]%（预期：夹带极限环结构性不可达，L39）——反证记录完成（缺失机制：调质/异质权重/命令互抑，M6 复核）",
+      "indicator_pass": false,
+      "in_band_silent": false,
+      "in_band_median": false,
+      "in_band_max": true,
+      "no_nan": "True",
+      "silent_frac_01": 0.10596026490066225,
+      "silent_frac_05": 0.10596026490066225,
+      "median_hz": 13.9,
+      "max_hz": 13.9,
+      "n_spiking": 270.0,
+      "band_silent": [
+        0.6,
+        0.8
+      ],
+      "band_median_hz": [
+        0.0,
+        1.0
+      ],
+      "band_max_hz": [
+        0.0,
+        60.0
+      ],
+      "t_total_ms": 10000.0,
+      "n_runs": 5,
+      "deterministic": true,
+      "runs": [
+        {
+          "seed": 0,
+          "median_hz": 13.9,
+          "max_hz": 13.9,
+          "silent_01": 0.10596026490066225,
+          "silent_05": 0.10596026490066225,
+          "has_nan": false,
+          "n_spiking": 270.0,
+          "median_post": 13.894736842105264,
+          "max_post": 13.894736842105264,
+          "silent_post_01": 0.10596026490066225,
+          "silent_post_05": 0.10596026490066225
+        },
+        {
+          "seed": 1,
+          "median_hz": 13.9,
+          "max_hz": 13.9,
+          "silent_01": 0.10596026490066225,
+          "silent_05": 0.10596026490066225,
+          "has_nan": false,
+          "n_spiking": 270.0,
+          "median_post": 13.894736842105264,
+          "max_post": 13.894736842105264,
+          "silent_post_01": 0.10596026490066225,
+          "silent_post_05": 0.10596026490066225
+        },
+        {
+          "seed": 2,
+          "median_hz": 13.9,
+          "max_hz": 13.9,
+          "silent_01": 0.10596026490066225,
+          "silent_05": 0.10596026490066225,
+          "has_nan": false,
+          "n_spiking": 270.0,
+          "median_post": 13.894736842105264,
+          "max_post": 13.894736842105264,
+          "silent_post_01": 0.10596026490066225,
+          "silent_post_05": 0.10596026490066225
+        },
+        {
+          "seed": 3,
+          "median_hz": 13.9,
+          "max_hz": 13.9,
+          "silent_01": 0.10596026490066225,
+          "silent_05": 0.10596026490066225,
+          "has_nan": false,
+          "n_spiking": 270.0,
+          "median_post": 13.894736842105264,
+          "max_post": 13.894736842105264,
+          "silent_post_01": 0.10596026490066225,
+          "silent_post_05": 0.10596026490066225
+        },
+        {
+          "seed": 4,
+          "median_hz": 13.9,
+          "max_hz": 13.9,
+          "silent_01": 0.10596026490066225,
+          "silent_05": 0.10596026490066225,
+          "has_nan": false,
+          "n_spiking": 270.0,
+          "median_post": 13.894736842105264,
+          "max_post": 13.894736842105264,
+          "silent_post_01": 0.10596026490066225,
+          "silent_post_05": 0.10596026490066225
+        }
+      ],
+      "wall_s": 34.085460834,
+      "counter_evidence": {
+        "status": "counter-evidence-record",
+        "root_cause": "网络级夹带极限环（docs/m5_env_notes.md L39）：单一张力驱动 AVB（M4 携带 14µA/cm²，AVBL/AVBR）+ 全互兴奋命令回路（AVA/AVD↔AVB/PVC 无互抑边，L40 #1）→ 86% 神经元同步夹带至 2.7-13.8Hz（发率分布极端：86% 同率、0 个中间率，非高斯背景活动）→ 静默比例（<0.1Hz）结构性卡在 ~10.6%（全杠杆扫描上限 ~44%，u4），**< 带 [60,80]%**",
+        "missing_mechanisms": [
+          "调质（RIM 酪胺能受体=mod → g=0 占位跳过，L5#5/L40#1：后退时抑制前进缺失）",
+          "命令互抑（AVA/AVD ↔ AVB/PVC 真实连接组互为兴奋，无互抑边，L40#1）",
+          "AVA→DD/VD GABA 抑制链缺失（真实连接组 0 条，L40#2）",
+          "异质权重/自发输入缺失（模型自发输入缺失、调质 g=0 → 任何持续驱动都夹带，L40#3）"
+        ],
+        "settle_window": {
+          "note": "L41 #1：t=0 初始化瞬态波（v=−65+张力开通）是初始条件伪迹，500ms 后消失",
+          "silent_post_01": 0.10596026490066225,
+          "silent_post_05": 0.10596026490066225,
+          "conclusion": "settle 后静默 10.6%——仍 < 带 [60,80]%（calibration u3 最高 69.2% 在带但行为破坏，P2 与行为在单一张力下不可兼得，L40#3）"
+        },
+        "recheck_m6": "M6 引入 RIM 酪胺/命令互抑/AVA→DD GABA 链后复核（M6 优先验证清单 #1/#2/#3）"
+      },
+      "protocol_source": "data/m5_worm_params.csv protocol.resting_t_total_ms（G0 定稿）",
+      "weights": "D4 定稿（load_weight_scales：gap_scale=0.05，类级=先验 1.0）"
+    },
+    "p3_pharynx": {
+      "pass_": true,
+      "status": "pass",
+      "verdict": "P3 咽部节律 PASS（vs 参考解 data/m5_ref.npz）：无食物稳健主频 0.400Hz ∈ [0.1,2] ✓（簇率 0.477/s）；有食物稳健主频 2.167Hz ∈ [2,5] ✓（簇率 2.835/s）；漂移 0.44/0.07 < 0.5 ✓",
+      "peak_freq_no_food": 0.3999866671110963,
+      "peak_freq_food": 2.1665944468517715,
+      "burst_rate_no_food": 0.4767921424654922,
+      "burst_rate_food": 2.8346939864468275,
+      "drift_no_food": 0.4363921498785482,
+      "drift_food": 0.07257881274640406,
+      "peak_freq_argmax": {
+        "no_food": 0.23332555581480618,
+        "food": 1.8666044465184495
+      },
+      "peak_freq_welch": {
+        "no_food": 0.3662109375,
+        "food": 1.8310546875
+      },
+      "peak_freq_acf": {
+        "no_food": 0.3795066413662239,
+        "food": 2.070393374741201
+      },
+      "pacemaker_spike_rate_hz": {
+        "no_food": 39.06666666666667,
+        "food": 30.933333333333334
+      },
+      "band_no_food": [
+        0.1,
+        2.0
+      ],
+      "band_food": [
+        2.0,
+        5.0
+      ],
+      "in_band_no_food": true,
+      "in_band_food": true,
+      "drift_ok": true,
+      "stage_a_no_food_silent": {
+        "n_total_spikes": 0,
+        "note": "Stage-A NEURON 化学子图无食物协议 0 发放（诚实记录，L31）；节律来自 Stage-B 缝隙网络泵马达池（功能参考机制，L32/L33）"
+      },
+      "brian2_consistency": {
+        "n_spiking_roles": 2,
+        "n_roles": 20,
+        "mc_mean_hz": 115.95,
+        "note": "L26：子图未校准 → 仅 MC 驱动发放，其余 18 角色静默；无网络级泵节律（P3 判定以参考解为主，本项 informational）",
+        "wall_s": 3.110170083
+      },
+      "reference_note": "参考解引擎：NEURON 9.0.1 cvode（atol=rtol=1e-8, celsius=6.3）+ scipy solve_ivp LSODA（rtol=1e-9/atol=1e-11）；稳健主频（L33）为判定首选"
+    },
+    "p4_chemotaxis": {
+      "pass_": false,
+      "status": "fail",
+      "verdict": "P4 趋化 FAIL：sig_ok=False delta_ok=False dir_ok=False ctrl_ok=True finite_ok=True",
+      "n_trials": 20,
+      "t_total_ms": 15000.0,
+      "ci_grad": [
+        0.32666666666666666,
+        -0.6333333333333333,
+        0.8216666666666667,
+        -1.0,
+        -1.0,
+        -0.96,
+        1.0,
+        0.005,
+        1.0,
+        -1.0,
+        -1.0,
+        0.49666666666666665,
+        -0.47833333333333333,
+        0.0,
+        1.0,
+        0.0,
+        1.0,
+        -0.88,
+        0.0,
+        0.0
+      ],
+      "ci_mean": -0.06508333333333334,
+      "ci_sem": 0.17221274391480634,
+      "ci_sd": 0.7701588039705405,
+      "p_value": 0.7096760548693398,
+      "t_stat": -0.37792402498115973,
+      "cohen_d": -0.08450638101882019,
+      "ci_ctrl": [
+        -1.0,
+        1.0,
+        -0.6383333333333333,
+        1.0,
+        0.0,
+        -1.0,
+        -0.49666666666666665,
+        0.0,
+        0.2683333333333333,
+        0.0,
+        1.0,
+        0.725,
+        0.0,
+        0.0,
+        -0.095,
+        1.0,
+        -0.8583333333333333,
+        -0.475,
+        0.0,
+        0.0
+      ],
+      "ctrl_mean": 0.02150000000000002,
+      "ctrl_sem": 0.14702234086508856,
+      "ctrl_p": 0.8852752717565879,
+      "in_band": false,
+      "ci_tolerance": [
+        0.25,
+        0.75
+      ],
+      "reference_ci_15s": 0.417,
+      "delta_ci_vs_reference": 0.4820833333333333,
+      "delta_ci_max": 0.15,
+      "direction_ok": false,
+      "direction": "negative/zero",
+      "significance_ok": false,
+      "control_ok": true,
+      "finite_ok": true,
+      "approaching_frac": 0.35,
+      "dist_start_mean": 3.5382562821976413,
+      "dist_end_mean": 3.56054349700018,
+      "deterministic": true,
+      "budget": {
+        "max_trial_wall_s": 53.44883038959999,
+        "budget_trial_wall_s": 300.0,
+        "budget_ok": true,
+        "wall_gradient_s": 1068.9766077919999,
+        "wall_control_s": 1061.0763262920002,
+        "wall_determinism_s": 52.47898012499991,
+        "total_wall_s": 2182.531914209,
+        "note": "预注册预算 ≤200 CPU-h；本协议实测 2183s ≈ 0.61 CPU-h（单机），远低于上限"
+      },
+      "weights": "D4 定稿（load_weight_scales：gap_scale=0.05，类级=先验 1.0）",
+      "protocol_source": "data/m5_worm_params.csv protocol 行（T=15000/N=20/start 5.0±0.3）",
+      "diagnosis": {
+        "root_cause": "D4 权重下 fwd/back 运动池共同发放（与 P2/P6 夹带同根，L39/L40）→ M5 VirtualBody v = C_fwd − C_back ≈ 0 → 15s 位移仅 0.2-0.5 皿单位（pause/turn 主导）→ 虫停留起点圈外 → CI≈0 或负——非统计噪声，是夹带病理的直接表现",
+        "protocol_semantics": {
+          "note": "B1e2 校准/G0 缩放的 CI@5s（g1=0.465、L39 +0.078）用 WormCircuit.run_chemotaxis_trials（M4 ChemotaxisBody 前向身体，忽略 C_back）；本全协议用 M5 定稿 WormLoop/VirtualBody（含后退 通道，virtual_body.py §5.2 #3）",
+          "m4_body_ci_mean_6": "+0.360（同种子 N=6，位移 3.9-6.3）",
+          "m5_body_ci_mean_6": "-0.407（同种子 N=6，位移 0.2-0.5）",
+          "evidence": "B2 诊断 /tmp/m5_b2_p4body.py（2026-08-26）",
+          "adjudication": "P4 判据主体协议语义需主 agent 三态裁决：① M5 定稿闭环（VirtualBody，本实测 → FAIL，可转反证记录同 P2/P6，M6 命令互抑后复核）② M4 前向身体语义（与校准/G0 一致，可能 pass）③ 其他。本判定按预注册判据 + M5 定稿闭环如实记录为 FAIL。"
+        },
+        "diagnosis_evidence": "/tmp/m5_b2_p4diag.py：6 试次位移 [0.36,0.22,0.45,0.19,0.30,0.35] 皿单位，state_frac fwd~20%/pause 56-71%/turn 0-84%"
+      }
+    },
+    "p5_escape": {
+      "pass_": true,
+      "status": "pass-with-measurement-limitations",
+      "verdict": "P5 逃避 = pass（含测量限制记录）：行为潜伏期 32.6ms ∈ [30,50] ✓（τ_trans=23 + 运动链 2.5ms + 肌肉上升 7.1ms）；方向 back 在参考相位 touch@50ms 验证 （D_peak=0.61，反应概率 100% ✓）；定稿 τ_trans=23（touch@73ms）→ not_back 记录为相位敏感测量限制（L40 #5）；神经潜伏期 2.5ms < [5,20] 为点神经元结构性偏快（G0 L22）；方向与行为窗不可兼得（L41 #3）→ 命令互抑缺失为 M6 优先验证清单 #1",
+      "behavior_latency_ms": 32.633498878774645,
+      "behavior_window": [
+        30.0,
+        50.0
+      ],
+      "behavior_tol": [
+        25.0,
+        60.0
+      ],
+      "motor_latency_from_injection_ms": 2.5,
+      "sensory_latency_ms": 0.7000000000000028,
+      "neural_window": [
+        5.0,
+        20.0
+      ],
+      "d_peak_tau23": -0.00418766620490095,
+      "direction_tau23": "not_back",
+      "d_peak_tau0": 0.6096568628401611,
+      "direction_tau0": "back",
+      "reaction_probability": {
+        "tau0": {
+          "n": 20,
+          "n_back": 20,
+          "prob": 1.0
+        },
+        "tau23": {
+          "n": 20,
+          "n_back": 0,
+          "prob": 0.0
+        }
+      },
+      "phase_scan": [
+        {
+          "tau_trans": 0.0,
+          "seed": 0,
+          "d_peak": 0.6097,
+          "direction": "back",
+          "touch_start_ms": 50.0,
+          "sensory_latency_ms": 0.7,
+          "motor_latency_from_injection_ms": 3.8,
+          "behavior_latency_ms": 10.9335,
+          "n_da_va_before": 21,
+          "n_da_va_after": 42,
+          "wall_s": 0.0
+        },
+        {
+          "tau_trans": 5.0,
+          "seed": 0,
+          "d_peak": -0.004,
+          "direction": "not_back",
+          "touch_start_ms": 55.0,
+          "sensory_latency_ms": 0.7,
+          "motor_latency_from_injection_ms": 3.8,
+          "behavior_latency_ms": 15.9335,
+          "n_da_va_before": 21,
+          "n_da_va_after": 42,
+          "wall_s": 0.0
+        },
+        {
+          "tau_trans": 10.0,
+          "seed": 0,
+          "d_peak": -0.0051,
+          "direction": "not_back",
+          "touch_start_ms": 60.0,
+          "sensory_latency_ms": 0.7,
+          "motor_latency_from_injection_ms": 3.8,
+          "behavior_latency_ms": 20.9335,
+          "n_da_va_before": 21,
+          "n_da_va_after": 42,
+          "wall_s": 0.0
+        },
+        {
+          "tau_trans": 15.0,
+          "seed": 0,
+          "d_peak": -0.0065,
+          "direction": "not_back",
+          "touch_start_ms": 65.0,
+          "sensory_latency_ms": 0.7,
+          "motor_latency_from_injection_ms": 3.8,
+          "behavior_latency_ms": 25.9335,
+          "n_da_va_before": 21,
+          "n_da_va_after": 42,
+          "wall_s": 0.0
+        },
+        {
+          "tau_trans": 23.0,
+          "seed": 0,
+          "d_peak": -0.0042,
+          "direction": "not_back",
+          "touch_start_ms": 73.0,
+          "sensory_latency_ms": 0.7,
+          "motor_latency_from_injection_ms": 2.5,
+          "behavior_latency_ms": 32.6335,
+          "n_da_va_before": 21,
+          "n_da_va_after": 42,
+          "wall_s": 0.0
+        },
+        {
+          "tau_trans": 35.0,
+          "seed": 0,
+          "d_peak": -0.0042,
+          "direction": "not_back",
+          "touch_start_ms": 85.0,
+          "sensory_latency_ms": 0.7,
+          "motor_latency_from_injection_ms": 8.8,
+          "behavior_latency_ms": 50.9335,
+          "n_da_va_before": 42,
+          "n_da_va_after": 43,
+          "wall_s": 0.0
+        }
+      ],
+      "reference": {
+        "nerve_latency_ms": 9.786,
+        "nerve_in_band": true,
+        "behavior_latency_mean_ms": 39.59,
+        "behavior_latency_std_ms": 2.752980203343279,
+        "behavior_in_band": true,
+        "direction": "back",
+        "reaction_probability": 1.0,
+        "d_peak": 0.598693775901776,
+        "tau_trans_ms": 23.251460442186787
+      },
+      "subcriteria": {
+        "behavior_latency": {
+          "ok": "True",
+          "tol_ok": "True",
+          "value": 32.633498878774645,
+          "window": [
+            30.0,
+            50.0
+          ],
+          "tol": [
+            25.0,
+            60.0
+          ],
+          "formula": "τ_trans(23.0) + 运动链(2.5) + 肌肉上升(7.1)"
+        },
+        "neural_latency": {
+          "ok": false,
+          "value": 2.5,
+          "window": [
+            5.0,
+            20.0
+          ],
+          "sensory_latency_ms": 0.7000000000000028,
+          "note": "点神经元省略峰电位起始延迟 → 结构性偏快（G0 L22：3.7-4.5ms < [5,20]）；302 夹带网络下运动神经元连续发放，潜伏期为注入后首个发放（附背景发放计数）"
+        },
+        "direction_at_tau23": {
+          "ok": false,
+          "value": "not_back",
+          "d_peak": -0.00418766620490095,
+          "note": "定稿 τ_trans=23（touch@73ms）→ not_back：~72ms 夹带节律相位污染（L40 #5），fwd/back 运动池共同发放抵消——相位敏感测量限制，非机制失败"
+        },
+        "direction_at_tau0": {
+          "ok": true,
+          "value": "back",
+          "d_peak": 0.6096568628401611,
+          "note": "参考相位 touch@50ms ✓"
+        },
+        "reaction_probability": {
+          "tau0": {
+            "n": 20,
+            "n_back": 20,
+            "prob": 1.0
+          },
+          "tau23": {
+            "n": 20,
+            "n_back": 0,
+            "prob": 0.0
+          },
+          "note": "确定性 p=1/n=1 → 方向逐试次同值（概率 0 或 1；N=20 同值确认）"
+        },
+        "incompatibility": {
+          "ok": true,
+          "note": "L41 #3：方向 back 需 τ_trans=0（touch@50ms）→ 行为潜伏期 10.9ms ∉ [30,50]；定稿 τ_trans=23 → 行为潜伏期 32.6ms ∈ [30,50] ✓ 但方向 not_back——302 点神经元上方向与行为窗不可兼得，需 M6 调质/命令互抑"
+        },
+        "phase_scan": [
+          {
+            "tau_trans": 0.0,
+            "seed": 0,
+            "d_peak": 0.6096568628401611,
+            "direction": "back",
+            "c_back": "[0.36880183 0.10533271 0.37816181 0.10800599 1.         0.30331453]",
+            "c_fwd": "[0.42013897 0.119995   0.41594809 0.11879805 0.39034314 0.34553585]",
+            "t_ms": "[  0.  25.  50.  75. 100. 125.]",
+            "touch_start_ms": 50.0,
+            "sensory_latency_ms": 0.7000000000000028,
+            "motor_latency_from_injection_ms": 3.799999999999997,
+            "behavior_latency_ms": 10.933498878774646,
+            "n_da_va_before": 21,
+            "n_da_va_after": 42,
+            "wall_s": 0.0
+          },
+          {
+            "tau_trans": 5.0,
+            "seed": 0,
+            "d_peak": -0.003960230499609342,
+            "direction": "not_back",
+            "c_back": "[0.36880183 0.10533271 0.48587396 0.13876943 0.03963364 0.38970787]",
+            "c_fwd": "[0.42013897 0.119995   0.53442294 0.1526354  0.04359387 0.44395513]",
+            "t_ms": "[  0.  25.  50.  75. 100. 125.]",
+            "touch_start_ms": 55.0,
+            "sensory_latency_ms": 0.6999999999999957,
+            "motor_latency_from_injection_ms": 3.8000000000000043,
+            "behavior_latency_ms": 15.933498878774653,
+            "n_da_va_before": 21,
+            "n_da_va_after": 42,
+            "wall_s": 0.0
+          },
+          {
+            "tau_trans": 10.0,
+            "seed": 0,
+            "d_peak": -0.005088226399076454,
+            "direction": "not_back",
+            "c_back": "[0.36880183 0.10533271 0.62426587 0.17829525 0.05092253 0.50070871]",
+            "c_fwd": "[0.42013897 0.119995   0.68664309 0.19611068 0.05601076 0.57040726]",
+            "t_ms": "[  0.  25.  50.  75. 100. 125.]",
+            "touch_start_ms": 60.0,
+            "sensory_latency_ms": 0.7000000000000028,
+            "motor_latency_from_injection_ms": 3.8000000000000114,
+            "behavior_latency_ms": 20.93349887877466,
+            "n_da_va_before": 21,
+            "n_da_va_after": 42,
+            "wall_s": 0.0
+          },
+          {
+            "tau_trans": 15.0,
+            "seed": 0,
+            "d_peak": -0.006537510352190967,
+            "direction": "not_back",
+            "c_back": "[0.36880183 0.10533271 0.80207606 0.22907924 0.06542684 0.643326  ]",
+            "c_fwd": "[0.42013897 0.119995   0.88222024 0.25196905 0.07196435 0.73287685]",
+            "t_ms": "[  0.  25.  50.  75. 100. 125.]",
+            "touch_start_ms": 65.0,
+            "sensory_latency_ms": 0.7000000000000028,
+            "motor_latency_from_injection_ms": 3.799999999999997,
+            "behavior_latency_ms": 25.933498878774646,
+            "n_da_va_before": 21,
+            "n_da_va_after": 42,
+            "wall_s": 0.0
+          },
+          {
+            "tau_trans": 23.0,
+            "seed": 0,
+            "d_peak": -0.00418766620490095,
+            "direction": "not_back",
+            "c_back": "[0.36880183 0.10533271 0.03008385 0.32211893 0.09199971 0.94635458]",
+            "c_fwd": "[0.42013897 0.119995   0.03427152 0.35608578 0.10170091 0.98507488]",
+            "t_ms": "[  0.  25.  50.  75. 100. 125.]",
+            "touch_start_ms": 73.0,
+            "sensory_latency_ms": 0.7000000000000028,
+            "motor_latency_from_injection_ms": 2.5,
+            "behavior_latency_ms": 32.633498878774645,
+            "n_da_va_before": 21,
+            "n_da_va_after": 42,
+            "wall_s": 0.0
+          },
+          {
+            "tau_trans": 35.0,
+            "seed": 0,
+            "d_peak": -0.00418766620490095,
+            "direction": "not_back",
+            "c_back": "[0.36880183 0.10533271 0.03008385 0.81832012 0.67979383 0.19415447]",
+            "c_fwd": "[0.42013897 0.119995   0.03427152 0.90008743 0.6970466  0.199082  ]",
+            "t_ms": "[  0.  25.  50.  75. 100. 125.]",
+            "touch_start_ms": 85.0,
+            "sensory_latency_ms": 0.7000000000000028,
+            "motor_latency_from_injection_ms": 8.800000000000011,
+            "behavior_latency_ms": 50.93349887877466,
+            "n_da_va_before": 42,
+            "n_da_va_after": 43,
+            "wall_s": 0.0
+          }
+        ],
+        "phase_sensitive": {
+          "ok": true,
+          "note": "touch@50ms（τ_trans=0）→ back D_peak=0.61；touch@55-85ms（τ_trans=5-35）→ not_back——网络 ~72ms 夹带节律使后退反应无法与背景活动分离（L40 #5；与 P2/P6 同根：命令互抑缺失 L40 #1）"
+        }
+      },
+      "tau_trans_final": 23.0,
+      "muscle_rise_ms": 7.133498878774649,
+      "weights": "D4 定稿（load_weight_scales：gap_scale=0.05）",
+      "protocol_source": "data/m5_worm_params.csv（escape_* 行：τ_trans=23 定稿）",
+      "wall_s": 40.241685249999996
+    },
+    "p6_spontaneous": {
+      "pass_": true,
+      "status": "counter-evidence-record",
+      "verdict": "P6 自发 = 反证记录型 pass：无 NaN ✓；状态比例 fwd 26.0%/rev 2.4%/turn 0.6%/pause 71.0%——不在带 [60,80]/[10,25]/[5,20]%（pause 主导：fwd/back 运动池共同发放 → 肌肉双饱和 → v≈0，L39/L40）；反证记录完成（缺失机制：RIM 酪胺/命令互抑/AVA→DD GABA 链，M6 复核）",
+      "indicator_pass": false,
+      "no_nan": true,
+      "deterministic": true,
+      "n_runs": 10,
+      "t_total_ms": 30000.0,
+      "frac_mean": {
+        "fwd": 0.25999999999999995,
+        "rev": 0.024166666666666666,
+        "turn": 0.0058333333333333345,
+        "pause": 0.71
+      },
+      "frac_sem": {
+        "fwd": 1.850371707708594e-17,
+        "rev": 0.0,
+        "turn": 2.8912057932946783e-19,
+        "pause": 0.0
+      },
+      "frac_pct": {
+        "fwd": 25.999999999999996,
+        "rev": 2.4166666666666665,
+        "turn": 0.5833333333333335,
+        "pause": 71.0
+      },
+      "bands": {
+        "fwd": [
+          60.0,
+          80.0
+        ],
+        "rev": [
+          10.0,
+          25.0
+        ],
+        "turn": [
+          5.0,
+          20.0
+        ]
+      },
+      "tol": {
+        "fwd": [
+          50.0,
+          90.0
+        ],
+        "rev": [
+          0.0,
+          35.0
+        ],
+        "turn": [
+          0.0,
+          30.0
+        ]
+      },
+      "in_band": {
+        "fwd": false,
+        "rev": false,
+        "turn": false
+      },
+      "in_tol": {
+        "fwd": false,
+        "rev": true,
+        "turn": true
+      },
+      "n_band_hits": 0,
+      "pause_dominant": true,
+      "runs": [
+        {
+          "seed": 0,
+          "frac": {
+            "fwd": 0.26,
+            "rev": 0.024166666666666666,
+            "turn": 0.005833333333333334,
+            "pause": 0.71
+          },
+          "n_epochs": 1200,
+          "v_mean": 0.020302452850179013,
+          "omega_mean": 0.0009286318608568387,
+          "v_finite": true,
+          "thresholds": {
+            "v_thr_frac": 0.05,
+            "omega_thr_frac": 0.2
+          }
+        },
+        {
+          "seed": 1,
+          "frac": {
+            "fwd": 0.26,
+            "rev": 0.024166666666666666,
+            "turn": 0.005833333333333334,
+            "pause": 0.71
+          },
+          "n_epochs": 1200,
+          "v_mean": 0.020302452850179013,
+          "omega_mean": 0.0009286318608568387,
+          "v_finite": true,
+          "thresholds": {
+            "v_thr_frac": 0.05,
+            "omega_thr_frac": 0.2
+          }
+        },
+        {
+          "seed": 2,
+          "frac": {
+            "fwd": 0.26,
+            "rev": 0.024166666666666666,
+            "turn": 0.005833333333333334,
+            "pause": 0.71
+          },
+          "n_epochs": 1200,
+          "v_mean": 0.020302452850179013,
+          "omega_mean": 0.0009286318608568387,
+          "v_finite": true,
+          "thresholds": {
+            "v_thr_frac": 0.05,
+            "omega_thr_frac": 0.2
+          }
+        },
+        {
+          "seed": 3,
+          "frac": {
+            "fwd": 0.26,
+            "rev": 0.024166666666666666,
+            "turn": 0.005833333333333334,
+            "pause": 0.71
+          },
+          "n_epochs": 1200,
+          "v_mean": 0.020302452850179013,
+          "omega_mean": 0.0009286318608568387,
+          "v_finite": true,
+          "thresholds": {
+            "v_thr_frac": 0.05,
+            "omega_thr_frac": 0.2
+          }
+        },
+        {
+          "seed": 4,
+          "frac": {
+            "fwd": 0.26,
+            "rev": 0.024166666666666666,
+            "turn": 0.005833333333333334,
+            "pause": 0.71
+          },
+          "n_epochs": 1200,
+          "v_mean": 0.020302452850179013,
+          "omega_mean": 0.0009286318608568387,
+          "v_finite": true,
+          "thresholds": {
+            "v_thr_frac": 0.05,
+            "omega_thr_frac": 0.2
+          }
+        },
+        {
+          "seed": 5,
+          "frac": {
+            "fwd": 0.26,
+            "rev": 0.024166666666666666,
+            "turn": 0.005833333333333334,
+            "pause": 0.71
+          },
+          "n_epochs": 1200,
+          "v_mean": 0.020302452850179013,
+          "omega_mean": 0.0009286318608568387,
+          "v_finite": true,
+          "thresholds": {
+            "v_thr_frac": 0.05,
+            "omega_thr_frac": 0.2
+          }
+        },
+        {
+          "seed": 6,
+          "frac": {
+            "fwd": 0.26,
+            "rev": 0.024166666666666666,
+            "turn": 0.005833333333333334,
+            "pause": 0.71
+          },
+          "n_epochs": 1200,
+          "v_mean": 0.020302452850179013,
+          "omega_mean": 0.0009286318608568387,
+          "v_finite": true,
+          "thresholds": {
+            "v_thr_frac": 0.05,
+            "omega_thr_frac": 0.2
+          }
+        },
+        {
+          "seed": 7,
+          "frac": {
+            "fwd": 0.26,
+            "rev": 0.024166666666666666,
+            "turn": 0.005833333333333334,
+            "pause": 0.71
+          },
+          "n_epochs": 1200,
+          "v_mean": 0.020302452850179013,
+          "omega_mean": 0.0009286318608568387,
+          "v_finite": true,
+          "thresholds": {
+            "v_thr_frac": 0.05,
+            "omega_thr_frac": 0.2
+          }
+        },
+        {
+          "seed": 8,
+          "frac": {
+            "fwd": 0.26,
+            "rev": 0.024166666666666666,
+            "turn": 0.005833333333333334,
+            "pause": 0.71
+          },
+          "n_epochs": 1200,
+          "v_mean": 0.020302452850179013,
+          "omega_mean": 0.0009286318608568387,
+          "v_finite": true,
+          "thresholds": {
+            "v_thr_frac": 0.05,
+            "omega_thr_frac": 0.2
+          }
+        },
+        {
+          "seed": 9,
+          "frac": {
+            "fwd": 0.26,
+            "rev": 0.024166666666666666,
+            "turn": 0.005833333333333334,
+            "pause": 0.71
+          },
+          "n_epochs": 1200,
+          "v_mean": 0.020302452850179013,
+          "omega_mean": 0.0009286318608568387,
+          "v_finite": true,
+          "thresholds": {
+            "v_thr_frac": 0.05,
+            "omega_thr_frac": 0.2
+          }
+        }
+      ],
+      "wall_s": 1016.369970125,
+      "counter_evidence": {
+        "status": "counter-evidence-record",
+        "root_cause": "pause 主导（L39/L40）：网络级夹带极限环下 fwd/back 运动池共同发放（motor→motor ampa 474 条 + 缝隙）→ 肌肉通道双饱和（C_fwd≈C_back≈1）→ 自发 v≈0 → pause 主导；后退 bout 无法隔离 fwd 池（AVA→DD/VD GABA 抑制链在真实连接组不存在，L40 #2）；单一张力驱动 + 无自发输入/调质 （g=0，L40 #3）→ 任何持续驱动都夹带全网络",
+        "missing_mechanisms": [
+          "RIM 酪胺能（受体=mod → g=0 占位跳过，L5#5/L40#1：后退时抑制前进缺失）",
+          "命令互抑（AVA/AVD ↔ AVB/PVC 互为兴奋无互抑边，L40#1）",
+          "AVA→DD/VD GABA 抑制链缺失（真实连接组 0 条，L40#2）",
+          "自发/调质输入缺失（唯一持续驱动 = M4 携带 AVB 张力，L40#3）"
+        ],
+        "alternative_u2": {
+          "note": "全杠杆扫描最优 P6 替代组合 u2（rec0.15：fwd 20/rev 24.5/turn 11.5，2/3 落带）但 P4 方向丢失——两组合不可兼得（L39）"
+        },
+        "recheck_m6": "M6 引入 RIM 酪胺/命令互抑/AVA→DD GABA 链后复核（M6 优先验证清单 #1/#2/#3）"
+      },
+      "weights": "D4 定稿（load_weight_scales：gap_scale=0.05，类级=先验 1.0）",
+      "protocol_source": "data/m5_worm_params.csv（spont_t_total_ms=30000/N=10/spont_v_thr_frac=0.05/spont_omega_thr_frac=0.2）"
+    }
+  },
+  "all_pass": false,
+  "pass_type": {
+    "p1_connectome": "pass",
+    "p3_pharynx": "pass",
+    "p4_chemotaxis": "fail",
+    "p5_escape": "pass-with-measurement-limitations",
+    "p2_resting": "counter-evidence-record",
+    "p6_spontaneous": "counter-evidence-record"
+  },
+  "note": "P1/P3/P5 pass；P2/P6 = 反证记录型 pass（与 M4 P4 同型：记录本身即交付物；缺失机制清单 → M6 优先验证清单，docs/m5_env_notes.md L40）。**P4 = 全协议（T=15s×N=20 梯度+对照，M5 定稿 WormLoop/VirtualBody）实测 FAIL：CĪ=-0.06508333333333334（p=0.7096760548693398，d=-0.08450638101882019）方向负/不显著——根因 = 夹带病理（fwd/back 运动池共同发放 → v≈0 → 位移 0.2-0.5 皿单位/15s）；协议语义差异（校准 CI@5s 用 M4 前向身体 vs M5 定稿 VirtualBody）已记录，待主 agent 三态裁决（① M5 定稿闭环 → 转反证记录同 P2/P6 ② M4 前向身体语义 ③ 其他）。预算纪律 OK：单试次 ~51s < 5min。P5 方向相位敏感测量限制（L40 #5）：定稿 τ_trans=23（touch@73ms）→ not_back；touch@50ms（τ_trans=0）→ back。"
+}

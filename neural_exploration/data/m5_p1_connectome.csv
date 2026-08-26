@@ -1,0 +1,21 @@
+# M5 P1 连接组验证结果（tools/validate_p1_connectome.py）
+metric,value,ref,verdict
+pass_,True,true,ok
+n_neurons,302,302,ok
+class_sensory,81,81,ok
+class_inter,85,81,ok
+class_motor,116,116,ok
+class_pharyngeal,20,20,ok
+chem_directed_pairs,3638,3638 (Cook 2019 c302 神经元-神经元),ok
+gap_unique_pairs,1093,1093 (Cook 2019 c302 神经元-神经元),ok
+chem_synapse_total,20589,20589 (Cook 2019 权重和),ok
+gap_synapse_total,8642,8642 (Cook 2019 权重和),ok
+chem_vs_cook_published_rel,0.0422,"<=0.10（全细胞边 vs 发布 4,887）",ok
+prereg_chem_band_in,False,"[6300, 7700]（诊断：L7 语义不吻合，如实记录）",diagnostic
+prereg_gap_band_in,False,"[630, 770]（诊断：L7 语义不吻合，如实记录）",diagnostic
+annotation_coverage_pct,100.0,100,ok
+self_connections_total,47,47（34 化学 + 13 缝隙，白名单保留）,ok
+isolated_neurons,CANL;CANR,CANL;CANR（白名单）,ok
+sha256_current,1ac182c11eb24c17,1ac182c11eb24c17,ok
+sha256_rerun,1ac182c11eb24c17,1ac182c11eb24c17,ok
+n_muscle_rows,68,68,ok

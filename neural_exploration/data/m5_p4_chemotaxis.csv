@@ -1,0 +1,20 @@
+# M5 P4 趋化验证（tools/validate_p4_chemotaxis.py；T=15s×N=20 全协议）
+metric,value,criterion,verdict
+pass_,False,true,FAIL
+n_trials,20,20,ok
+t_total_ms,15000.0,15000,ok
+ci_mean,-0.0651,>0,OUT
+ci_sem,0.1722,,
+p_value,0.7097,<0.05,OUT
+cohen_d,-0.0845,>=0.5,OUT
+in_tolerance_band,False,"[0.25,0.75]",informational
+delta_ci_vs_reference_15s,0.4821,<=0.15 或方向一致,OUT
+reference_ci_15s,0.4170,m4_calibration ref-T15000,ok
+ctrl_mean,0.0215,|CI|<0.1 informational,
+ctrl_p,0.8853,>0.05,ok
+approaching_frac,0.3500,informational,
+deterministic,True,true,ok
+budget_ok,True,<=300s/trial,ok
+max_trial_wall_s,53.4,<=300,ok
+total_wall_s,2183,,
+verdict,P4 趋化 FAIL：sig_ok=False delta_ok=False dir_ok=False ctrl_ok=True finite_ok=True,,

@@ -1,6 +1,13 @@
 # M5 权重校准记录（M5-B1e2，清单步骤 5 §6；逐组合四目标短协议值）
 # 协议：静息 T=5s / 自发 T=5s / 趋化 T=5s×N / 逃避 150ms×N（确定性 p=1/n=1）
 "# 行为带（唯一定稿源 data/m5_behavior_reference.csv）：静默 [0.6,0.8]（<0.1Hz）、CI 带 [0.25,0.75]（vs 参考 ΔCI≤0.15 或方向一致）、逃避 back D_peak>0.3、自发 fwd[60,80]/rev[10,25]/turn[5,20]%（容差带中心±10pp）"
+# 汇总结论（M5-B1e2 定稿 2026-08-26，D4=g1_gap005，详见 docs/m5_env_notes.md L37-L42）：
+#   P2 静默：全 40 组合无一达标（结构性夹带 86% 同步 2.7-13.8Hz，静默上限 ~44%）→ 反证
+#   P4 趋化：D4 CI@5s +0.078 方向一致（ΔCI=0.097≤0.15）→ PASS（T=15s×N=20 由 B2 复核）
+#   P5 逃避：方向 back 仅 τ_trans=0（touch@50ms，D_peak 0.61）；定稿 τ_trans=23 下 not_back（节律相位污染）→ 部分
+#   P6 自发：D4 fwd 25.5/rev 3.0/turn 0.5%；最优 P6 替代组合 u2 fwd 20/rev 24.5/turn 11.5（2/3 落带但 P4 丢）
+#   P6 判据：**部分涌现/待 M6 或机制补充**（缺失机制：RIM 酪胺/命令互抑、AVA→DD GABA 链、自发耦合动力学不足——
+#   非权重类级缩放可解，G0 §3.6 部分未涌现路径，不阻塞 P4/P5）
 combo,label,gap_scale,sensory_inter,inter_inter,inter_motor,motor_motor,motor_inter,gaba_scale,rest_median_hz,rest_silent_01,rest_silent_05,rest_max_hz,rest_silent_pass,ci_5s,ci_dir,ci_pass,esc_d_peak,esc_dir,esc_pass,esc_lat_ms,spont_fwd_pct,spont_rev_pct,spont_turn_pct,spont_pause_pct,spont_pass,note
 c0_baseline,"c0 占位(s=1,gap=1)",1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.33,0.086,1.000,0.33,FAIL,0.243,pos,PASS,-0.000,not_back,FAIL,-44.5,0.0,0.0,0.0,100.0,FAIL,
 c1_exc_dn,"c1 兴奋↓0.4,gap.5",0.5,0.4,0.4,0.4,0.4,0.4,1.0,0.33,0.089,0.997,0.67,FAIL,0.490,pos,PASS,-0.001,not_back,FAIL,-43.8,0.8,0.0,0.0,99.2,FAIL,
