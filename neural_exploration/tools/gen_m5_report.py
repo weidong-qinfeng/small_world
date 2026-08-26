@@ -305,22 +305,24 @@ def generate_report() -> str:
                  f"**{_yes(p1.get('pass_', False))} pass** | 302；"
                  f"{p1.get('class_counts', {})}；SHA 重跑逐位一致 |\n")
     lines.append(f"| **P2 静息** | 静默比例 [60,80]%（<0.1Hz）；中位数 <1Hz；max <60Hz；无 NaN | "
-                 f"**{_yes(p2.get('pass_', False))} 反证记录型 pass** | 静默 "
+                 f"**{_yes(p2.get('pass_', False))} 反证记录（pass_=False, "
+                 f"counter-evidence-record）** | 静默 "
                  f"{_pct2(p2.get('silent_frac_01'))}（中位数 {_fmt(p2.get('median_hz'))}Hz，"
-                 f"max {_fmt(p2.get('max_hz'))}Hz）→ 不在带；夹带极限环结构性不可达（L39）；"
-                 "反证记录完成，M6 复核 |\n")
+                 f"max {_fmt(p2.get('max_hz'))}Hz）→ 不在带；夹带极限环结构性不可达（L39，"
+                 "与 P4 同根因）；反证记录完成，M6 复核 |\n")
     lines.append(f"| **P3 咽部** | 无食物主频 [0.1,2]Hz；有食物 [2,5]Hz；漂移 <0.5 | "
                  f"**{_yes(p3.get('pass_', False))} pass** | {_fmt(p3.get('peak_freq_no_food'))}/"
                  f"{_fmt(p3.get('peak_freq_food'))}Hz（vs 参考解） |\n")
     lines.append(f"| **P4 趋化** | 显著性 p<0.05 且 d≥0.5；ΔCI vs 参考(15s)≤0.15 或方向一致；"
-                 f"对照 p>0.05 | **❌ fail（含反证记录，主 agent 最终裁决 2026-08-26）**"
+                 f"对照 p>0.05 | **❌ 反证记录（pass_=False, counter-evidence-record，"
+                 f"主 agent 最终裁决 2026-08-26）**"
                  f" | CĪ={_fmt(p4.get('ci_mean'))}±{_fmt(p4.get('ci_sem'))}（p="
                  f"{_fmt(p4.get('p_value'))}, d={_fmt(p4.get('cohen_d'))}）方向负/不显著"
                  f"（ΔCI vs 参考={_fmt(p4.get('delta_ci_vs_reference'))}）；对照 p="
                  f"{_fmt(p4.get('ctrl_p'))} ✓；T=15s×N=20 全协议；"
-                 "趋化在 302 网络中不涌现（根因=夹带病理：fwd/back 共同发放 → v≈0，"
+                 "302 网络趋化不涌现（根因=夹带病理：fwd/back 共同发放 → v≈0，"
                  "L39/L40，与 P2/P6 同根因）；M4 前向身体对照（+0.360@N=6）vs M5 定稿 "
-                 "VirtualBody（-0.407@N=6）仅作记录——fail + 反证记录，M6 复核 |\n")
+                 "VirtualBody（-0.407@N=6）仅作记录——反证记录完成，M6 复核 |\n")
     lines.append(f"| **P5 逃避** | 行为潜伏期 [30,50]ms（容差 [25,60]）；方向 back（D_peak>0.3）；"
                  f"反应概率 ≥0.8；神经窗 [5,20] | **{_yes(p5.get('pass_', False))} "
                  f"pass（含测量限制记录）** | 行为潜伏期 {_fmt(p5.get('behavior_latency_ms'))}ms"
@@ -331,17 +333,17 @@ def generate_report() -> str:
                  f"{_fmt(p5.get('motor_latency_from_injection_ms'))}ms < [5,20]"
                  "（点神经元结构性偏快 G0 L22）|\n")
     lines.append(f"| **P6 自发** | fwd [60,80] / rev [10,25] / turn [5,20]% | "
-                 f"**{_yes(p6.get('pass_', False))} 反证记录型 pass** | fwd "
+                 f"**{_yes(p6.get('pass_', False))} 反证记录（pass_=False, "
+                 f"counter-evidence-record）** | fwd "
                  f"{_pct2(p6.get('frac_mean', {}).get('fwd'))} / rev "
                  f"{_pct2(p6.get('frac_mean', {}).get('rev'))} / turn "
                  f"{_pct2(p6.get('frac_mean', {}).get('turn'))} / pause "
                  f"{_pct2(p6.get('frac_mean', {}).get('pause'))}——pause 主导（肌肉双饱和 → "
                  "v≈0，L39/L40）；反证记录完成，M6 复核 |\n")
     lines.append(f"\n**汇总**：`all_pass = {summary['all_pass']}`；P1/P3/P5 pass + "
-                 "P2/P6 **反证记录型 pass** + **P4 = fail（含反证记录）**——"
-                 "M5 部分达标（主 agent 最终裁决 2026-08-26：趋化在 302 网络中不涌现，"
-                 "如实 fail；P4 与 P2/P6 同根因：夹带极限环 + 缺失调质/异质权重，"
-                 "缺失机制清单见 §6.3）。\n")
+                 "P2/P4/P6 **反证记录（pass_=False, counter-evidence-record）**——"
+                 "M5 部分达标（主 agent 最终裁决 2026-08-26 编码统一：记录本身即科学交付物；"
+                 "P2/P4/P6 同根因：夹带极限环 + 缺失调质/异质权重，缺失机制清单见 §6.3）。\n")
 
     # 6. 权重定稿
     lines.append("## 6. 权重定稿（§6 校准：D4=g1_gap005，B1e2）\n")
@@ -350,8 +352,8 @@ def generate_report() -> str:
     lines.append("| P2 静默比例 | [60,80]% | 10.6%（中位数 13.8Hz——夹带） | ✗ → 反证记录 |\n")
     lines.append("| P4 趋化 CI | ΔCI vs 参考 ≤0.15 或方向一致 | +0.465@5s（校准，M4 前向身体）/B2 全协议 "
                  f"CĪ={_fmt(p4.get('ci_mean'))}@15s（M5 定稿 VirtualBody） | "
-                 "**✗ FAIL（主 agent 最终裁决）**——趋化在 302 网络中不涌现（方向负/不显著），"
-                 "如实 fail + 反证记录；协议语义差异见 §5/§6.3 |\n")
+                 "**✗ 反证记录（主 agent 最终裁决）**——302 网络趋化不涌现（方向负/不显著），"
+                 "pass_=False + counter-evidence-record；协议语义差异见 §5/§6.3 |\n")
     lines.append("| P5 逃避 | back + 行为窗 [30,50] | 方向 back 仅 τ=0；τ=23 not_back；"
                  "行为潜伏期 ≈34.5ms | △ 部分（相位敏感测量限制，B2 记录）|\n")
     lines.append("| P6 自发 | fwd[60,80]/rev[10,25]/turn[5,20]% | fwd 25.5/rev 3.0/turn 0.5%"

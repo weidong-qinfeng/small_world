@@ -1,5 +1,6 @@
+# M5 P6 自发行为验证（tools/validate_p6_spontaneous.py）
 metric,value,band,verdict
-pass_,True,反证记录型,ok
+pass_,False,False（反证记录：记录本身即科学交付物，主 agent 最终裁决）,record
 status,counter-evidence-record,counter-evidence-record,ok
 frac_fwd_pct,26.00,"(60.0, 80.0)（容差 (50.0, 90.0)）",OUT（反证记录）
 frac_rev_pct,2.42,"(10.0, 25.0)（容差 (0.0, 35.0)）",tol

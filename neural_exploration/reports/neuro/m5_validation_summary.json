@@ -1,6 +1,6 @@
 {
   "milestone": "M5",
-  "generated_utc": "2026-08-26T11:51:19Z",
+  "generated_utc": "2026-08-26T13:17:26Z",
   "results": {
     "p1_connectome": {
       "pass_": true,
@@ -99,9 +99,9 @@
       "errors": []
     },
     "p2_resting": {
-      "pass_": true,
+      "pass_": false,
       "status": "counter-evidence-record",
-      "verdict": "P2 静息 = 反证记录型 pass：无 NaN/无发散 ✓（max 13.9Hz < 60Hz 生理上限 ✓）；静默比例 10.6%（中位数 13.9Hz）不在带 [60,80]%（预期：夹带极限环结构性不可达，L39）——反证记录完成（缺失机制：调质/异质权重/命令互抑，M6 复核；**与 P4 同根因：夹带极限环 + 缺失调质/异质权重**）",
+      "verdict": "P2 静息 = 反证记录（pass_=False, status=counter-evidence-record）：无 NaN/无发散 ✓（max 13.9Hz < 60Hz 生理上限 ✓）；静默比例 10.6%（中位数 13.9Hz）不在带 [60,80]%（预期：夹带极限环结构性不可达，L39）——反证记录完成（缺失机制：调质/异质权重/命令互抑，M6 复核；**与 P4 同根因：夹带极限环 + 缺失调质/异质权重**）",
       "indicator_pass": false,
       "in_band_silent": false,
       "in_band_median": false,
@@ -194,7 +194,7 @@
           "silent_post_05": 0.10596026490066225
         }
       ],
-      "wall_s": 34.429066542,
+      "wall_s": 33.968377792,
       "counter_evidence": {
         "status": "counter-evidence-record",
         "root_cause": "网络级夹带极限环（docs/m5_env_notes.md L39）：单一张力驱动 AVB（M4 携带 14µA/cm²，AVBL/AVBR）+ 全互兴奋命令回路（AVA/AVD↔AVB/PVC 无互抑边，L40 #1）→ 86% 神经元同步夹带至 2.7-13.8Hz（发率分布极端：86% 同率、0 个中间率，非高斯背景活动）→ 静默比例（<0.1Hz）结构性卡在 ~10.6%（全杠杆扫描上限 ~44%，u4），**< 带 [60,80]%**",
@@ -267,8 +267,8 @@
     },
     "p4_chemotaxis": {
       "pass_": false,
-      "status": "fail-with-counter-evidence-record",
-      "verdict": "P4 趋化 = fail（主 agent 最终裁决 2026-08-26）：全协议（T=15s×N=20，302 全虫 D4 权重，M5 定稿 WormLoop/VirtualBody）实测 CĪ=-0.065±0.172（p=0.710, d=-0.08）方向负/不显著，ΔCI vs 参考(15s=0.417)=0.482——趋化在 302 网络中确实不涌现，如实 fail；附反证记录（M6 优先验证）：根因 = fwd/back 运动池夹带共同发放 → v≈0（L39/L40，与 P2/P6 同根因：夹带极限环 + 缺失调质/异质权重 + 命令互抑缺失）；M4 前向身体对照（data/m5_p4_body_comparison.csv：CĪ +0.360 vs -0.407）仅作记录，不改变判据主体；对照 p=0.885 > 0.05 ✓（无梯度无漂移）",
+      "status": "counter-evidence-record",
+      "verdict": "P4 趋化 = 反证记录（pass_=False, status=counter-evidence-record，主 agent 最终裁决 2026-08-26）：302 网络趋化不涌现——全协议（T=15s×N=20，M5 定稿 WormLoop/VirtualBody 为判据主体）实测 CĪ=-0.065±0.172（p=0.710，d=-0.08），ΔCI vs 参考(0.417@15s)=0.482；对照 CI=+0.022（p=0.885 正常）——负 CI 是真实网络行为（fwd/back 夹带共同发放 → v≈0，L39/L40）；→ 反证记录（夹带极限环 + 缺失调质/异质权重 + 命令互抑缺失 → M6 优先验证）；M4 前向身体对照（data/m5_p4_body_comparison.csv：CĪ +0.360 vs -0.407）仅作对照记录，不改变判据主体（换身体规避失败 = 不诚实）",
       "n_trials": 20,
       "t_total_ms": 15000.0,
       "ci_grad": [
@@ -365,7 +365,7 @@
         "diagnosis_evidence": "/tmp/m5_b2_p4diag.py：6 试次位移 [0.36,0.22,0.45,0.19,0.30,0.35] 皿单位，state_frac fwd~20%/pause 56-71%/turn 0-84%"
       },
       "indicator_pass": false,
-      "verdict_updated_by": "M5-B2 按主 agent 最终裁决 2026-08-26（P4 = fail + 反证记录）更新判定；测量值 3 进程交叉验证未动"
+      "verdict_updated_by": "M5-B2 按主 agent 最终裁决 2026-08-26（编码统一：pass_=False + counter-evidence-record）更新；测量值 3 进程交叉验证未动"
     },
     "p5_escape": {
       "pass_": true,
@@ -657,9 +657,9 @@
       "wall_s": 40.241685249999996
     },
     "p6_spontaneous": {
-      "pass_": true,
+      "pass_": false,
       "status": "counter-evidence-record",
-      "verdict": "P6 自发 = 反证记录型 pass：无 NaN ✓；状态比例 fwd 26.0%/rev 2.4%/turn 0.6%/pause 71.0%——不在带 [60,80]/[10,25]/[5,20]%（pause 主导：fwd/back 运动池共同发放 → 肌肉双饱和 → v≈0，L39/L40）；反证记录完成（缺失机制：RIM 酪胺/命令互抑/AVA→DD GABA 链，M6 复核）**；与 P4 同根因：夹带极限环 + 缺失调质/异质权重**）",
+      "verdict": "P6 自发 = 反证记录（pass_=False, status=counter-evidence-record）：无 NaN ✓；状态比例 fwd 26.0%/rev 2.4%/turn 0.6%/pause 71.0%——不在带 [60,80]/[10,25]/[5,20]%（pause 主导：fwd/back 运动池共同发放 → 肌肉双饱和 → v≈0，L39/L40）；反证记录完成（缺失机制：RIM 酪胺/命令互抑/AVA→DD GABA 链，M6 复核；**与 P4 同根因：夹带极限环 + 缺失调质/异质权重**）",
       "indicator_pass": false,
       "no_nan": true,
       "deterministic": true,
@@ -895,7 +895,7 @@
           }
         }
       ],
-      "wall_s": 1016.369970125,
+      "wall_s": 1030.6301203330001,
       "counter_evidence": {
         "status": "counter-evidence-record",
         "root_cause": "pause 主导（L39/L40）：网络级夹带极限环下 fwd/back 运动池共同发放（motor→motor ampa 474 条 + 缝隙）→ 肌肉通道双饱和（C_fwd≈C_back≈1）→ 自发 v≈0 → pause 主导；后退 bout 无法隔离 fwd 池（AVA→DD/VD GABA 抑制链在真实连接组不存在，L40 #2）；单一张力驱动 + 无自发输入/调质 （g=0，L40 #3）→ 任何持续驱动都夹带全网络",
@@ -911,18 +911,17 @@
         "recheck_m6": "M6 引入 RIM 酪胺/命令互抑/AVA→DD GABA 链后复核（M6 优先验证清单 #1/#2/#3）"
       },
       "weights": "D4 定稿（load_weight_scales：gap_scale=0.05，类级=先验 1.0）",
-      "protocol_source": "data/m5_worm_params.csv（spont_t_total_ms=30000/N=10/spont_v_thr_frac=0.05/spont_omega_thr_frac=0.2）",
-      "verdict_updated_by": "M5-B2 按主 agent 最终裁决补充“与 P4 同根因”"
+      "protocol_source": "data/m5_worm_params.csv（spont_t_total_ms=30000/N=10/spont_v_thr_frac=0.05/spont_omega_thr_frac=0.2）"
     }
   },
   "all_pass": false,
   "pass_type": {
     "p1_connectome": "pass",
     "p3_pharynx": "pass",
-    "p4_chemotaxis": "fail-with-counter-evidence-record",
+    "p4_chemotaxis": "counter-evidence-record",
     "p5_escape": "pass-with-measurement-limitations",
     "p2_resting": "counter-evidence-record",
     "p6_spontaneous": "counter-evidence-record"
   },
-  "note": "P1/P3/P5 pass；P2/P6 = 反证记录型 pass；**P4 = fail + 反证记录**（主 agent 最终裁决 2026-08-26：趋化在 302 网络中确实不涌现，如实 fail；all_pass=False 反映 M5 部分达标）。P4 全协议（T=15s×N=20 梯度+对照，M5 定稿 WormLoop/VirtualBody）实测 CĪ=-0.06508333333333334（p=0.7096760548693398，d=-0.08450638101882019）方向负/不显著——根因 = 夹带病理（fwd/back 运动池共同发放 → v≈0 → 位移 0.2-0.5 皿单位/15s，L39/L40；**与 P2/P6 同根因：夹带极限环 + 缺失调质/异质权重 + 命令互抑缺失**）；M4 前向身体对照（同种子 N=6 均值 +0.360 vs M5 -0.407，data/m5_p4_body_comparison.csv）仅作记录，不改变判据主体。预算纪律 OK：单试次 ~53s < 5min。P5 方向相位敏感测量限制（L40 #5）：定稿 τ_trans=23（touch@73ms）→ not_back；touch@50ms（τ_trans=0）→ back。"
+  "note": "P1/P3/P5 pass；**P2/P4/P6 = 反证记录（pass_=False, status=counter-evidence-record）**——主 agent 最终裁决 2026-08-26 编码统一（记录本身即科学交付物；all_pass=False 如实反映 M5 部分达标）。P4 全协议（T=15s×N=20 梯度+对照，M5 定稿 WormLoop/VirtualBody 为判据主体）实测 CĪ=-0.06508333333333334（p=0.7096760548693398，d=-0.08450638101882019）方向负/不显著——302 网络趋化不涌现（负 CI 是真实网络行为：fwd/back 夹带共同发放 → v≈0，L39/L40）；M4 前向身体对照（同种子 N=6 均值 +0.360 vs M5 -0.407，data/m5_p4_body_comparison.csv）仅作记录，不改变判据主体。P2/P4/P6 同根因：夹带极限环 + 缺失调质/异质权重（→ M6 优先验证清单）。预算纪律 OK：单试次 ~53s < 5min。P5 方向相位敏感测量限制（L40 #5）：定稿 τ_trans=23（touch@73ms）→ not_back；touch@50ms（τ_trans=0）→ back。"
 }
