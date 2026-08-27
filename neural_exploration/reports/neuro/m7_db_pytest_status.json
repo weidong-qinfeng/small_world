@@ -1,0 +1,7 @@
+{
+  "passed": 144,
+  "total": 144,
+  "suite": "digital_brain/tests",
+  "env": ".venv-db",
+  "note": "P5 回归（M7-B2）：117 原基线零回归 + test_m7_innate 7（B1a）+ test_m7_interface 14（P-A2）+ test_m7_applications 6（P-A3）= 144 全绿；pytest -p no:cacheprovider；复验 2026-08-27"
+}

@@ -1,0 +1,13 @@
+{
+  "passed": 68,
+  "total": 68,
+  "suite": "neural_exploration/tests/neuro",
+  "env": ".venv-neuro",
+  "note": "P5 回归（M7-B2）：M0-M4 快子集 41（268.5s）+ test_worm_smoke 10（22.7s）+ test_m6_neuromod 9（35.8s）+ test_m6_learning_smoke 8（1170.5s）分块顺序跑 = 68 全绿（M6 冻结基线 68/68 零回归）；逐文件独立进程（brian2 缓存锁纪律 L9#6）；pytest -p no:cacheprovider；复验 2026-08-27",
+  "chunks": {
+    "fast_m0_m4_multicomp": {"passed": 41, "wall_s": 268.5},
+    "test_worm_smoke": {"passed": 10, "wall_s": 22.7},
+    "test_m6_neuromod": {"passed": 9, "wall_s": 35.8},
+    "test_m6_learning_smoke": {"passed": 8, "wall_s": 1170.5}
+  }
+}

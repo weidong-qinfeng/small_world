@@ -1,0 +1,212 @@
+{
+  "tool": "run_m7_validation",
+  "node": "M7-B2",
+  "generated_utc": "2026-08-27T14:14:00Z",
+  "pa1_checks": [
+    {
+      "mechanism": "reflex.d_peak_in_band",
+      "pass": true,
+      "detail": "D_peak(1.0)=0.3601 ∈ [0.352,0.369]"
+    },
+    {
+      "mechanism": "reflex.direction_back",
+      "pass": true,
+      "detail": "direction=back (D_peak 0.3601 > 0.3)"
+    },
+    {
+      "mechanism": "reflex.intensity0_none",
+      "pass": true,
+      "detail": "I=0 → D_peak=0.0 dir=none"
+    },
+    {
+      "mechanism": "reflex.monotone",
+      "pass": true,
+      "detail": "I=2 → D_peak=0.4529 > D_peak(1)=0.3601"
+    },
+    {
+      "mechanism": "chemotaxis.ci_sign",
+      "pass": true,
+      "detail": "CI(10s) 四朝向 = {'east': 1.0, 'north': 1.0, 'west': 0.69, 'south': 0.69} 全正"
+    },
+    {
+      "mechanism": "chemotaxis.ci_in_tolerance",
+      "pass": true,
+      "detail": "CI_canon(10s,θ=π)=0.6900 ∈ 容差窗 [0.25,0.75]"
+    },
+    {
+      "mechanism": "chemotaxis.gradient_toward_food",
+      "pass": true,
+      "detail": "∇C(中心) 指向食物滴 (∇=(0.029,0.029))"
+    },
+    {
+      "mechanism": "cpg.no_food_band",
+      "pass": true,
+      "detail": "f_no_food=0.400Hz ∈ [0.1,2]（冻结 0.400）"
+    },
+    {
+      "mechanism": "cpg.with_food_band",
+      "pass": true,
+      "detail": "f_with_food=2.167Hz ∈ [2,5]（冻结 2.167）"
+    },
+    {
+      "mechanism": "habituation.r2",
+      "pass": true,
+      "detail": "指数拟合 R²=1.0000 ≥ 0.5（冻结 0.787）"
+    },
+    {
+      "mechanism": "habituation.decay",
+      "pass": true,
+      "detail": "decay=R(1)−R(N)=0.4920 > 0 R(n)=[0.353, 0.142, 0.014, -0.063, -0.11, -0.139]"
+    },
+    {
+      "mechanism": "habituation.half_criterion",
+      "pass": true,
+      "detail": "后半均值 -0.1043 < 0.5×前半均值 0.0849"
+    },
+    {
+      "mechanism": "habituation.direction_sanity",
+      "pass": true,
+      "detail": "R(1)=0.3530 > 0.3（冻结 0.353）"
+    },
+    {
+      "mechanism": "habituation.stp_off_ablation",
+      "pass": true,
+      "detail": "STP 关 → R(n) 常数 decay=0.0000（消融无衰减）"
+    },
+    {
+      "mechanism": "habituation.recovery",
+      "pass": true,
+      "detail": "R_rest=0.3530 ≥ 0.3×R(1)（冻结 frac=1.17）"
+    },
+    {
+      "mechanism": "associative.acquisition",
+      "pass": true,
+      "detail": "Δw_train=1.5451 > 0.1（冻结 +0.4325 方向锚）"
+    },
+    {
+      "mechanism": "associative.extinction",
+      "pass": true,
+      "detail": "Δw_ext=-1.6000 < 0（冻结 −0.108）"
+    },
+    {
+      "mechanism": "associative.eta0_ablation",
+      "pass": true,
+      "detail": "η=0 → Δw=0.000000 ≈ 0"
+    },
+    {
+      "mechanism": "modulation.range",
+      "pass": true,
+      "detail": "gate(mot)=[0.398, 0.414, 0.433, 0.453, 0.473] ⊆ [0.3, 1.2]"
+    },
+    {
+      "mechanism": "modulation.monotone",
+      "pass": true,
+      "detail": "动机↑ → 增益单调↑（5HT 促进通道）"
+    },
+    {
+      "mechanism": "modulation.tyramine_off",
+      "pass": true,
+      "detail": "酪胺关 → gate=0.9951 ≈ 1（消融 sanity）"
+    }
+  ],
+  "pa1_determinism": {
+    "reflex": true,
+    "chemotaxis": true,
+    "cpg": true,
+    "habituation": true,
+    "associative": true,
+    "modulation": true
+  },
+  "pa1_pass": true,
+  "pa1_check_count": 21,
+  "pa1_determinism_count": 6,
+  "pa2": {
+    "pass": true,
+    "passed": 14,
+    "expected": 14,
+    "exit_code": 0,
+    "tail": [
+      "digital_brain/tests/test_m7_interface.py ..............                  [100%]",
+      "",
+      "============================== 14 passed in 0.30s =============================="
+    ]
+  },
+  "pa3": {
+    "pass": true,
+    "passed": 6,
+    "expected": 6,
+    "exit_code": 0,
+    "tail": [
+      "digital_brain/tests/test_m7_applications.py ......                       [100%]",
+      "",
+      "============================== 6 passed in 0.29s ==============================="
+    ]
+  },
+  "p5": {
+    "digital_brain": {
+      "passed": 144,
+      "total": 144,
+      "suite": "digital_brain/tests",
+      "env": ".venv-db",
+      "note": "P5 回归（M7-B2）：117 原基线零回归 + test_m7_innate 7（B1a）+ test_m7_interface 14（P-A2）+ test_m7_applications 6（P-A3）= 144 全绿；pytest -p no:cacheprovider；复验 2026-08-27"
+    },
+    "neural_exploration": {
+      "passed": 68,
+      "total": 68,
+      "suite": "neural_exploration/tests/neuro",
+      "env": ".venv-neuro",
+      "note": "P5 回归（M7-B2）：M0-M4 快子集 41（268.5s）+ test_worm_smoke 10（22.7s）+ test_m6_neuromod 9（35.8s）+ test_m6_learning_smoke 8（1170.5s）分块顺序跑 = 68 全绿（M6 冻结基线 68/68 零回归）；逐文件独立进程（brian2 缓存锁纪律 L9#6）；pytest -p no:cacheprovider；复验 2026-08-27",
+      "chunks": {
+        "fast_m0_m4_multicomp": {
+          "passed": 41,
+          "wall_s": 268.5
+        },
+        "test_worm_smoke": {
+          "passed": 10,
+          "wall_s": 22.7
+        },
+        "test_m6_neuromod": {
+          "passed": 9,
+          "wall_s": 35.8
+        },
+        "test_m6_learning_smoke": {
+          "passed": 8,
+          "wall_s": 1170.5
+        }
+      }
+    },
+    "report_md": "docs/m7_report.md",
+    "validation_summary": "reports/neuro/m7_validation_summary.json",
+    "innate_map_png": "reports/neuro/m7_innate_map.png"
+  },
+  "p6": {
+    "handoff_docs": [
+      "docs/m7_env_notes.md（L1–L19：G1 门 + 机制清单 + B1a/B1b 实测坑）",
+      "docs/m7_report.md §7（L1–L19 摘要 + 本节点 L20+）",
+      "docs/m7_report.md §8（阶段二 M8 交接：果蝇幼虫全脑 + M-1..M-7）"
+    ],
+    "m8_key_points": [
+      "M8 = 果蝇幼虫全脑（3,016 神经元 / ~55 万突触，Winding 2023 连接组；行为+活动+扰动预测三通道）",
+      "M-1..M-6 迁移机制清单 + M5 缩放定律降阶模型方案 = M8 设计基础",
+      "M-7 夹带双稳态反证为 M8 降阶设计提供依据（阶段二铁律 C 缩放扫描）"
+    ],
+    "no_commit": true,
+    "note": "冻结文件零修改；未 git commit（M0–M6 惯例）"
+  },
+  "all_pass": true,
+  "pa1_b1a_readback": {
+    "pass": true,
+    "checks_pass": "21/21",
+    "determinism_pass": "6/6",
+    "wall_s": 0.014,
+    "note": "B1a 落盘（validate_m7_equivalence）；本节点 fresh compute 复验独立确认"
+  },
+  "verdicts": {
+    "pa1": "pass",
+    "pa2": "pass",
+    "pa3": "pass",
+    "p5": "pass",
+    "p6": "pass"
+  },
+  "wall_s": 0.965
+}
