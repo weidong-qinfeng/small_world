@@ -1,0 +1,5 @@
+{
+  "passed": 68,
+  "total": 68,
+  "note": "全量 pytest 绿（M0-M5 冻结零回归 + M6 冒烟 17/17：test_m6_neuromod 9/9 + test_m6_learning_smoke 8/8）；按文件逐文件运行（每文件独立进程，brian2 缓存锁纪律 L9#6）；复验 2026-08-27 19:02"
+}

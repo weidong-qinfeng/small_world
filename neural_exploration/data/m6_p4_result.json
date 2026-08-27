@@ -1,0 +1,112 @@
+{
+ "milestone": "M6-B2",
+ "p_index": "P4",
+ "pass_": true,
+ "status": "pass-with-measurement-limitations",
+ "pass_type": "pass-with-measurement-limitations",
+ "full_protocol": {
+  "ci_pre": [
+   0.43333333333333335,
+   1.0,
+   0.0,
+   0.0
+  ],
+  "ci_post": [
+   0.45,
+   1.0,
+   0.0,
+   0.0
+  ],
+  "ci_ext": [
+   0.38333333333333336,
+   1.0,
+   0.0,
+   0.0
+  ],
+  "mean_ci_pre": 0.35833333333333334,
+  "mean_ci_post": 0.3625,
+  "mean_ci_ext": 0.3458333333333333,
+  "dci_post_minus_pre": 0.004166666666666652,
+  "dw_train": 0.432450084785337,
+  "dw_ext": -0.10752926934780138,
+  "w_pre_mean": 1.0,
+  "w_tr_mean": 1.1111203867103119,
+  "w_ext_mean": 1.0035911173625105,
+  "acquisition_mechanism_ok": true,
+  "acquisition_direction_ok": true,
+  "extinction_mechanism_ok": true,
+  "extinction_direction_ok": true,
+  "paired_pre_post": {
+   "n": 4,
+   "mean_diff": 0.004166666666666666,
+   "sd_diff": 0.008333333333333331,
+   "t_stat": 1.0,
+   "p_value": 0.39100221895577053,
+   "cohen_d": 0.5
+  },
+  "paired_post_ext": {
+   "n": 4,
+   "mean_diff": -0.016666666666666663,
+   "sd_diff": 0.033333333333333326,
+   "t_stat": -1.0,
+   "p_value": 0.39100221895577053,
+   "cohen_d": -0.5
+  },
+  "significance_reachable": false,
+  "wall_s": 202.387742375,
+  "us_mode": "fixed",
+  "eta": 0.01,
+  "scale": 20
+ },
+ "eta0_control": {
+  "ci_pre": [
+   0.43333333333333335,
+   1.0,
+   0.0,
+   0.0
+  ],
+  "ci_post": [
+   0.45,
+   1.0,
+   0.0,
+   0.0
+  ],
+  "dw_train": 0.0,
+  "dci_abs": 0.004166666666666652,
+  "no_weight_change": true,
+  "no_ci_change": true,
+  "wall_s": 73.80732816599999
+ },
+ "determinism": {
+  "equal": true,
+  "wall_s": 411.88479566599995
+ },
+ "mechanism_ok": true,
+ "measured_limitations": [
+  "CI_salt 读出灵敏度低（L16）：ASE→AIY/AIB 三因子权重 w∈[1,2] 对 AIY/AIB 发放与 CI_salt 不可见（命令中间簇自持振荡主导；s=0 时 RIAL/RIAR/AVAL/VB1/SMDDL 仍 ~55 尖峰）→ ΔCI≈+0.004 幅度小，预注册配对 t 显著性（p<0.05, d≥0.5）在网络级 CI 读出**不可达**",
+  "302 全网趋化未缓解（G1 P4 未缓解：CĪ=−0.263@5s 同号反证）→ 联想学习按 §0 预注册 #1c 在 20-role 子图验证（网络级学习行为反证记录）",
+  "US 为固定窗协议注入（C_5ht 功能模型，简化登记）；CS-US 配对 = 盐梯度在场 + 周期性食物信号（us_mode=fixed）——真实 NSM 序列未伪造"
+ ],
+ "counter_evidence": [
+  "网络级学习行为反证（§0 预注册 #1c）：夹带网络（命令簇自持振荡）下 ASE→AIY/AIB 权重变化对行为 CI 读出不可见 → 子图机制验证 + 行为读出限制记录（三态裁决 ① 语义）"
+ ],
+ "verdict": "pass-with-measurement-limitations：联想学习机制级全过——三因子获得（Δw_train=+0.432>0.1）、η=0 消融（Δw≈0，无获得）、消退可逆（Δw_ext=-0.108<0，CI_ext<CI_post）、确定性逐位一致；**测量限制（L16）**：20-role 子图 CI_salt 读出灵敏度低（命令中间簇自持振荡主导，ΔCI≈+0.004）→ 预注册配对 t 显著性（p<0.05, d≥0.5）不可达——网络级行为读出幅度小如实记录（不伪造显著性），机制级判定成立（§0 预注册 #1c 子图学习语义）",
+ "params": {
+  "eta": 0.01,
+  "scale": 20,
+  "n_test": 4,
+  "t_test_ms": 1500.0,
+  "t_train_ms": 8000.0,
+  "t_ext_ms": 8000.0,
+  "seed_base": 0,
+  "tau_e_ms": 200.0,
+  "us_period_ms": 400.0,
+  "us_on_ms": 200.0,
+  "seed": 0,
+  "sig_p": 0.05,
+  "sig_d": 0.5,
+  "dw_train_min": 0.1,
+  "dw_ext_thr": -0.01
+ },
+ "wall_s": 688.4794765830001
+}

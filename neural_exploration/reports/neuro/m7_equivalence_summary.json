@@ -1,0 +1,216 @@
+{
+  "tool": "validate_m7_equivalence",
+  "node": "M7-B1a",
+  "params_csv": "neural_exploration/data/m7_innate_params.csv",
+  "pass": true,
+  "checks": [
+    {
+      "mechanism": "reflex.d_peak_in_band",
+      "pass": true,
+      "detail": "D_peak(1.0)=0.3601 ∈ [0.352,0.369]"
+    },
+    {
+      "mechanism": "reflex.direction_back",
+      "pass": true,
+      "detail": "direction=back (D_peak 0.3601 > 0.3)"
+    },
+    {
+      "mechanism": "reflex.intensity0_none",
+      "pass": true,
+      "detail": "I=0 → D_peak=0.0 dir=none"
+    },
+    {
+      "mechanism": "reflex.monotone",
+      "pass": true,
+      "detail": "I=2 → D_peak=0.4529 > D_peak(1)=0.3601"
+    },
+    {
+      "mechanism": "chemotaxis.ci_sign",
+      "pass": true,
+      "detail": "CI(10s) 四朝向 = {'east': 1.0, 'north': 1.0, 'west': 0.69, 'south': 0.69} 全正"
+    },
+    {
+      "mechanism": "chemotaxis.ci_in_tolerance",
+      "pass": true,
+      "detail": "CI_canon(10s,θ=π)=0.6900 ∈ 容差窗 [0.25,0.75] （冻结参考 CI(25s)=0.494 / CI(15s)=0.417）"
+    },
+    {
+      "mechanism": "chemotaxis.gradient_toward_food",
+      "pass": true,
+      "detail": "∇C(中心) 指向食物滴 (∇=(0.029,0.029))"
+    },
+    {
+      "mechanism": "cpg.no_food_band",
+      "pass": true,
+      "detail": "f_no_food=0.400Hz ∈ [0.1,2]（冻结 0.400）"
+    },
+    {
+      "mechanism": "cpg.with_food_band",
+      "pass": true,
+      "detail": "f_with_food=2.167Hz ∈ [2,5]（冻结 2.167）"
+    },
+    {
+      "mechanism": "habituation.r2",
+      "pass": true,
+      "detail": "指数拟合 R²=1.0000 ≥ 0.5（冻结 0.787）"
+    },
+    {
+      "mechanism": "habituation.decay",
+      "pass": true,
+      "detail": "decay=R(1)−R(N)=0.4920 > 0 R(n)=[0.353, 0.142, 0.014, -0.063, -0.11, -0.139]"
+    },
+    {
+      "mechanism": "habituation.half_criterion",
+      "pass": true,
+      "detail": "后半均值 -0.1043 < 0.5×前半均值 0.0849（冻结 −0.183 vs 0.093）"
+    },
+    {
+      "mechanism": "habituation.direction_sanity",
+      "pass": true,
+      "detail": "R(1)=0.3530 > 0.3（冻结 0.353）"
+    },
+    {
+      "mechanism": "habituation.stp_off_ablation",
+      "pass": true,
+      "detail": "STP 关 → R(n) 常数 decay=0.0000（冻结消融无衰减）"
+    },
+    {
+      "mechanism": "habituation.recovery",
+      "pass": true,
+      "detail": "R_rest=0.3530 ≥ 0.3×R(1)（冻结 R_rest=0.411 frac=1.17）"
+    },
+    {
+      "mechanism": "associative.acquisition",
+      "pass": true,
+      "detail": "Δw_train=1.5451 > 0.1（冻结 +0.4325；同号，幅度差如实记录——清单 §2.1 绝对值不作硬判据）"
+    },
+    {
+      "mechanism": "associative.extinction",
+      "pass": true,
+      "detail": "Δw_ext=-1.6000 < 0（冻结 −0.108）"
+    },
+    {
+      "mechanism": "associative.eta0_ablation",
+      "pass": true,
+      "detail": "η=0 → Δw=0.000000 ≈ 0（冻结 η=0 Δw=0）"
+    },
+    {
+      "mechanism": "modulation.range",
+      "pass": true,
+      "detail": "gate(mot)=[0.398, 0.414, 0.433, 0.453, 0.473] ⊆ [0.3, 1.2]"
+    },
+    {
+      "mechanism": "modulation.monotone",
+      "pass": true,
+      "detail": "动机↑ → 增益单调↑（5HT 促进通道）"
+    },
+    {
+      "mechanism": "modulation.tyramine_off",
+      "pass": true,
+      "detail": "酪胺关 → gate=0.9951 ≈ 1（冻结 sanity：gate≡1）"
+    }
+  ],
+  "determinism": {
+    "reflex": true,
+    "chemotaxis": true,
+    "cpg": true,
+    "habituation": true,
+    "associative": true,
+    "modulation": true
+  },
+  "anchors": {
+    "reflex": {
+      "d_peak_at_1": 0.3600944510035419,
+      "direction": "back",
+      "frozen_band": [
+        0.352,
+        0.369
+      ],
+      "frozen_latency_ms": 32.6,
+      "behavior_latency_ms": 32.6
+    },
+    "chemotaxis": {
+      "ci_by_heading": {
+        "east": 1.0,
+        "north": 1.0,
+        "west": 0.69,
+        "south": 0.69
+      },
+      "ci_canon": 0.69,
+      "frozen_ci_25s_ref": 0.494,
+      "frozen_ci_15s_ref": 0.417,
+      "ci_band": [
+        0.3,
+        0.7
+      ],
+      "ci_tolerance": [
+        0.25,
+        0.75
+      ]
+    },
+    "cpg": {
+      "f_no_food": 0.4,
+      "f_with_food": 2.167,
+      "frozen": [
+        0.4,
+        2.167
+      ],
+      "bands": [
+        [
+          0.1,
+          2.0
+        ],
+        [
+          2.0,
+          5.0
+        ]
+      ]
+    },
+    "habituation": {
+      "r_seq": [
+        0.353,
+        0.1421,
+        0.0142,
+        -0.0634,
+        -0.1105,
+        -0.139
+      ],
+      "r2": 1.0,
+      "tau_hab": 2.0,
+      "decay": 0.49200244073759025,
+      "r_rest": 0.353,
+      "frozen_r_seq": [
+        0.3529,
+        0.3752,
+        -0.1684,
+        -0.1832,
+        -0.1833,
+        -0.1833
+      ],
+      "frozen_r2": 0.787,
+      "frozen_tau": 2.0,
+      "frozen_r_rest": 0.411
+    },
+    "associative": {
+      "dw_train": 1.5450944744913344,
+      "dw_ext": -1.6000000000000012,
+      "dw_eta0": 0.0,
+      "frozen_dw_train": 0.4325,
+      "frozen_dw_ext": -0.108
+    },
+    "modulation": {
+      "gates": [
+        0.398,
+        0.4138,
+        0.4335,
+        0.4532,
+        0.4729
+      ],
+      "gate_tyramine_off": 0.9950738916256159,
+      "gate_floor": 0.3,
+      "gate_cap": 1.2,
+      "frozen_o2_floor_gate": 0.4
+    }
+  },
+  "wall_s": 0.014
+}

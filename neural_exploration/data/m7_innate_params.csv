@@ -1,0 +1,93 @@
+# M7 机制回迁——先天机制模块唯一定稿参数源（M7-B1a 执行节点创建）
+# 用途：P-A1 机制提取与封装（InnateMechanism 行为级模块）的唯一参数源；
+#       模块只读本 CSV 不硬编码（位置解析沿用 M5 L23 惯例：value 在 fields[9]）。
+# 列：role(机制名), neuron_class(参数名), synapse_from, synapse_to, synapse_type,
+#     g_max_ns, delay_ms, tonic_uA_cm2, value, note
+# 纪律：全部参数从 M3–M6 冻结 CSV（m3_reflex_params/m4_chemotaxis_params/
+#       m5_behavior_reference/m5_worm_params/m6_learning_params）**提取**，
+#       不重新训练/校准（清单 §2.1 封装原则 + L2 锚）；行为量等价锚
+#       （M3 D_peak 带 / M4 CI / M5 节律带 / M6 Δw·R²）取自冻结报告数值。
+role,neuron_class,synapse_from,synapse_to,synapse_type,g_max_ns,delay_ms,tonic_uA_cm2,value,note
+# ---------------- M-1 触觉反射弧（ReflexArcMechanism）----------------
+# 来源：data/m3_reflex_params.csv（param 行）+ M3 定稿 D_peak 带 +
+#       data/m5_behavior_reference.csv escape 行 + M5 302 冻结逃避数值。
+reflex,d_peak_base,,,,,,,,0.360,M3 定稿 D_peak 带 [0.352,0.369] 中点（行为级锚；基准触刺激 I=1.0 → D_peak=0.360）
+reflex,d_peak_thr,,,,,,,,0.3,方向判据阈值（behavior_reference escape.direction_peak；D_peak>0.3 → back）
+reflex,d_peak_max,,,,,,,,0.610,M5 302 D4 定稿逃避 D_peak（饱和上界；d_peak(I)=d_max·I/(I+i_half)）
+reflex,i_half,,,,,,,,0.694,饱和曲线半强度（由 d_peak(1.0)=d_peak_base 反解：i_half=d_max/d_base−1；确定性锚）
+reflex,muscle_w_back,,,,,,,,0.60,m3 muscle 行（informational：C_back 收缩增量 w）
+reflex,muscle_w_fwd,,,,,,,,0.18,m3 muscle 行（informational：C_fwd 收缩增量 w）
+reflex,muscle_tau_ms,,,,,,,,20.0,m3 muscle_tau（informational）
+reflex,touch_start_ms,,,,,,,,50.0,m3 param 行（协议信息）
+reflex,touch_dur_ms,,,,,,,,5.0,m3 param 行（协议信息）
+reflex,i0_uA_cm2,,,,,,,,60.0,m3 param 行（基准触刺激密度）
+reflex,nerve_latency_ms,,,,,,,,10.0,M3 实测神经潜伏期 8–14ms 中值（点档结构性偏快记录见 M5 L22）
+reflex,behavior_latency_ms,,,,,,,,32.6,M5 302 冻结行为潜伏期 32.633ms∈[30,50]（Chalfie 1985 带）
+# ---------------- M-2 嗅觉趋化（ChemotaxisMechanism）----------------
+# 来源：data/m4_chemotaxis_params.csv（env/body/protocol 行）+ data/m5_behavior_reference.csv。
+chemotaxis,arena_L,,,,,,,,10.0,方形培养皿边长（m4 env）
+chemotaxis,sigma,,,,,,,,1.25,梯度长度尺度 σ=L/8（m4 env；C=exp(−r²/2σ²)）
+chemotaxis,c_max,,,,,,,,1.0,梯度峰值（m4 env）
+chemotaxis,c_bg,,,,,,,,0.0,背景浓度（m4 env）
+chemotaxis,food_x,,,,,,,,7.5,食物滴 x（右上象限；m4 env）
+chemotaxis,food_y,,,,,,,,7.5,食物滴 y（m4 env）
+chemotaxis,boundary,,,,,,,,reflect,边界策略（m4 env）
+chemotaxis,v_fwd0,,,,,,,,1.0,最大前进速度 units/s（m4 body；B1c 实测基线 0.41）
+chemotaxis,dt_b_ms,,,,,,,,25.0,行为 tick ms（m4 body；闭环 epoch ΔT）
+chemotaxis,ci_radius,,,,,,,,2.5,吸引圈半径=2σ（m4 protocol；informational 双指标）
+chemotaxis,ci_band_lo,,,,,,,,0.3,CI 生物带下限（m5 behavior_reference chemotaxis.ci_band；容差窗 [0.25,0.75]）
+chemotaxis,ci_band_hi,,,,,,,,0.7,CI 生物带上限（m5 behavior_reference）
+chemotaxis,ci_ref_25s,,,,,,,,0.494,M4 参考模型 CI(25s)=0.494 p=0.000（m5_report §4.4；方向性参考锚）
+chemotaxis,ci_ref_15s,,,,,,,,0.417,M5 参考模型 CI(15s)（m5_report §4.4；方向性参考锚）
+# ---------------- M-3 咽部 CPG（CpgMechanism，可选扩展）----------------
+# 来源：data/m5_behavior_reference.csv pharynx 行 + M5 P3 冻结主频（m5_report §4.1）。
+cpg,f_no_food_hz,,,,,,,,0.400,M5 P3 冻结无食物主频 0.400Hz∈[0.1,2]（Avery & Horvitz 1989）
+cpg,f_with_food_hz,,,,,,,,2.167,M5 P3 冻结有食物主频 2.167Hz∈[2,5]（Avery & Horvitz 1989）
+cpg,band_no_food_hz,,,,,,,,0.1..2.0,预注册带（m5 behavior_reference pharynx.rhythm_no_food_hz）
+cpg,band_with_food_hz,,,,,,,,2.0..5.0,预注册带（m5 behavior_reference pharynx.rhythm_with_food_hz）
+cpg,drift_max,,,,,,,,0.5,节律稳定判据（T≥10s 主频漂移 <50%；m5 behavior_reference pharynx.rhythm_stability_drift）
+# ---------------- M-4 习惯化（HabituationMechanism）----------------
+# 来源：data/m6_learning_params.csv habituation 段 + M6 P3 冻结数值（data/m6_p3_habituation.csv）。
+habituation,r0,,,,,,,,0.353,M6 冻结 R(1)=0.3529（首刺激 D_peak；落 M3 带 [0.352,0.369]）
+habituation,tau_hab,,,,,,,,2.0,M6 冻结短 ISI 指数拟合 τ_hab=2.0（预注册带 [3,15] 出带如实记录——短 ISI 衰减更快）
+habituation,r_plateau,,,,,,,,-0.183,M6 冻结平台 R(3..6)≈−0.183（B 截距；R(n)=(R0−B)·exp(−(n−1)/τ)+B）
+habituation,stp_u0,,,,,,,,0.6,STP 基准利用度（m6 CSV；H1 机制）
+habituation,stp_tau_fac_ms,,,,,,,,10.0,STP 易化时间常数（m6 CSV；depression-dominant）
+habituation,stp_tau_rec_ms,,,,,,,,1000.0,STP 恢复时间常数（m6 CSV；预注册 400–1000ms）
+habituation,d_peak_thr,,,,,,,,0.3,方向 sanity 阈值（m6 CSV）
+habituation,fit_r2_min,,,,,,,,0.5,指数拟合 R² 预注册阈值（m6 CSV）
+habituation,fit_tau_band,,,,,,,,3.0..15.0,τ_hab 预注册带（m6 CSV；短 ISI 出带如实记录）
+habituation,recover_frac_min,,,,,,,,0.3,R_rest ≥ 0.3×R(1) 预注册（m6 CSV；冻结实测 1.17）
+# ---------------- M-5 联想学习（AssociativeMechanism）----------------
+# 来源：data/m6_learning_params.csv associative 段 + stdp 段 + M6 P4 冻结数值（data/m6_p4_associative.csv）。
+associative,eta,,,,,,,,0.01,三因子训练学习率（m6 CSV；预注册窗 [1e-4,1e-2] 上界）
+associative,tau_e_ms,,,,,,,,200.0,资格迹时间常数（m6 CSV stdp 段同值；预注册 [100,500]ms）
+associative,w0,,,,,,,,1.0,权重锚（m6 CSV stdp 段；ΔW 相对量）
+associative,w_max,,,,,,,,2.0,权重上界（m6 CSV stdp 段；clip 饱和）
+associative,us_period_ms,,,,,,,,400.0,US 窗周期（m6 CSV）
+associative,us_on_ms,,,,,,,,200.0,US 窗时长（m6 CSV；每周期 [us_on,period) 注入）
+associative,us_train_signal,,,,,,,,1.0,训练期 US 信号（m6 CSV；C_5ht 协议注入）
+associative,us_ext_signal,,,,,,,,-1.0,消退期 US 信号（m6 CSV；US 反号 → 权重回落）
+associative,t_train_ms,,,,,,,,8000.0,训练期时长（m6 CSV）
+associative,t_ext_ms,,,,,,,,8000.0,消退期时长（m6 CSV）
+associative,dt_ms,,,,,,,,25.0,行为 tick（=m4 body dt_b；行为级积分步）
+associative,dw_train_ref,,,,,,,,0.4325,M6 冻结 Δw_train=+0.4325（m6_p4_associative.csv；方向性参考锚——绝对值不作硬判据）
+associative,dw_ext_ref,,,,,,,,-0.108,M6 冻结 Δw_ext=−0.108（方向性参考锚）
+# ---------------- M-6 神经调质层（ModulationMechanism，可选扩展）----------------
+# 来源：data/m6_learning_params.csv mod 段（B1a O2 定稿）。
+modulation,tau_da_ms,,,,,,,,500.0,多巴胺浓度时间常数（预注册窗 [100,1000]ms）
+modulation,tau_5ht_ms,,,,,,,,500.0,血清素浓度时间常数
+modulation,tau_tyr_ms,,,,,,,,500.0,酪胺浓度时间常数
+modulation,rate_norm_hz,,,,,,,,30.0,释放源发放率归一化基准（→[0,1]）
+modulation,da_baseline,,,,,,,,0.05,多巴胺基线浓度
+modulation,ht_baseline,,,,,,,,0.05,血清素基线浓度
+modulation,tyr_baseline,,,,,,,,1.0,酪胺基线浓度（O2 定稿：fwd_gate→floor 0.4，打破单张力夹带）
+modulation,tyr_gain,,,,,,,,0.60,fwd_gate = 1 − tyr_gain·C_tyr（单调有界）
+modulation,tyr_floor,,,,,,,,0.30,fwd_gate 下限（不彻底关闭前进）
+modulation,ht_gain,,,,,,,,0.20,C_5ht → 前进增益 1+K·C（capped 1.2）
+modulation,da_gain,,,,,,,,0.30,C_da → 运动层增益 1/(1+K·C)（Hill 型）
+modulation,gate_min,,,,,,,,0.30,fwd_gate 全局下限（等价 tyr_floor）
+modulation,gate_max,,,,,,,,1.20,fwd_gate 全局上界（capped 1.2）
+modulation,tyramine_enabled,,,,,,,,1,① RIM 酪胺门控开关（消融：0 → gate≡1——冻结 sanity）
+modulation,ht_enabled,,,,,,,,1,血清素门控开关
+modulation,da_enabled,,,,,,,,1,多巴胺门控开关

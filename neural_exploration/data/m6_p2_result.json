@@ -1,0 +1,162 @@
+{
+ "milestone": "M6-B2",
+ "p_index": "P2",
+ "g1_verdict": "PARTIAL",
+ "pass_": false,
+ "status": "counter-evidence-record",
+ "pass_type": "counter-evidence-record",
+ "band_pass": false,
+ "checks": {
+  "p5_direction_phase": {
+   "tau_trans_ms": 23.0,
+   "d_peak": 0.355,
+   "direction": "back",
+   "in_band": true,
+   "criterion": "back (D_peak>0.3) — G1 关键前置",
+   "note": "确定性网络逐 seed 同值（B1a 实测 0.355）；本节点探针复现"
+  },
+  "p2_resting": {
+   "silent_post": 0.103,
+   "band": [
+    0.6,
+    0.8
+   ],
+   "in_band_silent": false,
+   "median_post_hz": 22.5,
+   "in_band_median": false,
+   "max_post_hz": 33.2,
+   "in_band_max": true,
+   "pass_": false,
+   "verdict": "未缓解（静息协议下运动池自发脉冲仍点燃全互兴奋共振环；M5 反证 L40#3 升级为结构性限制）",
+   "m5_frozen": "10.6%（median 13.8Hz）→ O2 10.3%（median 22.5Hz）——未缓解"
+  },
+  "p6_spontaneous": {
+   "frac_pct": {
+    "fwd": 36.0,
+    "rev": 11.0,
+    "turn": 3.4000000000000004
+   },
+   "pause_pct": 50.0,
+   "in_band": {
+    "fwd": false,
+    "rev": true,
+    "turn": false
+   },
+   "pass_": false,
+   "verdict": "部分缓解（rev 落带；fwd/turn 近带；M5 反证 25.5/3.0/0.5% → 36-43/9-11/3.4-4.3%；方向分离结构涌现）",
+   "m5_frozen": "fwd 25.5/rev 3.0/turn 0.5% → O2 36-43/9-11/3.4-4.3%"
+  },
+  "p4_chemotaxis": {
+   "ci_grad": -0.263,
+   "ci_ctrl": 0.384,
+   "sig_ok": false,
+   "dir_ok": false,
+   "ctrl_ok": false,
+   "pass_": false,
+   "verdict": "未缓解（与 M5 同符号反证：夹带网络 fwd/back 共同发放 → v≈0，无净趋化位移）；全协议 T=15s×N=20 复核挂起（L11）",
+   "m5_frozen": "M5 全协议 CĪ=−0.065@15s×N=20（p=0.71）→ O2 5s 探针 −0.263 同号",
+   "note": "夹带网络 fwd/back 共同发放 → v≈0，无净趋化位移（结构性限制）"
+  }
+ },
+ "probes": {
+  "p5_phase_probe": {
+   "d_peak": 0.35525650577825474,
+   "direction": "back",
+   "direction_ok": true,
+   "g1_reference": 0.355,
+   "reproducible": true,
+   "note": "确定性网络：单 seed 点估计 = G1 N=5 均值（B1a 存 0.355 为 3 位舍入，实测精确值 0.35526；判定方向/带不变）"
+  },
+  "p2_resting_probe": {
+   "silent_post": 0.10264900662251655,
+   "median_post_hz": 22.666666666666668,
+   "max_post_hz": 32.666666666666664,
+   "in_band_silent": false,
+   "in_band_median": false,
+   "in_band_max": true,
+   "pass_": false,
+   "g1_reference": {
+    "silent": 0.103,
+    "median": 22.5,
+    "max": 33.2
+   },
+   "note": "静息协议下运动池自发脉冲仍点燃共振环 → 静默 ~10%（带 [60,80] 未达）"
+  }
+ },
+ "ablation_sanity": {
+  "rows": {
+   "tyramine_off": {
+    "gate": 1.0,
+    "escape_d_peak": 0.355,
+    "ok": true,
+    "note": "组件级 gate≡1 ✓；escape 仍 back——方向修复非①单独承载（L7b：多机制联合，④ bout 驱动为主）"
+   },
+   "mutual_inh_off": {
+    "escape_d_peak": 0.355,
+    "note": "escape 仍 back——方向修复非②单独承载（L7b）"
+   },
+   "gaba_chain_off": {
+    "rev": [
+     0.1,
+     0.146
+    ],
+    "dd_vd_spikes": [
+     1703,
+     1703
+    ],
+    "note": "组件级链驱动 ✓（0.80nA 单调/删链恒 0）；网络级不可观测（O2 夹带态淹没，L9 #7 如实记录）"
+   },
+   "spont_off": {
+    "pause_frac": 1.0,
+    "bout_disappears": false,
+    "note": "bout 消失 ✓（现象消失 sanity）"
+   },
+   "frozen_regression": {
+    "rates_identical": true,
+    "note": "M5 冻结基线逐位一致（silent 10.6%/median 14Hz）——组合复用纪律 ✓"
+   }
+  },
+  "summary": "四项机制全部落地且可消融（每项 enabled 开关 + 行为可测变化）；方向相位修复是多机制联合（③ AVA→DD/VD 链 + ④ 自发 bout 为主，L7b）；GABA 链网络级效应不可观测（O2 夹带态淹没，L9 #7）如实记录；M5 冻结基线逐位一致（组合复用纪律 ✓）"
+ },
+ "missing_mechanisms": [
+  "夹带双稳态（entrainment bistability）：全互兴奋命令回路（AVA↔AVB/PVC ampa）+ 运动池互驱（motor→motor ampa 474 条）承载的 ~14-25Hz 共振极限环——调质门控（酪胺/自发 bout）只能把网络从 14Hz 夹带推到 2Hz 或 100% 静默，无『低活动（P2 静默 60-80%）+ 行为活跃（P6 fwd 60-80%）』的稳定中间态（M5 L38 观察在 O2 调质参数下复现：分岔陡峭）；任何『持续或准持续』驱动都重新点燃共振环",
+  "命令层点火点：自发/调质输入若注入命令池（AVB/PVC/AVA/AVD）→ 每脉冲重新点燃夹带（10-25Hz 全局同步）——行为驱动必须作用于运动输出层（L9 #1 结构性发现）",
+  "302 网络级学习读出（习惯化 D_peak / 联想 CI_salt）被夹带动力学淹没 → 学习机制在干净子图底物验证（M6-B1c L12/L16 限制，P3/P4 测量限制记录）"
+ ],
+ "verdict": "反证记录型 pass（判据带层面 pass_=False）：P2 静默未缓解（10.3% vs 带 [60,80]）、P4 趋化未缓解（−0.263@5s，与 M5 −0.065 同号）、P6 部分缓解（rev 10.9% 落带；fwd 36-43%/turn 3.4-4.3% 近带；方向分离结构涌现）；P5 方向相位修复（tau=23 → back D_peak=0.355，G1 关键前置满足）→ P3 习惯化协议可进入。反证记录本身即交付物（与 M5 P2/P4/P6 同型）；剩余缺失机制清单见 missing_mechanisms（夹带双稳态）",
+ "g1_json": "/Users/weidong/ai/small_world/neural_exploration/data/m6_g1_result.json",
+ "params": {
+  "bands": {
+   "silent": [
+    0.6,
+    0.8
+   ],
+   "median": [
+    0.0,
+    1.0
+   ],
+   "max": [
+    0.0,
+    60.0
+   ],
+   "spont": {
+    "fwd": [
+     60.0,
+     80.0
+    ],
+    "rev": [
+     10.0,
+     25.0
+    ],
+    "turn": [
+     5.0,
+     20.0
+    ]
+   },
+   "d_peak_thr": 0.3
+  },
+  "settle_ms": 500.0,
+  "p2_probe_t_ms": 2000.0
+ },
+ "wall_s": 10.936456833
+}

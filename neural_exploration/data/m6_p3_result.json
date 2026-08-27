@@ -1,0 +1,163 @@
+{
+ "milestone": "M6-B2",
+ "p_index": "P3",
+ "pass_": true,
+ "status": "pass-with-measurement-limitations",
+ "pass_type": "pass-with-measurement-limitations",
+ "protocols": {
+  "short_isi_mechanism": {
+   "r_seq": [
+    0.3528981213370778,
+    0.3752045727134381,
+    -0.16839190309278,
+    -0.18324542825663104,
+    -0.18325417550344023,
+    -0.18325321700908406
+   ],
+   "first_half_mean": 0.18657026365257867,
+   "last_half_mean": -0.1832509402563851,
+   "decay": 0.5361513383461619,
+   "fit": {
+    "A": 1.180084636341934,
+    "tau_hab": 2.0,
+    "B": -0.2864280303298223,
+    "r2": 0.7872375199162216,
+    "in_tau_band": false,
+    "r2_ok": true,
+    "fit_ok": true
+   },
+   "decay_ok": true,
+   "direction_ok": true,
+   "fit_r2_ok": true,
+   "fit_tau_in_band": false,
+   "wall_s": 2.6545204580000004,
+   "note": "短 ISI（0ms）：STP 不恢复 → 逐刺激耗竭 → 指数衰减；τ_hab≈2 出预注册带 [3,15]（短 ISI 形态，10s-ISI 带不可达，如实记录）"
+  },
+  "ablation": {
+   "r_seq": [
+    0.3504084455817558,
+    0.30972145625411546,
+    0.2774564170546921,
+    0.24784970264408768,
+    0.40952263029032626,
+    0.3225669555302725
+   ],
+   "first_half_mean": 0.3125287729635211,
+   "last_half_mean": 0.3266464294882288,
+   "decay": 0.027841490051483342,
+   "no_decay_ok": true,
+   "contrast_ok": true,
+   "wall_s": 1.068230458,
+   "note": "STP 关（u0 未配置/τ_fac=0 回退防御）→ 无系统衰减 → H1 机制必需"
+  },
+  "recovery": {
+   "r_seq": [
+    0.3528981213370778,
+    0.3752045727134381,
+    -0.16839190309278,
+    -0.18324542825663104,
+    -0.18325417550344023,
+    -0.18325321700908406
+   ],
+   "r1": 0.3528981213370778,
+   "r_last": -0.18325321700908406,
+   "r_rest": 0.41115168171027516,
+   "recover_frac": 1.1650718914356455,
+   "recover_ok": true,
+   "above_last": true,
+   "rest_ms": 2000.0,
+   "wall_s": 2.4308265000000002,
+   "note": "预注册 #4 相对恢复判据 R_rest ≥ 0.3×R(1)；绝对恢复时程（真实分钟~小时）记录为测量限制（不伪造）"
+  },
+  "isi_scaling": {
+   "main_10s": {
+    "isi_ms": 10000.0,
+    "n": 2,
+    "r_seq": [
+     0.3528981213370778,
+     0.31227715953013957
+    ],
+    "constant": true,
+    "note": "R(n) 常数：τ_rec=1000ms 在 10s ISI 内完全恢复（L25 记录）→ 无习惯化；30s 会话窗内仅 2 刺激可注触（协议分段预注册 §4.1 受会话窗限制）→ 主协议判据 (a)/(b) 不可达（测量限制，三态裁决请求）"
+   },
+   "mid_3s": {
+    "isi_ms": 3000.0,
+    "n": 6,
+    "r_seq": [
+     0.3528981213370778,
+     0.3122767782308395,
+     0.28033900756763025,
+     0.25278376286774945,
+     0.41303349937854483,
+     0.32219765696454555
+    ],
+    "first_last_decay": 0.030700464372532266,
+    "fit": {
+     "A": 0.07150126944781031,
+     "tau_hab": 1.0,
+     "B": 0.3153366498389195,
+     "r2": 0.032341394778585886,
+     "in_tau_band": false,
+     "r2_ok": false,
+     "fit_ok": true
+    },
+    "constant": true,
+    "note": "3s ≫ τ_rec=1s → x 近完全恢复 → R 近常数（残差衰减 +0.031）——ISI≫τ_rec 无习惯化的量化对照"
+   },
+   "wall_s": 22.079446001
+  },
+  "network_302": {
+   "r_seq": [
+    0.35525650577825474,
+    0.06911396388958968,
+    0.39670716410296436
+   ],
+   "no_touch_d_peak": 0.18167987897732552,
+   "touch_eq_no_touch": true,
+   "wall_s": 9.101847416999998,
+   "note": "302 O2 全网 D_peak 由自发动力学主导（touch≈no-touch）→ 网络级触诱发反应不可干净测量（G1 部分通过结构性限制；B1c L12#1 确认）"
+  },
+  "determinism": {
+   "seq_equal": true,
+   "fit_equal": true,
+   "wall_s": 2.2872092079999966
+  }
+ },
+ "criterion_reachability": {
+  "fit_r2_at_short_isi": true,
+  "tau_hab_in_band": false,
+  "tau_hab_meas": 2.0,
+  "tau_band": [
+   3.0,
+   15.0
+  ],
+  "main_protocol_10s_isi": "NOT-REACHABLE",
+  "reason": "τ_rec=1000ms ≪ ISI=10s → STP x 完全恢复 → R(n) 常数（无习惯化）；30s 协议窗内 10s-ISI 仅 2 刺激可注触 → 主协议判据 (a)/(b) 不可达；机制在短 ISI（0ms）演示（R²≥0.5 ✓，τ_hab≈2 出带）——判据可达性如实记录，三态裁决（主 agent 采纳机制级 pass + 测量限制记录）"
+ },
+ "mechanism_ok": true,
+ "measured_limitations": [
+  "10s-ISI 主协议不可达：τ_rec=1000ms ≪ ISI=10s → STP 完全恢复 → R(n) 常数（无习惯化）；30s 会话窗内仅 2 刺激可注触（协议分段受窗限制）",
+  "短 ISI（0ms）形态 τ_hab≈2 出预注册带 [3,15]（Rankin 10s-ISI 带在短 ISI 不可比——衰减更快，形态如实记录）",
+  "302 O2 网络 D_peak 非触诱发（touch≈no-touch，夹带干扰）→ 网络级习惯化不可干净测量（G1 部分通过结构性限制）",
+  "自发恢复用相对判据（R_rest≥0.3×R(1)）；绝对恢复时程（真实分钟~小时）记录为测量限制（§0 #4 预注册）"
+ ],
+ "missing_or_deferred": [
+  "去习惯化/反习惯化（强刺激后恢复）——informational（预注册），本节点记录不判据化；可经 rest 后强刺激（I0×2）扩展验证（未跑，如实记录）"
+ ],
+ "verdict": "pass-with-measurement-limitations：习惯化机制级全过——短 ISI 指数衰减（R²≥0.5）、STP 消融（关→无衰减，H1 必需）、自发恢复（R_rest≥0.3×R(1)）、确定性逐位一致；预注册 10s-ISI 主协议判据（τ_hab∈[3,15] 带 / R²≥0.5）受模型时程限制不可达（τ_rec=1s 在 10s ISI 内完全恢复 → R(n) 常数；30s 会话窗限刺激数）→ 机制级判定 + 测量限制如实记录（L25，三态裁决 ① 采纳）；302 网络底物 touch≈no-touch（夹带干扰）记录；302 R(n)=[0.355, 0.069, 0.397]",
+ "params": {
+  "n_short": 6,
+  "isi_short_ms": 0.0,
+  "isi_mid_ms": 3000.0,
+  "isi_main_ms": 10000.0,
+  "n_main": 2,
+  "rest_ms": 2000.0,
+  "n_network": 3,
+  "seed": 0,
+  "d_peak_thr": 0.3,
+  "decay_frac": 0.5,
+  "ablation_frac": 0.7,
+  "recover_frac_min": 0.3
+ },
+ "wall_s": 39.624335959
+}
