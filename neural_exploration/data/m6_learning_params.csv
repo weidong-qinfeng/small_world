@@ -1,3 +1,47 @@
+# ---- 学习协议参数（M6-B1c 追加；习惯化 P3 + 联想学习 P4；唯一定稿源）----
+# 行语义同 mod 行（value 在 fields[9]，位置解析；role=habituation|associative）
+# 预注册（清单 §0）：#3 τ_hab∈[3,15] 次/R²≥0.5；#4 恢复用相对判据 R_rest≥0.3×R(1)；
+#   §4.1 母版=M5 P5 逃避协议（T=150ms/touch@73ms τ_trans=23/PLM·ALM 60µA/cm²/D_peak）；
+#   §4.2 H1 STP u0≈0.6、τ_rec 400–1000ms + RIM 酪胺；§2.2 三因子 η[1e-4,1e-2]/τ_e[100,500]ms
+role,neuron_class,synapse_from,synapse_to,synapse_type,g_max_ns,delay_ms,tonic_uA_cm2,value,note
+habituation,n_stim,,,,,,,,20,刺激数（Rankin 1990 量级；预注册 20–30）
+habituation,isi_ms,,,,,,,,10000.0,刺激间静息窗（Rankin 主协议 10s；短 ISI 展示机制）
+habituation,t_stim_ms,,,,,,,,150.0,单刺激窗（= M5 escape t_total）
+habituation,touch_start_ms,,,,,,,,50.0,触刺激开始（M5 escape 同款）
+habituation,touch_dur_ms,,,,,,,,5.0,触刺激时长
+habituation,touch_i0_uA_cm2,,,,,,,,60.0,触刺激密度
+habituation,touch_tau_trans_ms,,,,,,,,23.0,转导延迟 τ_trans（G1 定稿 23ms → touch@73ms）
+habituation,touch_roles,,,,,,,,PLML|PLMR|ALML|ALMR,触刺激角色（escape 同款前缀）
+habituation,rest_ms,,,,,,,,0.0,恢复窗（自发恢复协议；0=不测）
+habituation,d_peak_thr,,,,,,,,0.3,方向 sanity 阈值（escape.direction_peak）
+habituation,stp_enabled,,,,,,,,1,STP 开关（H1 机制；消融：关 → 无衰减）
+habituation,stp_u0,,,,,,,,0.6,STP 基准利用度（M2 Tsodyks–Markram；预注册 u0≈0.6）
+habituation,stp_tau_fac_ms,,,,,,,,10.0,STP 易化时间常数（depression-dominant）
+habituation,stp_tau_rec_ms,,,,,,,,1000.0,STP 恢复时间常数（预注册 400–1000ms）
+habituation,fit_tau_band,,,,,,,,3.0..15.0,τ_hab 预注册带（次；§0 #3）
+habituation,fit_r2_min,,,,,,,,0.5,指数拟合 R² 预注册阈值
+habituation,recover_frac_min,,,,,,,,0.3,R_rest ≥ 0.3×R(1) 预注册
+habituation,fit_seed,,,,,,,,0,拟合确定性 seed
+associative,eta,,,,,,,,0.01,三因子训练学习率（预注册窗 [1e-4,1e-2] 上界）
+associative,tau_e_ms,,,,,,,,200.0,资格迹时间常数（stdp 段同值）
+associative,assoc_scale,,,,,,,,20,联想学习底物规模（M4 趋化子图；G1 后 302 趋化未缓解 → 子图学习 §0 #1c）
+associative,tf_edges,,,,,,,,ASEL->AIYL|ASEL->AIYR|ASEL->AIBL|ASEL->AIBR|ASER->AIYL|ASER->AIYR|ASER->AIBL|ASER->AIBR,三因子作用域（ASE→AIY/AIB；连接组事实 g=5nS）
+associative,n_test,,,,,,,,4,测试试次数（基线/训练后/消退后；配对种子）
+associative,t_test_ms,,,,,,,,1500.0,测试试次时长
+associative,t_train_ms,,,,,,,,8000.0,训练期时长（连续；CS-US 配对）
+associative,t_ext_ms,,,,,,,,8000.0,消退期时长（连续；US 撤除/反号）
+associative,us_period_ms,,,,,,,,400.0,US 窗周期（配对训练期重复）
+associative,us_on_ms,,,,,,,,200.0,US 窗时长（每周期 [us_on,period) 注入）
+associative,us_train_signal,,,,,,,,1.0,训练期 US 信号（C_5ht 协议注入）
+associative,us_ext_signal,,,,,,,,-1.0,消退期 US 信号（US 反号 → 权重回落）
+associative,start_jitter,,,,,,,,0.3,试次起点抖动（M5 protocol 同款）
+associative,seed_base,,,,,,,,0,试次种子基（确定性伪随机）
+# ---- 学习协议参数（M6-B1c 追加；习惯化 P3 + 联想学习 P4；唯一定稿源）----
+# 行语义同 mod 行（value 在 fields[9]，位置解析；role=habituation|associative）
+# 预注册（清单 §0）：#3 τ_hab∈[3,15] 次/R²≥0.5；#4 恢复用相对判据 R_rest≥0.3×R(1)；
+#   §4.1 母版=M5 P5 逃避协议（T=150ms/touch@73ms τ_trans=23/PLM·ALM 60µA/cm²/D_peak）；
+#   §4.2 H1 STP u0≈0.6、τ_rec 400–1000ms + RIM 酪胺；§2.2 三因子 η[1e-4,1e-2]/τ_e[100,500]ms
+role,neuron_class,synapse_from,synapse_to,synapse_type,g_max_ns,delay_ms,tonic_uA_cm2,value,note
 # M6 学习参数母版（B1b 生成 stdp 段；habituation/associative 段由后续步骤追加）
 # 单位：ms/mV/nS；w 无量纲（ΔW 以相对量 Δw/w0 报告，L6 约定）
 # STDP 预注册（清单 §2.1/§2.2）：τ=20ms 量级[10,40]；A₊=0.01·w0[0.005,0.02]；
@@ -88,3 +132,12 @@ mod_gating,gaba_chain_target,,,,,,,,AVA/AVD→DD/VD→fwd 运动池(DB/VB),③ A
 mod_gating,spont_target,,,,,,,,命令池+RIM+GABA 池+头运动（'|' 分隔见 mod.spont_roles）,④ 自发/调质输入：确定性伪随机（seed 固定）打破单一张力夹带（L40#3）；头运动（SMDD/SMB/RMD）→ C_left/C_right 不对称 → 转向 bout
 mod_gating,da_target,,,,,,,,运动层增益（AVB/PVC 张力×门控；ADE/CEP/PDE 释放源）,多巴胺：运动调制（8 多巴胺能神经元，L5#5/L9）
 mod_gating,ht_target,,,,,,,,前进增益（AVB/PVC 张力×门控；ADF/NSM/RIH 释放源）,血清素：食物信号/前进促进（7 血清素能神经元，L5#5/L9）
+# ---- learning 段（M6-B1c2 追加：习惯化 P3 + 联想学习 P4 协议；解析语义同 mod 行：
+#       value 在 fields[9]，位置解析惯例 M5 L23）----
+# 习惯化（母版 = M5 P5 逃避协议：T=150ms、touch@start+τ_trans、60µA/cm²、R(n)=D_peak）：
+# 联想学习（CS=盐浓度 ASE 时间差分编码 / US=血清素协议注入；三因子规则在 ASE→AIY/AIB 子图）：
+
+# ---- learning 段（M6-B1c 追加：习惯化 P3 + 联想学习 P4 协议；解析语义同 mod 行：value 在 fields[9]，位置解析惯例 M5 L23）----
+# 习惯化（母版 = M5 P5 逃避协议：T=150ms、touch@start+τ_trans、60µA/cm²、R(n)=D_peak=max(C_back−C_fwd)）：
+# 联想学习（CS=盐浓度 ASE 时间差分编码 / US=血清素协议注入；三因子 ASE→AIY/AIB 子图，§0 预注册 #1c）
+# 三因子：dw/dt=η·M(t)·elig（§2.2 规格）；M=us_train_signal（训练 LTP）/ 0（测试冻结）/ us_ext_signal 反号（消退 LTD）

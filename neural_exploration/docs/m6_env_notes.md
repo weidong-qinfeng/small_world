@@ -156,3 +156,99 @@ P6 部分缓解（rev 落带/fwd·turn 近带）。**复核数值见 data/m6_g1_
 
 *本文件为 M6-B1a 交付物（G1 机制门复核）；G1=部分通过（方向相位修复）+ 三态裁决请求
 （L7）提交规划节点复核（WORKFLOW 流程，不静默推进）。*
+
+---
+
+## M6-B1c2 学习协议实现（src/learning.py + 冒烟测试）——实测结论 L12+
+
+> 执行节点：M6-B1c2（承接前序 B1c 停滞的 learning.py/测试，落盘 + 冒烟绿）。
+> 冻结文件零修改；m6_learning_params.csv 的 learning 段为唯一定稿源（mod/stdp 段不动）。
+
+## L12 — 习惯化协议的可测性实测（B1c2 复核 B1c 记录，数值确认）
+
+1. **302 O2 全网上 R(n) 非触诱发（确认 B1c L23）**：单会话重复触刺激 6 次
+   R(n)=[0.355, 0.069, 0.397, 0.182, 0.061, 0.707]，无触对照 no_touch D_peak=0.675
+   ——touch 与 no-touch 同量级（自发 bout + AVA→DD 链主导，G1 部分通过结构性限制）。
+   → 302 底物冒烟只断言 R(n) 有限/确定性/首刺激 back sanity + touch≈no-touch 限制
+   如实入档（不静默）；习惯化的**机制演示与消融在 M3 反射子图底物**（干净触诱发链）。
+2. **反射子图 STP 机制（H1 主机制）**：isi=0（最短协议）STP 开
+   R(n)=[0.353, 0.375, −0.168, −0.183, −0.183, −0.183]（指数拟合 τ_hab≈2、R²≈0.79，
+   二值坍缩——命令阈值语义，B1c L23 记录）；STP 关 R(n)=[0.35, 0.31, 0.277, 0.248,
+   0.41, 0.323]（无系统衰减）→ 消融对照成立（H1 机制必需）。
+   ⚠ isi=100ms 时 STP 恢复 → R(n)≈0.41 常数（无习惯化）——**Rankin 10s-ISI 主协议
+   受模型时程限制不可复现**（τ_rec=1000ms 在 ISI 内完全恢复；§0 #4 预注册相对判据），
+   主协议 ISI=500ms（302）与 isi=0/50ms（反射，机制演示）为最短协议，10s 档 informational。
+3. **联想学习底物实测**：20 规模趋化子图 CI@5s N=10 均值 0.055、std 0.68（起点抖动
+   方差主导）——**CI 显著性需配对种子设计**（pre/post 同种子起点，去抖动噪声）；
+   G0 的 CI=0.403@5s 为单点参考，冒烟用配对方向性判据（mean_ci_post > mean_ci_pre）。
+
+## L13 — 联想学习实现修复（B1c 停滞根因，三因子不更新）
+
+- **根因 1（已修）**：`AssociativeLearningLoop.env = circuit.params.env` 是 `EnvSpec`
+  （无 sample/ci 方法）→ 联想学习全流程 AttributeError（前序 B1c 未跑通即停滞）。
+  修复：构建 `ChemotaxisEnv`（WormLoop 同款，M4 冻结语义）。
+- **根因 2（已修，关键）**：相位 store/restore 后**网络时钟 ≠ 0**——基线试次把时钟推到
+  t=1000ms，`net.store()` 快照 t=1000；训练试次 restore 后运行 [1000, 4000]，而 US
+  协议注入 M(t) 按**试次相对**时间写索引 [0, 3000] → M=0 全程 → dw/dt=η·M·elig≡0 →
+  **无 LTP（w 恒 1.0）**。修复：US 写**绝对网络时间**索引（t_net0 + t_e）。修复后
+  实测：训练 1s M=1 → w 1.0→1.14（elig≈29），周期 US（400ms 周期/200ms 窗）→ w 1.0→1.057。
+- **根因 3（已修）**：`load_learning_params` 的 `fit_tau_band` 行 "3.0..15.0" 解析为
+  单元素元组 → `fit_exponential` 的 `tau_band[1]` IndexError（习惯化拟合必崩）。
+  修复：数值元组解析（".." 带格式 + int/float 强转）。
+
+## L14 — 交付与复现
+
+- `src/learning.py`：LearningParams/load_learning_params/fit_exponential/
+  HabSessionReflex（M3 反射子图 + M2 STP）/HabSessionNetwork（302 O2）/
+  HabituationLoop（reflex/network 双底物）/AssociativeLearningLoop（20 子图三因子，
+  配对种子 CI）；B1c2 修复 L13 三根因。
+- `data/m6_learning_params.csv`：learning 段（B1c 追加整理，唯一定稿源；mod/stdp 段不动）。
+- `tests/neuro/test_m6_learning_smoke.py`：≥6 断言（R(n) 可测/衰减/STP 消融/302 限制/
+  联想获得/η=0 无获得/消退可逆/确定性/出图）。
+- 复现：`.venv-neuro/bin/python -m pytest neural_exploration/tests/neuro/test_m6_learning_smoke.py -q`。
+- 预算：冒烟单跑 ~4-6 min（reflex 秒级；302 底物 ~15s；联想学习 20 档 ~3.7s 墙钟/s 模拟）。
+
+---
+
+## M6-B1c 学习协议运行器补充实测（L15+，追加于 B1c2 L14 之后）
+
+> 执行节点：M6-B1c（与 B1c2 并行实现 learning.py/冒烟；本段只记录 B1c 独立实测
+> 且 B1c2 L12–L14 未覆盖的结论，避免重复）。
+
+## L15 — ⚠ Brian2 `Synapses.gmax[bool_mask] = 0.0` 静默 no-op（实现级关键坑）
+
+- **现象**：对 grouped `Synapses` 的 `gmax`（Quantity VariableView）做布尔掩码
+  赋值 `syn.gmax[mask] = 0.0`（或带单位 `0.0*siemens/meter**2`）**静默不生效**
+  （逐位不变，无报错无警告）——必须整体重建数组再赋值：
+  `_g = np.array(np.asarray(syn.gmax, float)); _g[mask] = 0.0;
+   syn.gmax = _g * siemens / meter**2` 才生效。
+- **影响**：学习层"子图替换"装配（三因子/STP 取代原连接）此前全部失效——原边
+  gmax 未置 0，新建突触成为**叠加**而非**替换** → 三因子权重变化被原边淹没
+  （联想学习 CI 读出失灵的根因之一；B1c2 L13 未覆盖此条）。修复已落
+  `learning.py`（`_build` 三因子装配；`docs/m6_env_notes.md` L15 记录）。
+- **教训**：Brian2 Quantity 数组赋值语义与 numpy 不同——掩码赋值前先
+  `np.asarray` 验证；新增装配代码必须断言 gmax 实际为 0。
+
+## L16 — 联想学习 CI_salt 读出灵敏度限制（结构性，G1 P4 未缓解的延续）
+
+- **实测**：20-role 趋化子图上，ASE→AIY/AIB 三因子权重 w∈[1,2]（gmax 0.2–5nS
+  全档扫描）对 AIY/AIB 发放与 CI_salt **不可见**（AIY/AIB 发放率由命令中间簇
+  自持振荡主导：s=0 时 RIAL/RIAR/AVAL/VB1/SMDDL 仍 ~55 尖峰；感觉通路权重被
+  淹没——与 G1 P4 未缓解（夹带网络无净趋化位移）同根）。
+- **处置**：冒烟断言**机制级**获得/消融/消退（Δw_train>0.1、η=0 → Δw=0、
+  消退 Δw<0）+ CI_salt 方向性如实入档（实测 ΔCI 为正但幅度小 ~+0.004——
+  夹带限制记录，不静默）；全协议 P4 显著性判据（p<0.05 且 d≥0.5）在 20-role
+  子图**不可达**（测量限制，三态裁决请求项：① 接受反证记录（网络级学习行为
+  反证，§0 预注册 #1c 语义）② 减弱命令簇自持振荡（冻结权重调整，超本节点
+  权限）③ 学习读出改为通路级（ASE→AIY/AIB 突触功能）而非行为级）。
+- **三因子机制本身已验证**：elig 迹 + M(t) 门控 + 确定性重跑逐位一致（w 更新
+  1.0→1.43、η=0 无更新、US 反号回落 1.43→0.79）。
+
+## L17 — 并发写者（CSV learning 段 race + τ_fac=0 破坏 STP）
+
+- 并行执行节点（B1c2）与 B1c 同写 `m6_learning_params.csv` learning 段 → 段
+  内容在测试期间被来回重写（键名/值交替）；**并发执行纪律（L9 #6）同样适用
+  于数据文件**。实测一次重写把 `stp_tau_fac_ms` 置 0（"0=纯抑制"注释）——
+  M2 `ChemicalSynapse.stp_enabled` 判据为 τ_fac>0 且 τ_rec>0 → τ_fac=0 **静默
+  禁用 STP**（习惯化消融失效假象）。处置：`HabSessionReflex` 防御性回退
+  （τ_fac≤0 → 10ms，注释记录）；CSV 最终值已核定为 τ_fac=10ms。
