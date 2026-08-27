@@ -1,0 +1,55 @@
+{
+  "scale": 300,
+  "plasticity": "none",
+  "verdict": "PASS",
+  "detail": "双状态成立；消融破坏：['no_motor_drive']——三杠杆生效（G1 正面设计验证）",
+  "base": {
+    "silent_frac": 0.8167,
+    "silent_band": [
+      0.5,
+      0.9
+    ],
+    "silent_in_band": true,
+    "bout_activity": 0.465,
+    "bout_floor": 0.1,
+    "bout_ok": true,
+    "state_frac": {
+      "fwd": 0.0,
+      "rev": 0.0,
+      "turn": 0.465,
+      "pause": 0.535
+    },
+    "dual_state": true,
+    "verdict": "PASS",
+    "detail": "静默比例落带 [50,90]% 且行为 bout 活动 ≥10%"
+  },
+  "levers": {
+    "cmd_desync": true,
+    "motor_drive": true,
+    "hetero": true
+  },
+  "ablation": {
+    "no_cmd_desync": {
+      "dual_state": true,
+      "silent_frac": 0.8167,
+      "bout_activity": 0.465,
+      "detail": "静默比例落带 [50,90]% 且行为 bout 活动 ≥10%"
+    },
+    "no_motor_drive": {
+      "dual_state": false,
+      "silent_frac": 1.0,
+      "bout_activity": 0.0,
+      "detail": "静默 1.00（带 (0.5, 0.9)）或 bout 活动 0.00（下限 0.1）未达"
+    },
+    "no_hetero": {
+      "dual_state": true,
+      "silent_frac": 0.8167,
+      "bout_activity": 0.465,
+      "detail": "静默比例落带 [50,90]% 且行为 bout 活动 ≥10%"
+    }
+  },
+  "li_thresholds": {
+    "li_appear": 0.05,
+    "li_disappear": 0.01
+  }
+}

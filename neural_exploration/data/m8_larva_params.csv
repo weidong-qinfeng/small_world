@@ -1,0 +1,39 @@
+# M8 幼虫参数与 G0/G1 决策定稿（唯一定稿源，可修改复现）——
+# tools/scan_m8_scaling.py 生成。列语义同 m5_worm_params.csv
+# （value 在 fields[9]，位置解析，M5-B1d L23 语义）。
+# G0 依据：data/m8_scaling.csv + reports/neuro/m8_scaling_curves.png。
+role,neuron_class,synapse_from,synapse_to,synapse_type,g_max_ns,delay_ms,tonic_uA_cm2,value,note
+# ---- 降阶模型行（G0 定稿）----
+model,scale_behavior,,,,,,,,3016,G0 定稿规模（300/1000/3016；302 为 C. elegans 锚行非幼虫子集）
+model,fidelity_behavior,,,,,,,,point,G0 定稿保真度（point/two_comp/hh；dt 并入档位）
+model,dt_ms,,,,,,,,0.1,定稿 dt（M4 L16：定稿后不变）
+model,method,,,,,,,,exponential_euler,定稿方法（M5 L17 实测定稿语义）
+model,plasticity_default,,,,,,,,none,行为协议默认可塑性（P5 学习协议单独启用）
+model,gap_scale,,,,,,,,0.05,缝隙全局缩放（M5 L38 定稿先验）
+model,lever_cmd_desync,,,,,,,,1,夹带双稳态杠杆①命令层去同步（真实 GABA 抑制边）
+model,lever_motor_drive,,,,,,,,1,杠杆②运动层与命令层分离驱动（M6 L9#1）
+model,lever_hetero,,,,,,,,1,杠杆③异质权重/传导（类级权重+异质延迟）
+model,budget_cpu_hours,,,,,,,,120.0,缩放扫描子预算（§0.7 #14：缩放 ≤120 CPU-h）
+# ---- 协议行（G0 定稿草案；B1c 行为参考交付后按 M5 §3.5 复核）----
+protocol,t_total_ms,,,,,,,,15000.0,单试次仿真时长草案（M5 P4 定稿值 15s）
+protocol,resting_t_total_ms,,,,,,,,2000.0,静息短协议（扫描档）
+protocol,resting_settle_ms,,,,,,,,500.0,settle 窗（M5 L41#1：t=0 瞬态波排除）
+protocol,spont_t_total_ms,,,,,,,,5000.0,自发短协议
+protocol,escape_t_total_ms,,,,,,,,1000.0,痛觉逃避短协议
+protocol,escape_start_ms,,,,,,,,100.0,伤害性刺激开始（静息漂移纪律 ≥40ms）
+protocol,escape_dur_ms,,,,,,,,20.0,伤害性刺激时长
+protocol,escape_i0_uA_cm2,,,,,,,,60.0,伤害性刺激密度（M3 定稿量级）
+protocol,learning_t_test_ms,,,,,,,,2000.0,学习探针测试窗（扫描档）
+protocol,learning_t_train_ms,,,,,,,,2000.0,学习探针训练窗（扫描档）
+protocol,n_trials,,,,,,,,1,扫描格点试次数（确定性 p=1/n=1）
+# ---- G0/G1 决策行 ----
+g0,decision,,,,,,,,FAIL,G0 决策（PASS/PARTIAL/FAIL/G1_FAIL/PENDING_DATA）
+g0,scale,,,,,,,,3016,G0 定稿规模
+g0,fidelity,,,,,,,,point,G0 定稿保真度
+g0,protocol_t_ms,,,,,,,,15000.0,G0 定稿协议 T
+g0,budget_cpu_h,,,,,,,,120.0,G0 定稿预算
+g0,notes,,,,,,,,规模扫描方向不一致/数据不足 → 三态裁决（降保真度/缩行为集/反证）,G0 依据/三态裁决请求
+g1,verdict,,,,,,,,PASS,G1 双状态门判定
+g1,silent_frac,,,,,,,,0.8167,静默比例（带 [50,90]%）
+g1,bout_activity,,,,,,,,0.465,行为 bout 活动（下限 10%）
+g1,detail,,,,,,,,双状态成立；消融破坏：['no_motor_drive']——三杠杆生效（G1 正面设计验证）,G1 依据/三杠杆消融

@@ -1,0 +1,20 @@
+# M4/M5 已验子回路同源交叉核对（《生物仿真M8实施清单》§3.2；连接组是事实，差异逐条入档）
+"# 列：kind, item, status, detail, expected"
+# status 语义：present=角色存在；OK=连接存在且极性一致；MISSING=权威连接组无该直接连接
+#             （功能链经多跳实现）；DIFF=存在但极性/类型与 M4/M5 建模不同（以真实连接组为准）。
+# 原则：连接组是事实，不得为过 Pass 改动权威连接；差异如实记录（§0 #5）。
+kind,item,status,detail,expected
+role,ORN（嗅觉感受）,present,75 个 ORN 命名角色,M4 ASE 感觉输入同源：须存在
+role,PN/uPN（2 阶投影神经元）,present,389 个 PN 命名角色,M4 AIY/AIB 同源：须存在
+role,KC（蘑菇体 Kenyon 细胞）,present,144 个 KC 命名角色,M4 RIA 同源（稀疏编码）：须存在
+role,MBON（蘑菇体输出）,present,50 个 MBON 命名角色,P5 学习读出：须存在
+edge,22c ORN left→mPN iACT bilateral LOWER left,OK,存在；极性 兴奋（cholinergic→ampa）,M4 ASE→AIY/AIB ampa 兴奋：极性一致（胆碱能兴奋）
+edge,KC #0→MBE2a right,OK,存在；极性 ampa,KC→MBON 兴奋（学习读出）
+role,class IV md 伤害感受器（ddaC/v'ada/v'daB/vdaC）,present,"L1EM 数据集 33 个（其中 0 个在 3,016 脑连接组 roster）——class IV 胞体在体壁/VNC，轴突不进入脑连接组；伤害性信息经 noci 上行 AN 入脑",P6 MD 痛觉同源：须在数据集存在（脑连接组内经 noci 上行链代表）
+role,noci（伤害性上行/感觉，含 A00c）,present,103 个 noci 相关角色,P6 MD 痛觉通路：须存在
+role,noci 2nd 阶 PN,present,84 个 noci 2nd 阶 PN,P6 伤害性 2 阶：须存在
+role,MB DAN（多巴胺能调质）,present,28 个 DAN 角色,MD class IV→MB DAN（Eschbach 2021）：目标须存在
+edge,noci-PN→DAN,OK,存在；极性 none,伤害性→DAN 通路
+role,pre-DN（命令样中间神经元）,present,578 个 pre-DN,M5 命令池同源：须存在
+role,DN-VNC/DN-SEZ/RGN（脑→VNC 下行）,present,400 个下行输出,M5 AVA/AVD/AVB/PVC 命令→运动同源：须存在
+edge,pre-DN→DN,OK,存在；极性 none,命令→下行驱动

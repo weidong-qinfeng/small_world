@@ -1,0 +1,106 @@
+{
+  "generated_by": "tools/build_m8_connectome.py",
+  "paper_authority": {
+    "n_neurons": 3016,
+    "n_input": 480,
+    "n_brain": 2536,
+    "n_synapses_total_sites": 548000,
+    "pct_linked": 0.75,
+    "compartment_pct": {
+      "ad": 66.6,
+      "aa": 25.8,
+      "dd": 5.8,
+      "da": 1.8
+    },
+    "n_gap": 0
+  },
+  "parse": {
+    "n_s1_matrix_neurons": 2952,
+    "n_roster_neurons": 2956,
+    "n_roster_gap_vs_paper": 60,
+    "n_excluded_graph_extra": 4,
+    "chem_synapse_count": 352611,
+    "chem_unique_directed_pairs": 110677,
+    "compartment_counts": {
+      "ad": 234958,
+      "aa": 90800,
+      "dd": 20415,
+      "da": 6438
+    },
+    "compartment_pct": {
+      "ad": 66.6,
+      "aa": 25.8,
+      "dd": 5.8,
+      "da": 1.8
+    },
+    "gap_rows": 0,
+    "self_chem_pairs": 537,
+    "class_counts": {
+      "inter": 2076,
+      "sensory": 480,
+      "motor": 400
+    },
+    "region_counts": {
+      "brain": 2910,
+      "vnc": 46
+    },
+    "neurotransmitter_counts": {
+      "cholinergic": 421,
+      "other": 2507,
+      "dopaminergic": 28
+    },
+    "nt_coverage_pct": 100.0,
+    "neurons_with_name": 2956,
+    "isolated_whitelisted": [
+      8199012,
+      15542199,
+      15609427,
+      15998319
+    ]
+  },
+  "diagnostics": [
+    {
+      "name": "神经元 3,016（±0，论文权威）",
+      "in_band": false,
+      "detail": "实测 2956；缺口 60 = 论文 roster（CATMAID 'mw brain and inputs' 注解成员）不在官方发布（Data S1/S2/inputs 覆盖 2,956；该实例 query-targets 忽略注解过滤返回全项目，成员不可得）"
+    },
+    {
+      "name": "化学突触 ~548,000（±10%，突触计数）",
+      "in_band": false,
+      "detail": "实测 352611（带 [493200,602800]）；论文 548k 为全脑注释位点（含 ~25% 孤儿位点 + 64 图外神经元位点），神经元间解析值语义不同"
+    },
+    {
+      "name": "化学突触唯一有向对（±10% 诊断带）",
+      "in_band": true,
+      "detail": "实测 110677（带 [99000,121000]）"
+    },
+    {
+      "name": "缝隙连接 0（±0，权威：论文无缝隙标注）",
+      "in_band": true,
+      "detail": "实测 0（论文全文/补充材料 0 处 gap junction/electrical；CATMAID 'gap' 为重建空隙）"
+    },
+    {
+      "name": "功能类 sensory 计数 vs 权威 480（±10%）",
+      "in_band": true,
+      "detail": "实测 480（带 [432,528]，权威=S2 宽泛类解析+论文三类语义）"
+    },
+    {
+      "name": "功能类 inter 计数 vs 权威 2136（±10%）",
+      "in_band": true,
+      "detail": "实测 2076（带 [1922,2349]，权威=S2 宽泛类解析+论文三类语义）"
+    },
+    {
+      "name": "功能类 motor 计数 vs 权威 400（±10%）",
+      "in_band": true,
+      "detail": "实测 400（带 [360,440]，权威=S2 宽泛类解析+论文三类语义）"
+    }
+  ],
+  "output_sha256": "a7fc31af3420a83dd08824a6a092d87948f9dfad50d31ff9cffbe57aff2c5291",
+  "derived_files_sha256": {
+    "m8_crosscheck_m4m5.csv": "bb589f7dcc4f8b6df3a2f3fe198a18207e4fb334194e1246fcfe080117df775a",
+    "m8_awc_subgraph.csv": "28e989936b3b2769e85a681dab037fa263d6481faebacb09482642c12f691ee0",
+    "m8_md_subgraph.csv": "335831bb05875d656cf19a98e1929550afe546d89f148c5778a64dde0076ca13",
+    "m8_motor_command_subgraph.csv": "ddfacccac317b3a4b04a200382a95d37d5a5ce173ac954631972d41c8e03eeab"
+  },
+  "note": "化学突触权威解析=Data S1 矩阵（2,952 神经元神经元间化学突触，四区室合计）；论文 ~548,000 为全脑注释突触位点（含 ~25% 孤儿位点 + 64 个分析图外神经元位点），两套计数语义不同——诊断 OUT 如实记录，请求规划节点三态裁决（M5 L7 惯例）。神经元 3,016：官方发布（Data S1∪S2∪inputs）覆盖 2,956；缺口 60 为论文 roster （CATMAID 'mw brain and inputs' 注解）成员不在发布中——该存档实例 query-targets 忽略注解过滤返回全项目转储（实测 3 次），成员不可得；如实登记为测量限制。缝隙连接：论文全文/补充材料 0 处 gap junction/electrical 标注（CATMAID 'gap' 标注为重建空隙非电突触）→ 权威=0，预注册 0±0，如实登记为测量限制。"
+}

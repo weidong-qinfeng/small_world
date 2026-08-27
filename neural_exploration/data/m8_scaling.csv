@@ -1,0 +1,22 @@
+# M8 铁律 C 三组缩放扫描结果（tools/scan_m8_scaling.py 生成，G0 门）
+# 列语义：scale=规模轴（300/1000/3016 幼虫子集；302=C. elegans 锚行）；
+#   fidelity=保真度轴（point/two_comp/hh，dt 并入档位）；
+#   plasticity=可塑性轴（none/stp/stdp/stdp_homeo）；
+#   ci_direction=趋化 CI 符号（正趋化=+）；escape_*=痛觉逃避方向（back/not_back）；
+#   resting_silent_frac=静默比例（G1 带 [50,90]%）；spont_*=自发状态比例；
+#   li/li_mode=学习探针 LI（weight=KC→MBON 权重档，mbon_rate=发放率档）；
+#   probe= T=1s 探针墙钟；chem_wall_s_mean=趋化短协议单试次墙钟。
+scale,fidelity,plasticity,source,dt_ms,method,status,n_neurons,n_chem,n_gap,n_muscle,build_wall_s,probe_T_ms,probe_wall_s,ci_mean,ci_sem,ci_n,ci_direction,escape_direction,escape_d_peak,escape_curl_peak,resting_median_hz,resting_silent_frac,resting_max_hz,spont_fwd,spont_rev,spont_turn,spont_pause,li,li_mode,dw_stdp,chem_wall_s_mean,total_wall_s,notes
+300,point,none,connectome,0.1,exponential_euler,done,300,3350,0,40,0.597,1000.0,2.162,0.0,nan,1,-,not_back,0.0,0.0,0.0,0.8167,4.5,0.0,0.0,0.465,0.535,0.0,no_plasticity,nan,10.751,45.7,⚠ PROVISIONAL_NT：未标注化学边临时类级回退 n=1309 （B1a 递质标注不完整，非权威）; ⚠ PROVISIONAL_MUSCLE：运动池→通道临时映射 （幼虫脑连接组无肌肉行，P3 节点定稿真实映射）; 300 点神经元基线（grouped）
+300,point,stp,connectome,0.1,exponential_euler,done,300,3350,0,40,0.277,1000.0,2.886,0.0,nan,1,-,not_back,0.0,0.0,0.0,0.8167,4.5,0.0,0.0,0.465,0.535,0.0,no_plasticity,nan,13.556,56.3,⚠ PROVISIONAL_NT：未标注化学边临时类级回退 n=1309 （B1a 递质标注不完整，非权威）; ⚠ PROVISIONAL_MUSCLE：运动池→通道临时映射 （幼虫脑连接组无肌肉行，P3 节点定稿真实映射）; 300 点 + STP（全化学突触）
+300,point,stdp,connectome,0.1,exponential_euler,done,300,3350,0,40,0.287,1000.0,3.108,0.0,nan,1,-,not_back,0.0,0.0,0.0,0.8167,4.5,0.0,0.0,0.465,0.535,0.0,weight,0.0,15.574,64.5,⚠ PROVISIONAL_NT：未标注化学边临时类级回退 n=1309 （B1a 递质标注不完整，非权威）; ⚠ PROVISIONAL_MUSCLE：运动池→通道临时映射 （幼虫脑连接组无肌肉行，P3 节点定稿真实映射）; 300 点 + STDP（KC→MBON 子集）
+300,point,stdp_homeo,connectome,0.1,exponential_euler,done,300,3350,0,40,0.298,1000.0,3.328,0.0,nan,1,-,not_back,0.0,0.0,0.0,0.8167,4.5,0.0,0.0,0.465,0.535,0.0,weight,0.0,15.71,64.0,⚠ PROVISIONAL_NT：未标注化学边临时类级回退 n=1309 （B1a 递质标注不完整，非权威）; ⚠ PROVISIONAL_MUSCLE：运动池→通道临时映射 （幼虫脑连接组无肌肉行，P3 节点定稿真实映射）; 300 点 + STDP+稳态（防饱和）
+300,two_comp,none,connectome,0.05,exponential_euler,skipped,0,0,0,0,nan,1000.0,nan,nan,nan,0,,,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,,nan,nan,nan,skipped: 300 双隔室（grouped 2N；短协议）
+300,hh,none,connectome,0.01,exponential_euler,skipped,0,0,0,0,nan,1000.0,nan,nan,nan,0,,,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,,nan,nan,nan,skipped: 300 HH（M1 多隔室局部子图；预算敏感，默认跳过）
+1000,point,none,connectome,0.1,exponential_euler,skipped,0,0,0,0,nan,1000.0,nan,nan,nan,0,,,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,,nan,nan,nan,skipped: 1000 点神经元基线
+1000,point,stp,connectome,0.1,exponential_euler,skipped,0,0,0,0,nan,1000.0,nan,nan,nan,0,,,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,,nan,nan,nan,skipped: 1000 点 + STP
+1000,point,stdp,connectome,0.1,exponential_euler,skipped,0,0,0,0,nan,1000.0,nan,nan,nan,0,,,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,,nan,nan,nan,skipped: 1000 点 + STDP
+1000,two_comp,none,connectome,0.05,exponential_euler,skipped,0,0,0,0,nan,1000.0,nan,nan,nan,0,,,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,,nan,nan,nan,skipped: 1000 双隔室（预算敏感，默认跳过）
+3016,point,none,connectome,0.1,exponential_euler,skipped,0,0,0,0,nan,1000.0,nan,nan,nan,0,,,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,,nan,nan,nan,"skipped: 3,016 全脑点神经元（grouped 稀疏 stim）"
+3016,point,stp,connectome,0.1,exponential_euler,skipped,0,0,0,0,nan,1000.0,nan,nan,nan,0,,,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,,nan,nan,nan,"skipped: 3,016 全脑 + STP"
+302,point,none,connectome,0.1,exponential_euler,skipped,0,0,0,0,nan,1000.0,nan,nan,nan,0,,,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,,nan,nan,nan,skipped: 302 锚行（C. elegans 方法论对照，非幼虫子集）
