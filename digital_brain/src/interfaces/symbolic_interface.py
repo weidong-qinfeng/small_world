@@ -97,6 +97,7 @@ class SymbolicInterface:
         auto_learn_tokenizer: bool = False, # 默认：分词器也空白（不加载 tokenization_examples.json）
         storage_dir: Optional[str] = None,  # v2: 记忆持久化目录，None=不持久化
         auto_restore: bool = False,         # v2: 启动时自动从 storage_dir 恢复
+        innate: "Optional[InnateInterface]" = None,  # M7 P-A2: 先天机制层（感知/运动底座）注入；None=无机制层
     ) -> None:
         # 1. 加载配置
         self.config = self._load_config(config_path or self.DEFAULT_CONFIG_PATH)
@@ -154,6 +155,10 @@ class SymbolicInterface:
             declarative_memory=self.declarative,
         )
         self.physical = PhysicalInterface()
+        # M7 P-A2：先天机制层（感知/运动底座）注入——可选参数，默认 None（117 基线
+        # 行为不变，组合复用纪律）；非 None 时仅被 M7 场景测试消费，solve 语义零修改
+        # （InnateInterface 定义见 digital_brain/src/interfaces/innate_interface.py）。
+        self.innate = innate
         # 7. 向后兼容：auto_build=True 时走标准课程（内部也是调用 teach_*，模拟教学）
         #    v2: 若已从硬盘恢复，跳过 auto_build（避免覆盖已学知识）
         if auto_build and not restored:

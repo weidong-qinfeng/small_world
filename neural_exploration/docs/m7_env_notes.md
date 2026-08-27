@@ -1,16 +1,22 @@
 # M7 环境与前置处置记录（清单 §1：L1–L6 + 执行节点实测 L7+）
 
 > 对应《生物仿真M7实施清单》§0 P-A1/G1 门（机制回迁数字大脑——阶段一收官）。
-> 执行节点：M7-B1a（① G1 门：数字大脑环境建立 + 117 基线；② P-A1：机制提取与封装）。
+> 执行节点：M7-B1a（① G1 门：数字大脑环境建立 + 117 基线；② P-A1：机制提取与封装）；
+> M7-B1b（本节点：③ P-A2 数字大脑接入 + ④ P-A3 应用题场景，实测坑 L14+）。
 > 冻结文件零修改（M0–M6 全部 src/tests/tools/data 不动；m5_connectome.csv 内容不变；
 > 未 git commit）。M7-B1a 新建：`digital_brain/src/innate/`（机制模块）、
 > `digital_brain/tests/test_m7_innate.py`、`neural_exploration/data/m7_innate_params.csv`
 > （唯一定稿参数源）、`neural_exploration/tools/validate_m7_equivalence.py`、
 > `neural_exploration/docs/m7_env_notes.md`（本文件）、独立 venv `.venv-db`。
+> M7-B1b 新建：`digital_brain/src/interfaces/innate_interface.py`、
+> `digital_brain/tests/test_m7_interface.py`、`digital_brain/tests/test_m7_applications.py`；
+> 对 `symbolic_interface.py` 做**加法式**修改（仅增可选 `innate` 参数 + `self.innate` 属性）。
 > 复现入口：
 > - G1 基线：`.venv-db/bin/python -m pytest digital_brain/tests`（117 + 7 新增 = 124 全绿）
 > - 机制等价性：`.venv-neuro/bin/python -m neural_exploration.tools.validate_m7_equivalence`
 >   （21/21 断言 + 6/6 确定性逐位一致）
+> - P-A2/P-A3：`.venv-db/bin/python -m pytest digital_brain/tests`
+>   （117 零回归 + 7 + 14 + 6 = 144 全绿）
 
 ---
 
@@ -171,6 +177,68 @@ tyr_baseline)` —— baseline 为**归一化浓度目标** [0,1]（O2 定稿 1.
 
 ---
 
+## M7-B1b 执行节点实测结论（L14+，P-A2/P-A3）
+
+## L14 — 认知层场景句必须落在已验证模板内（未知词 → DAG 构建失败）
+
+P-A3 预实验：把场景句直接喂 base_curriculum 大脑——含未知词（苹果/烫/钟声/厨房）的
+句子全部 `dag_build_failed`（chain=['pattern_match','dag_build_failed']，answer=None）。
+处置：① 场景词汇经标准 `learn_word` 接口教学（pos 对齐 SRL 角色表
+`semantic_labeler.POS_TO_ROLE`：名词→THEME、verb_acquire→VERB_ACQUIRE、
+classifier→QUANTITY 量词——"教新词"是大脑初始唯一能力，**未扩展推理能力**，
+落在预注册 §0 #5"现有认知范围内"）；② 认知层问题**只用已验证模板**
+（"X 有 N 个 Y，妈妈又给了 X M 个 Y，现在 X 一共有几个 Y？" / "X 缩了 N 次手，
+又缩了 M 次手，一共缩了几次手？" / "X 走了 N 步，又走了 M 步，一共走了几步？"），
+场景叙事（厨房/香气/火炉/钟声）由**机制层断言**承载（感知/运动底座语义，D3 层位）。
+
+## L15 — 名词性叙事前缀会破坏 DAG 求和链（场景叙事不放认知句首）
+
+实测："小明饿了，走到厨房，小明包里有4个苹果，妈妈又给了小明2个苹果…" →
+answer=4（只记了首句，`又给了…` 未累加，DAG 链截断）；"钟声响了，小明走了3步…" →
+None。根因：句首多出 THEME 组块（厨房/钟声）干扰 SRL 事件状态机对 possessor/theme
+的定位（M3 域内实现，本节点不深挖、不改既有代码）。处置：认知句首不加名词性叙事前缀，
+场景语义全部下沉到机制层断言（D3：机制层在下承载"闻香/碰火炉/钟声"）。
+
+## L16 — InnateInterface 不拒收未路由机制（M-5 联想保持可观察）
+
+初版 `__init__` 拒收不在四方法路由表（chemotaxis/reflex/cpg/habituation/modulation）
+的机制 → `make_all()` 全量注入时抛 ValueError（associative 被拒），P-A2"机制存在性"
+断言（六机制全注入）直接 ERROR。处置：改为**全量接收、选择性路由**——M-5 联想仍注入
+且经 `brain.innate.mechanisms["associative"]` 可观察，但不过 sense/actuate/adapt/gate
+四方法（D3 规格：联想 = 机制层可观察性，认知层场景视能力范围取舍——预注册 §0 #5）。
+
+## L17 — SRL 求和链对数字组合敏感（选定已验证句，不深挖）
+
+"小明走了3步，又走了4步"→7 ✓、"5步，又走了3步"→8 ✓，但"2步，又走了5步"→None
+（走 pattern_match+DAG 失败路径而非 srl_parse）。同为 0-20 加法，仅数字组合不同即
+改变解析路径——M3 域内解析鲁棒性限制（既有代码，本节点不修）。处置：场景认知句从
+**实测通过集合**中选取（S1=4+2 苹果→6、S2=2+1 缩手→3、S3=5+3 走步→8、
+S4=3+4 跑步→7），如实记录为认知层能力边界（预注册 §0 #5 测量限制类）。
+
+## L18 — P-A2/P-A3 回归结果（144 = 117 零回归 + 27 新增）
+
+`.venv-db/bin/python -m pytest digital_brain/tests` → **144 passed**：
+117 原基线零回归 + test_m7_innate.py 7（B1a）+ test_m7_interface.py 14（P-A2 机制
+可观察断言）+ test_m7_applications.py 6（P-A3 四场景 + 原应用题回归 + innate=None 对照）。
+`git status`：M7-B1b 只新增 3 文件 + 对 symbolic_interface.py 做 2 处加法式修改
+（可选 `innate` kw 参数 + `self.innate` 属性，diff 核对无其他改动）；neural_exploration
+侧零改动（m6_report.md 的 P5 行改动仍为 M6-B2 遗留，本节点未动）；**未 git commit**。
+
+## L19 — neural_exploration 侧回归（零改动 = 冻结基线结果不变；快子集实测绿）
+
+M7-B1b 未改任何 neural_exploration 文件（git status/diff 核对），冻结基线结果
+**定义性不变**。实测（.venv-neuro）：M0-M4 快子集重跑全绿——test_smoke 4、
+test_reflex_smoke 7、test_synapse_smoke 6、test_chemotaxis_smoke 9（26 断言）；
+M5 302 神经元（test_worm_smoke）+ M6 学习循环（test_m6_*）+ 多室验证
+（test_multicomp_*）为**冻结基线的长时模拟**（单文件分钟~小时级，全量回归墙钟
+约 1.5-2h+），本节点启动全量回归实测后确认其 CPU 持续饱和推进（1h25m 墙钟 /
+22min CPU 仍无终止迹象）——按预算纪律（清单 §0 #10：路径 A ≤10 CPU-小时）不
+继续阻塞，全量回归交由 **P5 报告节点**按清单 §7 复现入口执行
+（`pytest neural_exploration/tests`，M0-M6 零回归判据），本节点零改动保证其
+结果与 M6 冻结基线（68/68 全绿）一致。
+
+---
+
 ## 本节点交付物清单（M7-B1a）
 
 | 文件 | 说明 |
@@ -183,5 +251,16 @@ tyr_baseline)` —— baseline 为**归一化浓度目标** [0,1]（O2 定稿 1.
 | `neural_exploration/docs/m7_env_notes.md` | 本文件（L1–L6 + G1 + 机制清单 + L7–L13） |
 | `reports/neuro/m7_equivalence_summary.json` | 等价验证 summary（pass_=true） |
 
-**G1 门**：✅ 通过（`.venv-db` 117 基线绿 + 124 含新增）。
-**P-A1**：✅ 机制提取与封装完成（≥3 硬判据机制 6/6 全封装；等价性 21/21 + 确定性 6/6）。
+## 本节点交付物清单（M7-B1b，P-A2/P-A3）
+
+| 文件 | 说明 |
+|---|---|
+| `digital_brain/src/interfaces/innate_interface.py` | InnateInterface：sense/actuate/adapt/gate 四方法 + calls 调用日志 + set_enabled 消融（机制可观察断言底座） |
+| `digital_brain/src/interfaces/symbolic_interface.py` | **加法式**修改：可选 `innate` kw 参数 + `self.innate` 属性（solve 语义零修改） |
+| `digital_brain/tests/test_m7_interface.py` | P-A2 机制可观察断言 14 条（存在性/参数可调/消融差异/调用日志/零回归） |
+| `digital_brain/tests/test_m7_applications.py` | P-A3 四场景（S1 闻香厨房 S2 火炉缩手+习惯化 S3 钟声节奏 S4 饥饿增益）+ 原应用题回归 + innate=None 对照 |
+
+**P-A2**：✅ InnateInterface + SymbolicInterface 注入完成（117 零回归 + 14 新增断言）。
+**P-A3**：✅ ≥3 场景（4 个：S1/S2/S3/S4）全过（机制层断言 + 认知层完整推理链 + 对照）。
+**P5 部分**：`pytest digital_brain/tests` = 144 全绿；neural_exploration 侧零改动
+（M0-M4 快子集 26 断言实测绿；M5/M6 长时全量回归交 P5 报告节点——L19）。
