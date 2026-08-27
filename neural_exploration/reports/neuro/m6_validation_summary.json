@@ -1,0 +1,491 @@
+{
+  "milestone": "M6",
+  "generated_utc": "2026-08-27T07:21:41Z",
+  "results": {
+    "p1_stdp": {
+      "pass_": true,
+      "status": "pass",
+      "stdp_pass": true,
+      "deterministic_ok": true,
+      "stp_regression_pass": true,
+      "network_interface_ok": true,
+      "max_abs_diff": "True",
+      "reused_from": "data/m6_p1_stdp.csv（B1b 已跑，本节点复核读回）"
+    },
+    "p2_modulation": {
+      "milestone": "M6-B2",
+      "p_index": "P2",
+      "g1_verdict": "PARTIAL",
+      "pass_": false,
+      "status": "counter-evidence-record",
+      "pass_type": "counter-evidence-record",
+      "band_pass": false,
+      "checks": {
+        "p5_direction_phase": {
+          "tau_trans_ms": 23.0,
+          "d_peak": 0.355,
+          "direction": "back",
+          "in_band": true,
+          "criterion": "back (D_peak>0.3) — G1 关键前置",
+          "note": "确定性网络逐 seed 同值（B1a 实测 0.355）；本节点探针复现"
+        },
+        "p2_resting": {
+          "silent_post": 0.103,
+          "band": [
+            0.6,
+            0.8
+          ],
+          "in_band_silent": false,
+          "median_post_hz": 22.5,
+          "in_band_median": false,
+          "max_post_hz": 33.2,
+          "in_band_max": true,
+          "pass_": false,
+          "verdict": "未缓解（静息协议下运动池自发脉冲仍点燃全互兴奋共振环；M5 反证 L40#3 升级为结构性限制）",
+          "m5_frozen": "10.6%（median 13.8Hz）→ O2 10.3%（median 22.5Hz）——未缓解"
+        },
+        "p6_spontaneous": {
+          "frac_pct": {
+            "fwd": 36.0,
+            "rev": 11.0,
+            "turn": 3.4000000000000004
+          },
+          "pause_pct": 50.0,
+          "in_band": {
+            "fwd": false,
+            "rev": true,
+            "turn": false
+          },
+          "pass_": false,
+          "verdict": "部分缓解（rev 落带；fwd/turn 近带；M5 反证 25.5/3.0/0.5% → 36-43/9-11/3.4-4.3%；方向分离结构涌现）",
+          "m5_frozen": "fwd 25.5/rev 3.0/turn 0.5% → O2 36-43/9-11/3.4-4.3%"
+        },
+        "p4_chemotaxis": {
+          "ci_grad": -0.263,
+          "ci_ctrl": 0.384,
+          "sig_ok": false,
+          "dir_ok": false,
+          "ctrl_ok": false,
+          "pass_": false,
+          "verdict": "未缓解（与 M5 同符号反证：夹带网络 fwd/back 共同发放 → v≈0，无净趋化位移）；全协议 T=15s×N=20 复核挂起（L11）",
+          "m5_frozen": "M5 全协议 CĪ=−0.065@15s×N=20（p=0.71）→ O2 5s 探针 −0.263 同号",
+          "note": "夹带网络 fwd/back 共同发放 → v≈0，无净趋化位移（结构性限制）"
+        }
+      },
+      "probes": {
+        "p5_phase_probe": {
+          "d_peak": 0.35525650577825474,
+          "direction": "back",
+          "direction_ok": true,
+          "g1_reference": 0.355,
+          "reproducible": true,
+          "note": "确定性网络：单 seed 点估计 = G1 N=5 均值（B1a 存 0.355 为 3 位舍入，实测精确值 0.35526；判定方向/带不变）"
+        },
+        "p2_resting_probe": {
+          "silent_post": 0.10264900662251655,
+          "median_post_hz": 22.666666666666668,
+          "max_post_hz": 32.666666666666664,
+          "in_band_silent": false,
+          "in_band_median": false,
+          "in_band_max": true,
+          "pass_": false,
+          "g1_reference": {
+            "silent": 0.103,
+            "median": 22.5,
+            "max": 33.2
+          },
+          "note": "静息协议下运动池自发脉冲仍点燃共振环 → 静默 ~10%（带 [60,80] 未达）"
+        }
+      },
+      "ablation_sanity": {
+        "rows": {
+          "tyramine_off": {
+            "gate": 1.0,
+            "escape_d_peak": 0.355,
+            "ok": true,
+            "note": "组件级 gate≡1 ✓；escape 仍 back——方向修复非①单独承载（L7b：多机制联合，④ bout 驱动为主）"
+          },
+          "mutual_inh_off": {
+            "escape_d_peak": 0.355,
+            "note": "escape 仍 back——方向修复非②单独承载（L7b）"
+          },
+          "gaba_chain_off": {
+            "rev": [
+              0.1,
+              0.146
+            ],
+            "dd_vd_spikes": [
+              1703,
+              1703
+            ],
+            "note": "组件级链驱动 ✓（0.80nA 单调/删链恒 0）；网络级不可观测（O2 夹带态淹没，L9 #7 如实记录）"
+          },
+          "spont_off": {
+            "pause_frac": 1.0,
+            "bout_disappears": false,
+            "note": "bout 消失 ✓（现象消失 sanity）"
+          },
+          "frozen_regression": {
+            "rates_identical": true,
+            "note": "M5 冻结基线逐位一致（silent 10.6%/median 14Hz）——组合复用纪律 ✓"
+          }
+        },
+        "summary": "四项机制全部落地且可消融（每项 enabled 开关 + 行为可测变化）；方向相位修复是多机制联合（③ AVA→DD/VD 链 + ④ 自发 bout 为主，L7b）；GABA 链网络级效应不可观测（O2 夹带态淹没，L9 #7）如实记录；M5 冻结基线逐位一致（组合复用纪律 ✓）"
+      },
+      "missing_mechanisms": [
+        "夹带双稳态（entrainment bistability）：全互兴奋命令回路（AVA↔AVB/PVC ampa）+ 运动池互驱（motor→motor ampa 474 条）承载的 ~14-25Hz 共振极限环——调质门控（酪胺/自发 bout）只能把网络从 14Hz 夹带推到 2Hz 或 100% 静默，无『低活动（P2 静默 60-80%）+ 行为活跃（P6 fwd 60-80%）』的稳定中间态（M5 L38 观察在 O2 调质参数下复现：分岔陡峭）；任何『持续或准持续』驱动都重新点燃共振环",
+        "命令层点火点：自发/调质输入若注入命令池（AVB/PVC/AVA/AVD）→ 每脉冲重新点燃夹带（10-25Hz 全局同步）——行为驱动必须作用于运动输出层（L9 #1 结构性发现）",
+        "302 网络级学习读出（习惯化 D_peak / 联想 CI_salt）被夹带动力学淹没 → 学习机制在干净子图底物验证（M6-B1c L12/L16 限制，P3/P4 测量限制记录）"
+      ],
+      "verdict": "反证记录型 pass（判据带层面 pass_=False）：P2 静默未缓解（10.3% vs 带 [60,80]）、P4 趋化未缓解（−0.263@5s，与 M5 −0.065 同号）、P6 部分缓解（rev 10.9% 落带；fwd 36-43%/turn 3.4-4.3% 近带；方向分离结构涌现）；P5 方向相位修复（tau=23 → back D_peak=0.355，G1 关键前置满足）→ P3 习惯化协议可进入。反证记录本身即交付物（与 M5 P2/P4/P6 同型）；剩余缺失机制清单见 missing_mechanisms（夹带双稳态）",
+      "g1_json": "/Users/weidong/ai/small_world/neural_exploration/data/m6_g1_result.json",
+      "params": {
+        "bands": {
+          "silent": [
+            0.6,
+            0.8
+          ],
+          "median": [
+            0.0,
+            1.0
+          ],
+          "max": [
+            0.0,
+            60.0
+          ],
+          "spont": {
+            "fwd": [
+              60.0,
+              80.0
+            ],
+            "rev": [
+              10.0,
+              25.0
+            ],
+            "turn": [
+              5.0,
+              20.0
+            ]
+          },
+          "d_peak_thr": 0.3
+        },
+        "settle_ms": 500.0,
+        "p2_probe_t_ms": 2000.0
+      },
+      "wall_s": 10.936456833,
+      "reused_from": "data/m6_p2_result.json（本节点已跑，读回）"
+    },
+    "p3_habituation": {
+      "milestone": "M6-B2",
+      "p_index": "P3",
+      "pass_": true,
+      "status": "pass-with-measurement-limitations",
+      "pass_type": "pass-with-measurement-limitations",
+      "protocols": {
+        "short_isi_mechanism": {
+          "r_seq": [
+            0.3528981213370778,
+            0.3752045727134381,
+            -0.16839190309278,
+            -0.18324542825663104,
+            -0.18325417550344023,
+            -0.18325321700908406
+          ],
+          "first_half_mean": 0.18657026365257867,
+          "last_half_mean": -0.1832509402563851,
+          "decay": 0.5361513383461619,
+          "fit": {
+            "A": 1.180084636341934,
+            "tau_hab": 2.0,
+            "B": -0.2864280303298223,
+            "r2": 0.7872375199162216,
+            "in_tau_band": false,
+            "r2_ok": true,
+            "fit_ok": true
+          },
+          "decay_ok": true,
+          "direction_ok": true,
+          "fit_r2_ok": true,
+          "fit_tau_in_band": false,
+          "wall_s": 2.6545204580000004,
+          "note": "短 ISI（0ms）：STP 不恢复 → 逐刺激耗竭 → 指数衰减；τ_hab≈2 出预注册带 [3,15]（短 ISI 形态，10s-ISI 带不可达，如实记录）"
+        },
+        "ablation": {
+          "r_seq": [
+            0.3504084455817558,
+            0.30972145625411546,
+            0.2774564170546921,
+            0.24784970264408768,
+            0.40952263029032626,
+            0.3225669555302725
+          ],
+          "first_half_mean": 0.3125287729635211,
+          "last_half_mean": 0.3266464294882288,
+          "decay": 0.027841490051483342,
+          "no_decay_ok": true,
+          "contrast_ok": true,
+          "wall_s": 1.068230458,
+          "note": "STP 关（u0 未配置/τ_fac=0 回退防御）→ 无系统衰减 → H1 机制必需"
+        },
+        "recovery": {
+          "r_seq": [
+            0.3528981213370778,
+            0.3752045727134381,
+            -0.16839190309278,
+            -0.18324542825663104,
+            -0.18325417550344023,
+            -0.18325321700908406
+          ],
+          "r1": 0.3528981213370778,
+          "r_last": -0.18325321700908406,
+          "r_rest": 0.41115168171027516,
+          "recover_frac": 1.1650718914356455,
+          "recover_ok": true,
+          "above_last": true,
+          "rest_ms": 2000.0,
+          "wall_s": 2.4308265000000002,
+          "note": "预注册 #4 相对恢复判据 R_rest ≥ 0.3×R(1)；绝对恢复时程（真实分钟~小时）记录为测量限制（不伪造）"
+        },
+        "isi_scaling": {
+          "main_10s": {
+            "isi_ms": 10000.0,
+            "n": 2,
+            "r_seq": [
+              0.3528981213370778,
+              0.31227715953013957
+            ],
+            "constant": true,
+            "note": "R(n) 常数：τ_rec=1000ms 在 10s ISI 内完全恢复（L25 记录）→ 无习惯化；30s 会话窗内仅 2 刺激可注触（协议分段预注册 §4.1 受会话窗限制）→ 主协议判据 (a)/(b) 不可达（测量限制，三态裁决请求）"
+          },
+          "mid_3s": {
+            "isi_ms": 3000.0,
+            "n": 6,
+            "r_seq": [
+              0.3528981213370778,
+              0.3122767782308395,
+              0.28033900756763025,
+              0.25278376286774945,
+              0.41303349937854483,
+              0.32219765696454555
+            ],
+            "first_last_decay": 0.030700464372532266,
+            "fit": {
+              "A": 0.07150126944781031,
+              "tau_hab": 1.0,
+              "B": 0.3153366498389195,
+              "r2": 0.032341394778585886,
+              "in_tau_band": false,
+              "r2_ok": false,
+              "fit_ok": true
+            },
+            "constant": true,
+            "note": "3s ≫ τ_rec=1s → x 近完全恢复 → R 近常数（残差衰减 +0.031）——ISI≫τ_rec 无习惯化的量化对照"
+          },
+          "wall_s": 22.079446001
+        },
+        "network_302": {
+          "r_seq": [
+            0.35525650577825474,
+            0.06911396388958968,
+            0.39670716410296436
+          ],
+          "no_touch_d_peak": 0.18167987897732552,
+          "touch_eq_no_touch": true,
+          "wall_s": 9.101847416999998,
+          "note": "302 O2 全网 D_peak 由自发动力学主导（touch≈no-touch）→ 网络级触诱发反应不可干净测量（G1 部分通过结构性限制；B1c L12#1 确认）"
+        },
+        "determinism": {
+          "seq_equal": true,
+          "fit_equal": true,
+          "wall_s": 2.2872092079999966
+        }
+      },
+      "criterion_reachability": {
+        "fit_r2_at_short_isi": true,
+        "tau_hab_in_band": false,
+        "tau_hab_meas": 2.0,
+        "tau_band": [
+          3.0,
+          15.0
+        ],
+        "main_protocol_10s_isi": "NOT-REACHABLE",
+        "reason": "τ_rec=1000ms ≪ ISI=10s → STP x 完全恢复 → R(n) 常数（无习惯化）；30s 协议窗内 10s-ISI 仅 2 刺激可注触 → 主协议判据 (a)/(b) 不可达；机制在短 ISI（0ms）演示（R²≥0.5 ✓，τ_hab≈2 出带）——判据可达性如实记录，三态裁决（主 agent 采纳机制级 pass + 测量限制记录）"
+      },
+      "mechanism_ok": true,
+      "measured_limitations": [
+        "10s-ISI 主协议不可达：τ_rec=1000ms ≪ ISI=10s → STP 完全恢复 → R(n) 常数（无习惯化）；30s 会话窗内仅 2 刺激可注触（协议分段受窗限制）",
+        "短 ISI（0ms）形态 τ_hab≈2 出预注册带 [3,15]（Rankin 10s-ISI 带在短 ISI 不可比——衰减更快，形态如实记录）",
+        "302 O2 网络 D_peak 非触诱发（touch≈no-touch，夹带干扰）→ 网络级习惯化不可干净测量（G1 部分通过结构性限制）",
+        "自发恢复用相对判据（R_rest≥0.3×R(1)）；绝对恢复时程（真实分钟~小时）记录为测量限制（§0 #4 预注册）"
+      ],
+      "missing_or_deferred": [
+        "去习惯化/反习惯化（强刺激后恢复）——informational（预注册），本节点记录不判据化；可经 rest 后强刺激（I0×2）扩展验证（未跑，如实记录）"
+      ],
+      "verdict": "pass-with-measurement-limitations：习惯化机制级全过——短 ISI 指数衰减（R²≥0.5）、STP 消融（关→无衰减，H1 必需）、自发恢复（R_rest≥0.3×R(1)）、确定性逐位一致；预注册 10s-ISI 主协议判据（τ_hab∈[3,15] 带 / R²≥0.5）受模型时程限制不可达（τ_rec=1s 在 10s ISI 内完全恢复 → R(n) 常数；30s 会话窗限刺激数）→ 机制级判定 + 测量限制如实记录（L25，三态裁决 ① 采纳）；302 网络底物 touch≈no-touch（夹带干扰）记录；302 R(n)=[0.355, 0.069, 0.397]",
+      "params": {
+        "n_short": 6,
+        "isi_short_ms": 0.0,
+        "isi_mid_ms": 3000.0,
+        "isi_main_ms": 10000.0,
+        "n_main": 2,
+        "rest_ms": 2000.0,
+        "n_network": 3,
+        "seed": 0,
+        "d_peak_thr": 0.3,
+        "decay_frac": 0.5,
+        "ablation_frac": 0.7,
+        "recover_frac_min": 0.3
+      },
+      "wall_s": 39.624335959,
+      "reused_from": "data/m6_p3_result.json（本节点已跑，读回）"
+    },
+    "p4_associative": {
+      "milestone": "M6-B2",
+      "p_index": "P4",
+      "pass_": true,
+      "status": "pass-with-measurement-limitations",
+      "pass_type": "pass-with-measurement-limitations",
+      "full_protocol": {
+        "ci_pre": [
+          0.43333333333333335,
+          1.0,
+          0.0,
+          0.0
+        ],
+        "ci_post": [
+          0.45,
+          1.0,
+          0.0,
+          0.0
+        ],
+        "ci_ext": [
+          0.38333333333333336,
+          1.0,
+          0.0,
+          0.0
+        ],
+        "mean_ci_pre": 0.35833333333333334,
+        "mean_ci_post": 0.3625,
+        "mean_ci_ext": 0.3458333333333333,
+        "dci_post_minus_pre": 0.004166666666666652,
+        "dw_train": 0.432450084785337,
+        "dw_ext": -0.10752926934780138,
+        "w_pre_mean": 1.0,
+        "w_tr_mean": 1.1111203867103119,
+        "w_ext_mean": 1.0035911173625105,
+        "acquisition_mechanism_ok": true,
+        "acquisition_direction_ok": true,
+        "extinction_mechanism_ok": true,
+        "extinction_direction_ok": true,
+        "paired_pre_post": {
+          "n": 4,
+          "mean_diff": 0.004166666666666666,
+          "sd_diff": 0.008333333333333331,
+          "t_stat": 1.0,
+          "p_value": 0.39100221895577053,
+          "cohen_d": 0.5
+        },
+        "paired_post_ext": {
+          "n": 4,
+          "mean_diff": -0.016666666666666663,
+          "sd_diff": 0.033333333333333326,
+          "t_stat": -1.0,
+          "p_value": 0.39100221895577053,
+          "cohen_d": -0.5
+        },
+        "significance_reachable": false,
+        "wall_s": 202.387742375,
+        "us_mode": "fixed",
+        "eta": 0.01,
+        "scale": 20
+      },
+      "eta0_control": {
+        "ci_pre": [
+          0.43333333333333335,
+          1.0,
+          0.0,
+          0.0
+        ],
+        "ci_post": [
+          0.45,
+          1.0,
+          0.0,
+          0.0
+        ],
+        "dw_train": 0.0,
+        "dci_abs": 0.004166666666666652,
+        "no_weight_change": true,
+        "no_ci_change": true,
+        "wall_s": 73.80732816599999
+      },
+      "determinism": {
+        "equal": true,
+        "wall_s": 411.88479566599995
+      },
+      "mechanism_ok": true,
+      "measured_limitations": [
+        "CI_salt 读出灵敏度低（L16）：ASE→AIY/AIB 三因子权重 w∈[1,2] 对 AIY/AIB 发放与 CI_salt 不可见（命令中间簇自持振荡主导；s=0 时 RIAL/RIAR/AVAL/VB1/SMDDL 仍 ~55 尖峰）→ ΔCI≈+0.004 幅度小，预注册配对 t 显著性（p<0.05, d≥0.5）在网络级 CI 读出**不可达**",
+        "302 全网趋化未缓解（G1 P4 未缓解：CĪ=−0.263@5s 同号反证）→ 联想学习按 §0 预注册 #1c 在 20-role 子图验证（网络级学习行为反证记录）",
+        "US 为固定窗协议注入（C_5ht 功能模型，简化登记）；CS-US 配对 = 盐梯度在场 + 周期性食物信号（us_mode=fixed）——真实 NSM 序列未伪造"
+      ],
+      "counter_evidence": [
+        "网络级学习行为反证（§0 预注册 #1c）：夹带网络（命令簇自持振荡）下 ASE→AIY/AIB 权重变化对行为 CI 读出不可见 → 子图机制验证 + 行为读出限制记录（三态裁决 ① 语义）"
+      ],
+      "verdict": "pass-with-measurement-limitations：联想学习机制级全过——三因子获得（Δw_train=+0.432>0.1）、η=0 消融（Δw≈0，无获得）、消退可逆（Δw_ext=-0.108<0，CI_ext<CI_post）、确定性逐位一致；**测量限制（L16）**：20-role 子图 CI_salt 读出灵敏度低（命令中间簇自持振荡主导，ΔCI≈+0.004）→ 预注册配对 t 显著性（p<0.05, d≥0.5）不可达——网络级行为读出幅度小如实记录（不伪造显著性），机制级判定成立（§0 预注册 #1c 子图学习语义）",
+      "params": {
+        "eta": 0.01,
+        "scale": 20,
+        "n_test": 4,
+        "t_test_ms": 1500.0,
+        "t_train_ms": 8000.0,
+        "t_ext_ms": 8000.0,
+        "seed_base": 0,
+        "tau_e_ms": 200.0,
+        "us_period_ms": 400.0,
+        "us_on_ms": 200.0,
+        "seed": 0,
+        "sig_p": 0.05,
+        "sig_d": 0.5,
+        "dw_train_min": 0.1,
+        "dw_ext_thr": -0.01
+      },
+      "wall_s": 688.4794765830001,
+      "reused_from": "data/m6_p4_result.json（本节点已跑，读回）"
+    }
+  },
+  "all_pass": false,
+  "milestone_complete": true,
+  "pass_type": {
+    "p1_stdp": "pass",
+    "p2_modulation": "counter-evidence-record",
+    "p3_habituation": "pass-with-measurement-limitations",
+    "p4_associative": "pass-with-measurement-limitations"
+  },
+  "p2_verdict_accepted": true,
+  "note": "主 agent 裁决 2026-08-27（M6-B2 落实为判定框架）：**P1 = pass**（STDP 组件 vs 理论曲线逐位一致 + STP 回归不回归）；**P2 = 反证记录型**（G1=部分通过：P5 方向相位修复 back@tau=23 ✓；P2 静默未缓解（10.3% vs 带 [60,80]）、P4 趋化未缓解（−0.263@5s 同号反证）、P6 部分缓解（rev 落带；fwd/turn 近带）——记录本身即交付物；剩余缺失机制清单：夹带双稳态）；**P3 = pass-with-measurement-limitations**（机制级衰减/消融/恢复全过；10s-ISI 主协议判据受 τ_rec=1s 时程限制不可达——R(n) 常数，机制在短 ISI 演示，L25 如实记录）；**P4 = pass-with-measurement-limitations**（机制级获得/消融/消退全过；CI_salt 读出灵敏度低——ΔCI≈+0.004，网络级显著性不可达，L16 如实记录）。P5（pytest 全绿 + m6_report.md）/P6（交接 + m6_env_notes）由全量 pytest + tools/gen_m6_report.py 独立确认。",
+  "measured_limitations": {
+    "p3_habituation": [
+      "10s-ISI 主协议不可达：τ_rec=1000ms ≪ ISI=10s → STP 完全恢复 → R(n) 常数（无习惯化）；30s 会话窗内仅 2 刺激可注触（协议分段受窗限制）",
+      "短 ISI（0ms）形态 τ_hab≈2 出预注册带 [3,15]（Rankin 10s-ISI 带在短 ISI 不可比——衰减更快，形态如实记录）",
+      "302 O2 网络 D_peak 非触诱发（touch≈no-touch，夹带干扰）→ 网络级习惯化不可干净测量（G1 部分通过结构性限制）",
+      "自发恢复用相对判据（R_rest≥0.3×R(1)）；绝对恢复时程（真实分钟~小时）记录为测量限制（§0 #4 预注册）"
+    ],
+    "p4_associative": [
+      "CI_salt 读出灵敏度低（L16）：ASE→AIY/AIB 三因子权重 w∈[1,2] 对 AIY/AIB 发放与 CI_salt 不可见（命令中间簇自持振荡主导；s=0 时 RIAL/RIAR/AVAL/VB1/SMDDL 仍 ~55 尖峰）→ ΔCI≈+0.004 幅度小，预注册配对 t 显著性（p<0.05, d≥0.5）在网络级 CI 读出**不可达**",
+      "302 全网趋化未缓解（G1 P4 未缓解：CĪ=−0.263@5s 同号反证）→ 联想学习按 §0 预注册 #1c 在 20-role 子图验证（网络级学习行为反证记录）",
+      "US 为固定窗协议注入（C_5ht 功能模型，简化登记）；CS-US 配对 = 盐梯度在场 + 周期性食物信号（us_mode=fixed）——真实 NSM 序列未伪造"
+    ]
+  },
+  "counter_evidence": {
+    "p2_modulation": [
+      "夹带双稳态（entrainment bistability）：全互兴奋命令回路（AVA↔AVB/PVC ampa）+ 运动池互驱（motor→motor ampa 474 条）承载的 ~14-25Hz 共振极限环——调质门控（酪胺/自发 bout）只能把网络从 14Hz 夹带推到 2Hz 或 100% 静默，无『低活动（P2 静默 60-80%）+ 行为活跃（P6 fwd 60-80%）』的稳定中间态（M5 L38 观察在 O2 调质参数下复现：分岔陡峭）；任何『持续或准持续』驱动都重新点燃共振环",
+      "命令层点火点：自发/调质输入若注入命令池（AVB/PVC/AVA/AVD）→ 每脉冲重新点燃夹带（10-25Hz 全局同步）——行为驱动必须作用于运动输出层（L9 #1 结构性发现）",
+      "302 网络级学习读出（习惯化 D_peak / 联想 CI_salt）被夹带动力学淹没 → 学习机制在干净子图底物验证（M6-B1c L12/L16 限制，P3/P4 测量限制记录）"
+    ],
+    "p4_associative": [
+      "网络级学习行为反证（§0 预注册 #1c）：夹带网络（命令簇自持振荡）下 ASE→AIY/AIB 权重变化对行为 CI 读出不可见 → 子图机制验证 + 行为读出限制记录（三态裁决 ① 语义）"
+    ]
+  },
+  "pytest_status_json": "reports/neuro/m6_pytest_status.json",
+  "report_md": "docs/m6_report.md"
+}

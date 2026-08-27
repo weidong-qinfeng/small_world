@@ -1,0 +1,21 @@
+# M6 P4 联想学习全协议（M6-B2 验证级；CS=盐梯度 ASE / US=血清素
+# 协议注入；三因子 ASE→AIY/AIB 子图，η=1e-2）
+# 判据（预注册 §0 P4）：获得 Δw>0.1 + CI 方向；η=0 无获得；
+#   消退 Δw<0 + CI 回落；确定性逐位一致；CI 显著性记录（测量限制）
+phase,metric,value,ok,note
+pre,ci_trials,[0.43333333333333335, 1.0, 0.0, 0.0],,配对种子基线
+post,ci_trials,[0.45, 1.0, 0.0, 0.0],,
+ext,ci_trials,[0.38333333333333336, 1.0, 0.0, 0.0],,US 反号消退
+acquisition,dw_train,0.432450084785337,True,机制级获得（>0.1）
+acquisition,dci_post_minus_pre,0.004166666666666652,True,方向性（幅度小——测量限制 L16）
+acquisition,paired_t_p,0.39100221895577053,,预注册显著性（不可达，记录）
+acquisition,paired_cohen_d,0.5,,
+extinction,dw_ext,-0.10752926934780138,True,机制级可逆（<−0.01）
+extinction,ci_ext_lt_post,1.0,True,
+eta0,dw_train,0.0,True,η=0 → 无权重变化
+eta0,dci_abs,0.004166666666666652,True,η=0 → CI 与基线无差异
+determinism,bitwise_equal,True,True,重跑逐位一致
+weights,w_pre_mean,1.0,,
+weights,w_tr_mean,1.1111203867103119,,
+weights,w_ext_mean,1.0035911173625105,,
+# verdict: pass-with-measurement-limitations：联想学习机制级全过——三因子获得（Δw_train=+0.432>0.1）、η=0 消融（Δw≈0，无获得）、消退可逆（Δw_ext=-0.108<0，CI_ext<CI_post）、确定性逐位一致；**测量限制（L16）**：20-role 子图 CI_salt 读出灵敏度低（命令中间簇自持振荡主导，ΔCI≈+0.004）→ 预注册配对 t 显著性（p<0.05, d≥0.5）不可达——网络级行为读出幅度小如实记录（不伪造显著性），机制级判定成立（§0 预注册 #1c 子图学习语义）

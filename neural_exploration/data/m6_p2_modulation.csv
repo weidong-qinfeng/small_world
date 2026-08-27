@@ -1,0 +1,15 @@
+# M6 P2 调质系统 + M5 反证清单复核（M6-B2 验证级）
+# 判据带 = data/m5_behavior_reference.csv 预注册（不做事后调）
+item,metric,value,band,ok,note
+P5,d_peak_tau23,0.355,>0.3,True,back (D_peak>0.3) — G1 关键前置
+P2,silent_post_settle500ms,0.103,0.60..0.80,False,未缓解（静息协议下运动池自发脉冲仍点燃全互兴奋共振环；M5 反证 L40#3 升级为结构性限制）
+P2,median_post_hz,22.5,0..1Hz,False,
+P2,max_post_hz,33.2,0..60Hz,True,
+P6,frac_fwd,36.0,60.0..80.0%,False,部分缓解（rev 落带；fwd/turn 近带；M5 反证 25.5/3.0/0.5% → 36-43/9-11/3.4-4.3%；方向分离结构涌现）
+P6,frac_rev,11.0,10.0..25.0%,True,部分缓解（rev 落带；fwd/turn 近带；M5 反证 25.5/3.0/0.5% → 36-43/9-11/3.4-4.3%；方向分离结构涌现）
+P6,frac_turn,3.4000000000000004,5.0..20.0%,False,部分缓解（rev 落带；fwd/turn 近带；M5 反证 25.5/3.0/0.5% → 36-43/9-11/3.4-4.3%；方向分离结构涌现）
+P4,ci_grad_5s_probe,-0.263,>0 显著,False,未缓解（与 M5 同符号反证：夹带网络 fwd/back 共同发放 → v≈0，无净趋化位移）；全协议 T=15s×N=20 复核挂起（L11）
+P4,ci_ctrl_5s_probe,0.384,p>0.05,False,
+probe,p5_phase_probe,{"d_peak": 0.35525650577825474, "direction": "back", "direction_ok": true, "g1_reference": 0.355, "reproducible": true, "note": "\u786e\u5b9a\u6027\u7f51\u7edc\uff1a\u5355 seed \u70b9\u4f30\u8ba1 = G1 N=5 \u5747\u503c\uff08B1a \u5b58 0.355 \u4e3a 3 \u4f4d\u820d\u5165\uff0c\u5b9e\u6d4b\u7cbe\u786e\u503c 0.35526\uff1b\u5224\u5b9a\u65b9\u5411/\u5e26\u4e0d\u53d8\uff09"},,True,
+probe,p2_resting_probe,{"silent_post": 0.10264900662251655, "median_post_hz": 22.666666666666668, "max_post_hz": 32.666666666666664, "in_band_silent": false, "in_band_median": false, "in_band_max": true, "pass_": false, "g1_reference": {"silent": 0.103, "median": 22.5, "max": 33.2}, "note": "\u9759\u606f\u534f\u8bae\u4e0b\u8fd0\u52a8\u6c60\u81ea\u53d1\u8109\u51b2\u4ecd\u70b9\u71c3\u5171\u632f\u73af \u2192 \u9759\u9ed8 ~10%\uff08\u5e26 [60,80] \u672a\u8fbe\uff09"},,True,
+# verdict: 反证记录型 pass（判据带层面 pass_=False）：P2 静默未缓解（10.3% vs 带 [60,80]）、P4 趋化未缓解（−0.263@5s，与 M5 −0.065 同号）、P6 部分缓解（rev 10.9% 落带；fwd 36-43%/turn 3.4-4.3% 近带；方向分离结构涌现）；P5 方向相位修复（tau=23 → back D_peak=0.355，G1 关键前置满足）→ P3 习惯化协议可进入。反证记录本身即交付物（与 M5 P2/P4/P6 同型）；剩余缺失机制清单见 missing_mechanisms（夹带双稳态）
