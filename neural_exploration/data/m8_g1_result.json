@@ -1,23 +1,23 @@
 {
-  "scale": 300,
+  "scale": 3016,
   "plasticity": "none",
   "verdict": "PASS",
   "detail": "双状态成立；消融破坏：['no_motor_drive']——三杠杆生效（G1 正面设计验证）",
   "base": {
-    "silent_frac": 0.8167,
+    "silent_frac": 0.8152,
     "silent_band": [
       0.5,
       0.9
     ],
     "silent_in_band": true,
-    "bout_activity": 0.465,
+    "bout_activity": 0.895,
     "bout_floor": 0.1,
     "bout_ok": true,
     "state_frac": {
-      "fwd": 0.0,
-      "rev": 0.0,
-      "turn": 0.465,
-      "pause": 0.535
+      "fwd": 0.34,
+      "rev": 0.3,
+      "turn": 0.255,
+      "pause": 0.105
     },
     "dual_state": true,
     "verdict": "PASS",
@@ -31,8 +31,8 @@
   "ablation": {
     "no_cmd_desync": {
       "dual_state": true,
-      "silent_frac": 0.8167,
-      "bout_activity": 0.465,
+      "silent_frac": 0.8152,
+      "bout_activity": 0.895,
       "detail": "静默比例落带 [50,90]% 且行为 bout 活动 ≥10%"
     },
     "no_motor_drive": {
@@ -43,8 +43,8 @@
     },
     "no_hetero": {
       "dual_state": true,
-      "silent_frac": 0.8167,
-      "bout_activity": 0.465,
+      "silent_frac": 0.8152,
+      "bout_activity": 0.895,
       "detail": "静默比例落带 [50,90]% 且行为 bout 活动 ≥10%"
     }
   },

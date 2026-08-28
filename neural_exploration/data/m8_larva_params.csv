@@ -5,7 +5,7 @@
 role,neuron_class,synapse_from,synapse_to,synapse_type,g_max_ns,delay_ms,tonic_uA_cm2,value,note
 # ---- 降阶模型行（G0 定稿）----
 model,scale_behavior,,,,,,,,3016,G0 定稿规模（300/1000/3016；302 为 C. elegans 锚行非幼虫子集）
-model,fidelity_behavior,,,,,,,,point,G0 定稿保真度（point/two_comp/hh；dt 并入档位）
+model,fidelity_behavior,,,,,,,,two_comp,G0 定稿保真度（point/two_comp/hh；dt 并入档位）
 model,dt_ms,,,,,,,,0.1,定稿 dt（M4 L16：定稿后不变）
 model,method,,,,,,,,exponential_euler,定稿方法（M5 L17 实测定稿语义）
 model,plasticity_default,,,,,,,,none,行为协议默认可塑性（P5 学习协议单独启用）
@@ -27,13 +27,13 @@ protocol,learning_t_test_ms,,,,,,,,2000.0,学习探针测试窗（扫描档）
 protocol,learning_t_train_ms,,,,,,,,2000.0,学习探针训练窗（扫描档）
 protocol,n_trials,,,,,,,,1,扫描格点试次数（确定性 p=1/n=1）
 # ---- G0/G1 决策行 ----
-g0,decision,,,,,,,,FAIL,G0 决策（PASS/PARTIAL/FAIL/G1_FAIL/PENDING_DATA）
+g0,decision,,,,,,,,PASS,G0 决策（PASS/PARTIAL/FAIL/G1_FAIL/PENDING_DATA）
 g0,scale,,,,,,,,3016,G0 定稿规模
-g0,fidelity,,,,,,,,point,G0 定稿保真度
+g0,fidelity,,,,,,,,two_comp,G0 定稿保真度
 g0,protocol_t_ms,,,,,,,,15000.0,G0 定稿协议 T
 g0,budget_cpu_h,,,,,,,,120.0,G0 定稿预算
-g0,notes,,,,,,,,规模扫描方向不一致/数据不足 → 三态裁决（降保真度/缩行为集/反证）,G0 依据/三态裁决请求
+g0,notes,,,,,,,,；保真度不收敛 ΔCI=0.190>0.15 → two_comp（请求裁决）,G0 依据/三态裁决请求
 g1,verdict,,,,,,,,PASS,G1 双状态门判定
-g1,silent_frac,,,,,,,,0.8167,静默比例（带 [50,90]%）
-g1,bout_activity,,,,,,,,0.465,行为 bout 活动（下限 10%）
+g1,silent_frac,,,,,,,,0.8152,静默比例（带 [50,90]%）
+g1,bout_activity,,,,,,,,0.895,行为 bout 活动（下限 10%）
 g1,detail,,,,,,,,双状态成立；消融破坏：['no_motor_drive']——三杠杆生效（G1 正面设计验证）,G1 依据/三杠杆消融
