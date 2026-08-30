@@ -1,0 +1,94 @@
+{
+  "meta": {
+    "scale": 300,
+    "fidelity": "two_comp",
+    "spont_t_ms": 3000.0,
+    "seed": 0,
+    "tau_gcamp_ms": 1000.0,
+    "dt_img_ms": 500.0,
+    "act_bin_ms": 100.0,
+    "trans_win_ms": 2000.0,
+    "wall_s": 26.66
+  },
+  "rates": {
+    "median_hz": 0.6666666666666682,
+    "max_hz": 24.33333333333339,
+    "silent_frac": 0.4866666666666667,
+    "n_roles": 300,
+    "distribution_csv": "data/m8_p8_activity.csv"
+  },
+  "band_checks": {
+    "median_firing_hz": {
+      "value": 0.6666666666666682,
+      "lo": 0.0,
+      "hi": 1.0,
+      "in_band": true,
+      "provenance": "M8 清单 §0.7 #4 惯例（操作化；幼虫静息低活动）"
+    },
+    "max_firing_hz": {
+      "value": 24.33333333333339,
+      "lo": 0.0,
+      "hi": 60.0,
+      "in_band": true,
+      "provenance": "M8 清单 §0.7 #4 惯例（生理上限）"
+    },
+    "silent_fraction_band": {
+      "value": 48.66666666666667,
+      "lo": 50.0,
+      "hi": 90.0,
+      "in_band": false,
+      "provenance": "M8 清单 §1 D6（G1 静默比例草案带 [50,90]%，成像文献校准）"
+    }
+  },
+  "ks": null,
+  "imaging_limitation": {
+    "reference": "Lemon et al. 2015 Nat Commun 6:8924（一龄幼虫全 CNS GCaMP 体积成像）",
+    "data_available": false,
+    "ref_csv": "/Users/weidong/ai/small_world/neural_exploration/data/m8_imaging_stats.csv",
+    "note": "成像事件率分布数据不可得（网络/数据获取受限）→ KS 对照不可执行；按 §0.7 #3 预注册回退 = m8_behavior_reference.csv resting 文献带（统计级回退）+ 测量限制记录；不伪造成像参考分布。"
+  },
+  "fluorescence": {
+    "n_frames": 6,
+    "has_nan": false,
+    "deterministic": true
+  },
+  "transitions": {
+    "n": 15,
+    "pre_mean": 4.356263616557735,
+    "post_mean": 3.3246096866096875,
+    "occupancy_high": 0.5076530612244898,
+    "n_high": 199,
+    "n_low": 193,
+    "has_nan": false,
+    "deterministic": true,
+    "global_states_non_nan": true
+  },
+  "transition_matrix_model": {
+    "run_to_turn": 0.8,
+    "turn_to_run": 0.06930693069306931
+  },
+  "occupancy_model": {
+    "pause": 0.075,
+    "run": 0.08333333333333333,
+    "turn": 0.8416666666666667
+  },
+  "matrix_limitation": {
+    "reference": "成像参考状态占用/转换矩阵（Lemon 2015）",
+    "data_available": false,
+    "note": "成像参考矩阵不可得 → 距离判据不可执行；模型侧占用/转换如实落盘 （informational），测量限制记录（§8.2 (b) 预注册阈值 ≤0.15 留 B2）。"
+  },
+  "criteria": {
+    "a_band_fallback": false,
+    "b_transition_sequences": true,
+    "c_forward_model_smoke": true,
+    "pass_model": false,
+    "note": "统计级承诺（§0.7 #3）：成像数据不可得 → 文献带回退 + 测量限制记录；不逐神经元对应声称"
+  },
+  "determinism": {
+    "states": true,
+    "activity": true,
+    "fluorescence": true,
+    "transitions": true
+  },
+  "plot": "/Users/weidong/ai/small_world/neural_exploration/reports/neuro/m8_p8_activity.png"
+}

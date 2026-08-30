@@ -1,0 +1,8 @@
+# M8 P7 扰动预测（B1d 冒烟：前 5 神经元沉默/激活）
+rank,role,anchor_status,anchor_effect_class,n_silenced_edges,class_silence,class_activation,hit,d_fwd_mean,d_back_mean,d_turn_frac,d_pause_frac
+1,PRE-GORO3 RIGHT,no-experiment,,7,无变化,转弯↑,,-0.0044,0.0000,0.0000,0.0000
+2,AF5: SHORT-PRESYNAPTIC-D-1L,no-experiment,,15,无变化,无变化,,0.0000,0.0005,0.0125,0.0000
+3,PRE PMN RIGHT,no-experiment,,6,无变化,转弯↑,,0.0000,0.0000,0.0000,0.0000
+4,PRE-DORSAL-MAP PRESYNAPTIC-D-2-R LEFT,no-experiment,,13,无变化,后退↑,,0.0000,0.0000,0.0000,0.0000
+5,L1: SHORT-PRESYNAPTICD-3-R,no-experiment,,14,无变化,无变化,,0.0000,-0.0016,0.0000,0.0000
+28,MDNB_RIGHT; PAIR 1 RIGHT,anchored,蜷缩↑/后退↑,2,无变化,后退↑,True,0.0000,0.0000,0.0000,0.0000

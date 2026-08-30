@@ -27,3 +27,5 @@ chemotaxis,ci_direction_positive,0.0,1.0,dimensionless,0.0,1.0,0.5,"M8 清单 §
 resting,silent_fraction_band,50.0,90.0,percent,50.0,90.0,70.0,"M8 清单 §1 D6（G1 静默比例草案带 [50,90]%，成像文献校准）","静息静默比例（G1 双状态门输入；silent ∈ [50,90]%）"
 resting,median_firing_hz,0.0,1.0,Hz,,,,"M8 清单 §0.7 #4 惯例（操作化；幼虫静息低活动）","静息态组中位数发放率 <1Hz（informational）"
 resting,max_firing_hz,0.0,60.0,Hz,,,,"M8 清单 §0.7 #4 惯例（生理上限）","静息态最大发放率 <60Hz 生理上限（无 NaN/无发散前置）"
+nociceptive,escape_d_peak,0.3,1.0,dimensionless,0.3,1.0,0.3,"M8 清单 §7.3/§0 P6（痛觉逃避基线 sanity：D_peak>0.3 或 C_curl>C_fwd）；B1d 补带（2026-08-30，§0.7 #8 定稿于 CSV）","痛觉逃避方向正确性：max(C_back−C_fwd)>0.3 或 curl 主导（伤害性刺激→蜷缩/后退）"
+nociceptive,escape_response_prob,0.8,1.0,dimensionless,0.8,1.0,0.8,"M8 清单 §0 P6（反应概率 ≥0.8）；B1d 补带（2026-08-30）","伤害性刺激反应概率（响应试次/总试次 ≥0.8，机制前置）"

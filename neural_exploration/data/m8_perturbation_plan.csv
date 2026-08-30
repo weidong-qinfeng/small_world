@@ -1,0 +1,56 @@
+# M8 P7 扰动预测计划（预注册，确定性生成；seed=0，名单定稿不事后改）
+# 选择规则：①命令样/下行（command=1.0）②连接度枢纽（hub_pct=子集内度分位）③实验可及性（access：MD=1.0/skid=0.6/celltype=0.3）
+# total = 1.0*command + 0.5*hub_pct + 0.3*access；平局按 role_index（确定性算法，无随机性）
+# 行为后果类阈值（预注册）：Δfrac 阈值 fwd/back/turn/pause/curl=0.05；curl 通道在 provisional 肌肉映射不存在 → 蜷缩↑ 结构性不可达（记录）
+# 激活：tonic 0.5 nA × 2000.0 ms；沉默：出边 gmax→0（M6 L15：整体重建数组）
+rank,role,neuron_class,celltype,region,skid,degree,command,hub_pct,access,total,anchor_status,anchor_effect_class,anchor_source,silence_protocol,activation_protocol
+1,PRE-GORO3 RIGHT,motor,DN-VNC,brain,3620633,27,1.00,0.9133,0.90,1.7267,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+2,AF5: SHORT-PRESYNAPTIC-D-1L,inter,pre-DN-VNC,brain,3158085,26,1.00,0.9000,0.90,1.7200,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+3,PRE PMN RIGHT,motor,DN-SEZ,brain,3436420,23,1.00,0.8667,0.90,1.7033,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+4,PRE-DORSAL-MAP PRESYNAPTIC-D-2-R LEFT,inter,pre-DN-SEZ,brain,2142817,21,1.00,0.8367,0.90,1.6883,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+5,L1: SHORT-PRESYNAPTICD-3-R,inter,pre-DN-VNC,brain,3276003,19,1.00,0.8133,0.90,1.6767,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+6,TOMATO VINE 2_RIGHT,motor,DN-SEZ,brain,3027876,19,1.00,0.8133,0.90,1.6767,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+7,VB: DPMM1 4_RIGHT,inter,pre-DN-VNC,brain,8572353,16,1.00,0.7800,0.90,1.6600,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+8,CP4 8 RIGHT,inter,pre-DN-VNC,brain,1868538,16,1.00,0.7800,0.90,1.6600,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+9,AF5: SHORT-PRESYNAPTIC-D-1R,inter,pre-DN-VNC,brain,2597151,15,1.00,0.7567,0.90,1.6483,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+10,BLDC A00C POINTER RIGHT,inter,PN-somato,brain,2881070,14,1.00,0.7233,0.90,1.6317,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+11,LOCAL CRESCENT RIGHT,inter,PN-somato,brain,4130960,13,1.00,0.6800,0.90,1.6100,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+12,CONTRA-VINE RIGHT,motor,DN-SEZ,brain,3498479,13,1.00,0.6800,0.90,1.6100,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+13,VB: DPMM1 4_LEFT,inter,pre-DN-VNC,brain,10872426,12,1.00,0.6633,0.90,1.6017,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+14,MB2IN-162 LEFT; PDLR,inter,pre-DN-VNC,brain,2438653,12,1.00,0.6633,0.90,1.6017,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+15,BLAL HORSESHOE NEURON RIGHT,inter,pre-DN-VNC,brain,3765735,12,1.00,0.6633,0.90,1.6017,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+16,BLP34 BILATERAL 2 RIGHT,inter,pre-DN-VNC,brain,4127926,12,1.00,0.6633,0.90,1.6017,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+17,DALD_L  3,inter,pre-DN-VNC,brain,1646076,11,1.00,0.6167,0.90,1.5783,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+18,DPM CONTRALATERAL HORSESHOE RIGHT,inter,pre-DN-VNC,brain,3021609,11,1.00,0.6167,0.90,1.5783,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+19,BLDC POINTER RIGHT,inter,pre-DN-SEZ,brain,3182103,11,1.00,0.6167,0.90,1.5783,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+20,CONTRA-VINE LEFT,motor,DN-SEZ,brain,3414508,11,1.00,0.6167,0.90,1.5783,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+21,DPMM1 BRAIN DESCENDING INTO VNC RIGHT,motor,DN-VNC,brain,3595837,11,1.00,0.6167,0.90,1.5783,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+22,BLVA HOOK 1 RIGHT,inter,pre-DN-VNC,brain,2772093,10,1.00,0.5700,0.90,1.5550,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+23,TWO-HEADED COBRA LEFT,inter,pre-DN-VNC,brain,2988292,10,1.00,0.5700,0.90,1.5550,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+24,DPLL GNARLY LEFT,inter,pre-DN-VNC,brain,3060480,10,1.00,0.5700,0.90,1.5550,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+25,DPMM1 3 (OUTPUT OF MUNIN)_LEFT,inter,pre-DN-VNC,brain,3945756,10,1.00,0.5700,0.90,1.5550,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+26,ML_RIGHT,inter,pre-DN-VNC,brain,4228105,10,1.00,0.5700,0.90,1.5550,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+27,COASTER (NPF) RIGHT,motor,DN-VNC,brain,3009700,10,1.00,0.5700,0.90,1.5550,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+28,MDNB_RIGHT; PAIR 1 RIGHT,motor,DN-VNC,brain,13557064,8,1.00,0.4700,1.00,1.5350,anchored,蜷缩↑/后退↑,class IV 伤害感受器光遗传激活→蜷缩/滚动/后退逃避：Hwang et al. 2007 PNAS 104:11388; Robertson et al. 2013 Curr Biol 23:79; PMC5555049（nociceptor activation → curling/rolling）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+29,DPMM1 IPSILATERAL DESCENDING RIGHT,motor,DN-SEZ,brain,2655798,9,1.00,0.5233,0.90,1.5317,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+30,DPLC1 DESCENDING L,motor,DN-SEZ,brain,3044500,9,1.00,0.5233,0.90,1.5317,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+31,CPF CONTRALATERAL 3 LEFT,inter,pre-DN-VNC,brain,1961182,8,1.00,0.4700,0.90,1.5050,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+32,CA ; DPMPM1 1_RIGHT,inter,pre-DN-VNC,brain,2650887,8,1.00,0.4700,0.90,1.5050,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+33,TELEPHONE-RELATED RIGHT,inter,pre-DN-VNC,brain,3149791,8,1.00,0.4700,0.90,1.5050,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+34,EV_RIGHT,inter,pre-DN-VNC,brain,4227880,8,1.00,0.4700,0.90,1.5050,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+35,130729_SFO CAND 42A-42B_OSN_IN1 LEFT,motor,DN-SEZ,brain,3486867,8,1.00,0.4700,0.90,1.5050,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+36,DPML_ANT_VEN DESCENDING RIGHT,motor,DN-VNC,brain,1065967,7,1.00,0.4333,0.90,1.4867,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+37,NAG RIGHT,inter,pre-DN-VNC,brain,1591270,7,1.00,0.4333,0.90,1.4867,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+38,DAMV12 MANDIBLE 2 LEFT,inter,pre-DN-VNC,brain,3945136,7,1.00,0.4333,0.90,1.4867,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+39,DALCM12 V AP 11 RIGHT,inter,pre-DN-VNC,brain,4017464,7,1.00,0.4333,0.90,1.4867,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+40,BLP POST VEN NEURON 1 RIGHT; BLP34 A 6,inter,pre-DN-SEZ,brain,1805418,7,1.00,0.4333,0.90,1.4867,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+41,CM4-DM HORSESHOE 1 RIGHT,inter,pre-DN-VNC,brain,2659504,7,1.00,0.4333,0.90,1.4867,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+42,AF0: NEURON RIGHT,inter,pre-DN-VNC,brain,3010486,7,1.00,0.4333,0.90,1.4867,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+43,BLP34 DESCENDING 5 RIGHT,inter,pre-DN-VNC,brain,4127096,7,1.00,0.4333,0.90,1.4867,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+44,BALA12 DESCENDING 1 LEFT,motor,DN-SEZ,brain,3539170,7,1.00,0.4333,0.90,1.4867,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+45,MDNA_RIGHT; PAIR 2 RIGHT,motor,DN-VNC,brain,18464581,6,1.00,0.3500,1.00,1.4750,anchored,蜷缩↑/后退↑,class IV 伤害感受器光遗传激活→蜷缩/滚动/后退逃避：Hwang et al. 2007 PNAS 104:11388; Robertson et al. 2013 Curr Biol 23:79; PMC5555049（nociceptor activation → curling/rolling）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+46,BLP34 DESCENDING 3 RIGHT,inter,pre-DN-VNC,brain,1805669,6,1.00,0.3500,0.90,1.4450,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+47,DPLAM TALON 1 LEFT,inter,pre-DN-VNC,brain,2979675,6,1.00,0.3500,0.90,1.4450,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+48,BLVP1 LOCAL A RIGHT,inter,pre-DN-SEZ,brain,3180681,6,1.00,0.3500,0.90,1.4450,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+49,DPMM1 BRAIN DESCENDING INTO VNC 2 RIGHT,motor,DN-VNC,brain,3598000,6,1.00,0.3500,0.90,1.4450,no-experiment,,无逐神经元驱动线锚（B1d 网络受限，预注册回退 §0.7 #4）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms
+50,MDNB_LEFT; PAIR 2 LEFT,motor,DN-VNC,brain,10728328,4,1.00,0.2667,1.00,1.4333,anchored,蜷缩↑/后退↑,class IV 伤害感受器光遗传激活→蜷缩/滚动/后退逃避：Hwang et al. 2007 PNAS 104:11388; Robertson et al. 2013 Curr Biol 23:79; PMC5555049（nociceptor activation → curling/rolling）,出边 gmax→0（M6 L15：整体重建数组）,tonic 0.5 nA × 2000.0 ms

@@ -1,0 +1,318 @@
+{
+  "meta": {
+    "scale": 300,
+    "fidelity": "two_comp",
+    "proto_t_ms": 2000.0,
+    "seed": 0,
+    "n_smoke": 5,
+    "activation_nA": 0.5,
+    "wall_s": 133.86
+  },
+  "baseline": {
+    "frac": {
+      "run": 0.075,
+      "turn": 0.85,
+      "pause": 0.075,
+      "curl": 0.0
+    },
+    "ch_mean": {
+      "fwd": 0.12738811031101674,
+      "back": 0.2692069273918466,
+      "left": 0.25814173913167676,
+      "right": 0.41307442807852607,
+      "curl": 0.0
+    }
+  },
+  "sham": {
+    "identical": true
+  },
+  "determinism": {
+    "identical": true,
+    "class_rerun": "无变化"
+  },
+  "hitrate": {
+    "rate": 1.0,
+    "hits": 1,
+    "simulated_anchored": 1,
+    "anchored_ok": false,
+    "hit_ok": true,
+    "limitation": {
+      "n_anchored_plan": 3,
+      "anchored_floor": 20,
+      "anchored_floor_met": false,
+      "note": "B1d 网络受限（无逐神经元驱动线锚下载）→ 有锚 = MD 4/50 < 20 下限→ 按 §0.7 #4 缩小有锚判据分母 + 记录测量限制；命中率仅 informational，≥70% 判据留 B2（有锚子集达标后）"
+    }
+  },
+  "criteria": {
+    "sham_sanity": true,
+    "determinism": true,
+    "hitrate_note": "≥70% 判据预注册有锚 ≥20/50 未达 → 测量限制记录，不静默判定；机制（沉默/激活→后果类）B1d 已可运行"
+  },
+  "per_neuron": [
+    {
+      "rank": 1,
+      "role": "PRE-GORO3 RIGHT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "n_silenced_edges": 7,
+      "sil_frac": {
+        "run": 0.075,
+        "turn": 0.85,
+        "pause": 0.075,
+        "curl": 0.0
+      },
+      "act_frac": {
+        "run": 0.0125,
+        "turn": 0.975,
+        "pause": 0.0125,
+        "curl": 0.0
+      },
+      "base_frac": {
+        "run": 0.075,
+        "turn": 0.85,
+        "pause": 0.075,
+        "curl": 0.0
+      },
+      "d_sil": {
+        "run": 0.0,
+        "turn": 0.0,
+        "pause": 0.0,
+        "curl": 0.0,
+        "fwd": -0.00438861668669728,
+        "back": 0.0
+      },
+      "d_act": {
+        "run": -0.0625,
+        "turn": 0.125,
+        "pause": -0.0625,
+        "curl": 0.0,
+        "fwd": -0.00438861668669728,
+        "back": -1.3288974771707984e-05
+      },
+      "class_silence": "无变化",
+      "class_activation": "转弯↑",
+      "hit": null
+    },
+    {
+      "rank": 2,
+      "role": "AF5: SHORT-PRESYNAPTIC-D-1L",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "n_silenced_edges": 15,
+      "sil_frac": {
+        "run": 0.0625,
+        "turn": 0.8624999999999999,
+        "pause": 0.075,
+        "curl": 0.0
+      },
+      "act_frac": {
+        "run": 0.0625,
+        "turn": 0.875,
+        "pause": 0.0625,
+        "curl": 0.0
+      },
+      "base_frac": {
+        "run": 0.075,
+        "turn": 0.85,
+        "pause": 0.075,
+        "curl": 0.0
+      },
+      "d_sil": {
+        "run": -0.012499999999999997,
+        "turn": 0.012499999999999956,
+        "pause": 0.0,
+        "curl": 0.0,
+        "fwd": 0.0,
+        "back": 0.0004930178727381995
+      },
+      "d_act": {
+        "run": -0.012499999999999997,
+        "turn": 0.025000000000000022,
+        "pause": -0.012499999999999997,
+        "curl": 0.0,
+        "fwd": 0.013500350026917102,
+        "back": 0.01767298538600315
+      },
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null
+    },
+    {
+      "rank": 3,
+      "role": "PRE PMN RIGHT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "n_silenced_edges": 6,
+      "sil_frac": {
+        "run": 0.075,
+        "turn": 0.85,
+        "pause": 0.075,
+        "curl": 0.0
+      },
+      "act_frac": {
+        "run": 0.0125,
+        "turn": 0.975,
+        "pause": 0.0125,
+        "curl": 0.0
+      },
+      "base_frac": {
+        "run": 0.075,
+        "turn": 0.85,
+        "pause": 0.075,
+        "curl": 0.0
+      },
+      "d_sil": {
+        "run": 0.0,
+        "turn": 0.0,
+        "pause": 0.0,
+        "curl": 0.0,
+        "fwd": 0.0,
+        "back": 0.0
+      },
+      "d_act": {
+        "run": -0.0625,
+        "turn": 0.125,
+        "pause": -0.0625,
+        "curl": 0.0,
+        "fwd": -3.021524812465981e-05,
+        "back": 1.2967547180497974e-05
+      },
+      "class_silence": "无变化",
+      "class_activation": "转弯↑",
+      "hit": null
+    },
+    {
+      "rank": 4,
+      "role": "PRE-DORSAL-MAP PRESYNAPTIC-D-2-R LEFT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "n_silenced_edges": 13,
+      "sil_frac": {
+        "run": 0.075,
+        "turn": 0.85,
+        "pause": 0.075,
+        "curl": 0.0
+      },
+      "act_frac": {
+        "run": 0.0625,
+        "turn": 0.875,
+        "pause": 0.0625,
+        "curl": 0.0
+      },
+      "base_frac": {
+        "run": 0.075,
+        "turn": 0.85,
+        "pause": 0.075,
+        "curl": 0.0
+      },
+      "d_sil": {
+        "run": 0.0,
+        "turn": 0.0,
+        "pause": 0.0,
+        "curl": 0.0,
+        "fwd": 0.0,
+        "back": 0.0
+      },
+      "d_act": {
+        "run": -0.012499999999999997,
+        "turn": 0.025000000000000022,
+        "pause": -0.012499999999999997,
+        "curl": 0.0,
+        "fwd": 0.05938451956094418,
+        "back": 0.06499457889500349
+      },
+      "class_silence": "无变化",
+      "class_activation": "后退↑",
+      "hit": null
+    },
+    {
+      "rank": 5,
+      "role": "L1: SHORT-PRESYNAPTICD-3-R",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "n_silenced_edges": 14,
+      "sil_frac": {
+        "run": 0.075,
+        "turn": 0.85,
+        "pause": 0.075,
+        "curl": 0.0
+      },
+      "act_frac": {
+        "run": 0.0625,
+        "turn": 0.875,
+        "pause": 0.0625,
+        "curl": 0.0
+      },
+      "base_frac": {
+        "run": 0.075,
+        "turn": 0.85,
+        "pause": 0.075,
+        "curl": 0.0
+      },
+      "d_sil": {
+        "run": 0.0,
+        "turn": 0.0,
+        "pause": 0.0,
+        "curl": 0.0,
+        "fwd": 0.0,
+        "back": -0.001640091562392365
+      },
+      "d_act": {
+        "run": -0.012499999999999997,
+        "turn": 0.025000000000000022,
+        "pause": -0.012499999999999997,
+        "curl": 0.0,
+        "fwd": 0.015161179452466866,
+        "back": 0.022534357258964688
+      },
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null
+    },
+    {
+      "rank": 28,
+      "role": "MDNB_RIGHT; PAIR 1 RIGHT",
+      "anchor": "anchored",
+      "anchor_effect": "蜷缩↑/后退↑",
+      "n_silenced_edges": 2,
+      "sil_frac": {
+        "run": 0.075,
+        "turn": 0.8500000000000001,
+        "pause": 0.075,
+        "curl": 0.0
+      },
+      "act_frac": {
+        "run": 0.0,
+        "turn": 1.0,
+        "pause": 0.0,
+        "curl": 0.0
+      },
+      "base_frac": {
+        "run": 0.075,
+        "turn": 0.85,
+        "pause": 0.075,
+        "curl": 0.0
+      },
+      "d_sil": {
+        "run": 0.0,
+        "turn": 1.1102230246251565e-16,
+        "pause": 0.0,
+        "curl": 0.0,
+        "fwd": 0.0,
+        "back": 0.0
+      },
+      "d_act": {
+        "run": -0.075,
+        "turn": 0.15000000000000002,
+        "pause": -0.075,
+        "curl": 0.0,
+        "fwd": 0.0,
+        "back": 0.6699214653301637
+      },
+      "class_silence": "无变化",
+      "class_activation": "后退↑",
+      "hit": true
+    }
+  ],
+  "plot": "/Users/weidong/ai/small_world/neural_exploration/reports/neuro/m8_perturbation_hitrate.png"
+}

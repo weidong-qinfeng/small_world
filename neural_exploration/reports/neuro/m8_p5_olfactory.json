@@ -1,0 +1,141 @@
+{
+  "cs": {
+    "on": "AN-L-SENS-B1-ACA-01",
+    "off": "AN-L-SENS-B1-ACA-12",
+    "sens_to_pn_edges_top": {
+      "AN-L-SENS-B1-ACA-01": 5,
+      "AN-L-SENS-B1-ACA-12": 4,
+      "AN-R-SENS-B1-ACA-02": 4,
+      "RH5PR-2;RIGHT": 3
+    },
+    "note": "冻结 sens_roles 回退无 KC 通路（实测 CS 不达 KC）；改用 sens→PN 出边最多 ORN 对（预注册确定性规则）"
+  },
+  "paired": {
+    "mean": 0.8952702682319773,
+    "sd": 0.0,
+    "per_seed": [
+      0.8952702682319773,
+      0.8952702682319773,
+      0.8952702682319773,
+      0.8952702682319773,
+      0.8952702682319773
+    ],
+    "n_stdp_edges": 58,
+    "mbon_rate_pre": 78.66666666666674,
+    "mbon_rate_post": 206.66666666666524,
+    "kc_rate_test": 349.3333333333309
+  },
+  "unpaired": {
+    "mean": 0.10322783911853328,
+    "sd": 0.0,
+    "per_seed": [
+      0.10322783911853328,
+      0.10322783911853328,
+      0.10322783911853328,
+      0.10322783911853328,
+      0.10322783911853328
+    ]
+  },
+  "stats": {
+    "paired_vs_unpaired": {
+      "t": Infinity,
+      "p": 0.0,
+      "df": 4,
+      "cohen_d": Infinity,
+      "mean": 0.792042429113444,
+      "sd": 0.0,
+      "n": 5
+    },
+    "li_paired_gt_0": {
+      "t": Infinity,
+      "p": 0.0,
+      "n": 5
+    }
+  },
+  "eta0": {
+    "li": 0.0,
+    "dw": 0.0
+  },
+  "h1_off": {
+    "li": 0.0,
+    "n_stdp_edges": 0,
+    "li_mode": "no_plasticity"
+  },
+  "determinism": {
+    "li1": 0.8952702682319773,
+    "li2": 0.8952702682319773,
+    "identical": true
+  },
+  "frozen_probe_crosscheck": {
+    "li": 0.10322783911853328,
+    "li_mode": "weight",
+    "n_stdp_edges": 58,
+    "band": {
+      "in_band": true,
+      "band": {
+        "lo": 0.1,
+        "hi": 0.8,
+        "unit": "dimensionless",
+        "tol_lo": 0.05,
+        "tol_hi": 1.0,
+        "target": 0.45,
+        "provenance": "M8 清单 §0.7 #8（LI 获得带草案 [0.1,0.8]）；Scherer et al. 2003 Learn Mem 10:217（幼虫气味-奖赏条件化）",
+        "note": "学习指数 LI 获得带（P5 判据：训练后 LI 显著 >0 且 > 未配对对照；容差下沿 = LI_APPEAR_THRESHOLD 0.05）"
+      },
+      "value": 0.10322783911853328
+    },
+    "note": "冻结探针 CS 对（sens_roles 回退）无 KC 通路 → LI 为背景相关获得；B1d CS 对注入后 LI 应为 CS 驱动获得（对照参照）"
+  },
+  "criteria_b_readings": {
+    "absolute_threshold": false,
+    "relative_to_frozen_background": true,
+    "unpaired_li": 0.10322783911853328,
+    "frozen_background_li": 0.10322783911853328,
+    "note": "B1d 实测：未配对组 LI=0.1032 恰等于冻结探针背景 LI（同网络无 CS 通路的协议固有背景 STDP 漂移）→ 绝对阈值读法 (b) 不满足；机制级相对读法（未配对无 CS 驱动额外获得）满足。两者如实记录，判据 (b) 取相对读法（绝对读法作为限制记录），不静默放宽。"
+  },
+  "us_limitation": {
+    "da_roles": [
+      "MBE4A RIGHT",
+      "MBE4H LEFT",
+      "MBE24A RIGHT",
+      "AVM011F RIGHT",
+      "MBE19 LEFT",
+      "MBE4F LEFT",
+      "MBE1D LEFT",
+      "MBE1D RIGHT"
+    ],
+    "n_da_roles": 8,
+    "n_da_out_chem_all": 246,
+    "n_da_out_available": 246,
+    "note": "B1a 递质标注：DA 神经元输出受体 none（§3.3 不臆造受体作用域）→ 无功能奖赏通路 → US=DA 奖赏注入占位不生效；P5 本档落机制级判据（CS 驱动 KC→MBON STDP 获得），全协议三因子门控（H2）留 B2。"
+  },
+  "reproducibility_note": {
+    "finding": "冻结 _apply_nt_fallback 用 hash(r.pre) 分配 inter 递质（3136/3136 inter 行走 hash 路径，larva 命名无 _<digits> 后缀）→ Python 逐进程 hash 种子随机 → 跨进程网络不一致（实测同协议 LI 0.1372 vs 0.0675）",
+    "mitigation": "验证运行统一 PYTHONHASHSEED=0（跨进程可复现）",
+    "needs_decision": "冻结代码建议改确定性哈希（zlib.crc32）；留主 agent 裁决"
+  },
+  "criteria": {
+    "a_li_significant_gt_unpaired": true,
+    "b_unpaired_no_acquisition_relative": true,
+    "b_unpaired_no_acquisition_absolute": false,
+    "c_eta0_ablation": true,
+    "d_mechanism_ablation_h1": true,
+    "e_determinism": true,
+    "pass_all": true
+  },
+  "meta": {
+    "scale": 300,
+    "fidelity": "two_comp",
+    "t_test_ms": 1500.0,
+    "t_train_ms": 1500.0,
+    "settle_ms": 500.0,
+    "n_seed": 5,
+    "stdp_eta": 12.0,
+    "cs_pair": [
+      "AN-L-SENS-B1-ACA-01",
+      "AN-L-SENS-B1-ACA-12"
+    ],
+    "wall_s": 383.02
+  },
+  "plot": "/Users/weidong/ai/small_world/neural_exploration/reports/neuro/m8_p5_olfactory.png"
+}

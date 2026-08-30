@@ -1,0 +1,117 @@
+{
+  "escape": {
+    "resp_prob": 1.0,
+    "d_peaks": [
+      0.7831756331536667,
+      0.7831756331536667,
+      0.7831756331536667,
+      0.7831756331536667,
+      0.7831756331536667
+    ],
+    "directions": [
+      "back",
+      "back",
+      "back",
+      "back",
+      "back"
+    ],
+    "escape_sanity": true,
+    "d_peak_threshold": 0.3,
+    "resp_prob_floor": 0.8,
+    "trials": [
+      {
+        "seed": 0,
+        "d_peak": 0.7831756331536667,
+        "direction": "back",
+        "curl_peak": 0.0,
+        "c_back_mean": 0.23726189185877428,
+        "c_fwd_mean": 0.15602143174995786,
+        "curl_dominant": false,
+        "back_response": true,
+        "response": true
+      },
+      {
+        "seed": 1,
+        "d_peak": 0.7831756331536667,
+        "direction": "back",
+        "curl_peak": 0.0,
+        "c_back_mean": 0.23726189185877428,
+        "c_fwd_mean": 0.15602143174995786,
+        "curl_dominant": false,
+        "back_response": true,
+        "response": true
+      },
+      {
+        "seed": 2,
+        "d_peak": 0.7831756331536667,
+        "direction": "back",
+        "curl_peak": 0.0,
+        "c_back_mean": 0.23726189185877428,
+        "c_fwd_mean": 0.15602143174995786,
+        "curl_dominant": false,
+        "back_response": true,
+        "response": true
+      },
+      {
+        "seed": 3,
+        "d_peak": 0.7831756331536667,
+        "direction": "back",
+        "curl_peak": 0.0,
+        "c_back_mean": 0.23726189185877428,
+        "c_fwd_mean": 0.15602143174995786,
+        "curl_dominant": false,
+        "back_response": true,
+        "response": true
+      },
+      {
+        "seed": 4,
+        "d_peak": 0.7831756331536667,
+        "direction": "back",
+        "curl_peak": 0.0,
+        "c_back_mean": 0.23726189185877428,
+        "c_fwd_mean": 0.15602143174995786,
+        "curl_dominant": false,
+        "back_response": true,
+        "response": true
+      }
+    ]
+  },
+  "us_structural": {
+    "n_md_roles": 4,
+    "n_md_out_available": 6,
+    "md_posts": [
+      "DALD BUSHY LEFT; DALD_L  2",
+      "MDNA_LEFT; PAIR 1 LEFT",
+      "MDNA_RIGHT; PAIR 2 RIGHT",
+      "MDNB_LEFT; PAIR 2 LEFT",
+      "MDNB_RIGHT; PAIR 1 RIGHT"
+    ],
+    "md_post_classes": {
+      "DALD BUSHY LEFT; DALD_L  2": "motor",
+      "MDNA_LEFT; PAIR 1 LEFT": "motor",
+      "MDNA_RIGHT; PAIR 2 RIGHT": "motor",
+      "MDNB_LEFT; PAIR 2 LEFT": "motor",
+      "MDNB_RIGHT; PAIR 1 RIGHT": "motor"
+    }
+  },
+  "us_absent": false,
+  "conditioning": {
+    "us_chosen": "光遗传激活 IV 类伤害感受器（MD 前缀角色）",
+    "cs": "嗅觉感觉对（sens_roles 回退：前 2 sensory ORN）",
+    "protocol": "配对：CS(s=+1) 窗 + US(MD 注入) 窗重叠；N_train 试次 → 双选偏好测试",
+    "limitation": "行为级回避指数读出（CI/偏好）在 300 档 two_comp 下结构性不可转正（D5 校准反证：缺 GABA 标注，CI=-0.165 落盘 data/m8_calibration.csv）；MD 伤害感受器在子集内可用出边 = 6（US 通路在子集内可接线，但行为级回避读出仍受 CI 反证限制）",
+    "reachable": "escape_baseline_only"
+  },
+  "criteria": {
+    "escape_sanity": true,
+    "note": "反证记录型 pass 条件：若 us_absent=True → 逃避基线结构性不可达（MD 无下游），如实记录测量限制，不静默判定 PASS"
+  },
+  "meta": {
+    "scale": 300,
+    "fidelity": "two_comp",
+    "n_trials": 5,
+    "escape_t_ms": 1000.0,
+    "wall_s": 25.02
+  },
+  "plot": "/Users/weidong/ai/small_world/neural_exploration/reports/neuro/m8_p6_nociceptive.png"
+}

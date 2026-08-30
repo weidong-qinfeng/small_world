@@ -367,3 +367,38 @@ Drosophila 一龄幼虫脑连接组；3,016 神经元 / ~548,000 突触位点）
 3. **冒烟全绿**：8/8（P3 身体模式 + P4 自发可算 + P5 学习探针 LI≥阈 +
    G1 可算记录 + CI 反证记录 + 确定性逐位一致 + 行为带 CSV + 出图
    reports/neuro/m8_smoke.png）。
+
+## L21 — 跨进程非确定性裁决（B1d 发现；铁律确定性）
+
+1. **发现**：`larva_circuit._apply_nt_fallback` 用 Python `hash(r.pre)` 分配 inter
+   递质（larva 命名无 `_<digits>` 后缀 → 3136/3136 inter 行走 hash 路径）→ Python
+   str hash 受进程随机种子影响 → 跨进程网络不一致（同协议冻结探针 LI 实测
+   0.0675/0.1032/0.1372）。
+2. **主agent 裁决（2026-08-30）**：**不改冻结代码**——改 zlib.crc32 会改变
+   inter→gaba 分配 → 已落盘历史结果（缩放扫描 G1 PASS、D5 校准 CI=-0.165、
+   冒烟 8/8）在新代码下不可复现，需重烧预算重验（预算教训 M4-M8）。
+   改为**固化运行纪律**：M8 及后续所有验证/复现运行统一
+   `PYTHONHASHSEED=0`（B1d 已验证两独立进程冻结探针均 0.1032；冒烟
+   PYTHONHASHSEED=0 下 8/8 绿）。crc32 确定性哈希改进留 M9+（届时网络
+   定义新建，无历史包袱）。
+3. **运行前缀**：`PYTHONHASHSEED=0 MPLBACKEND=Agg ./.venv-neuro/bin/python ...`
+   （B1d 全程；B2 验收复跑同样）。
+
+## L22 — B1d 实测发现与裁决记录
+
+1. **冻结 sens_roles CS 对无 KC 通路**（B1a 数据事实）：RH6PR/22C ORN 出边 1 条、
+   10 跳不达 KC → 冻结 `run_learning_probe` LI 为背景相关获得（非气味联想）。
+   B1d 改用触角嗅觉 ORN 对（AN-L-SENS-B1-ACA-01/12，sens→PN 出边 top）经扩展
+   stim 列注入（预注册规则）→ CS 驱动生效（KC 测试窗 349 spikes/s）。
+2. **冻结转导公式 s=1 → ≈100µA 过驱动**活 ORN；B1d CS 注入预注册 1.0nA
+   （与 P6 伤害感受器 0.75nA 同量级）。
+3. **行为判据带补带**（§0.7 #8）：m8_behavior_reference.csv 追加
+   nociceptive,escape_d_peak（>0.3）与 nociceptive,escape_response_prob（≥0.8）。
+4. **curl 通道结构性缺失**：provisional 肌肉映射仅 fwd/back/left/right →
+   P6 C_curl>C_fwd 与 P7 蜷缩↑ 结构性不可达（已记录）；蜷缩判据留真实肌肉映射
+   （P3 定稿后）。
+5. **P7 有锚 3/50 < 20 下限** → 命中率 ≥70% 判据留 B2（网络恢复后可补
+   逐神经元驱动线锚）；B1d 机制（沉默/激活→后果类）已可运行，MD 锚 HIT。
+6. **P5 DA/US 通路缺失限制**：B1a 递质标注 DA 神经元输出受体 none（§3.3 不臆造
+   受体作用域）→ US=DA 奖赏注入占位不生效 → P5 本档落机制级判据（CS 驱动
+   KC→MBON STDP 获得 LI=0.895），全协议三因子门控（H2）留 B2。
