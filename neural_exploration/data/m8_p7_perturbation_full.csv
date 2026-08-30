@@ -1,0 +1,52 @@
+# M8 P7 扰动预测（B2 全测：top-50 神经元沉默/激活）
+rank,role,anchor_status,anchor_effect_class,n_silenced_edges,class_silence,class_activation,hit,d_fwd_mean,d_back_mean,d_turn_frac,d_pause_frac
+1,PRE-GORO3 RIGHT,no-experiment,,7,无变化,转弯↑,,-0.0044,0.0000,0.0000,0.0000
+2,AF5: SHORT-PRESYNAPTIC-D-1L,no-experiment,,15,无变化,无变化,,0.0000,0.0005,0.0125,0.0000
+3,PRE PMN RIGHT,no-experiment,,6,无变化,转弯↑,,0.0000,0.0000,0.0000,0.0000
+4,PRE-DORSAL-MAP PRESYNAPTIC-D-2-R LEFT,no-experiment,,13,无变化,后退↑,,0.0000,0.0000,0.0000,0.0000
+5,L1: SHORT-PRESYNAPTICD-3-R,no-experiment,,14,无变化,无变化,,0.0000,-0.0016,0.0000,0.0000
+6,TOMATO VINE 2_RIGHT,no-experiment,,6,无变化,转弯↑,,0.0000,0.0000,0.0000,0.0000
+7,VB: DPMM1 4_RIGHT,no-experiment,,6,无变化,无变化,,-0.0001,-0.0285,-0.0125,0.0000
+8,CP4 8 RIGHT,no-experiment,,10,无变化,无变化,,0.0000,0.0000,0.0000,0.0000
+9,AF5: SHORT-PRESYNAPTIC-D-1R,no-experiment,,8,无变化,无变化,,-0.0038,0.0000,0.0000,0.0000
+10,BLDC A00C POINTER RIGHT,no-experiment,,12,无变化,无变化,,0.0000,0.0000,0.0000,0.0000
+11,LOCAL CRESCENT RIGHT,no-experiment,,8,无变化,无变化,,0.0000,0.0000,0.0000,0.0000
+12,CONTRA-VINE RIGHT,no-experiment,,5,无变化,前进↑,,0.0000,0.0000,0.0000,0.0000
+13,VB: DPMM1 4_LEFT,no-experiment,,7,无变化,无变化,,0.0000,-0.0106,0.0000,0.0000
+14,MB2IN-162 LEFT; PDLR,no-experiment,,10,无变化,无变化,,0.0000,0.0000,0.0000,0.0000
+15,BLAL HORSESHOE NEURON RIGHT,no-experiment,,3,无变化,无变化,,0.0000,0.0000,0.0000,0.0000
+16,BLP34 BILATERAL 2 RIGHT,no-experiment,,3,无变化,无变化,,-0.0016,-0.0016,0.0000,0.0000
+17,DALD_L  3,no-experiment,,6,无变化,无变化,,-0.0126,-0.0234,0.0250,-0.0125
+18,DPM CONTRALATERAL HORSESHOE RIGHT,no-experiment,,7,无变化,无变化,,0.0000,-0.0062,0.0000,0.0000
+19,BLDC POINTER RIGHT,no-experiment,,6,无变化,无变化,,0.0000,0.0000,0.0000,0.0000
+20,CONTRA-VINE LEFT,no-experiment,,2,无变化,后退↑,,0.0000,0.0000,0.0000,0.0000
+21,DPMM1 BRAIN DESCENDING INTO VNC RIGHT,no-experiment,,7,无变化,后退↑,,0.0000,0.0000,0.0000,0.0000
+22,BLVA HOOK 1 RIGHT,no-experiment,,3,无变化,无变化,,0.0000,0.0000,0.0000,0.0000
+23,TWO-HEADED COBRA LEFT,no-experiment,,2,无变化,无变化,,0.0000,0.0000,0.0000,0.0000
+24,DPLL GNARLY LEFT,no-experiment,,6,无变化,无变化,,0.0000,0.0000,0.0000,0.0000
+25,DPMM1 3 (OUTPUT OF MUNIN)_LEFT,no-experiment,,7,无变化,无变化,,0.0000,0.0000,0.0000,0.0000
+26,ML_RIGHT,no-experiment,,6,无变化,无变化,,0.0000,0.0000,0.0000,0.0000
+27,COASTER (NPF) RIGHT,no-experiment,,1,无变化,后退↑,,0.0000,0.0000,0.0000,0.0000
+28,MDNB_RIGHT; PAIR 1 RIGHT,anchored,蜷缩↑/后退↑,2,无变化,后退↑,True,0.0000,0.0000,0.0000,0.0000
+29,DPMM1 IPSILATERAL DESCENDING RIGHT,no-experiment,,3,无变化,转弯↑,,-0.0000,0.0000,0.0000,0.0000
+30,DPLC1 DESCENDING L,no-experiment,,4,无变化,转弯↑,,0.0000,0.0000,0.0000,0.0000
+31,CPF CONTRALATERAL 3 LEFT,no-experiment,,6,无变化,无变化,,0.0000,0.0000,0.0000,0.0000
+32,CA ; DPMPM1 1_RIGHT,no-experiment,,2,无变化,无变化,,0.0000,0.0000,0.0000,0.0000
+33,TELEPHONE-RELATED RIGHT,no-experiment,,3,无变化,无变化,,0.0000,0.0000,0.0000,0.0000
+34,EV_RIGHT,no-experiment,,5,无变化,无变化,,0.0000,0.0000,0.0000,0.0000
+35,130729_SFO CAND 42A-42B_OSN_IN1 LEFT,no-experiment,,6,无变化,转弯↑,,0.0000,0.0000,0.0000,0.0000
+36,DPML_ANT_VEN DESCENDING RIGHT,no-experiment,,1,无变化,转弯↑,,0.0000,-0.0044,0.0000,0.0000
+37,NAG RIGHT,no-experiment,,5,无变化,无变化,,0.0000,0.0000,0.0000,0.0000
+38,DAMV12 MANDIBLE 2 LEFT,no-experiment,,2,无变化,无变化,,-0.0016,-0.0016,0.0250,0.0000
+39,DALCM12 V AP 11 RIGHT,no-experiment,,1,无变化,无变化,,0.0000,0.0000,0.0000,0.0000
+40,BLP POST VEN NEURON 1 RIGHT; BLP34 A 6,no-experiment,,4,无变化,无变化,,0.0000,0.0000,0.0000,0.0000
+41,CM4-DM HORSESHOE 1 RIGHT,no-experiment,,3,无变化,无变化,,0.0000,0.0000,0.0000,0.0000
+42,AF0: NEURON RIGHT,no-experiment,,5,无变化,无变化,,0.0000,0.0000,0.0000,0.0000
+43,BLP34 DESCENDING 5 RIGHT,no-experiment,,5,无变化,无变化,,0.0000,0.0000,0.0000,0.0000
+44,BALA12 DESCENDING 1 LEFT,no-experiment,,4,无变化,转弯↑,,0.0000,0.0000,0.0000,0.0000
+45,MDNA_RIGHT; PAIR 2 RIGHT,anchored,蜷缩↑/后退↑,2,无变化,转弯↑,False,-0.0000,-0.0019,0.0000,0.0000
+46,BLP34 DESCENDING 3 RIGHT,no-experiment,,1,无变化,无变化,,0.0000,0.0000,0.0000,0.0000
+47,DPLAM TALON 1 LEFT,no-experiment,,0,无变化,无变化,,0.0000,0.0000,0.0000,0.0000
+48,BLVP1 LOCAL A RIGHT,no-experiment,,4,无变化,无变化,,0.0000,0.0000,0.0000,0.0000
+49,DPMM1 BRAIN DESCENDING INTO VNC 2 RIGHT,no-experiment,,5,无变化,转弯↑,,0.0000,0.0000,0.0000,0.0000
+50,MDNB_LEFT; PAIR 2 LEFT,anchored,蜷缩↑/后退↑,1,无变化,转弯↑,False,0.0000,0.0000,0.0000,0.0000

@@ -1,0 +1,858 @@
+{
+  "meta": {
+    "scale": 300,
+    "fidelity": "two_comp",
+    "proto_t_ms": 2000.0,
+    "seed": 0,
+    "n_full": 50,
+    "activation_nA": 0.5,
+    "wall_s": 876.73
+  },
+  "baseline": {
+    "frac": {
+      "run": 0.075,
+      "turn": 0.85,
+      "pause": 0.075,
+      "curl": 0.0
+    },
+    "ch_mean": {
+      "fwd": 0.12738811031101674,
+      "back": 0.2692069273918466,
+      "left": 0.25814173913167676,
+      "right": 0.41307442807852607,
+      "curl": 0.0
+    }
+  },
+  "sham": {
+    "identical": true
+  },
+  "determinism": {
+    "identical": true,
+    "class_rerun": "无变化"
+  },
+  "hitrate": {
+    "rate": 0.3333333333333333,
+    "hits": 1,
+    "simulated_anchored": 3,
+    "anchored_ok": false,
+    "hit_ok": false,
+    "limitation": {
+      "n_anchored_plan": 3,
+      "anchored_floor": 20,
+      "anchored_floor_met": false,
+      "hit_rate": 0.3333333333333333,
+      "hits": 1,
+      "simulated_anchored": 3,
+      "note": "B1d/B2 网络受限（无逐神经元驱动线锚下载）→ 有锚 = MD 3/50 < 20 下限 → 按 §0.7 #4 缩小有锚判据分母 + 测量限制记录；命中率仅 informational，≥70% 判据在有锚子集达标前不静默判定"
+    }
+  },
+  "criteria": {
+    "sham_sanity": true,
+    "determinism": true,
+    "hitrate_note": "有锚 3/50 < 20 预注册下限 → 命中率仅 informational + 测量限制记录，不静默判 ≥70%（B1d 冒烟 MD 锚 HIT：MDNB_RIGHT 激活→后退↑ 与文献锚一致）"
+  },
+  "per_neuron": [
+    {
+      "rank": 1,
+      "role": "PRE-GORO3 RIGHT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "转弯↑",
+      "hit": null,
+      "n_silenced_edges": 7,
+      "d_sil": {
+        "fwd": -0.004389,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 2,
+      "role": "AF5: SHORT-PRESYNAPTIC-D-1L",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 15,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.000493,
+        "turn": 0.0125,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 3,
+      "role": "PRE PMN RIGHT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "转弯↑",
+      "hit": null,
+      "n_silenced_edges": 6,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 4,
+      "role": "PRE-DORSAL-MAP PRESYNAPTIC-D-2-R LEFT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "后退↑",
+      "hit": null,
+      "n_silenced_edges": 13,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 5,
+      "role": "L1: SHORT-PRESYNAPTICD-3-R",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 14,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": -0.00164,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 6,
+      "role": "TOMATO VINE 2_RIGHT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "转弯↑",
+      "hit": null,
+      "n_silenced_edges": 6,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 7,
+      "role": "VB: DPMM1 4_RIGHT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 6,
+      "d_sil": {
+        "fwd": -5.3e-05,
+        "back": -0.028549,
+        "turn": -0.0125,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 8,
+      "role": "CP4 8 RIGHT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 10,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 9,
+      "role": "AF5: SHORT-PRESYNAPTIC-D-1R",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 8,
+      "d_sil": {
+        "fwd": -0.003824,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 10,
+      "role": "BLDC A00C POINTER RIGHT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 12,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 11,
+      "role": "LOCAL CRESCENT RIGHT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 8,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 12,
+      "role": "CONTRA-VINE RIGHT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "前进↑",
+      "hit": null,
+      "n_silenced_edges": 5,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 13,
+      "role": "VB: DPMM1 4_LEFT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 7,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": -0.010632,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 14,
+      "role": "MB2IN-162 LEFT; PDLR",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 10,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 15,
+      "role": "BLAL HORSESHOE NEURON RIGHT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 3,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 16,
+      "role": "BLP34 BILATERAL 2 RIGHT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 3,
+      "d_sil": {
+        "fwd": -0.001596,
+        "back": -0.00164,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 17,
+      "role": "DALD_L  3",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 6,
+      "d_sil": {
+        "fwd": -0.012623,
+        "back": -0.023442,
+        "turn": 0.025,
+        "pause": -0.0125
+      }
+    },
+    {
+      "rank": 18,
+      "role": "DPM CONTRALATERAL HORSESHOE RIGHT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 7,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": -0.006242,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 19,
+      "role": "BLDC POINTER RIGHT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 6,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 20,
+      "role": "CONTRA-VINE LEFT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "后退↑",
+      "hit": null,
+      "n_silenced_edges": 2,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 8e-06,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 21,
+      "role": "DPMM1 BRAIN DESCENDING INTO VNC RIGHT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "后退↑",
+      "hit": null,
+      "n_silenced_edges": 7,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 22,
+      "role": "BLVA HOOK 1 RIGHT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 3,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 23,
+      "role": "TWO-HEADED COBRA LEFT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 2,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 24,
+      "role": "DPLL GNARLY LEFT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 6,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 25,
+      "role": "DPMM1 3 (OUTPUT OF MUNIN)_LEFT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 7,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 26,
+      "role": "ML_RIGHT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 6,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 27,
+      "role": "COASTER (NPF) RIGHT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "后退↑",
+      "hit": null,
+      "n_silenced_edges": 1,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 28,
+      "role": "MDNB_RIGHT; PAIR 1 RIGHT",
+      "anchor": "anchored",
+      "anchor_effect": "蜷缩↑/后退↑",
+      "class_silence": "无变化",
+      "class_activation": "后退↑",
+      "hit": true,
+      "n_silenced_edges": 2,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 29,
+      "role": "DPMM1 IPSILATERAL DESCENDING RIGHT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "转弯↑",
+      "hit": null,
+      "n_silenced_edges": 3,
+      "d_sil": {
+        "fwd": -2.6e-05,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 30,
+      "role": "DPLC1 DESCENDING L",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "转弯↑",
+      "hit": null,
+      "n_silenced_edges": 4,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 31,
+      "role": "CPF CONTRALATERAL 3 LEFT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 6,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 32,
+      "role": "CA ; DPMPM1 1_RIGHT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 2,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 33,
+      "role": "TELEPHONE-RELATED RIGHT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 3,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 34,
+      "role": "EV_RIGHT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 5,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 35,
+      "role": "130729_SFO CAND 42A-42B_OSN_IN1 LEFT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "转弯↑",
+      "hit": null,
+      "n_silenced_edges": 6,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 36,
+      "role": "DPML_ANT_VEN DESCENDING RIGHT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "转弯↑",
+      "hit": null,
+      "n_silenced_edges": 1,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": -0.004397,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 37,
+      "role": "NAG RIGHT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 5,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 38,
+      "role": "DAMV12 MANDIBLE 2 LEFT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 2,
+      "d_sil": {
+        "fwd": -0.001621,
+        "back": -0.00164,
+        "turn": 0.025,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 39,
+      "role": "DALCM12 V AP 11 RIGHT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 1,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 40,
+      "role": "BLP POST VEN NEURON 1 RIGHT; BLP34 A 6",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 4,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 41,
+      "role": "CM4-DM HORSESHOE 1 RIGHT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 3,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 42,
+      "role": "AF0: NEURON RIGHT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 5,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 43,
+      "role": "BLP34 DESCENDING 5 RIGHT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 5,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 44,
+      "role": "BALA12 DESCENDING 1 LEFT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "转弯↑",
+      "hit": null,
+      "n_silenced_edges": 4,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 45,
+      "role": "MDNA_RIGHT; PAIR 2 RIGHT",
+      "anchor": "anchored",
+      "anchor_effect": "蜷缩↑/后退↑",
+      "class_silence": "无变化",
+      "class_activation": "转弯↑",
+      "hit": false,
+      "n_silenced_edges": 2,
+      "d_sil": {
+        "fwd": -1.3e-05,
+        "back": -0.001857,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 46,
+      "role": "BLP34 DESCENDING 3 RIGHT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 1,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 47,
+      "role": "DPLAM TALON 1 LEFT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 0,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 48,
+      "role": "BLVP1 LOCAL A RIGHT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "无变化",
+      "hit": null,
+      "n_silenced_edges": 4,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 49,
+      "role": "DPMM1 BRAIN DESCENDING INTO VNC 2 RIGHT",
+      "anchor": "no-experiment",
+      "anchor_effect": "",
+      "class_silence": "无变化",
+      "class_activation": "转弯↑",
+      "hit": null,
+      "n_silenced_edges": 5,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 3.3e-05,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    },
+    {
+      "rank": 50,
+      "role": "MDNB_LEFT; PAIR 2 LEFT",
+      "anchor": "anchored",
+      "anchor_effect": "蜷缩↑/后退↑",
+      "class_silence": "无变化",
+      "class_activation": "转弯↑",
+      "hit": false,
+      "n_silenced_edges": 1,
+      "d_sil": {
+        "fwd": 0.0,
+        "back": 0.0,
+        "turn": 0.0,
+        "pause": 0.0
+      }
+    }
+  ],
+  "csv": "/Users/weidong/ai/small_world/neural_exploration/data/m8_p7_perturbation_full.csv",
+  "plot": "/Users/weidong/ai/small_world/neural_exploration/reports/neuro/m8_perturbation_hitrate_full.png"
+}

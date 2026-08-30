@@ -56,6 +56,12 @@ DT_IMG_MS = 500.0         # 成像 2Hz
 ACT_BIN_MS = 100.0        # 活动率 bin（100ms）
 TRANS_WIN_MS = 2000.0     # ±2s 窗（§8.2 (b)）
 
+#: B2 全协议（清单 §8：300 档 two_comp 自发 T=30s 全协议 + 3016 point 短窗对照）
+FULL_SPONT_T_MS = 30000.0
+SCALE_3016 = 3016
+FIDELITY_3016 = "point"
+SHORT_T_MS = 5000.0       # 3016 point ≤5s 短窗（预算纪律）
+
 
 def load_weight_rows() -> dict:
     out = {}
@@ -122,6 +128,240 @@ def run_spont_with_spikes(circ: LarvaCircuit, t_total_ms: float, seed: int):
 def map_larva_state(st: str) -> str:
     """virtual_body 状态 → 幼虫语义（larva_loop 映射：run=fwd、turn=turn+rev）。"""
     return {"fwd": "run", "rev": "turn"}.get(st, st)
+
+
+def run_activity_full(scale: int, fidelity: str, t_total_ms: float,
+                      seed: int, tag: str) -> dict:
+    """B2 全协议活动管线：自发序列 → 发放率带判定 + 荧光正向模型 + 转换窗序列。
+
+    复用 B1d 冒烟管线语义（run_spont_with_spikes / spikes_to_fluorescence /
+    global_activity_per_bin / transition_windows），以全协议 T 运行；
+    返回与 B1d summary 相同结构的 dict（供 *_full 落盘与对比）。
+    """
+    t0 = time.perf_counter()
+    w = load_weight_rows()
+    gmax = float(w["gmax_scale"])
+    class_scales = {}
+    for k, v in w.items():
+        if k.startswith("class_scale_"):
+            parts = k.split("_")
+            if len(parts) == 4:
+                class_scales[(parts[2], parts[3])] = v
+    ckw = dict(scale=scale, fidelity=fidelity, seed=seed,
+               nt_fallback="class", provisional_muscles=True,
+               gmax_scale=gmax, class_scales=class_scales,
+               plasticity="none")
+    circ = LarvaCircuit(**ckw)
+
+    r1 = run_spont_with_spikes(circ, t_total_ms, seed)
+    r2 = run_spont_with_spikes(circ, t_total_ms, seed)   # 确定性重跑
+    states1 = [map_larva_state(s) for s in r1["states"]]
+    states2 = [map_larva_state(s) for s in r2["states"]]
+    det_states = bool(states1 == states2)
+
+    t_s = r1["t_end_ms"] / 1000.0
+    rates = {role: len(t) / t_s for role, t in r1["spike_times"].items()}
+    rate_arr = np.array(list(rates.values()), dtype=float)
+    median_hz = float(np.median(rate_arr)) if rate_arr.size else float("nan")
+    max_hz = float(np.max(rate_arr)) if rate_arr.size else float("nan")
+    silent_frac = float(np.mean(rate_arr < 0.5)) if rate_arr.size else float("nan")
+    rate_rows = sorted((role, float(rates[role]), int(len(r1["spike_times"][role])))
+                       for role in rates)
+
+    bands = load_resting_bands()
+    band_checks = {}
+    for key, band in bands.items():
+        lo, hi = band["lo"], band["hi"]
+        val = {"median_firing_hz": median_hz,
+               "max_firing_hz": max_hz,
+               "silent_fraction_band": silent_frac * 100.0}.get(key)
+        ok = bool(lo is not None and hi is not None and lo <= val <= hi)
+        band_checks[key] = dict(value=val, lo=lo, hi=hi, in_band=ok,
+                                provenance=band["provenance"])
+
+    frames_all = {}
+    for role, times in r1["spike_times"].items():
+        frames_all[role] = spikes_to_fluorescence(
+            times, t_total_ms, tau_gcamp_ms=TAU_GCAMP_MS, dt_img_ms=DT_IMG_MS)
+    frame_mat = np.stack(list(frames_all.values())) if frames_all else \
+        np.empty((0, 0))
+    has_nan_frames = bool(np.any(~np.isfinite(frame_mat)))
+
+    act = global_activity_per_bin(r1["spike_times"], t_total_ms,
+                                  bin_ms=ACT_BIN_MS)
+    act_det = global_activity_per_bin(r2["spike_times"], t_total_ms,
+                                      bin_ms=ACT_BIN_MS)
+    det_act = bool(np.array_equal(act, act_det))
+    tw = transition_windows(states1, act, dt_state_ms=circ.dt_b,
+                            win_ms=TRANS_WIN_MS, act_bin_ms=ACT_BIN_MS)
+    tw_det = transition_windows(states2, act_det, dt_state_ms=circ.dt_b,
+                                win_ms=TRANS_WIN_MS, act_bin_ms=ACT_BIN_MS)
+    det_trans = bool(np.array_equal(
+        np.concatenate(tw["windows"]) if tw["windows"] else np.array([]),
+        np.concatenate(tw_det["windows"]) if tw_det["windows"]
+        else np.array([])))
+    global_states = activity_state_sequence(act, percentile=50.0)
+    has_nan_seq = bool(np.any(~np.isfinite(act))
+                       or any(not np.all(np.isfinite(x))
+                              for x in tw["windows"]))
+
+    occ = {s: states1.count(s) / len(states1) for s in set(states1)}
+    n_tr = len(states1) - 1
+    tm = {"run_to_turn": 0.0, "turn_to_run": 0.0}
+    for i in range(n_tr):
+        if states1[i] == "run" and states1[i + 1] == "turn":
+            tm["run_to_turn"] += 1.0
+        elif states1[i] == "turn" and states1[i + 1] == "run":
+            tm["turn_to_run"] += 1.0
+    tm["run_to_turn"] = tm["run_to_turn"] / max(1, states1.count("run"))
+    tm["turn_to_run"] = tm["turn_to_run"] / max(1, states1.count("turn"))
+
+    crit_a_bands = all(v["in_band"] for v in band_checks.values())
+    crit_b = bool(tw["has_nan"] is False and has_nan_seq is False
+                  and det_trans and det_act)
+    crit_c = bool(not has_nan_frames and det_states)
+    pass_model = bool(crit_a_bands and crit_b and crit_c)
+
+    return dict(
+        meta=dict(scale=scale, fidelity=fidelity, spont_t_ms=t_total_ms,
+                  seed=seed, tag=tag,
+                  wall_s=round(time.perf_counter() - t0, 2)),
+        rates=dict(median_hz=median_hz, max_hz=max_hz, silent_frac=silent_frac,
+                   n_roles=len(rates)),
+        rate_rows=rate_rows,
+        band_checks=band_checks,
+        fluorescence=dict(n_frames=int(frame_mat.shape[1]) if frame_mat.size
+                          else 0, has_nan=has_nan_frames),
+        transitions=dict(n=tw["n_transitions"], pre_mean=tw["pre_mean"],
+                         post_mean=tw["post_mean"],
+                         occupancy_high=tw["occupancy_high"],
+                         n_high=tw["n_high"], n_low=tw["n_low"],
+                         has_nan=tw["has_nan"]),
+        transition_matrix_model=tm, occupancy_model=occ,
+        criteria=dict(a_band_fallback=crit_a_bands,
+                      b_transition_sequences=crit_b,
+                      c_forward_model_smoke=crit_c,
+                      pass_model=pass_model),
+        determinism=dict(states=det_states, activity=det_act,
+                         transitions=det_trans))
+
+
+def run_full_protocol(summary: dict, run_3016: bool = False) -> dict:
+    """B2 P8 全协议：300 two_comp 自发 T=30s + 3016 point ≤5s 短窗规模对照。
+
+    写 data/m8_p8_activity_full.csv + reports/neuro/m8_p8_activity_full.{png,json}
+    （B1d 短协议输出保留并存）。
+    """
+    t0 = time.perf_counter()
+    full300 = run_activity_full(SCALE, FIDELITY, FULL_SPONT_T_MS, SEED,
+                                "300_two_comp_full_30s")
+    res = dict(full300=full300)
+    short3016 = None
+    if run_3016:
+        short3016 = run_activity_full(SCALE_3016, FIDELITY_3016, SHORT_T_MS,
+                                      SEED, "3016_point_short_5s")
+        res["short3016"] = short3016
+        res["scale_comparison"] = dict(
+            note=("3016 point 只跑 ≤5s 短窗（预算纪律：3016 point 30s=843s/试次"
+                  "不可行）；3016 point CI=0 行为层退化反证已记录（缩放扫描）；"
+                  "活动对照仅作规模侧结构性参考"),
+            silent_frac_300=full300["rates"]["silent_frac"],
+            silent_frac_3016=short3016["rates"]["silent_frac"],
+            median_300=full300["rates"]["median_hz"],
+            median_3016=short3016["rates"]["median_hz"])
+
+    # 落盘 CSV（逐角色发放率 + 荧光帧样例，300 全协议 + 3016 短窗）
+    csv_path = os.path.join(DATA_DIR, "m8_p8_activity_full.csv")
+    with open(csv_path, "w", newline="", encoding="utf-8") as f:
+        import csv as _csv
+        wtr = _csv.writer(f)
+        wtr.writerow(["# M8 P8 活动金标准（B2 全协议：300 two_comp T=30s"
+                      + ("；3016 point 短窗 5s" if run_3016 else "") + "）"])
+        for rr, tag in ((full300, "300_two_comp_30s"),
+                        (short3016, "3016_point_5s")):
+            if rr is None:
+                continue
+            wtr.writerow(["# scale=%d fidelity=%s tag=%s"
+                          % (rr["meta"]["scale"], rr["meta"]["fidelity"], tag)])
+            wtr.writerow(["tag", "role", "rate_hz", "n_spikes"])
+            for role, rate, n_sp in rr["rate_rows"]:
+                wtr.writerow([tag, role, f"{rate:.6f}", n_sp])
+            wtr.writerow([])
+
+    # 出图（发放率直方图 + 转换窗热图，300 全协议）
+    png_path = os.path.join(REPORTS_NEURO, "m8_p8_activity_full.png")
+    try:
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+        import matplotlib.font_manager as fm
+        for _f in ("PingFang HK", "Heiti TC", "PingFang SC", "Arial Unicode MS"):
+            try:
+                fm.findfont(_f, fallback_to_default=False)
+                plt.rcParams["font.sans-serif"] = [_f, "DejaVu Sans"]
+                plt.rcParams["axes.unicode_minus"] = False
+                break
+            except Exception:
+                continue
+        r = full300
+        rate_arr = np.array([x[1] for x in r["rate_rows"]], dtype=float)
+        fig, axes = plt.subplots(1, 2, figsize=(13, 4.8))
+        ax = axes[0]
+        ax.hist(rate_arr, bins=25, color="#4c72b0", alpha=0.8)
+        ax.axvline(0.5, color="gray", ls="--", lw=1, label="静默阈值 0.5Hz")
+        ax.set_xlabel("逐角色发放率 (Hz)")
+        ax.set_ylabel("角色数")
+        ax.set_title(f"P8 全协议发放率分布：median={r['rates']['median_hz']:.2f}Hz "
+                     f"silent={r['rates']['silent_frac']:.2f}")
+        ax.legend(fontsize=8)
+        ax.grid(True, alpha=0.3)
+        ax = axes[1]
+        bandtxt = "\n".join(
+            f"  {k}: {v['value']:.2f} in [{v['lo']}, {v['hi']}] → {v['in_band']}"
+            for k, v in r["band_checks"].items())
+        tw = r["transitions"]
+        ax.text(0.03, 0.97,
+                f"run↔turn 转换 n={tw['n']}\n"
+                f"pre={tw['pre_mean']:.2f}Hz post={tw['post_mean']:.2f}Hz\n"
+                f"high 占用={tw['occupancy_high']:.2f}  无 NaN={not tw['has_nan']}\n"
+                f"确定性: states={r['determinism']['states']} "
+                f"trans={r['determinism']['transitions']}\n\n"
+                f"resting 带判定：\n{bandtxt}",
+                transform=ax.transAxes, va="top", fontsize=9,
+                bbox=dict(boxstyle="round", facecolor="#efe"))
+        ax.set_xlim(0, 1)
+        ax.set_ylim(0, 1)
+        ax.axis("off")
+        ax.set_title(f"P8 全协议：转换窗统计 + 带判定 "
+                     f"(pass_model={r['criteria']['pass_model']})")
+        fig.suptitle("M8 P8 活动金标准（B2 全协议 300 two_comp T=30s）",
+                     fontsize=11)
+        fig.tight_layout(rect=(0, 0, 1, 0.93))
+        fig.savefig(png_path, dpi=130)
+        plt.close(fig)
+    except Exception as e:  # noqa: BLE001
+        png_path = f"FAILED: {e}"
+
+    res["csv"] = csv_path
+    res["plot"] = png_path
+    json_path = os.path.join(REPORTS_NEURO, "m8_p8_activity_full.json")
+    with open(json_path, "w", encoding="utf-8") as f:
+        json.dump(res, f, ensure_ascii=False, indent=2, default=str)
+
+    print("=== P8 全协议（B2）===")
+    for tag, rr in (("300 two_comp 30s", full300),
+                    ("3016 point 5s", short3016)):
+        if rr is None:
+            continue
+        print(f"  [{tag}] median={rr['rates']['median_hz']:.3f}Hz "
+              f"max={rr['rates']['max_hz']:.3f}Hz "
+              f"silent={rr['rates']['silent_frac']:.3f} "
+              f"trans n={rr['transitions']['n']} "
+              f"无NaN={not rr['transitions']['has_nan']} "
+              f"pass_model={rr['criteria']['pass_model']}")
+    print(f"csv={csv_path} json={json_path} wall={time.perf_counter() - t0:.0f}s")
+    summary["full_protocol"] = res
+    return res
 
 
 def main() -> int:
@@ -357,6 +597,13 @@ def main() -> int:
           f"pass_model={pass_model}")
     print(f"imaging_limitation: {imaging_limitation['note'][:60]}…")
     print(f"csv={csv_path} json={json_path} wall={summary['meta']['wall_s']}s")
+
+    # ---- B2：P8 全协议（300 two_comp T=30s + 可选 3016 point ≤5s 短窗对照）----
+    run_3016 = "--scale3016" in sys.argv[1:]
+    full = run_full_protocol(summary, run_3016=run_3016)
+    print("=== P8 判定（B1d 短协议 + B2 全协议）===")
+    print(f"300 全协议 pass_model={full['full300']['criteria']['pass_model']}；"
+          f"成像数据不可得 → 文献带回退 + 测量限制记录（只承诺统计级）")
     return 0
 
 

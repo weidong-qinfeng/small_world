@@ -1,0 +1,330 @@
+{
+  "meta": {
+    "scale": 300,
+    "fidelity": "two_comp",
+    "t_total_ms": 30000.0,
+    "n_trials": 10,
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "wall_s": 1307.24
+  },
+  "per_trial": [
+    {
+      "seed": 0,
+      "frac": {
+        "run": 0.09916666666666667,
+        "turn": 0.8141666666666667,
+        "pause": 0.08666666666666667,
+        "curl": 0.0
+      },
+      "ch_mean": {
+        "fwd": 0.16228460448946502,
+        "back": 0.2546234027819369,
+        "left": 0.23809847726717587,
+        "right": 0.4267072904348202,
+        "curl": 0.0
+      },
+      "wall_s": 120.38
+    },
+    {
+      "seed": 1,
+      "frac": {
+        "run": 0.09916666666666667,
+        "turn": 0.8141666666666667,
+        "pause": 0.08666666666666667,
+        "curl": 0.0
+      },
+      "ch_mean": {
+        "fwd": 0.16228460448946502,
+        "back": 0.2546234027819369,
+        "left": 0.23809847726717587,
+        "right": 0.4267072904348202,
+        "curl": 0.0
+      },
+      "wall_s": 122.43
+    },
+    {
+      "seed": 2,
+      "frac": {
+        "run": 0.09916666666666667,
+        "turn": 0.8141666666666667,
+        "pause": 0.08666666666666667,
+        "curl": 0.0
+      },
+      "ch_mean": {
+        "fwd": 0.16228460448946502,
+        "back": 0.2546234027819369,
+        "left": 0.23809847726717587,
+        "right": 0.4267072904348202,
+        "curl": 0.0
+      },
+      "wall_s": 120.04
+    },
+    {
+      "seed": 3,
+      "frac": {
+        "run": 0.09916666666666667,
+        "turn": 0.8141666666666667,
+        "pause": 0.08666666666666667,
+        "curl": 0.0
+      },
+      "ch_mean": {
+        "fwd": 0.16228460448946502,
+        "back": 0.2546234027819369,
+        "left": 0.23809847726717587,
+        "right": 0.4267072904348202,
+        "curl": 0.0
+      },
+      "wall_s": 119.39
+    },
+    {
+      "seed": 4,
+      "frac": {
+        "run": 0.09916666666666667,
+        "turn": 0.8141666666666667,
+        "pause": 0.08666666666666667,
+        "curl": 0.0
+      },
+      "ch_mean": {
+        "fwd": 0.16228460448946502,
+        "back": 0.2546234027819369,
+        "left": 0.23809847726717587,
+        "right": 0.4267072904348202,
+        "curl": 0.0
+      },
+      "wall_s": 118.98
+    },
+    {
+      "seed": 5,
+      "frac": {
+        "run": 0.09916666666666667,
+        "turn": 0.8141666666666667,
+        "pause": 0.08666666666666667,
+        "curl": 0.0
+      },
+      "ch_mean": {
+        "fwd": 0.16228460448946502,
+        "back": 0.2546234027819369,
+        "left": 0.23809847726717587,
+        "right": 0.4267072904348202,
+        "curl": 0.0
+      },
+      "wall_s": 116.52
+    },
+    {
+      "seed": 6,
+      "frac": {
+        "run": 0.09916666666666667,
+        "turn": 0.8141666666666667,
+        "pause": 0.08666666666666667,
+        "curl": 0.0
+      },
+      "ch_mean": {
+        "fwd": 0.16228460448946502,
+        "back": 0.2546234027819369,
+        "left": 0.23809847726717587,
+        "right": 0.4267072904348202,
+        "curl": 0.0
+      },
+      "wall_s": 116.54
+    },
+    {
+      "seed": 7,
+      "frac": {
+        "run": 0.09916666666666667,
+        "turn": 0.8141666666666667,
+        "pause": 0.08666666666666667,
+        "curl": 0.0
+      },
+      "ch_mean": {
+        "fwd": 0.16228460448946502,
+        "back": 0.2546234027819369,
+        "left": 0.23809847726717587,
+        "right": 0.4267072904348202,
+        "curl": 0.0
+      },
+      "wall_s": 116.65
+    },
+    {
+      "seed": 8,
+      "frac": {
+        "run": 0.09916666666666667,
+        "turn": 0.8141666666666667,
+        "pause": 0.08666666666666667,
+        "curl": 0.0
+      },
+      "ch_mean": {
+        "fwd": 0.16228460448946502,
+        "back": 0.2546234027819369,
+        "left": 0.23809847726717587,
+        "right": 0.4267072904348202,
+        "curl": 0.0
+      },
+      "wall_s": 118.36
+    },
+    {
+      "seed": 9,
+      "frac": {
+        "run": 0.09916666666666667,
+        "turn": 0.8141666666666667,
+        "pause": 0.08666666666666667,
+        "curl": 0.0
+      },
+      "ch_mean": {
+        "fwd": 0.16228460448946502,
+        "back": 0.2546234027819369,
+        "left": 0.23809847726717587,
+        "right": 0.4267072904348202,
+        "curl": 0.0
+      },
+      "wall_s": 117.55
+    }
+  ],
+  "aggregate": {
+    "mean_frac": {
+      "run": 0.09916666666666665,
+      "turn": 0.8141666666666667,
+      "pause": 0.08666666666666667,
+      "curl": 0.0
+    },
+    "sd_frac": {
+      "run": 1.4628472785736255e-17,
+      "turn": 0.0,
+      "pause": 0.0,
+      "curl": 0.0
+    },
+    "bout_stats": {
+      "run_ms_mean": 29.75,
+      "run_ms_median": 25.0,
+      "turn_ms_mean": 142.83625730994152,
+      "turn_ms_median": 100.0,
+      "n_run_bouts": 1000,
+      "n_turn_bouts": 1710
+    }
+  },
+  "band_checks": {
+    "run": {
+      "in_band": false,
+      "band": {
+        "lo": 60.0,
+        "hi": 85.0,
+        "unit": "percent",
+        "tol_lo": 50.0,
+        "tol_hi": 90.0,
+        "target": 72.5,
+        "provenance": "幼虫一龄行为学成像：Lahiri et al. 2008 Nat Neurosci 11:187（run/turn 结构）；Gershow et al. 2012 Nat Methods 9:290（自由行为追踪）",
+        "note": "自发时间比例：前进 run（run/turn/pause 三分，P4 判据带草案 [60,85]%；容差=带中心 ±10 个百分点，M5 §0 #5 惯例）"
+      },
+      "value": 9.916666666666666
+    },
+    "turn": {
+      "in_band": false,
+      "band": {
+        "lo": 10.0,
+        "hi": 30.0,
+        "unit": "percent",
+        "tol_lo": 5.0,
+        "tol_hi": 35.0,
+        "target": 20.0,
+        "provenance": "同上（幼虫 run/turn 交替结构；反转并入 turn，Srivastava 2013 语义——m8_larva_body_params.csv state note_rev_in_turn）",
+        "note": "自发时间比例：转弯 turn（含反转；P4 判据带草案 [10,30]%）"
+      },
+      "value": 81.41666666666667
+    },
+    "pause": {
+      "in_band": true,
+      "band": {
+        "lo": 3.0,
+        "hi": 20.0,
+        "unit": "percent",
+        "tol_lo": 0.0,
+        "tol_hi": 30.0,
+        "target": 11.5,
+        "provenance": "同上（幼虫停驻/静止态）",
+        "note": "自发时间比例：停驻 pause（P4 判据带草案 [3,20]%）"
+      },
+      "value": 8.666666666666668
+    },
+    "curl": {
+      "in_band": true,
+      "band": {
+        "lo": 0.0,
+        "hi": 5.0,
+        "unit": "percent",
+        "tol_lo": 0.0,
+        "tol_hi": 10.0,
+        "target": 2.5,
+        "provenance": "informational（防御态非自发主态）",
+        "note": "自发时间比例：蜷缩 curl（informational，非 P4 主判据）"
+      },
+      "value": 0.0
+    },
+    "bout_activity": {
+      "in_band": true,
+      "value": 0.9133,
+      "band": null
+    }
+  },
+  "determinism": {
+    "frac_identical": true,
+    "states_identical": true,
+    "identical": true
+  },
+  "criteria": {
+    "run_in_band": false,
+    "turn_in_band": false,
+    "pause_in_band": true,
+    "pass_spontaneous": false
+  },
+  "counter_evidence": {
+    "run_pct": 9.92,
+    "turn_pct": 81.42,
+    "pause_pct": 8.67,
+    "curl_pct": 0.0,
+    "band_run_pct": [
+      60.0,
+      85.0
+    ],
+    "band_turn_pct": [
+      10.0,
+      30.0
+    ],
+    "band_pause_pct": [
+      3.0,
+      20.0
+    ],
+    "verdict": "自发分布不落 P4 带：run 比例远低于 [60,85]%（感觉驱动过强 → 转向过多，turn 远超 [10,30]%）→ **行为不涌现反证**（B2 全协议 N=10 确认 B1d 预算实测信号）",
+    "missing_mechanisms": [
+      {
+        "mechanism": "D5 权重 s2i6 放大（class_scale_sensory_inter=6.0）→ 感觉驱动过强 → 转向（turn）主导、run 稀缺",
+        "check": "降低 s2i6 或改 s2i6 分段缩放后复测自发分布；校准反证记录于 data/m8_calibration.csv（d5_g050）"
+      },
+      {
+        "mechanism": "缺 GABA 递质标注（B1a：inter 递质经 nt_fallback=class hash 分配，非真实 GABA）→ 抑制平衡缺失 → 网络难维持 稳定前进模态",
+        "check": "补充 GABA 标注/递质行后重测（主 agent 裁决）"
+      },
+      {
+        "mechanism": "provisional 肌肉映射仅 fwd/back/left/right（无真实 curl 通道）→ curl=0 固定，防御态缺失",
+        "check": "curl 通道留真实肌肉映射（P3 定稿后）"
+      },
+      {
+        "mechanism": "运动层与命令层分离驱动（杠杆②）在当前 D5 权重下仍 不足以稳定 run 模态",
+        "check": "杠杆组合消融 sanity（§1 D6 三杠杆）"
+      }
+    ],
+    "three_state_verdict_request": "P4 行为判据 = FAIL（反证记录）。请求主 agent 三态裁决：①接受反证路径（缺失机制清单如上，M9 必需机制清单累积）；②或裁决调整 D5 权重（降低 s2i6 / 补 GABA 标注）后 B3 复测；③或裁定 P4 在 3016 全规模结构验证（G1 已 PASS）下按 M4 P4 先例记录反证型 pass。本节点不静默判定 PASS。"
+  },
+  "note": "B2 预算裁决：行为判据以 300 档 two_comp 全协议为准（G0 定稿 保真度 two_comp）；3016 全规模长协议行为判据不可行（3016 point 30s=843s/试次；3016 point CI=0 行为层退化反证；3016 two_comp 组合从未构建——B1b 遗留裁决）→ 3016 只做结构性验证（G1 PASS：silent=0.8477/0.8167，m8_larva_params.csv g1 行）",
+  "plot": "/Users/weidong/ai/small_world/neural_exploration/reports/neuro/m8_p4_spontaneous.png",
+  "csv": "/Users/weidong/ai/small_world/neural_exploration/data/m8_p4_spontaneous.csv"
+}

@@ -1,0 +1,191 @@
+{
+  "meta": {
+    "scale": 300,
+    "fidelity": "two_comp",
+    "n_trials": 10,
+    "escape_t_ms": 1000.0,
+    "cond_n_train": 3,
+    "cond_cs_s": 0.5,
+    "cond_t_cs_ms": 1000.0,
+    "wall_s": 100.33
+  },
+  "escape": {
+    "resp_prob": 1.0,
+    "d_peaks": [
+      0.7831756331536667,
+      0.7831756331536667,
+      0.7831756331536667,
+      0.7831756331536667,
+      0.7831756331536667,
+      0.7831756331536667,
+      0.7831756331536667,
+      0.7831756331536667,
+      0.7831756331536667,
+      0.7831756331536667
+    ],
+    "directions": [
+      "back",
+      "back",
+      "back",
+      "back",
+      "back",
+      "back",
+      "back",
+      "back",
+      "back",
+      "back"
+    ],
+    "escape_sanity": true,
+    "trials": [
+      {
+        "seed": 0,
+        "d_peak": 0.7831756331536667,
+        "direction": "back",
+        "curl_dominant": false,
+        "back_response": true,
+        "response": true
+      },
+      {
+        "seed": 1,
+        "d_peak": 0.7831756331536667,
+        "direction": "back",
+        "curl_dominant": false,
+        "back_response": true,
+        "response": true
+      },
+      {
+        "seed": 2,
+        "d_peak": 0.7831756331536667,
+        "direction": "back",
+        "curl_dominant": false,
+        "back_response": true,
+        "response": true
+      },
+      {
+        "seed": 3,
+        "d_peak": 0.7831756331536667,
+        "direction": "back",
+        "curl_dominant": false,
+        "back_response": true,
+        "response": true
+      },
+      {
+        "seed": 4,
+        "d_peak": 0.7831756331536667,
+        "direction": "back",
+        "curl_dominant": false,
+        "back_response": true,
+        "response": true
+      },
+      {
+        "seed": 5,
+        "d_peak": 0.7831756331536667,
+        "direction": "back",
+        "curl_dominant": false,
+        "back_response": true,
+        "response": true
+      },
+      {
+        "seed": 6,
+        "d_peak": 0.7831756331536667,
+        "direction": "back",
+        "curl_dominant": false,
+        "back_response": true,
+        "response": true
+      },
+      {
+        "seed": 7,
+        "d_peak": 0.7831756331536667,
+        "direction": "back",
+        "curl_dominant": false,
+        "back_response": true,
+        "response": true
+      },
+      {
+        "seed": 8,
+        "d_peak": 0.7831756331536667,
+        "direction": "back",
+        "curl_dominant": false,
+        "back_response": true,
+        "response": true
+      },
+      {
+        "seed": 9,
+        "d_peak": 0.7831756331536667,
+        "direction": "back",
+        "curl_dominant": false,
+        "back_response": true,
+        "response": true
+      }
+    ]
+  },
+  "conditioning": {
+    "paired": {
+      "seed": 0,
+      "n_train": 3,
+      "paired": true,
+      "baseline": {
+        "c_back_mean": 0.2485665923497197,
+        "c_fwd_mean": 0.23504384144408733,
+        "t0_ms": 2499.999999999995
+      },
+      "test": {
+        "c_back_mean": 0.27257955398121575,
+        "c_fwd_mean": 0.1494438791605258,
+        "t0_ms": 3499.9999999999914
+      },
+      "avoidance_index": 0.10961292391505759,
+      "n_md_cols": 4,
+      "n_md_roles": 4
+    },
+    "unpaired": {
+      "seed": 0,
+      "n_train": 3,
+      "paired": false,
+      "baseline": {
+        "c_back_mean": 0.2485665923497197,
+        "c_fwd_mean": 0.23504384144408733,
+        "t0_ms": 2499.999999999995
+      },
+      "test": {
+        "c_back_mean": 0.27257955398121575,
+        "c_fwd_mean": 0.1494438791605258,
+        "t0_ms": 3499.9999999999914
+      },
+      "avoidance_index": 0.10961292391505759,
+      "n_md_cols": 4,
+      "n_md_roles": 4
+    },
+    "determinism_identical": true
+  },
+  "counter_evidence": {
+    "escape_sanity": true,
+    "resp_prob": 1.0,
+    "paired_avoidance": 0.10961292391505759,
+    "unpaired_avoidance": 0.10961292391505759,
+    "verdict": "伤害性条件化行为级回避指数结构性不可转正（D5 校准反证：缺 GABA 标注，CI=-0.165 落盘 data/m8_calibration.csv；本探针实测配对 vs 未配对回避指数均 ≈ 0——plasticity=none 无联想机制，如实记录）",
+    "missing_mechanisms": [
+      {
+        "mechanism": "MD→DALD→back 通道无联想可塑性（无 STDP/三因子门控于伤害性通路）→ CS-US 配对无法产生回避获得",
+        "check": "US=痛觉在伤害性通路开启三因子门控可塑性（H2 语义，留 M9）"
+      },
+      {
+        "mechanism": "行为级回避读出（CI）在 300 档 two_comp 下不可转正：缺 GABA 标注（inter 递质 hash 分配）→ 抑制平衡缺失",
+        "check": "补 GABA 标注/递质行后重测（主 agent 裁决）"
+      },
+      {
+        "mechanism": "curl 通道结构性缺失（provisional 肌肉映射仅 fwd/back/left/right）→ 蜷缩防御读出不完整",
+        "check": "真实肌肉映射（P3 定稿后）"
+      }
+    ],
+    "three_state_verdict_request": "P6 行为级条件化 = FAIL（反证记录）；逃避基线 sanity = PASS。请求主 agent 三态裁决：①接受反证路径（缺失机制清单入 M9 必需机制清单）；②或裁决补 GABA 标注/伤害性通路可塑性后 B3 复测。本节点不静默判定 PASS。"
+  },
+  "criteria": {
+    "escape_sanity": true,
+    "conditioned_avoidance": false,
+    "pass_all": false,
+    "note": "逃避基线 PASS（机制前置）；条件化回避行为级判据 结构性不可转正 → 反证记录（不静默）"
+  },
+  "plot": "/Users/weidong/ai/small_world/neural_exploration/reports/neuro/m8_p6_nociceptive_full.png",
+  "csv": "/Users/weidong/ai/small_world/neural_exploration/data/m8_p6_nociceptive_full.csv"
+}

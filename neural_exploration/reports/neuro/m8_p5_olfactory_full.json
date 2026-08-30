@@ -1,0 +1,95 @@
+{
+  "meta": {
+    "scale": 300,
+    "fidelity": "two_comp",
+    "t_test_ms": 1500.0,
+    "t_train_ms": 1500.0,
+    "settle_ms": 500.0,
+    "n_train": 3,
+    "n_test": 2,
+    "n_seed": 5,
+    "n_ext": 3,
+    "wall_s": 720.82
+  },
+  "paired": {
+    "mean": 0.8952702682319773,
+    "sd": 0.0,
+    "per_seed": [
+      0.8952702682319773,
+      0.8952702682319773,
+      0.8952702682319773,
+      0.8952702682319773,
+      0.8952702682319773
+    ],
+    "li_trajectory_mean": [
+      0.8952702682319773,
+      0.8952702682319773,
+      0.8952702682319773
+    ],
+    "n_stdp_edges": 58,
+    "mbon_rate_a": 561.3333333333334,
+    "mbon_rate_b": 438.66666666666055,
+    "li_pref": 0.12266666666667357
+  },
+  "unpaired": {
+    "mean": 0.2290292075733773,
+    "sd": 0.0,
+    "per_seed": [
+      0.2290292075733773,
+      0.2290292075733773,
+      0.2290292075733773,
+      0.2290292075733773,
+      0.2290292075733773
+    ]
+  },
+  "stats": {
+    "paired_vs_unpaired": {
+      "t": Infinity,
+      "p": 0.0,
+      "df": 4,
+      "cohen_d": Infinity,
+      "mean": 0.6662410606586,
+      "sd": 0.0,
+      "n": 5
+    },
+    "li_paired_gt_0": {
+      "t": Infinity,
+      "p": 0.0,
+      "n": 5
+    }
+  },
+  "eta0": {
+    "li": 0.0,
+    "dw": 0.0
+  },
+  "h1_off": {
+    "li": 0.0,
+    "n_stdp_edges": 0
+  },
+  "extinction": {
+    "ext_ok": false,
+    "limitation": {
+      "li_before": 0.8952702682319773,
+      "li_after": 0.8952702682319773,
+      "ext_ok": false,
+      "note": "判据 (d) 消退（可逆性）：paired-STDP 无权重衰减项（stdp 档无 homeostatic dw/dt；stdp_homeo 才含 η_h·(w0−w)）→ CS 单独重复仍 Hebbian 强化 → LI 预期不回落；如实测量 + 结构性限制记录，不静默 判过（三因子门控/US 门控消退机制留 M9）"
+    }
+  },
+  "determinism": {
+    "li1": 0.8952702682319773,
+    "li2": 0.8952702682319773,
+    "identical": true
+  },
+  "criteria": {
+    "a_li_significant_gt_unpaired": true,
+    "b_unpaired_no_acquisition": false,
+    "c_eta0_ablation": true,
+    "d_mechanism_ablation_h1": true,
+    "e_determinism": true,
+    "d_extinction": false,
+    "pass_all": false
+  },
+  "note": "B2 全协议在 B1d 短协议基础上加深：配对训练 N_train=3 试次（LI 学习曲线）+ 双选测试（trained vs control CS，LI_pref 机制级偏好）；US=DA 奖赏仍为占位（B1a 无功能奖赏通路 → H2 三因子门控留 M9，测量限制记录）；消退判据 (d) 结构性不可达（无权重衰减项）→ 如实记录",
+  "plot": "/Users/weidong/ai/small_world/neural_exploration/reports/neuro/m8_p5_olfactory_full.png",
+  "csv": "/Users/weidong/ai/small_world/neural_exploration/data/m8_p5_olfactory_full.csv"
+}

@@ -402,3 +402,25 @@ Drosophila 一龄幼虫脑连接组；3,016 神经元 / ~548,000 突触位点）
 6. **P5 DA/US 通路缺失限制**：B1a 递质标注 DA 神经元输出受体 none（§3.3 不臆造
    受体作用域）→ US=DA 奖赏注入占位不生效 → P5 本档落机制级判据（CS 驱动
    KC→MBON STDP 获得 LI=0.895），全协议三因子门控（H2）留 B2。
+
+## L23 — B2 验证节点实测发现与处置记录（2026-08-30）
+
+1. **Brian2 编译缓存并发争用（本节点首次实测）**：两个验证进程同时运行且**共享
+   `.cache/brian2` 缓存目录**（默认在项目根 .cache/ 下）时，出现 session 构建（make_session
+   → Synapses 模板实例化）从 ~1s 恶化到 ~14-16min/次的病态（进程 CPU 满、但脚本自身
+   perf_counter 测量仅 2min/试次——外部调度层病态）。单进程运行时 make_session=0.5s（探针
+   `tools/_probe_m8_session_timing.py` 实测 3 试次）。**处置**：验证脚本**串行**运行（一次
+   一个重 worker），符合清单 §0.7 #14「验证前并发清空 ≤2 worker」；M9 大尺度验证必须
+   预注册独立缓存目录（`prefs.codegen.runtime.cython.cache_dir`）或严格串行。
+2. **P4 全协议（300 two_comp T=30s N=10）**：run=9.92% / turn=81.42% / pause=8.67%
+   （带 [60,85]/[10,30]/[3,20]）→ **不落带反证**（B1d 预算实测信号复测确认）；
+   确定性逐位一致；缺失机制清单 + 三态裁决请求入 m8_report。
+3. **P6 条件化回避探针**：配对 vs 未配对回避指数**完全相等**（0.1096）→ 无联想
+   机制（plasticity=none）实证；逃避基线 N=10 sanity PASS（resp=1.0、D_peak=0.783）。
+4. **P8 全协议（300 two_comp T=30s）**：silent=50.0%（恰好入带 [50,90] 下沿）、
+   median=0.5Hz、转换窗 n=179 无 NaN；B1d 短协议 3s 的 silent=48.7% 出带 → 全协议
+   入带（边缘），如实记录。
+5. **P7 top-50 全测**：机制全可运行（sham 逐位一致 + 确定性）；有锚 3/50 < 20
+   下限 → 命中率仅 informational。
+6. **matplotlib CJK 字体**：PingFang SC 不在 fontManager → 图形中文回退 Heiti TC/
+   PingFang HK；B2 图字体列表已更新（"PingFang HK" 优先）。

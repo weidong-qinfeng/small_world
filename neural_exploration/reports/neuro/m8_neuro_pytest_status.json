@@ -1,0 +1,15 @@
+{
+  "summary": {
+    "passed": 76,
+    "failed": 0,
+    "skipped": 0,
+    "total": 76
+  },
+  "detail": "PYTHONHASHSEED=0 PYTHONDONTWRITEBYTECODE=1 pytest neural_exploration/tests -q -p no:cacheprovider → 76 passed in 1866.14s（2026-08-31 06:09；含 M8 冒烟 8/8 + M1-M7 全部既有测试零回归）",
+  "m8_smoke": {
+    "passed": 8,
+    "failed": 0,
+    "wall_s": 262.45
+  },
+  "full_suite_status": "done"
+}

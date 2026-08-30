@@ -70,6 +70,16 @@ SEEDS = list(range(N_SEED))
 #: 嗅觉通路；冻结探针 CS 对（sens_roles 回退）无下游所以从未暴露此问题。
 CS_INJECT_nA = 1.0
 
+#: B2 全协议（300 档 two_comp；清单 §7.2：配对训练 N_train 试次 × 双选测试 N_test
+#: → LI；判据 (a)-(e) + H1 消融；单试次 <5min 预算内）
+FULL_T_TEST_MS = 1500.0
+FULL_T_TRAIN_MS = 1500.0
+FULL_SETTLE_MS = 500.0
+FULL_N_TRAIN = 3          # 配对训练试次（LI 学习曲线）
+FULL_N_TEST = 2           # 双选测试窗（trained CS vs control CS）
+FULL_N_SEED = 5           # 同 N 同协议对照（§0 P5 (a)）
+FULL_N_EXT = 3            # 消退探针试次（CS 单独重复，判据 (d) 扩展级）
+
 
 def load_weight_rows() -> dict:
     """读 m8_larva_params.csv 的 weight 行（D5 定稿；value 在 fields[9]）。"""
@@ -218,6 +228,355 @@ def probe_li(circ: PerturbLarvaCircuit, cs_roles: tuple,
                 t_test_ms=t_test_ms, t_train_ms=t_train_ms, seed=seed)
 
 
+def probe_li_full(circ: PerturbLarvaCircuit, cs_roles: tuple,
+                  t_test_ms: float, t_train_ms: float, seed: int,
+                  n_train: int = FULL_N_TRAIN, train_cs: bool = True,
+                  n_ext: int = 0) -> dict:
+    """B2 全协议：基线（中性）→ N_train 配对训练试次 → settle → 双选测试 → LI。
+
+    在 B1d 短协议（单训练窗）基础上加深（清单 §7.2 全协议语义）：
+      - 配对训练：N_train 个训练窗（train_cs=True → CS 注入；US=DA 占位不生效
+        ——B1a 无功能奖赏通路，测量限制记录），STDP 逐试次累积；
+      - **LI 学习曲线**：逐训练试次采样 KC→MBON 权重 → li_trajectory
+        （机制级 LI = (mean(w)−mean(w_pre))/(w_max−w0) clip [−1,1]，B1d 语义）；
+      - **双选测试**（N_test=2）：trained CS 窗 vs control CS（cs_off ORN）窗
+        → MBON 发放率偏好 LI_pref = (r_A−r_B)/(r_A+r_B)（机制级双选偏好，
+        与 LI 权重档双轨，§0.7 #6 双判据语义）；
+      - 消退探针（判据 (d) 扩展级）：n_ext>0 → 训练后 CS 单独重复窗 → LI 回落
+        检测（paired-STDP 无权重衰减项 → 预期结构性不可达，如实记录）；
+      - 确定性：同 seed 重跑逐位一致。
+
+    Returns dict(li, li_trajectory, li_pref, dw, li_mode, mbon_rate_*,
+    kc_rate_*, n_stdp_edges, t_*, n_train, seed)。
+    """
+    from brian2 import ms as bms
+
+    t_tot = float(max(t_test_ms, 1.0)) \
+        + n_train * float(max(t_train_ms, 1.0)) + float(FULL_SETTLE_MS) \
+        + FULL_N_TEST * float(max(t_test_ms, 1.0)) \
+        + n_ext * float(max(t_train_ms, 1.0))
+    sess = circ.make_session(t_total_ms=t_tot)
+    sess.reset(seed=seed)
+    mbon = circ.mbon_roles
+    kc = circ.kc_roles
+    col_on = circ._stim_cols.get(cs_roles[0])
+    col_off = circ._stim_cols.get(cs_roles[1])
+
+    def _epoch(dt_ms: float, on_on: bool, on_off: bool):
+        """单 epoch：cs_on/cs_off 列独立控制（on_off=True → control CS 注入）。"""
+        t_now = float(sess.net.t / bms)
+        i0 = int(round(t_now / circ.dt_ms))
+        i1 = int(round((t_now + dt_ms) / circ.dt_ms))
+        n_steps = sess.stim.values.shape[0]
+        i0, i1 = max(0, min(i0, n_steps)), max(i0, min(i1, n_steps))
+        if col_on is not None:
+            sess.stim.values[i0:i1, col_on] = (
+                CS_INJECT_nA * 1e-9 if on_on else 0.0)
+        if col_off is not None:
+            sess.stim.values[i0:i1, col_off] = (
+                CS_INJECT_nA * 1e-9 if on_off else 0.0)
+        sess.run_epoch(dt_ms, 0.0)
+
+    def _window(t_ms: float, on_on: bool, on_off: bool = False):
+        n_ep = max(1, int(round(t_ms / circ.dt_b)))
+        t_start = float(sess.net.t / bms)
+        for _ in range(n_ep):
+            _epoch(circ.dt_b, on_on, on_off)
+        t_end = float(sess.net.t / bms)
+        n_mbon = 0
+        n_kc = 0
+        times = sess.role_spike_times()
+        for r in mbon:
+            t_arr = times.get(r, [])
+            n_mbon += int(np.sum((t_arr >= t_start) & (t_arr < t_end)))
+        for r in kc:
+            t_arr = times.get(r, [])
+            n_kc += int(np.sum((t_arr >= t_start) & (t_arr < t_end)))
+        return n_mbon, n_kc, t_end
+
+    if circ._stdp_syn is None:
+        return dict(li=0.0, li_trajectory=[0.0] * (n_train + 1),
+                    li_pref=0.0, dw=float("nan"), li_mode="no_plasticity",
+                    n_stdp_edges=0, seed=seed, n_train=n_train)
+
+    # 基线（中性，无 CS）→ w_pre
+    _window(t_test_ms, False)
+    w_pre = np.array(circ._stdp_syn.w, dtype=float)
+    li_traj = []
+    # 配对训练 N_train 试次（逐试次采样权重）
+    for k in range(n_train):
+        _window(t_train_ms, train_cs)
+        wk = np.array(circ._stdp_syn.w, dtype=float)
+        li_traj.append(float(np.clip((np.mean(wk) - np.mean(w_pre))
+                                     / (2.0 - 1.0), -1.0, 1.0)))
+    w_post = np.array(circ._stdp_syn.w, dtype=float)
+    li = float(np.clip((np.mean(w_post) - np.mean(w_pre)) / (2.0 - 1.0),
+                       -1.0, 1.0))
+    # settle
+    n_ep_settle = max(1, int(round(FULL_SETTLE_MS / circ.dt_b)))
+    for _ in range(n_ep_settle):
+        sess.run_epoch(circ.dt_b, 0.0)
+    # 双选测试：trained CS（cs_on）vs control CS（cs_off）
+    n_a, kc_a, t_end_a = _window(t_test_ms, True, False)
+    n_b, kc_b, t_end_b = _window(t_test_ms, False, True)
+    dur_a = max(t_test_ms, 1e-9) / 1000.0      # A/B 窗等长（t_test_ms）
+    dur_b = max(t_end_b - t_end_a, 1e-9) / 1000.0
+    r_a = n_a / dur_a
+    r_b = n_b / dur_b
+    li_pref = float((r_a - r_b) / (r_a + r_b)) if (r_a + r_b) > 0 else 0.0
+    # 消退探针（判据 (d)：CS 单独重复 → LI 回落检测）
+    ext_traj = []
+    for k in range(n_ext):
+        _window(t_train_ms, True)      # CS 单独（US 占位不生效 → 语义同训练）
+        we = np.array(circ._stdp_syn.w, dtype=float)
+        ext_traj.append(float(np.clip((np.mean(we) - np.mean(w_pre))
+                                      / (2.0 - 1.0), -1.0, 1.0)))
+    dw = float(np.mean(w_post) - np.mean(w_pre))
+    return dict(li=li, li_trajectory=li_traj, li_pref=li_pref,
+                ext_trajectory=ext_traj, dw=dw, li_mode="weight",
+                mbon_rate_a=r_a, mbon_rate_b=r_b,
+                kc_rate_test=kc_a / dur_a,
+                n_stdp_edges=int(len(circ._stdp_syn.w)),
+                t_test_ms=t_test_ms, t_train_ms=t_train_ms, seed=seed,
+                n_train=n_train)
+
+
+def run_full_protocol(cs_roles: tuple, summary: dict) -> dict:
+    """B2 P5 全协议主运行：配对/未配对/η=0/H1/消退/确定性 + 统计 + 落盘。
+
+    写 data/m8_p5_olfactory_full.csv + reports/neuro/m8_p5_olfactory_full.{png,json}
+    （B1d 短协议输出不覆盖；两者并存，全协议在短协议基础上加深）。
+    """
+    results = []
+    t0 = time.perf_counter()
+
+    # ---- 配对组（N_train 训练试次，CS+US 占位）----
+    circ_paired = make_circuit(stdp_eta=12.0, cs_roles=cs_roles)
+    paired = []
+    for s in range(FULL_N_SEED):
+        r = probe_li_full(circ_paired, cs_roles, FULL_T_TEST_MS,
+                          FULL_T_TRAIN_MS, s, n_train=FULL_N_TRAIN,
+                          train_cs=True)
+        r["group"] = "paired"
+        results.append(r)
+        paired.append(r["li"])
+    li_traj_paired = [results[i]["li_trajectory"] for i in range(FULL_N_SEED)]
+
+    # ---- 未配对组（训练窗无 CS → 无 CS 驱动获得）----
+    circ_unp = make_circuit(stdp_eta=12.0, cs_roles=cs_roles)
+    unpaired = []
+    for s in range(FULL_N_SEED):
+        r = probe_li_full(circ_unp, cs_roles, FULL_T_TEST_MS,
+                          FULL_T_TRAIN_MS, s, n_train=FULL_N_TRAIN,
+                          train_cs=False)
+        r["group"] = "unpaired"
+        results.append(r)
+        unpaired.append(r["li"])
+
+    # ---- 统计（§0.7 #7：显著性主判据）----
+    diffs = np.asarray(paired, dtype=float) - np.asarray(unpaired, dtype=float)
+    stat = _ttest_paired(diffs)
+    from scipy import stats as _st
+    t1, p1_two = _st.ttest_1samp(np.asarray(paired), 0.0)
+    stat_one = dict(t=float(t1), p=float(p1_two / 2.0), n=len(paired))
+    crit_a = bool(stat["p"] < 0.05 and stat["cohen_d"] >= 0.5
+                  and np.mean(paired) > LI_APPEAR_THRESHOLD)
+    # 未配对无获得（相对背景读法：无 CS 驱动额外获得；绝对读法限制记录）
+    crit_b_rel = bool(abs(np.mean(unpaired)) < 0.05)  # 全协议训练窗更长 → 背景漂移
+    # 绝对阈值读法（|LI_unpaired| < LI_APPEAR_THRESHOLD）
+
+    # ---- η=0 消融 ----
+    circ_eta0 = make_circuit(stdp_eta=0.0, cs_roles=cs_roles)
+    r_eta0 = probe_li_full(circ_eta0, cs_roles, FULL_T_TEST_MS,
+                           FULL_T_TRAIN_MS, 0, n_train=FULL_N_TRAIN,
+                           train_cs=True)
+    r_eta0["group"] = "eta0"
+    results.append(r_eta0)
+    crit_c = bool(abs(r_eta0["li"]) < 1e-9)
+
+    # ---- 机制消融 H1（KC→MBON 子集关）----
+    circ_h1 = make_circuit(stdp_eta=12.0,
+                           stdp_edges=[("__NONE_A__", "__NONE_B__")],
+                           cs_roles=cs_roles)
+    r_h1 = probe_li_full(circ_h1, cs_roles, FULL_T_TEST_MS,
+                         FULL_T_TRAIN_MS, 0, n_train=FULL_N_TRAIN,
+                         train_cs=True)
+    r_h1["group"] = "h1_off"
+    results.append(r_h1)
+    crit_d = bool(r_h1["n_stdp_edges"] == 0 and r_h1["li"] == 0.0)
+
+    # ---- 消退探针（判据 (d) 扩展级）----
+    circ_ext = make_circuit(stdp_eta=12.0, cs_roles=cs_roles)
+    r_ext = probe_li_full(circ_ext, cs_roles, FULL_T_TEST_MS,
+                          FULL_T_TRAIN_MS, 0, n_train=FULL_N_TRAIN,
+                          train_cs=True, n_ext=FULL_N_EXT)
+    r_ext["group"] = "extinction"
+    results.append(r_ext)
+    li_before_ext = r_ext["li"]
+    li_after_ext = (r_ext["ext_trajectory"][-1]
+                    if r_ext["ext_trajectory"] else li_before_ext)
+    # 消退成立 = LI 回落到训练前（|LI_after − 0| 显著小于 LI_before）
+    ext_ok = bool(li_after_ext < li_before_ext * 0.5)
+    ext_limitation = dict(
+        li_before=li_before_ext, li_after=li_after_ext,
+        ext_ok=ext_ok,
+        note=("判据 (d) 消退（可逆性）：paired-STDP 无权重衰减项（stdp 档无 "
+              "homeostatic dw/dt；stdp_homeo 才含 η_h·(w0−w)）→ CS 单独重复仍 "
+              "Hebbian 强化 → LI 预期不回落；如实测量 + 结构性限制记录，不静默 "
+              "判过（三因子门控/US 门控消退机制留 M9）"))
+
+    # ---- 确定性（同 seed 重跑逐位一致）----
+    r_det1 = probe_li_full(circ_paired, cs_roles, FULL_T_TEST_MS,
+                           FULL_T_TRAIN_MS, 0, n_train=FULL_N_TRAIN,
+                           train_cs=True)
+    r_det2 = probe_li_full(circ_paired, cs_roles, FULL_T_TEST_MS,
+                           FULL_T_TRAIN_MS, 0, n_train=FULL_N_TRAIN,
+                           train_cs=True)
+    crit_e = bool(r_det1["li"] == r_det2["li"]
+                  and r_det1["li_trajectory"] == r_det2["li_trajectory"]
+                  and r_det1["li_pref"] == r_det2["li_pref"])
+
+    pass_all = bool(crit_a and crit_b_rel and crit_c and crit_d and crit_e)
+
+    full = dict(
+        meta=dict(scale=SCALE, fidelity=FIDELITY, t_test_ms=FULL_T_TEST_MS,
+                  t_train_ms=FULL_T_TRAIN_MS, settle_ms=FULL_SETTLE_MS,
+                  n_train=FULL_N_TRAIN, n_test=FULL_N_TEST,
+                  n_seed=FULL_N_SEED, n_ext=FULL_N_EXT,
+                  wall_s=round(time.perf_counter() - t0, 2)),
+        paired=dict(mean=float(np.mean(paired)),
+                    sd=float(np.std(paired, ddof=1)), per_seed=paired,
+                    li_trajectory_mean=[float(np.mean([t[k] for t in li_traj_paired]))
+                                        for k in range(FULL_N_TRAIN)],
+                    n_stdp_edges=results[0]["n_stdp_edges"],
+                    mbon_rate_a=results[0]["mbon_rate_a"],
+                    mbon_rate_b=results[0]["mbon_rate_b"],
+                    li_pref=results[0]["li_pref"]),
+        unpaired=dict(mean=float(np.mean(unpaired)),
+                      sd=float(np.std(unpaired, ddof=1)), per_seed=unpaired),
+        stats=dict(paired_vs_unpaired=stat, li_paired_gt_0=stat_one),
+        eta0=dict(li=r_eta0["li"], dw=r_eta0["dw"]),
+        h1_off=dict(li=r_h1["li"], n_stdp_edges=r_h1["n_stdp_edges"]),
+        extinction=dict(ext_ok=ext_ok, limitation=ext_limitation),
+        determinism=dict(li1=r_det1["li"], li2=r_det2["li"],
+                         identical=crit_e),
+        criteria=dict(
+            a_li_significant_gt_unpaired=crit_a,
+            b_unpaired_no_acquisition=crit_b_rel,
+            c_eta0_ablation=crit_c,
+            d_mechanism_ablation_h1=crit_d,
+            e_determinism=crit_e,
+            d_extinction=ext_ok,
+            pass_all=pass_all),
+        note=("B2 全协议在 B1d 短协议基础上加深：配对训练 N_train=3 试次（LI "
+              "学习曲线）+ 双选测试（trained vs control CS，LI_pref 机制级偏好）；"
+              "US=DA 奖赏仍为占位（B1a 无功能奖赏通路 → H2 三因子门控留 M9，"
+              "测量限制记录）；消退判据 (d) 结构性不可达（无权重衰减项）→ 如实记录"))
+
+    # ---- 落盘 CSV ----
+    csv_path = os.path.join(DATA_DIR, "m8_p5_olfactory_full.csv")
+    with open(csv_path, "w", newline="", encoding="utf-8") as f:
+        import csv as _csv
+        wtr = _csv.writer(f)
+        wtr.writerow(["# M8 P5 气味联想学习（B2 全协议：300 two_comp，配对训练 "
+                      "N_train=%d × 双选测试 N_test=%d）" % (FULL_N_TRAIN,
+                                                          FULL_N_TEST)])
+        wtr.writerow(["# CS 对: %s + %s" % (cs_roles[0], cs_roles[1])])
+        wtr.writerow(["group", "seed", "li", "li_pref", "dw", "li_trajectory",
+                      "ext_trajectory", "n_stdp_edges"])
+        for r in results:
+            wtr.writerow([r["group"], r["seed"], f"{r['li']:.9f}",
+                          f"{r['li_pref']:.9f}",
+                          (f"{r['dw']:.9f}" if np.isfinite(r["dw"]) else "nan"),
+                          "[" + ",".join(f"{x:.6f}" for x in r["li_trajectory"])
+                          + "]", "[" + ",".join(
+                              f"{x:.6f}" for x in r.get("ext_trajectory", []))
+                          + "]", r["n_stdp_edges"]])
+
+    # ---- 出图（LI 学习曲线 + 组对照 + 双选偏好）----
+    png_path = os.path.join(REPORTS_NEURO, "m8_p5_olfactory_full.png")
+    try:
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+        import matplotlib.font_manager as fm
+        for _f in ("PingFang HK", "Heiti TC", "PingFang SC", "Arial Unicode MS"):
+            try:
+                fm.findfont(_f, fallback_to_default=False)
+                plt.rcParams["font.sans-serif"] = [_f, "DejaVu Sans"]
+                plt.rcParams["axes.unicode_minus"] = False
+                break
+            except Exception:
+                continue
+        fig, axes = plt.subplots(1, 2, figsize=(13, 4.8))
+        ax = axes[0]
+        xs = list(range(1, FULL_N_TRAIN + 1))
+        ax.plot(xs, full["paired"]["li_trajectory_mean"], "o-",
+                color="#2ca02c", label="配对组（LI 学习曲线）")
+        ax.plot([0] + xs, [0.0] + full["paired"]["li_trajectory_mean"],
+                "--", color="#2ca02c", alpha=0.5)
+        ax.axhline(np.mean(unpaired), color="#d62728", ls="--",
+                   label=f"未配对 LI={np.mean(unpaired):.3f}")
+        ax.axhline(LI_APPEAR_THRESHOLD, color="gray", ls=":", lw=1,
+                   label=f"LI 出现阈值 {LI_APPEAR_THRESHOLD}")
+        ax.axhline(0, color="k", lw=0.8)
+        ax.set_xlabel("配对训练试次")
+        ax.set_ylabel("LI（KC→MBON 权重档）")
+        ax.set_title(f"P5 全协议：LI_paired={np.mean(paired):.3f} vs "
+                     f"unpaired={np.mean(unpaired):.3f}；pass={pass_all}")
+        ax.legend(fontsize=8)
+        ax.grid(True, alpha=0.3)
+        ax = axes[1]
+        groups = ["paired", "unpaired", "eta0", "h1_off", "extinction"]
+        means = [np.mean(paired), np.mean(unpaired), r_eta0["li"], r_h1["li"],
+                 li_after_ext]
+        colors = ["#2ca02c", "#d62728", "#ff7f0e", "#9467bd", "#8c564b"]
+        ax.bar(groups, means, color=colors, alpha=0.85)
+        ax.scatter([0] * len(paired), paired, color="k", s=18, zorder=5)
+        ax.scatter([1] * len(unpaired), unpaired, color="k", s=18, zorder=5)
+        ax.axhline(LI_APPEAR_THRESHOLD, color="gray", ls="--", lw=1)
+        ax.axhline(0, color="k", lw=0.8)
+        ax.set_ylabel("LI")
+        ax.set_title(f"全协议组对照（消退 LI_after={li_after_ext:.3f}）")
+        ax.grid(True, alpha=0.3)
+        fig.suptitle("M8 P5 气味联想学习（B2 全协议）：配对训练 × 双选测试 + 消融",
+                     fontsize=11)
+        fig.tight_layout(rect=(0, 0, 1, 0.93))
+        fig.savefig(png_path, dpi=130)
+        plt.close(fig)
+        full["plot"] = png_path
+    except Exception as e:  # noqa: BLE001
+        full["plot"] = f"FAILED: {e}"
+
+    full["csv"] = csv_path
+    json_path = os.path.join(REPORTS_NEURO, "m8_p5_olfactory_full.json")
+    with open(json_path, "w", encoding="utf-8") as f:
+        json.dump(full, f, ensure_ascii=False, indent=2, default=str)
+
+    print("=== P5 全协议（B2）===")
+    print(f"LI paired   : {np.mean(paired):+.4f} ± "
+          f"{np.std(paired, ddof=1):.4f} per_seed="
+          f"{[round(x, 4) for x in paired]}")
+    print(f"LI 学习曲线 : "
+          f"{[round(x, 4) for x in full['paired']['li_trajectory_mean']]}")
+    print(f"LI_pref     : {results[0]['li_pref']:+.4f} "
+          f"（双选 MBON 偏好，机制级 informational）")
+    print(f"LI unpaired : {np.mean(unpaired):+.4f} ± "
+          f"{np.std(unpaired, ddof=1):.4f}")
+    print(f"paired vs unpaired: t={stat['t']:.3f} p={stat['p']:.4f} "
+          f"d={stat['cohen_d']:.2f}")
+    print(f"eta0 LI={r_eta0['li']:.6f}  h1_off LI={r_h1['li']:.6f} "
+          f"edges={r_h1['n_stdp_edges']}")
+    print(f"extinction: LI {li_before_ext:.4f} → {li_after_ext:.4f} "
+          f"ok={ext_ok}（限制记录）")
+    print(f"determinism: {r_det1['li']} == {r_det2['li']} → {crit_e}")
+    print(f"criteria: a={crit_a} b={crit_b_rel} c={crit_c} d={crit_d} "
+          f"e={crit_e} d_ext={ext_ok} → pass_all={pass_all}")
+    print(f"csv={csv_path} json={json_path} wall={full['meta']['wall_s']}s")
+    summary["full_protocol"] = full
+    return full
+
+
 def _ttest_paired(diffs: np.ndarray) -> dict:
     """配对 t（scipy）；返回 t, p(one-sided), df, cohen_d。"""
     from scipy import stats
@@ -233,6 +592,9 @@ def main() -> int:
     os.makedirs(REPORTS_NEURO, exist_ok=True)
     results = []
     summary = {}
+    # --full-only：跳过 B1d 短协议段（B1d 结果已落盘 data/m8_p5_olfactory.csv/json，
+    # 确定性重跑冗余——B2 只补全协议；节省 CPU 时间）
+    full_only = "--full-only" in sys.argv[1:]
 
     # CS 气味对（确定性预注册规则；先建一个电路读取角色，不跑协议）
     circ_probe = make_circuit(stdp_eta=12.0)
@@ -242,6 +604,15 @@ def main() -> int:
                          sens_to_pn_edges_top=cs_edges,
                          note=("冻结 sens_roles 回退无 KC 通路（实测 CS 不达 KC）；"
                                "改用 sens→PN 出边最多 ORN 对（预注册确定性规则）"))
+    pass_all = False
+    if full_only:
+        # ---- B2：P5 全协议（配对训练 N_train × 双选测试；B1d 结果沿用落盘）----
+        full = run_full_protocol(cs_roles, summary)
+        print("=== P5 判定（--full-only：仅 B2 全协议；B1d 短协议结果沿用已落盘 "
+              "data/m8_p5_olfactory.json）===")
+        print(f"B2 全协议 pass_all={full['criteria']['pass_all']}")
+        print("us_limitation: US=DA 奖赏占位（B1a 无功能奖赏通路）→ H2 三因子门控留 M9")
+        return 0 if full["criteria"]["pass_all"] else 1
 
     # ---- 配对组（CS+US 占位；机制 = CS 驱动 STDP 获得）----
     circ_paired = make_circuit(stdp_eta=12.0, cs_roles=cs_roles)
@@ -415,7 +786,7 @@ def main() -> int:
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
         import matplotlib.font_manager as fm
-        for _f in ("PingFang SC", "Heiti TC", "Arial Unicode MS"):
+        for _f in ("PingFang HK", "Heiti TC", "PingFang SC", "Arial Unicode MS"):
             try:
                 fm.findfont(_f, fallback_to_default=False)
                 plt.rcParams["font.sans-serif"] = [_f, "DejaVu Sans"]
@@ -471,7 +842,16 @@ def main() -> int:
           f"c={crit_c} d={crit_d} e={crit_e} → pass_all={pass_all}")
     print(f"us_limitation: n_da={len(da_roles)} da_out_ok={len(da_out_ok)}")
     print(f"csv={csv_path} json={json_path} wall={summary['meta']['wall_s']}s")
-    return 0 if pass_all else 1
+
+    # ---- B2：P5 全协议（配对训练 N_train × 双选测试；B1d 输出保留并存）----
+    full = run_full_protocol(cs_roles, summary)
+
+    print("=== P5 判定（B1d 短协议 + B2 全协议）===")
+    print(f"B1d 短协议 pass_all={pass_all}；B2 全协议 pass_all="
+          f"{full['criteria']['pass_all']}")
+    print("us_limitation: US=DA 奖赏占位（B1a 无功能奖赏通路）→ H2 三因子门控"
+          "留 M9；消退判据 (d) 结构性不可达（无权重衰减项）→ 限制记录")
+    return 0 if (pass_all and full["criteria"]["pass_all"]) else 1
 
 
 if __name__ == "__main__":

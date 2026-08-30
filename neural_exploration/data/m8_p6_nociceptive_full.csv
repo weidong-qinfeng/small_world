@@ -1,0 +1,16 @@
+# M8 P6 避痛学习（B2 全协议）：逃避基线 N=10 + 条件化回避探针
+seed,d_peak,direction,curl_dominant,back_response,response
+0,0.783176,back,False,True,True
+1,0.783176,back,False,True,True
+2,0.783176,back,False,True,True
+3,0.783176,back,False,True,True
+4,0.783176,back,False,True,True
+5,0.783176,back,False,True,True
+6,0.783176,back,False,True,True
+7,0.783176,back,False,True,True
+8,0.783176,back,False,True,True
+9,0.783176,back,False,True,True
+
+probe,paired,avoidance_index,c_back_mean_baseline,c_fwd_mean_baseline,c_back_mean_test,c_fwd_mean_test
+paired,True,0.109613,0.248567,0.235044,0.272580,0.149444
+unpaired,False,0.109613,0.248567,0.235044,0.272580,0.149444

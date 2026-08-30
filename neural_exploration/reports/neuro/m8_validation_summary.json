@@ -1,0 +1,214 @@
+{
+  "meta": {
+    "node": "B2 验证节点",
+    "date": "2026-08-30",
+    "scripts": [
+      "tools/validate_p8_spontaneous.py",
+      "tools/validate_p8_olfactory.py",
+      "tools/validate_p8_nociceptive.py",
+      "tools/validate_p8_perturbation.py",
+      "tools/validate_p8_activity.py",
+      "tools/gen_m8_report.py"
+    ],
+    "determinism": "PYTHONHASHSEED=0 + 固定 seed；同参数重跑逐位一致"
+  },
+  "p1_connectome": {
+    "pass_": true,
+    "note": "P1 计数裁决（主 agent 2026-08-28）：roster 以官方发布解析值 2,956 为交付（60 缺口 = CATMAID 注解成员不在官方发布，如实记录诊断 OUT，不近似补齐）；化学突触以神经元间解析 352,611 为硬断言（四区室比例 66.6/25.8/5.8/1.8% 与论文 Fig.2C 逐位一致）；论文 ~548,000（含 ~25% 孤儿位点全注释语义）登记为参考数；缝隙连接 0（论文无缝隙标注）；递质覆盖 100%"
+  },
+  "p2_scaling_g0_g1": {
+    "pass_": true,
+    "g1_verdict": "PASS"
+  },
+  "p3_body": {
+    "pass_": true
+  },
+  "p4_spontaneous": {
+    "pass_": false,
+    "run_pct": "9.92",
+    "turn_pct": "81.42",
+    "pause_pct": "8.67",
+    "band_checks": {
+      "run": {
+        "value": 9.916666666666666,
+        "in_band": false
+      },
+      "turn": {
+        "value": 81.41666666666667,
+        "in_band": false
+      },
+      "pause": {
+        "value": 8.666666666666668,
+        "in_band": true
+      },
+      "curl": {
+        "value": 0.0,
+        "in_band": true
+      },
+      "bout_activity": {
+        "value": 0.9133,
+        "in_band": true
+      }
+    },
+    "counter_evidence": true,
+    "missing_mechanisms": [
+      {
+        "mechanism": "D5 权重 s2i6 放大（class_scale_sensory_inter=6.0）→ 感觉驱动过强 → 转向（turn）主导、run 稀缺",
+        "check": "降低 s2i6 或改 s2i6 分段缩放后复测自发分布；校准反证记录于 data/m8_calibration.csv（d5_g050）"
+      },
+      {
+        "mechanism": "缺 GABA 递质标注（B1a：inter 递质经 nt_fallback=class hash 分配，非真实 GABA）→ 抑制平衡缺失 → 网络难维持 稳定前进模态",
+        "check": "补充 GABA 标注/递质行后重测（主 agent 裁决）"
+      },
+      {
+        "mechanism": "provisional 肌肉映射仅 fwd/back/left/right（无真实 curl 通道）→ curl=0 固定，防御态缺失",
+        "check": "curl 通道留真实肌肉映射（P3 定稿后）"
+      },
+      {
+        "mechanism": "运动层与命令层分离驱动（杠杆②）在当前 D5 权重下仍 不足以稳定 run 模态",
+        "check": "杠杆组合消融 sanity（§1 D6 三杠杆）"
+      }
+    ]
+  },
+  "p5_olfactory": {
+    "pass_": true,
+    "li_paired": "0.8953",
+    "li_unpaired": "0.1032",
+    "full_protocol": {
+      "pass_": false,
+      "li_trajectory": [
+        0.8952702682319773,
+        0.8952702682319773,
+        0.8952702682319773
+      ],
+      "li_pref": 0.12266666666667357,
+      "extinction_ok": false,
+      "note": "B2 全协议在 B1d 短协议基础上加深：配对训练 N_train=3 试次（LI 学习曲线）+ 双选测试（trained vs control CS，LI_pref 机制级偏好）；US=DA 奖赏仍为占位（B1a 无功能奖赏通路 → H2 三因子门控留 M9，测量限制记录）；消退判据 (d) 结构性不可达（无权重衰减项）→ 如实记录"
+    },
+    "us_limitation": {
+      "da_roles": [
+        "MBE4A RIGHT",
+        "MBE4H LEFT",
+        "MBE24A RIGHT",
+        "AVM011F RIGHT",
+        "MBE19 LEFT",
+        "MBE4F LEFT",
+        "MBE1D LEFT",
+        "MBE1D RIGHT"
+      ],
+      "n_da_roles": 8,
+      "n_da_out_chem_all": 246,
+      "n_da_out_available": 246,
+      "note": "B1a 递质标注：DA 神经元输出受体 none（§3.3 不臆造受体作用域）→ 无功能奖赏通路 → US=DA 奖赏注入占位不生效；P5 本档落机制级判据（CS 驱动 KC→MBON STDP 获得），全协议三因子门控（H2）留 B2。"
+    }
+  },
+  "p6_nociceptive": {
+    "pass_escape_sanity": true,
+    "pass_conditioned_avoidance": false,
+    "counter_evidence": true,
+    "missing_mechanisms": [
+      {
+        "mechanism": "MD→DALD→back 通道无联想可塑性（无 STDP/三因子门控于伤害性通路）→ CS-US 配对无法产生回避获得",
+        "check": "US=痛觉在伤害性通路开启三因子门控可塑性（H2 语义，留 M9）"
+      },
+      {
+        "mechanism": "行为级回避读出（CI）在 300 档 two_comp 下不可转正：缺 GABA 标注（inter 递质 hash 分配）→ 抑制平衡缺失",
+        "check": "补 GABA 标注/递质行后重测（主 agent 裁决）"
+      },
+      {
+        "mechanism": "curl 通道结构性缺失（provisional 肌肉映射仅 fwd/back/left/right）→ 蜷缩防御读出不完整",
+        "check": "真实肌肉映射（P3 定稿后）"
+      }
+    ]
+  },
+  "p7_perturbation": {
+    "pass_mechanism": true,
+    "pass_hitrate": false,
+    "hit_rate": 0.3333333333333333,
+    "limitation": "B1d/B2 网络受限（无逐神经元驱动线锚下载）→ 有锚 = MD 3/50 < 20 下限 → 按 §0.7 #4 缩小有锚判据分母 + 测量限制记录；命中率仅 informational，≥70% 判据在有锚子集达标前不静默判定"
+  },
+  "p8_activity": {
+    "pass_model": true,
+    "imaging_limitation": {
+      "reference": "Lemon et al. 2015 Nat Commun 6:8924（一龄幼虫全 CNS GCaMP 体积成像）",
+      "data_available": false,
+      "ref_csv": "/Users/weidong/ai/small_world/neural_exploration/data/m8_imaging_stats.csv",
+      "note": "成像事件率分布数据不可得（网络/数据获取受限）→ KS 对照不可执行；按 §0.7 #3 预注册回退 = m8_behavior_reference.csv resting 文献带（统计级回退）+ 测量限制记录；不伪造成像参考分布。"
+    },
+    "short3016": {
+      "median_hz": "—",
+      "silent_frac": "—"
+    }
+  },
+  "p9_report": {
+    "pass_": true
+  },
+  "p10_handover": {
+    "pass_": true
+  },
+  "counter_evidence_list": [
+    {
+      "protocol": "P4 自发分布",
+      "mechanism": "D5 权重 s2i6 放大（class_scale_sensory_inter=6.0）→ 感觉驱动过强 → 转向（turn）主导、run 稀缺",
+      "check": "降低 s2i6 或改 s2i6 分段缩放后复测自发分布；校准反证记录于 data/m8_calibration.csv（d5_g050）"
+    },
+    {
+      "protocol": "P4 自发分布",
+      "mechanism": "缺 GABA 递质标注（B1a：inter 递质经 nt_fallback=class hash 分配，非真实 GABA）→ 抑制平衡缺失 → 网络难维持 稳定前进模态",
+      "check": "补充 GABA 标注/递质行后重测（主 agent 裁决）"
+    },
+    {
+      "protocol": "P4 自发分布",
+      "mechanism": "provisional 肌肉映射仅 fwd/back/left/right（无真实 curl 通道）→ curl=0 固定，防御态缺失",
+      "check": "curl 通道留真实肌肉映射（P3 定稿后）"
+    },
+    {
+      "protocol": "P4 自发分布",
+      "mechanism": "运动层与命令层分离驱动（杠杆②）在当前 D5 权重下仍 不足以稳定 run 模态",
+      "check": "杠杆组合消融 sanity（§1 D6 三杠杆）"
+    },
+    {
+      "protocol": "P4 自发分布",
+      "mechanism": "P4 行为判据 FAIL → 三态裁决请求",
+      "check": "P4 行为判据 = FAIL（反证记录）。请求主 agent 三态裁决：①接受反证路径（缺失机制清单如上，M9 必需机制清单累积）；②或裁决调整 D5 权重（降低 s2i6 / 补 GABA 标注）后 B3 复测；③或裁定 P4 在 3016 全规模结构验证（G1 已 PASS）下按 M4 P4 先例记录反证型 pass。本节点不静默判定 PASS。"
+    },
+    {
+      "protocol": "P6 条件化回避",
+      "mechanism": "MD→DALD→back 通道无联想可塑性（无 STDP/三因子门控于伤害性通路）→ CS-US 配对无法产生回避获得",
+      "check": "US=痛觉在伤害性通路开启三因子门控可塑性（H2 语义，留 M9）"
+    },
+    {
+      "protocol": "P6 条件化回避",
+      "mechanism": "行为级回避读出（CI）在 300 档 two_comp 下不可转正：缺 GABA 标注（inter 递质 hash 分配）→ 抑制平衡缺失",
+      "check": "补 GABA 标注/递质行后重测（主 agent 裁决）"
+    },
+    {
+      "protocol": "P6 条件化回避",
+      "mechanism": "curl 通道结构性缺失（provisional 肌肉映射仅 fwd/back/left/right）→ 蜷缩防御读出不完整",
+      "check": "真实肌肉映射（P3 定稿后）"
+    },
+    {
+      "protocol": "P6 条件化回避",
+      "mechanism": "P6 行为级条件化 FAIL → 三态裁决请求",
+      "check": "P6 行为级条件化 = FAIL（反证记录）；逃避基线 sanity = PASS。请求主 agent 三态裁决：①接受反证路径（缺失机制清单入 M9 必需机制清单）；②或裁决补 GABA 标注/伤害性通路可塑性后 B3 复测。本节点不静默判定 PASS。"
+    },
+    {
+      "protocol": "P7 扰动预测",
+      "mechanism": "有锚子集 3/50 < 20 预注册下限（无逐神经元驱动线锚下载）",
+      "check": "B1d/B2 网络受限（无逐神经元驱动线锚下载）→ 有锚 = MD 3/50 < 20 下限 → 按 §0.7 #4 缩小有锚判据分母 + 测量限制记录；命中率仅 informational，≥70% 判据在有锚子集达标前不静默判定"
+    },
+    {
+      "protocol": "P8 活动金标准",
+      "mechanism": "成像统计参考数据不可得（Lemon 2015 数值不可下载）",
+      "check": "文献带回退 + 测量限制记录；只承诺统计级"
+    },
+    {
+      "protocol": "P5/P6 US 通路",
+      "mechanism": "DA 递质输出受体 none（B1a 不臆造受体作用域）→ 奖赏/回避 US 通路无功能",
+      "check": "三因子门控/US 门控机制留 M9（H2）"
+    }
+  ],
+  "three_channel_fig": "/Users/weidong/ai/small_world/neural_exploration/reports/neuro/m8_three_channel.png",
+  "all_pass": false,
+  "note": "M8 三通道验证：结构层（P1/P2/P3/G0/G1）全过；行为层 P4 反证 + P6 条件化反证 + P7 命中率限制 → all_pass=false 如实；缺失机制清单 + 三态裁决请求由主 agent 裁决（不静默、不伪造）"
+}

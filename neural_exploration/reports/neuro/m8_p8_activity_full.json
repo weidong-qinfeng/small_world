@@ -1,0 +1,1587 @@
+{
+  "full300": {
+    "meta": {
+      "scale": 300,
+      "fidelity": "two_comp",
+      "spont_t_ms": 30000.0,
+      "seed": 0,
+      "tag": "300_two_comp_full_30s",
+      "wall_s": 240.51
+    },
+    "rates": {
+      "median_hz": 0.5000000000000107,
+      "max_hz": 20.166666666667094,
+      "silent_frac": 0.5,
+      "n_roles": 300
+    },
+    "rate_rows": [
+      [
+        "130729_SFO CAND 42A-42B_OSN_IN1 LEFT",
+        5.800000000000123,
+        174
+      ],
+      [
+        "22C ORN LEFT",
+        0.0,
+        0
+      ],
+      [
+        "3RD THERMO RIGHT - ADL022",
+        3.46666666666674,
+        104
+      ],
+      [
+        "42A PN LEFT",
+        0.0,
+        0
+      ],
+      [
+        "A00C_A6L",
+        0.0,
+        0
+      ],
+      [
+        "A00C_A6R",
+        0.0,
+        0
+      ],
+      [
+        "AC ; DALCM12 M ANT MED 1_RIGHT",
+        7.400000000000157,
+        222
+      ],
+      [
+        "AE:BAMD2 R BILATERAL_LEFT",
+        0.0,
+        0
+      ],
+      [
+        "AF0: NEURON RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "AF2: PDLL2_RIGHT_SIBLING 35",
+        7.466666666666825,
+        224
+      ],
+      [
+        "AF3 THERMO 3RD RIGHT",
+        5.800000000000123,
+        174
+      ],
+      [
+        "AF5: SHORT-PRESYNAPTIC-D-1L",
+        7.3333333333334885,
+        220
+      ],
+      [
+        "AF5: SHORT-PRESYNAPTIC-D-1R",
+        7.466666666666825,
+        224
+      ],
+      [
+        "AF6: MUNIN OUTPUT LEFT",
+        3.266666666666736,
+        98
+      ],
+      [
+        "AF7: C SHAPED RIGHT",
+        2.9333333333333953,
+        88
+      ],
+      [
+        "AF8: PDL_RIGHT_SIBLING",
+        0.0,
+        0
+      ],
+      [
+        "AF9: BRUSH RIGHT",
+        3.266666666666736,
+        98
+      ],
+      [
+        "AF:UPTOLN2 SIBLING 35_RIGHT",
+        3.46666666666674,
+        104
+      ],
+      [
+        "AN-L-SENS-B1-ACA-01",
+        0.0,
+        0
+      ],
+      [
+        "AN-L-SENS-B1-ACA-04",
+        0.0,
+        0
+      ],
+      [
+        "AN-L-SENS-B1-ACA-05",
+        0.0,
+        0
+      ],
+      [
+        "AN-L-SENS-B1-ACA-06",
+        0.0,
+        0
+      ],
+      [
+        "AN-L-SENS-B1-ACA-07",
+        0.0,
+        0
+      ],
+      [
+        "AN-L-SENS-B1-ACA-09",
+        0.0,
+        0
+      ],
+      [
+        "AN-L-SENS-B1-ACA-10",
+        0.0,
+        0
+      ],
+      [
+        "AN-L-SENS-B1-ACA-11",
+        0.0,
+        0
+      ],
+      [
+        "AN-L-SENS-B1-ACA-12",
+        0.0,
+        0
+      ],
+      [
+        "AN-L-SENS-B1-ACA-14",
+        0.0,
+        0
+      ],
+      [
+        "AN-L-SENS-B1-ACA-15",
+        0.0,
+        0
+      ],
+      [
+        "AN-L-SENS-B1-AVA-16",
+        0.0,
+        0
+      ],
+      [
+        "AN-L-SENS-B1-AVA-17",
+        0.0,
+        0
+      ],
+      [
+        "AN-L-SENS-B1-AVA-18",
+        0.0,
+        0
+      ],
+      [
+        "AN-L-SENS-B1-AVA-20",
+        0.0,
+        0
+      ],
+      [
+        "AN-L-SENS-B1-AVA-21",
+        0.0,
+        0
+      ],
+      [
+        "AN-L-SENS-B1-AVA-22",
+        0.0,
+        0
+      ],
+      [
+        "AN-L-SENS-B1-AVA-26",
+        0.0,
+        0
+      ],
+      [
+        "AN-L-SENS-B1-AVA-27",
+        0.0,
+        0
+      ],
+      [
+        "AN-L-SENS-B1-AVA-31",
+        0.0,
+        0
+      ],
+      [
+        "AN-L-SENS-B1-AVA-32",
+        0.0,
+        0
+      ],
+      [
+        "AN-L-SENS-B1-AVA-40",
+        0.0,
+        0
+      ],
+      [
+        "AN-L-SENS-B2-ACP-02",
+        0.0,
+        0
+      ],
+      [
+        "AN-L-SENS-B2-ACP-17",
+        0.0,
+        0
+      ],
+      [
+        "AN-L-SENS-B2-ACP-19",
+        0.0,
+        0
+      ],
+      [
+        "AN-L-SENS-B2-AVA-24 (PPS MECHANO)",
+        0.0,
+        0
+      ],
+      [
+        "AN-L-SENS-B2-AVP-01",
+        0.0,
+        0
+      ],
+      [
+        "AN-R-SENS-B1-ACA-02",
+        0.0,
+        0
+      ],
+      [
+        "AN-R-SENS-B1-AVA-44",
+        0.0,
+        0
+      ],
+      [
+        "AN: DPMLP LAR_LEFT",
+        7.600000000000161,
+        228
+      ],
+      [
+        "ANOTHER UPPER COMISSURE PN RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "AS ; LEFT DAL NEURON L",
+        7.533333333333493,
+        226
+      ],
+      [
+        "ASB TODO B1 RIGHT 8 FRAGMENT WITH SOMA",
+        7.133333333333485,
+        214
+      ],
+      [
+        "AVM011F RIGHT",
+        11.000000000000233,
+        330
+      ],
+      [
+        "BACKWARDS HANDLEBAR LEFT (LOOKS LIKE 35A)",
+        7.400000000000157,
+        222
+      ],
+      [
+        "BALA12 DESCENDING 1 LEFT",
+        5.900000000000125,
+        177
+      ],
+      [
+        "BALA34 VENTRAL CLUSTER 1 RIGHT",
+        5.900000000000125,
+        177
+      ],
+      [
+        "BAMAS LINEAGE NEURON RIGHT 2",
+        7.400000000000157,
+        222
+      ],
+      [
+        "BAMAS SOG MBE1_L (ACBILIBLO (LEFT))",
+        4.066666666666753,
+        122
+      ],
+      [
+        "BAMAS12 CONTRA LEFT; INTERNEURON--35 IN TOTAL",
+        6.000000000000127,
+        180
+      ],
+      [
+        "BAMAS12 MIDLINE NEURON 1 LEFT",
+        5.900000000000125,
+        177
+      ],
+      [
+        "BAMAS12 MIDLINE NEURON 2 RIGHT",
+        5.900000000000125,
+        177
+      ],
+      [
+        "BAMAS12_DOR CENTER OUTPUT 1 RIGHT",
+        5.900000000000125,
+        177
+      ],
+      [
+        "BLAD ANT MED 3 NEURON LEFT",
+        0.2666666666666723,
+        8
+      ],
+      [
+        "BLAL HORSESHOE NEURON RIGHT",
+        7.533333333333493,
+        226
+      ],
+      [
+        "BLAV12_LAT POINTER-LIKE RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "BLDA B 6_FROM ANOTHER TEMP PN (DS5TH-2) LEFT",
+        0.0,
+        0
+      ],
+      [
+        "BLDA B 6_FROM ANOTHER TEMP PN (DS5TH-2) RIGHT",
+        6.2666666666668,
+        188
+      ],
+      [
+        "BLDC A00C POINTER RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "BLDC DESCENDING 1 RIGHT; BPL FEEDBACK LOCAL R",
+        0.0,
+        0
+      ],
+      [
+        "BLDC POINTER RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "BLP POST VEN NEURON 1 RIGHT; BLP34 A 6",
+        0.0,
+        0
+      ],
+      [
+        "BLP12 CLAW 1 LEFT",
+        0.0,
+        0
+      ],
+      [
+        "BLP34 BILATERAL 2 RIGHT",
+        4.000000000000084,
+        120
+      ],
+      [
+        "BLP34 DESCENDING 3 RIGHT",
+        0.3333333333333404,
+        10
+      ],
+      [
+        "BLP34 DESCENDING 5 RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "BLP34 HOOK 1 RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "BLP34 LATERAL RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "BLP34 LOCAL RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "BLP34 LOOPER 2 LEFT; RIGHT_CPLD",
+        0.0,
+        0
+      ],
+      [
+        "BLP34 LOOPER 2 RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "BLVA ASCENDING 1 RIGHT; DL-LH_CAND3_NO",
+        0.0,
+        0
+      ],
+      [
+        "BLVA HOOK 1 RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "BLVA12 LOCAL RIGHT; DL-LH_CAND4; BLVA12 A 6 (WRONG CONNECTION)",
+        0.0,
+        0
+      ],
+      [
+        "BLVA12 TRIPARTITE RIGHT; F14: PVL005 - 1 RIGHT?",
+        0.06666666666666808,
+        2
+      ],
+      [
+        "BLVA34 LOCAL HOOK RIGHT; DOWNSTREAM OF BASKET PN; BLVA34 A 4",
+        0.0,
+        0
+      ],
+      [
+        "BLVA_T HOOK 2 LEFT",
+        0.0,
+        0
+      ],
+      [
+        "BLVP1 BILATERAL DESCENDING RIGHT; DP1 OF GPHN RIGHT (IPSILATERAL PN TO BILATERAL LH); BLVP1 4",
+        0.0,
+        0
+      ],
+      [
+        "BLVP1 HOOK RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "BLVP1 LOCAL A RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "BU ; DALD 4_LEFT",
+        9.4000000000002,
+        282
+      ],
+      [
+        "CA ; DPMPM1 1_RIGHT",
+        11.000000000000233,
+        330
+      ],
+      [
+        "CM13 HORSESHOE 2 RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "CM4-DM HORSESHOE 1 RIGHT",
+        3.866666666666749,
+        116
+      ],
+      [
+        "COASTER (NPF) LEFT",
+        5.933333333333459,
+        178
+      ],
+      [
+        "COASTER (NPF) RIGHT",
+        6.133333333333463,
+        184
+      ],
+      [
+        "CONTRA-VINE LEFT",
+        13.066666666666944,
+        392
+      ],
+      [
+        "CONTRA-VINE RIGHT",
+        9.766666666666874,
+        293
+      ],
+      [
+        "CP CONTRALATERAL RIGHT; HELPER-GAP NEURON DOWN_OCT",
+        7.400000000000157,
+        222
+      ],
+      [
+        "CP23 D 13_RIGHT",
+        0.3333333333333404,
+        10
+      ],
+      [
+        "CP4 8 RIGHT",
+        0.13333333333333616,
+        4
+      ],
+      [
+        "CPF CONTRALATERAL 3 LEFT",
+        4.000000000000084,
+        120
+      ],
+      [
+        "CPF DESCENDING IPSILATERAL-LIKE LEFT",
+        6.233333333333466,
+        187
+      ],
+      [
+        "CPLD-- DOWNTODN1 LEFT",
+        3.8000000000000806,
+        114
+      ],
+      [
+        "CPLD-- DOWNTODN1 RIGHT",
+        7.3333333333334885,
+        220
+      ],
+      [
+        "DALCM12 V AP 11 RIGHT",
+        20.166666666667094,
+        605
+      ],
+      [
+        "DALD BUSHY LEFT; DALD_L  2",
+        6.000000000000127,
+        180
+      ],
+      [
+        "DALD_L  3",
+        19.600000000000417,
+        588
+      ],
+      [
+        "DALV23 LAL 11 RIGHT",
+        13.166666666666945,
+        395
+      ],
+      [
+        "DALV23 LAL 12 RIGHT",
+        13.03333333333361,
+        391
+      ],
+      [
+        "DALV23 LAL 2 RIGHT",
+        5.600000000000119,
+        168
+      ],
+      [
+        "DALV23 LAL 3 RIGHT",
+        9.533333333333536,
+        286
+      ],
+      [
+        "DALV23 LAL 5 RIGHT",
+        9.700000000000205,
+        291
+      ],
+      [
+        "DALV23 LAL 7 RIGHT",
+        5.966666666666793,
+        179
+      ],
+      [
+        "DALV23 LAL CRINKLED RIGHT",
+        6.000000000000127,
+        180
+      ],
+      [
+        "DALV23 SUB MB 1_RIGHT",
+        9.800000000000209,
+        294
+      ],
+      [
+        "DAMV12 MANDIBLE 2 LEFT",
+        12.900000000000274,
+        387
+      ],
+      [
+        "DAMV12_MED MUNIN OUTPUT LEFT",
+        9.90000000000021,
+        297
+      ],
+      [
+        "DAMV12_MED MUNIN OUTPUT RIGHT",
+        9.800000000000209,
+        294
+      ],
+      [
+        "DH44 1 RIGHT",
+        5.900000000000125,
+        177
+      ],
+      [
+        "DL-LH_CAND10 RIGHT; BLVA 34 B 1 RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "DL-LH_CAND9 RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "DM-NPF_CONN4_LEFT",
+        0.0,
+        0
+      ],
+      [
+        "DM-NPF_CONN4_RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "DMS 1 RIGHT",
+        6.200000000000132,
+        186
+      ],
+      [
+        "DN1-1 - PDL007 RIGHT",
+        3.46666666666674,
+        104
+      ],
+      [
+        "DPLAL SIMPLE BILATERAL 2 RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "DPLAL SIMPLE BILATERAL 3 RIGHT; BPL TO LATERAL BILATERAL RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "DPLAM NEURON RIGHT",
+        3.8000000000000806,
+        114
+      ],
+      [
+        "DPLAM TALON 1 LEFT",
+        0.0,
+        0
+      ],
+      [
+        "DPLC1 DESCENDING L",
+        9.633333333333537,
+        289
+      ],
+      [
+        "DPLC_ANT_LAT BILATERAL RIGHT; DN2-1R (ASB TODO A2 11)",
+        3.7333333333334124,
+        112
+      ],
+      [
+        "DPLC_POST_MED DESCENDING LEFT",
+        0.0,
+        0
+      ],
+      [
+        "DPLD C NEURON LEFT",
+        0.0,
+        0
+      ],
+      [
+        "DPLL GNARLY LEFT",
+        3.6000000000000765,
+        108
+      ],
+      [
+        "DPLM1 CONTRALATERAL 2 RIGHT; POTENTIAL RG NEURON",
+        3.333333333333404,
+        100
+      ],
+      [
+        "DPM CONTRALATERAL HORSESHOE RIGHT",
+        3.866666666666749,
+        116
+      ],
+      [
+        "DPML A 5 RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "DPML_ANT_VEN DESCENDING RIGHT",
+        9.73333333333354,
+        292
+      ],
+      [
+        "DPMM1 3 (OUTPUT OF MUNIN)_LEFT",
+        0.0,
+        0
+      ],
+      [
+        "DPMM1 BRAIN DESCENDING INTO VNC 2 RIGHT",
+        5.900000000000125,
+        177
+      ],
+      [
+        "DPMM1 BRAIN DESCENDING INTO VNC RIGHT",
+        6.066666666666795,
+        182
+      ],
+      [
+        "DPMM1 HORSESHOE 2 RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "DPMM1 IPSILATERAL DESCENDING RIGHT",
+        9.666666666666872,
+        290
+      ],
+      [
+        "DPMPM1 4 DNS",
+        9.433333333333533,
+        283
+      ],
+      [
+        "DPMPM1 HORSESHOE RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "EV_RIGHT",
+        7.400000000000157,
+        222
+      ],
+      [
+        "FLON;RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "FROM UPPER LOOPING PN - PEPTIDERGIC RIGHT",
+        0.40000000000000846,
+        12
+      ],
+      [
+        "GB: RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "GINKGO 2 LEFT",
+        0.20000000000000423,
+        6
+      ],
+      [
+        "GX; LEFT",
+        7.6666666666668295,
+        230
+      ],
+      [
+        "HANDLEBAR PN (CB ON LEFT)",
+        0.40000000000000846,
+        12
+      ],
+      [
+        "HL; DALV23 L LAL_RIGHT",
+        3.8000000000000806,
+        114
+      ],
+      [
+        "HOOK-1_A1L",
+        0.0,
+        0
+      ],
+      [
+        "HORSESHOE BILATERAL RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "HORSESHOE DEVIANT RIGHT",
+        12.766666666666938,
+        383
+      ],
+      [
+        "HUGIN-RG LEFT 1",
+        5.900000000000125,
+        177
+      ],
+      [
+        "INNER BRIDGE 2 LEFT",
+        0.0,
+        0
+      ],
+      [
+        "IPC 7 LEFT",
+        6.533333333333472,
+        196
+      ],
+      [
+        "IPC 7 RIGHT",
+        6.2666666666668,
+        188
+      ],
+      [
+        "IPC PAIR 1; IPC 6 RIGHT",
+        6.100000000000129,
+        183
+      ],
+      [
+        "IPC PAIR 3; IPC 5 RIGHT",
+        13.20000000000028,
+        396
+      ],
+      [
+        "IPC PAIR 4; IPC 3 RIGHT",
+        6.4333333333334695,
+        193
+      ],
+      [
+        "IPC PAIR 5; IPC 5 LEFT",
+        6.400000000000135,
+        192
+      ],
+      [
+        "IPC PAIR 6; IPC 2 RIGHT",
+        6.2666666666668,
+        188
+      ],
+      [
+        "K ; DPLAM MED _LEFT",
+        7.733333333333498,
+        232
+      ],
+      [
+        "KC #0",
+        7.400000000000157,
+        222
+      ],
+      [
+        "KC NO PAIR",
+        18.50000000000039,
+        555
+      ],
+      [
+        "KC1",
+        7.400000000000157,
+        222
+      ],
+      [
+        "KC10",
+        7.533333333333493,
+        226
+      ],
+      [
+        "KC11",
+        7.466666666666825,
+        224
+      ],
+      [
+        "KC2",
+        7.400000000000157,
+        222
+      ],
+      [
+        "KC3",
+        7.400000000000157,
+        222
+      ],
+      [
+        "KC4",
+        7.400000000000157,
+        222
+      ],
+      [
+        "KC5",
+        7.400000000000157,
+        222
+      ],
+      [
+        "KC7",
+        7.400000000000157,
+        222
+      ],
+      [
+        "KC72",
+        8.900000000000189,
+        267
+      ],
+      [
+        "L RIGHT (PN TO LH)",
+        0.0,
+        0
+      ],
+      [
+        "L1 RIGHT; (OLD) I OF GPHN RIGHT (IPSILATERAL PN TO BILATERAL LH)",
+        0.0,
+        0
+      ],
+      [
+        "L1: SHORT-PRESYNAPTICD-3-R",
+        3.9333333333334166,
+        118
+      ],
+      [
+        "LADDER (OLFACTORY) POST.",
+        7.466666666666825,
+        224
+      ],
+      [
+        "LH-22 BLVA12 A 11 _RIGHT",
+        3.6000000000000765,
+        108
+      ],
+      [
+        "LN2;LEFT",
+        0.0,
+        0
+      ],
+      [
+        "LN2;RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "LN3;RIGHT",
+        0.40000000000000846,
+        12
+      ],
+      [
+        "LN4;RIGHT",
+        3.5333333333334083,
+        106
+      ],
+      [
+        "LOCAL CRESCENT RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "LOWER LOOPING PN LEFT - AVM004",
+        0.0,
+        0
+      ],
+      [
+        "LOWER LOOPING PN RIGHT - AVM004 (BALA1/2)",
+        7.400000000000157,
+        222
+      ],
+      [
+        "MAGIC WAND RIGHT (AF11)",
+        6.066666666666795,
+        182
+      ],
+      [
+        "MB2IN-162 LEFT; PDLR",
+        0.0,
+        0
+      ],
+      [
+        "MBE12 RIGHT",
+        14.53333333333364,
+        436
+      ],
+      [
+        "MBE13A RIGHT",
+        10.9666666666669,
+        329
+      ],
+      [
+        "MBE13B RIGHT",
+        7.500000000000159,
+        225
+      ],
+      [
+        "MBE15A LEFT",
+        14.500000000000307,
+        435
+      ],
+      [
+        "MBE19 LEFT",
+        7.400000000000157,
+        222
+      ],
+      [
+        "MBE1D LEFT",
+        9.166666666666861,
+        275
+      ],
+      [
+        "MBE1D RIGHT",
+        7.433333333333491,
+        223
+      ],
+      [
+        "MBE20 RIGHT",
+        7.533333333333493,
+        226
+      ],
+      [
+        "MBE24A RIGHT",
+        7.400000000000157,
+        222
+      ],
+      [
+        "MBE2A RIGHT",
+        11.166666666666904,
+        335
+      ],
+      [
+        "MBE33 RIGHT",
+        11.000000000000233,
+        330
+      ],
+      [
+        "MBE34 RIGHT",
+        7.600000000000161,
+        228
+      ],
+      [
+        "MBE4A RIGHT",
+        10.900000000000231,
+        327
+      ],
+      [
+        "MBE4F LEFT",
+        10.933333333333564,
+        328
+      ],
+      [
+        "MBE4H LEFT",
+        14.200000000000301,
+        426
+      ],
+      [
+        "MBE6 RIGHT",
+        7.400000000000157,
+        222
+      ],
+      [
+        "MBON-F-V8;14+4 CELL BODY CLOSE TO OTHER RELAYS",
+        0.0,
+        0
+      ],
+      [
+        "MBON-F-V8;14+4 CELL BODY CLOSE TO OTHER RELAYS THE OTHER SIDE",
+        0.0,
+        0
+      ],
+      [
+        "MDNA_LEFT; PAIR 1 LEFT",
+        9.633333333333537,
+        289
+      ],
+      [
+        "MDNA_RIGHT; PAIR 2 RIGHT",
+        9.866666666666875,
+        296
+      ],
+      [
+        "MDNB_LEFT; PAIR 2 LEFT",
+        9.666666666666872,
+        290
+      ],
+      [
+        "MDNB_RIGHT; PAIR 1 RIGHT",
+        13.266666666666948,
+        398
+      ],
+      [
+        "MIXED BPL TERMINAL RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "MIXED POINTER-LIKE RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "ML_RIGHT",
+        7.400000000000157,
+        222
+      ],
+      [
+        "MN_AN IACT PN RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "MPN BAMD1-G RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "MPN D RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "MPN IACT A1 RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "MPN IACT B1_LEFT",
+        0.0,
+        0
+      ],
+      [
+        "MPN IACT B2 LEFT",
+        0.0,
+        0
+      ],
+      [
+        "MPN IACT BILATERAL LOWER LEFT",
+        0.0,
+        0
+      ],
+      [
+        "MPN IACT C2 LEFT",
+        0.0,
+        0
+      ],
+      [
+        "MUNIN OUTPUT RIGHT - UNFINISHED",
+        7.600000000000161,
+        228
+      ],
+      [
+        "NAG RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "NK_RIGHT",
+        11.000000000000233,
+        330
+      ],
+      [
+        "OUTPUT OF HUGIN RIGHT",
+        3.5333333333334083,
+        106
+      ],
+      [
+        "OUTPUT OF MUNIN 3 LEFT - PAIR #1",
+        0.5333333333333447,
+        16
+      ],
+      [
+        "OUTPUT OF MUNIN 3 RIGHT - PAIR #1; CP4 9",
+        0.7333333333333488,
+        22
+      ],
+      [
+        "OUTPUT OF MUNIN LEFT 3",
+        7.6666666666668295,
+        230
+      ],
+      [
+        "PICKY 2 RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "PN OF GPHN TO LH (LEFT)",
+        0.0,
+        0
+      ],
+      [
+        "PN ONLY CONNECTS TO TOGETHERS RIGHT",
+        0.20000000000000423,
+        6
+      ],
+      [
+        "POSTERIOR VENTRAL NEURON RIGHT",
+        7.26666666666682,
+        218
+      ],
+      [
+        "PPLV - 2 RIGHT (MAYBE PVL014C); BLP34 A 7",
+        5.933333333333459,
+        178
+      ],
+      [
+        "PRE PMN RIGHT",
+        10.06666666666688,
+        302
+      ],
+      [
+        "PRE-DORSAL-MAP PRESYNAPTIC-D-2-R LEFT",
+        0.3333333333333404,
+        10
+      ],
+      [
+        "PRE-GORO3 RIGHT",
+        9.833333333333542,
+        295
+      ],
+      [
+        "PRESYNAPTIC-D-2-MAP-L LEFT",
+        0.46666666666667656,
+        14
+      ],
+      [
+        "PROJECTION FROM LH 1_RIGHT",
+        2.9333333333333953,
+        88
+      ],
+      [
+        "PUTATIVE 11H10 RIGHT",
+        6.000000000000127,
+        180
+      ],
+      [
+        "PVC_RIGHT; BLP34 A 8",
+        0.0,
+        0
+      ],
+      [
+        "PVL2 LEFT",
+        3.6000000000000765,
+        108
+      ],
+      [
+        "PVL2 RIGHT; BLP34 A 3",
+        0.0,
+        0
+      ],
+      [
+        "RH5PR-1;RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "RH5PR-2;LEFT",
+        0.0,
+        0
+      ],
+      [
+        "RH5PR-2;RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "RH5PR-4;LEFT",
+        0.0,
+        0
+      ],
+      [
+        "RH6PR-1;LEFT",
+        0.0,
+        0
+      ],
+      [
+        "RH6PR-1;RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "RH6PR-2;LEFT",
+        0.0,
+        0
+      ],
+      [
+        "RH6PR-3;LEFT",
+        0.0,
+        0
+      ],
+      [
+        "RH6PR-3;RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "RH6PR-4;LEFT",
+        0.0,
+        0
+      ],
+      [
+        "RH6PR-4;RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "RH6PR-6;LEFT",
+        0.0,
+        0
+      ],
+      [
+        "RH6PR-7;LEFT",
+        0.0,
+        0
+      ],
+      [
+        "RH6PR-8;LEFT",
+        0.0,
+        0
+      ],
+      [
+        "RH6PR-8;RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "RH6PR-9;LEFT",
+        0.0,
+        0
+      ],
+      [
+        "ROSE 1 RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "RULER LIKE NEURON RIGHT",
+        3.400000000000072,
+        102
+      ],
+      [
+        "SEZ CUP RIGHT",
+        5.900000000000125,
+        177
+      ],
+      [
+        "SEZ-IN-A01-RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "SJ: DALV23 L LAL DOR POS 2_RIGHT",
+        11.000000000000233,
+        330
+      ],
+      [
+        "SLEEPY LEFT",
+        7.400000000000157,
+        222
+      ],
+      [
+        "SLEEPY-2 LEFT",
+        7.466666666666825,
+        224
+      ],
+      [
+        "SLO_LEFT",
+        0.0,
+        0
+      ],
+      [
+        "SLP2_RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "SOG INTO BRAIN CONTRALATERALLY LEFT - PAIRED WITH #3420915",
+        0.2666666666666723,
+        8
+      ],
+      [
+        "SOG INTO BRAIN CONTRALATERALLY RIGHT - PAIRED WITH #3622234",
+        0.20000000000000423,
+        6
+      ],
+      [
+        "SUCKERFISH PN RIGHT",
+        6.800000000000144,
+        204
+      ],
+      [
+        "T NEURON_SIBLING RIGHT",
+        3.333333333333404,
+        100
+      ],
+      [
+        "T3: PVLR_LEFT",
+        3.6666666666667442,
+        110
+      ],
+      [
+        "T3: PVLR_RIGHT",
+        3.866666666666749,
+        116
+      ],
+      [
+        "T5; OFFPVL09_3_LARGE_RIGHT",
+        9.666666666666872,
+        290
+      ],
+      [
+        "TELEPHONE-1R",
+        3.5333333333334083,
+        106
+      ],
+      [
+        "TELEPHONE-RELATED RIGHT",
+        0.20000000000000423,
+        6
+      ],
+      [
+        "THERMO KC B_RIGHT - MBI2 - UNKNOWN",
+        7.6666666666668295,
+        230
+      ],
+      [
+        "TOMATO VINE 2_RIGHT",
+        12.933333333333607,
+        388
+      ],
+      [
+        "TRY5THLN_SIBLING 35 RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "TWO-HEADED COBRA LEFT",
+        7.400000000000157,
+        222
+      ],
+      [
+        "UNK BASAL RIGHT; DL-LH_CAND2",
+        0.0,
+        0
+      ],
+      [
+        "UNK BRAIN ASCENDING LEFT",
+        0.0,
+        0
+      ],
+      [
+        "UNK BRIDGE RIGHT; AF6: MUNIN OUTPUT RIGHT",
+        0.3333333333333404,
+        10
+      ],
+      [
+        "UNK TRIPLE BRANCH LEFT",
+        0.0,
+        0
+      ],
+      [
+        "UNK TRIPLE BRANCH RIGHT; IPSILATERAL BPL INTERNEURON (HOOK TARGET)",
+        0.0,
+        0
+      ],
+      [
+        "UPPER LOOPING PN LEFT - AVM004",
+        0.0,
+        0
+      ],
+      [
+        "UPPER LOOPING PN RIGHT - AVM004 (BALA1/2)",
+        0.20000000000000423,
+        6
+      ],
+      [
+        "V'TD_VNC_A7R",
+        0.0,
+        0
+      ],
+      [
+        "V1: POSSIBLE PVL005 - 3 RIGHT",
+        0.6000000000000127,
+        18
+      ],
+      [
+        "VB: DPMM1 4_LEFT",
+        9.566666666666869,
+        287
+      ],
+      [
+        "VB: DPMM1 4_RIGHT",
+        9.800000000000209,
+        294
+      ],
+      [
+        "VENTRAL LN RIGHT",
+        0.0,
+        0
+      ],
+      [
+        "VINE LEFT",
+        0.0,
+        0
+      ],
+      [
+        "WS: FROM OLFACTORY TO HUGIN INTERNEURON LEFT",
+        0.0,
+        0
+      ],
+      [
+        "WS: FROM OLFACTORY TO HUGIN INTERNEURON RIGHT",
+        0.2666666666666723,
+        8
+      ],
+      [
+        "Y ; DALCM12 L M ANT LAT 2_RIGHT",
+        3.266666666666736,
+        98
+      ],
+      [
+        "Y NEURON LEFT",
+        0.06666666666666808,
+        2
+      ],
+      [
+        "Z: CONTRA_LEFT",
+        7.6666666666668295,
+        230
+      ]
+    ],
+    "band_checks": {
+      "median_firing_hz": {
+        "value": 0.5000000000000107,
+        "lo": 0.0,
+        "hi": 1.0,
+        "in_band": true,
+        "provenance": "M8 清单 §0.7 #4 惯例（操作化；幼虫静息低活动）"
+      },
+      "max_firing_hz": {
+        "value": 20.166666666667094,
+        "lo": 0.0,
+        "hi": 60.0,
+        "in_band": true,
+        "provenance": "M8 清单 §0.7 #4 惯例（生理上限）"
+      },
+      "silent_fraction_band": {
+        "value": 50.0,
+        "lo": 50.0,
+        "hi": 90.0,
+        "in_band": true,
+        "provenance": "M8 清单 §1 D6（G1 静默比例草案带 [50,90]%，成像文献校准）"
+      }
+    },
+    "fluorescence": {
+      "n_frames": 60,
+      "has_nan": false
+    },
+    "transitions": {
+      "n": 179,
+      "pre_mean": 3.7891003030634978,
+      "post_mean": 3.646246041804139,
+      "occupancy_high": 0.505117485944933,
+      "n_high": 3504,
+      "n_low": 3433,
+      "has_nan": false
+    },
+    "transition_matrix_model": {
+      "run_to_turn": 0.7563025210084033,
+      "turn_to_run": 0.09109518935516889
+    },
+    "occupancy_model": {
+      "pause": 0.08666666666666667,
+      "run": 0.09916666666666667,
+      "turn": 0.8141666666666667
+    },
+    "criteria": {
+      "a_band_fallback": true,
+      "b_transition_sequences": true,
+      "c_forward_model_smoke": true,
+      "pass_model": true
+    },
+    "determinism": {
+      "states": true,
+      "activity": true,
+      "transitions": true
+    }
+  },
+  "csv": "/Users/weidong/ai/small_world/neural_exploration/data/m8_p8_activity_full.csv",
+  "plot": "/Users/weidong/ai/small_world/neural_exploration/reports/neuro/m8_p8_activity_full.png",
+  "short3016": {
+    "status": "not_run_budget_limited",
+    "note": "3016 point ≤5s 短窗：3016 会话构建在本机负载下 >40 min 未完成（B1b 冷构建 754s 亦远超预算）→ 按 §0.7 #1/清单预算纪律记录协议限制；3016 结构性验证由 G1（silent=0.8477/0.8167，m8_g1_result.json）与缩放扫描（3016 point CI=0 行为层退化反证，m8_scaling.csv）覆盖，不重复烧预算"
+  },
+  "scale_comparison": {
+    "note": "3016 短窗未跑（预算限制）；300 two_comp 全协议结构对照",
+    "silent_frac_300": 0.5,
+    "median_300": 0.5000000000000107
+  }
+}
