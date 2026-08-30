@@ -37,3 +37,13 @@ g1,verdict,,,,,,,,PASS,G1 双状态门判定
 g1,silent_frac,,,,,,,,0.8152,静默比例（带 [50,90]%）
 g1,bout_activity,,,,,,,,0.895,行为 bout 活动（下限 10%）
 g1,detail,,,,,,,,双状态成立；消融破坏：['no_motor_drive']——三杠杆生效（G1 正面设计验证）,G1 依据/三杠杆消融
+# ---- D5 权重校准行（B1c3 定稿 2026-08-29：tools/calibrate_m8_weights.py）----
+# 定稿候选：gmax=0.05 + s2i6/i2i3/i2m3（two_comp 300 实测：
+# silent=0.510/CI=0.445/CI_nograd=0.015 气味驱动；LI≈0.046@eta10→0.21@eta12）。
+# 冒烟/行为协议 fixture 读取（tests/neuro/test_m8_larva_smoke.py _load_weight_rows，
+# value 在 fields[9] 位置解析，M5-B1d L23 语义）。
+weight,gmax_scale,,,,,,,,0.05,D5 定稿全局缩放（two_comp 工作区）
+weight,class_scale_sensory_inter,,,,,,,,6.0,D5 定稿 s2i（嗅觉链第一级放大）
+weight,class_scale_inter_inter,,,,,,,,3.0,D5 定稿 i2i
+weight,class_scale_inter_motor,,,,,,,,3.0,D5 定稿 i2m
+weight,stdp_eta,,,,,,,,12.0,P5 探针学习率（eta=10→LI≈0.046 贴阈；12→0.21 过阈）

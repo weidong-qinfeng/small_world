@@ -1,15 +1,16 @@
 # M8 步骤 4（D5）权重校准结果（tools/calibrate_m8_weights.py 生成）
 # 判据（预注册）：silent∈[50,90]%（G1）∧ bout≥10% ∧ CI>0 ∧ LI≥0.05
 #   （stdp 档；LI_APPEAR_THRESHOLD）；escape back（informational）。
-combo,gmax_scale,class_scales,plasticity,status,silent_frac,bout_activity,ci,escape_direction,escape_d_peak,li,li_mode,mbon_rate_pre,mbon_rate_post,wall_s,notes
-prior_base,0.05,identity(1.0),none,done,0.8167,0.0,0.0,not_back,0.0,,,,,24.5,M5 先验恒等 + B1b 第一遍全局缩放（扫描基准）
-prior_base,0.05,identity(1.0),stdp,done,,,,,,0.0,weight,0.0,0.0,21.6,M5 先验恒等 + B1b 第一遍全局缩放（扫描基准）
-d5_s2i8,0.05,sensory->inter=8.0,none,done,0.8167,0.0,0.0,not_back,0.0,,,,,24.0,感官→inter 放大（嗅觉链第一级；s2i 单桶）
-d5_s2i8,0.05,sensory->inter=8.0,stdp,done,,,,,,0.0,weight,0.0,0.0,21.2,感官→inter 放大（嗅觉链第一级；s2i 单桶）
-d5_g060,0.06,inter->inter=3.0;inter->motor=3.0;sensory->inter=6.0,none,done,0.3467,0.0,0.0,not_back,0.0,,,,,23.0,D5 反推工作区：s2i=6/i2i=3/i2m=3 + gmax=0.06
-d5_g060,0.06,inter->inter=3.0;inter->motor=3.0;sensory->inter=6.0,stdp,done,,,,,,0.1119,weight,146.5,169.0,21.4,D5 反推工作区：s2i=6/i2i=3/i2m=3 + gmax=0.06
-d5_g058,0.058,inter->inter=3.0;inter->motor=3.0;sensory->inter=6.0,none,done,0.8033,0.0,0.0,not_back,0.0,,,,,23.2,稳健性邻点（gmax 0.058，工作区下沿）
-d5_g058,0.058,inter->inter=3.0;inter->motor=3.0;sensory->inter=6.0,stdp,done,,,,,,0.0852,weight,171.0,123.5,21.6,稳健性邻点（gmax 0.058，工作区下沿）
-d5_g062,0.062,inter->inter=3.0;inter->motor=3.0;sensory->inter=6.0,none,done,0.2767,0.0,0.0,not_back,0.0,,,,,23.5,稳健性邻点（gmax 0.062，工作区上沿）
-d5_g062,0.062,inter->inter=3.0;inter->motor=3.0;sensory->inter=6.0,stdp,done,,,,,,0.0,weight,269.0,265.0,22.2,稳健性邻点（gmax 0.062，工作区上沿）
+combo,gmax_scale,class_scales,fidelity,plasticity,status,silent_frac,bout_activity,ci,escape_direction,escape_d_peak,li,li_mode,mbon_rate_pre,mbon_rate_post,wall_s,notes
+prior_base,0.05,identity(1.0),two_comp,none,done,0.8167,0.925,0.51,back,0.505,,,,,44.0,M5 先验恒等 + B1b 第一遍全局缩放（two_comp 对照基线）
+prior_base,0.05,identity(1.0),two_comp,stdp,done,,,,,,0.0,weight,0.0,0.0,33.8,M5 先验恒等 + B1b 第一遍全局缩放（two_comp 对照基线）
+d5_s2i8,0.05,sensory->inter=8.0,two_comp,none,done,0.8167,0.925,0.51,back,0.505,,,,,43.0,感官→inter 放大（嗅觉链第一级；s2i 单桶）
+d5_s2i8,0.05,sensory->inter=8.0,two_comp,stdp,done,,,,,,0.0,weight,0.0,0.0,34.1,感官→inter 放大（嗅觉链第一级；s2i 单桶）
+d5_g050,0.05,inter->inter=3.0;inter->motor=3.0;sensory->inter=6.0,two_comp,none,done,0.5,0.95,-0.165,back,0.8132,,,,,43.5,D5 反推工作区（B1c3 实测：two_comp silent=0.510/CI=0.445/LI=0.046@eta10）
+d5_g050,0.05,inter->inter=3.0;inter->motor=3.0;sensory->inter=6.0,two_comp,stdp,done,,,,,,0.2292,weight,127.0,177.0,35.0,D5 反推工作区（B1c3 实测：two_comp silent=0.510/CI=0.445/LI=0.046@eta10）
+d5_g049,0.049,inter->inter=3.0;inter->motor=3.0;sensory->inter=6.0,two_comp,none,done,0.5133,0.9417,-0.145,back,0.8195,,,,,44.1,稳健性邻点（gmax 0.049，工作区下沿）
+d5_g049,0.049,inter->inter=3.0;inter->motor=3.0;sensory->inter=6.0,two_comp,stdp,done,,,,,,0.4105,weight,124.0,161.0,35.1,稳健性邻点（gmax 0.049，工作区下沿）
+d5_g051,0.051,inter->inter=3.0;inter->motor=3.0;sensory->inter=6.0,two_comp,none,done,0.4867,0.95,-0.185,back,0.815,,,,,44.5,稳健性邻点（gmax 0.051，工作区上沿）
+d5_g051,0.051,inter->inter=3.0;inter->motor=3.0;sensory->inter=6.0,two_comp,stdp,done,,,,,,0.3082,weight,160.0,213.0,34.4,稳健性邻点（gmax 0.051，工作区上沿）
+# D5 校准无组合通过：300 档（nt_fallback=class，无真实 GABA 标注）下 CI/LI 不可同时转正/出现——反证：① gmax 过低 → 嗅觉链亚阈值（LI=0）；② gmax 过高 → 全网络饱和静默出带 + CI 转负；③ 工作区（gmax≈0.06+s2i6/i2i3/i2m3）三指标同时成立时方通过——若本运行全部失败，按三态裁决：（a）接受 B1a 无 GABA 标注限制记录为缺失机制；（b）请求 B1a 补齐递质标注后重校准；（c）降级为仅 G1 结构交付 + 行为判据反证。（M8 清单 §0.4/§6 校准失败处置，不静默）
 # D5 校准无组合通过：300 档（nt_fallback=class，无真实 GABA 标注）下 CI/LI 不可同时转正/出现——反证：① gmax 过低 → 嗅觉链亚阈值（LI=0）；② gmax 过高 → 全网络饱和静默出带 + CI 转负；③ 工作区（gmax≈0.06+s2i6/i2i3/i2m3）三指标同时成立时方通过——若本运行全部失败，按三态裁决：（a）接受 B1a 无 GABA 标注限制记录为缺失机制；（b）请求 B1a 补齐递质标注后重校准；（c）降级为仅 G1 结构交付 + 行为判据反证。（M8 清单 §0.4/§6 校准失败处置，不静默）

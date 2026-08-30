@@ -1,0 +1,29 @@
+# M8 幼虫行为学/学习判据带（唯一定稿源，含 provenance）——
+# M8-B1c3 节点按《生物仿真M8实施清单》§0.7 #8（判据可测性预注册：
+# 行为判据带定稿于 CSV，不做事后调——M3 P5 ×1.2 教训）+ §0 P4/P5 整理。
+# 列：role, neuron_class, lo, hi, unit, tol_lo, tol_hi, target, provenance, note
+# 语义：
+#   - role=<spontaneous|learning|chemotaxis|resting>（行为域）
+#   - neuron_class=<指标名>；lo/hi=生物学带；tol_lo/tol_hi=判定容差窗（预注册）；
+#   - target=带中心（参考值）；provenance=文献来源；note=操作化语义。
+# 预注册纪律（清单 §0.7 #8）：自发分布带 / 学习指数带全部定稿于本文件，
+# 协议运行前定稿，不做事后调带。
+# 幼虫（Drosophila 一龄幼虫，Winding 2023 连接组）行为学草案带：
+#   - run 60–85% / turn 10–30% / pause 3–20% / curl informational
+#     （草案带：幼虫行为学成像文献校准——Lahiri et al. 2008 / Gershow et al.
+#     2012 一龄幼虫自由行为 run/turn 时间比例；Srivastava 2013 C. elegans
+#     语义为 M5 同源，此处按幼虫文献量级定稿）；
+#   - LI 获得带 [0.1, 0.8]（学习指数，P5 判据 (a) 显著 >0 且 > 未配对对照）；
+#   - CI 方向：正趋化符号（P4 判据，M4/M5 语义，符号条款 §3.4 降阶正确性锚）。
+role,neuron_class,lo,hi,unit,tol_lo,tol_hi,target,provenance,note
+spontaneous,time_fraction_run,60.0,85.0,percent,50.0,90.0,72.5,"幼虫一龄行为学成像：Lahiri et al. 2008 Nat Neurosci 11:187（run/turn 结构）；Gershow et al. 2012 Nat Methods 9:290（自由行为追踪）","自发时间比例：前进 run（run/turn/pause 三分，P4 判据带草案 [60,85]%；容差=带中心 ±10 个百分点，M5 §0 #5 惯例）"
+spontaneous,time_fraction_turn,10.0,30.0,percent,5.0,35.0,20.0,"同上（幼虫 run/turn 交替结构；反转并入 turn，Srivastava 2013 语义——m8_larva_body_params.csv state note_rev_in_turn）","自发时间比例：转弯 turn（含反转；P4 判据带草案 [10,30]%）"
+spontaneous,time_fraction_pause,3.0,20.0,percent,0.0,30.0,11.5,"同上（幼虫停驻/静止态）","自发时间比例：停驻 pause（P4 判据带草案 [3,20]%）"
+spontaneous,time_fraction_curl,0.0,5.0,percent,0.0,10.0,2.5,"informational（防御态非自发主态）","自发时间比例：蜷缩 curl（informational，非 P4 主判据）"
+spontaneous,bout_activity_floor,10.0,100.0,percent,10.0,100.0,10.0,"M8 清单 §0.5 G1（双状态门：行为 bout 活动 ≥10%）","自发 bout 活动下限（fwd+rev+turn 时间比例 ≥10%，G1 判据）"
+learning,li_gain_band,0.1,0.8,dimensionless,0.05,1.0,0.45,"M8 清单 §0.7 #8（LI 获得带草案 [0.1,0.8]）；Scherer et al. 2003 Learn Mem 10:217（幼虫气味-奖赏条件化）","学习指数 LI 获得带（P5 判据：训练后 LI 显著 >0 且 > 未配对对照；容差下沿 = LI_APPEAR_THRESHOLD 0.05）"
+learning,li_appear_threshold,0.05,1.0,dimensionless,0.05,1.0,0.05,"M8 larva_circuit.LI_APPEAR_THRESHOLD（机制级判据）","LI 出现阈值（|LI| ≥ 0.05 → 可塑性轴 LI 出现）"
+chemotaxis,ci_direction_positive,0.0,1.0,dimensionless,0.0,1.0,0.5,"M8 清单 §3.4（降阶正确性锚：AWC 嗅觉趋化 CI 符号跨规模一致）；M4/M5 语义","趋化 CI 符号（正趋化 = CI>0；300 档校准主判据；落带 informational）"
+resting,silent_fraction_band,50.0,90.0,percent,50.0,90.0,70.0,"M8 清单 §1 D6（G1 静默比例草案带 [50,90]%，成像文献校准）","静息静默比例（G1 双状态门输入；silent ∈ [50,90]%）"
+resting,median_firing_hz,0.0,1.0,Hz,,,,"M8 清单 §0.7 #4 惯例（操作化；幼虫静息低活动）","静息态组中位数发放率 <1Hz（informational）"
+resting,max_firing_hz,0.0,60.0,Hz,,,,"M8 清单 §0.7 #4 惯例（生理上限）","静息态最大发放率 <60Hz 生理上限（无 NaN/无发散前置）"

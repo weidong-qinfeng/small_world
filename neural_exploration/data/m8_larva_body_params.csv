@@ -1,0 +1,19 @@
+# M8 幼虫身体参数与状态分类阈值定稿（唯一定稿源）——
+# M8-B1c2 节点生成（src/larva_body.py load_larva_body_params 读取；
+# value 在 fields[9]，位置解析，M5-B1d L23 语义）。
+# 对应《生物仿真M8实施清单》§5.1（P3：分段体 + 运动模式 + 状态分类阈值 CSV 定稿，
+# 不做事后调——M3 P5 ×1.2 教训）。
+role,neuron_class,synapse_from,synapse_to,synapse_type,g_max_ns,delay_ms,tonic_uA_cm2,value,note
+# ---- 身体参数行（分段体 + 蠕动行波）----
+body,n_seg,,,,,,,,10,分段数（P3 预注册 8–12 段）
+body,gait_period_ms,,,,,,,,500.0,蠕动行波周期 T_gait（ms）
+body,wave_amp,,,,,,,,0.3,行波波幅 A（皿单位；informational→防御曲率饱和上限）
+body,wave_lambda,,,,,,,,1.0,行波波长 λ（皿单位；段间相位差推进）
+body,body_len,,,,,,,,1.0,体轴长度（皿单位；段坐标 0..body_len）
+body,curl_t_ms,,,,,,,,500.0,蜷缩防御时程 T_curl（伤害性刺激后位移≈0 时长）
+body,dig_depth,,,,,,,,0.1,掘进深度（informational：垂直位移/基质穿透语义，非验证级）
+# ---- 状态分类阈值行（定稿后不做事后调）----
+state,v_run_frac,,,,,,,,0.05,run 速度阈值分数（v_thr = v_run_frac·v_fwd0）
+state,omega_turn_frac,,,,,,,,0.2,turn 转向阈值分数（ω_thr = omega_turn_frac·omega_max）
+state,curl_thr,,,,,,,,0.3,curl 蜷缩通道阈值（C_curl ≥ curl_thr → curl 防御态）
+state,note_rev_in_turn,,,,,,,,1,净后退 v<−v_thr 并入 turn（幼虫反转伴随转向；P4 带 turn 吸收反转，Srivastava 2013 语义）

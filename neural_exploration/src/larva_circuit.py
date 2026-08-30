@@ -140,6 +140,9 @@ LI_DISAPPEAR_THRESHOLD = 0.01
 SILENT_BAND = (0.50, 0.90)
 #: 双状态「行为 bout」活动下限（fwd+turn 时间比例 > 本值 → 有行为 bout）
 BOUT_ACTIVITY_FLOOR = 0.10
+#: 机制 A 转向触发阈值（ΔC/ms）：M4 定稿 mechanism_a.theta_pir=1e-6
+#: （data/m4_chemotaxis_params.csv；B1c L24 修正 larva 版 -0.5 不可达 bug）
+PIR_THETA_S = 1.0e-6
 
 
 # --------------------------------------------------------------------- #
@@ -388,7 +391,14 @@ def _parse_connectome_csv(path: str,
                 for key in ("left_id", "right_id"):
                     sid = (ar.get(key) or "").strip()
                     if sid and sid != "no pair":
-                        rkey = f"SKID_{sid}"
+                        # ⚠ B1c 实测坑 L23（2026-08-28）：旧逻辑 rkey=f"SKID_{sid}"
+                        # 永不命中 skid_map（键为原始 skid，如 "40045"）→
+                        # functional_tags 全空 → sens_roles 回退首 2 感觉神经元
+                        # （含光感受器 Rh6PR，嗅觉链断裂 → CI=0/LI=0 根因）。
+                        # 修复：优先以原始 skid 命中（f"SKID_{sid}" 回退保留，
+                        # 兼容占位/预置命名连接组）；未改签名/默认行为
+                        # （annotations_path=None 时无任何行为变化）。
+                        rkey = sid if sid in skid_map else f"SKID_{sid}"
                         if rkey in skid_map:
                             rkey = skid_map[rkey]
                         spec.functional_tags.setdefault(rkey, set()).update(tags)
@@ -928,6 +938,14 @@ class LarvaCircuit:
         其余按 role_index 哈希），w=0.3（M5 肌肉权重量级）。
         映射为**临时假设**（P3 larva_body 节点定稿真实映射），结果标记
         PROVISIONAL_MUSCLE。
+
+        ⚠ B1c 实测坑 L25（2026-08-28）：初版 side 优先把**全部** motor 分到
+        left/right（B1a CSV 的 VNC 运动神经元几乎都有 side=left/right），
+        k%4 回退不可达 → c_fwd/c_back 恒 0 → 身体只能原地转（fwd=0/CI≡0）。
+        P3 规格（清单 §5.1）要求 C_fwd/C_back 行波驱动存在——修正：side 优先
+        保留 left/right 转向驱动，但按确定性周期抽 ~1/3 到 fwd/back 行波通道
+        （k%3==0 → left→fwd、right→back；否则 side 通道），保证五模式
+        （前进/后退/侧转）驱动齐全。未改签名/默认行为。
         """
         rows = []
         for k, n in enumerate(self.names):
@@ -935,9 +953,9 @@ class LarvaCircuit:
                 continue
             side = self.sub.neurons.get(n, {}).get("side", "")
             if side == "left":
-                ch = "left"
+                ch = "fwd" if k % 3 == 0 else "left"
             elif side == "right":
-                ch = "right"
+                ch = "back" if k % 3 == 0 else "right"
             else:
                 ch = ["fwd", "back", "left", "right"][k % 4]
             rows.append(MuscleRow(motor=n, channel=ch, w=0.3))
@@ -1542,7 +1560,11 @@ I_gap_out : amp
                 s = tracker.s_at(e * self.dt_b, c_now)
                 mus = sess.run_epoch(self.dt_b, s)
                 # 机制 A（M4 语义）：s<−θ_pir 且转向头运动发放 → 转向事件
-                if s < -0.5 and not body.is_turning():
+                # ⚠ B1c 实测坑 L24（2026-08-28）：旧阈值 -0.5 不可达
+                # （|s|≤ΔC/τ_win≈0.01，C∈[0,1]）→ 转向事件永不触发 → CI≡0。
+                # 按 M4 定稿 mechanism_a.theta_pir=1e-6（ΔC/ms，
+                # data/m4_chemotaxis_params.csv）修正（未改签名/默认行为）。
+                if s < -PIR_THETA_S and not body.is_turning():
                     turn_roles = self._turn_driver_roles()
                     if turn_roles and sess.any_spikes_in_window(
                             turn_roles, e * self.dt_b,

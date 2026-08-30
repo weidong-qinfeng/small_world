@@ -18,3 +18,12 @@ __pycache__/
 .cache/
 neural_exploration/tools/nmodl/arm64/
 .venv-db/
+
+# M8 原始下载数据（491MB，Zenodo/PMC/CATMAID 原始件；保留管线必需的
+# annotations.csv 小文件，其余按需本地下载——确定性重跑只读本地）
+neural_exploration/data/m8_raw/*
+!neural_exploration/data/m8_raw/winding_s1/
+neural_exploration/data/m8_raw/winding_s1/*
+!neural_exploration/data/m8_raw/winding_s1/Supplementary-Data-S1/
+neural_exploration/data/m8_raw/winding_s1/Supplementary-Data-S1/*
+!neural_exploration/data/m8_raw/winding_s1/Supplementary-Data-S1/annotations.csv

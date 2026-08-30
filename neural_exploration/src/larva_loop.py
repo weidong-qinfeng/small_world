@@ -155,22 +155,33 @@ class LarvaLoop:
                         seed: Optional[int] = None) -> Dict[str, object]:
         """无刺激无梯度 T 窗 → 状态比例 + 带判定（P4 判据）。
 
+        ⚠ 状态名映射（B1c3 实测坑）：LarvaCircuit.run_spontaneous 用 M5
+        classify_state（virtual_body 冻结语义）→ 键为 fwd/rev/turn/pause；
+        P4 判据用幼虫状态（run/turn/pause/curl，larva_body 语义）——映射：
+        run=fwd、turn=turn+rev（反转并入 turn，m8_larva_body_params note）、
+        pause=pause、curl=0（本协议无 curl 驱动）。
+
         Returns dict(frac, states, band_checks, g1_dual_state, wall_s)。
         """
         seed = self.seed if seed is None else int(seed)
         circ = self.make_circuit(plasticity="none")
         sp = circ.run_spontaneous(t_total_ms=t_total_ms, seed=seed)
-        frac = sp["frac"]
+        m5 = sp["frac"]
+        frac = dict(run=m5.get("fwd", 0.0),
+                    turn=m5.get("turn", 0.0) + m5.get("rev", 0.0),
+                    pause=m5.get("pause", 0.0),
+                    curl=0.0)
         checks = {}
         for state in ("run", "turn", "pause", "curl"):
             band = self.behavior_ref.get(("spontaneous",
                                           f"time_fraction_{state}"))
             checks[state] = band_check(frac.get(state, 0.0) * 100.0, band)
-        bout = sum(frac.get(k, 0.0) for k in ("fwd", "rev", "turn"))
+        bout = sum(frac.get(k, 0.0) for k in ("run", "turn"))
         checks["bout_activity"] = dict(
             in_band=bool(bout >= 0.10), value=round(bout, 4), band=None)
         return dict(frac=frac, states=sp["states"], band_checks=checks,
-                    bout_activity=round(bout, 4), wall_s=sp["wall_s"])
+                    bout_activity=round(bout, 4), wall_s=sp["wall_s"],
+                    m5_frac=m5)
 
     # ------------------------------------------------------------------ #
     # P5 前置：学习探针（AWC→KC→MBON LI；机制级判据）

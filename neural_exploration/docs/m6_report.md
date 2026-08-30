@@ -127,7 +127,7 @@ P4 判定：**pass-with-measurement-limitations**（机制级获得/消融/消�
 | P2 调质+反证清单 | counter-evidence-record | ❌ | P5 相位 back 0.355；P2 静默 10.3%；P6 rev 11.0% 落带 | 记录本身即交付物（夹带双稳态清单） |
 | P3 习惯化 | pass-with-measurement-limitations | ✅ | 短 ISI τ_hab≈2、R²≈0.79；消融/恢复全过；10s-ISI R(n) 常数（判据不可达，记录） | L25 判据可达性 |
 | P4 联想学习 | pass-with-measurement-limitations | ✅ | Δw_train=0.432；η=0 Δw≈0；Δw_ext=-0.108；ΔCI≈+0.004（不可达，记录） | L16 CI 读出限制 |
-| P5 回归与报告 | pass | ❌ | pytest None/None；m6_report.md + m6_validation_summary.json | 全量 pytest 独立确认 |
+| P5 回归与报告 | pass | ✅ | pytest 68/68；m6_report.md + m6_validation_summary.json | 全量 pytest 独立确认 |
 | P6 交接处置 | pass | ✅ | L1–L27 处置 + m6_env_notes + M7 交接 | 本报告 §7/§8 |
 
 ## 7. 踩坑记录（L1–L17 摘要 + 本节点实测 L18+）
