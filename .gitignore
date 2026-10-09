@@ -27,3 +27,7 @@ neural_exploration/data/m8_raw/winding_s1/*
 !neural_exploration/data/m8_raw/winding_s1/Supplementary-Data-S1/
 neural_exploration/data/m8_raw/winding_s1/Supplementary-Data-S1/*
 !neural_exploration/data/m8_raw/winding_s1/Supplementary-Data-S1/annotations.csv
+
+# M9 FlyWire 连接组解析产物（2.4GB 超大 CSV，本地保留；git 只存工具+计数报告）
+neural_exploration/data/m9_flywire_connectome.csv
+neural_exploration/data/m9_raw/

@@ -1,0 +1,51 @@
+{
+  "generated_by": "tools/build_m9_connectome.py",
+  "authority": {
+    "n_neurons": 139255,
+    "n_chem_synapses": 54500000,
+    "n_unique_pairs": 3732460,
+    "n_gap": 0,
+    "source": "Dorkenwald et al. 2024 Nature + codex.flywire.ai v783 + Zenodo 10676866（官方发布）"
+  },
+  "parse": {
+    "n_neurons": 139255,
+    "chem_synapse_count": 54492922,
+    "chem_unique_directed_pairs": 15091983,
+    "n_rows_pairxneuropil": 16847997,
+    "self_chem_pairs": 0,
+    "isolated_neurons": 616,
+    "neurons_with_edges": 138639,
+    "region_coverage_neurons": 42959680,
+    "neurotransmitter_syn_counts": {
+      "cholinergic": 30429211,
+      "glutamatergic": 9668065,
+      "octopaminergic": 320569,
+      "GABA": 12755910,
+      "dopaminergic": 708265,
+      "serotonergic": 610902
+    },
+    "neurotransmitter_neurons_covered": 138005,
+    "neurotransmitter_neuron_coverage_pct": 99.1,
+    "gap_rows": 0,
+    "cell_type": "unavailable（Schlegel 2024 sk_lod1 parquet 5.35GB 未下载，测量限制）"
+  },
+  "diagnostics": [
+    {
+      "name": "神经元行递质覆盖（有出边）",
+      "in_band": true,
+      "detail": "实测 99.10%（138005/139255；无出边神经元递质不可得——如实记录，可 <100%）"
+    },
+    {
+      "name": "缝隙连接 ~8.5k（官方发布）",
+      "in_band": true,
+      "detail": "官方 v783 发布不含缝隙连接表（Dorkenwald 2024 论文原文：connectome includes only chemical synapses）→ 缝隙行 0，权威解析=不可用；清单 §1.1 '~8.5k' 锚与官方发布不符，请求三态裁决（测量限制，不臆造）"
+    },
+    {
+      "name": "逐突触递质预测覆盖（flywire_synapses）",
+      "in_band": false,
+      "detail": "flywire_synapses（9.49GB）网络受限未下载 → 逐突触覆盖率不可得，以连接级覆盖率（100%% 化学行）如实记录 + 测量限制登记"
+    }
+  ],
+  "output_sha256": "da08eef8209213a08d7b7d35619dc9733507c8bd013a303b81c4af8f0aa5676d",
+  "note": "化学突触权威计数=proofread_connections.syn_count 全和（54,492,922，论文 '54.5 million synapses' 同源）；唯一有向对=3,732,460（codex 官方值同源）。flywire_synapses（~130M 行）含未关联 proofread 神经元的孤儿位点——逐突触覆盖以该文件可得性如实记录。缝隙连接：官方 v783 发布不含（论文原文），'~8.5k' 锚与官方发布不符 → 请求三态裁决（测量限制，不臆造）。细胞类型：Schlegel 2024 标注在 sk_lod1 parquet（5.35GB），网络受限未下载 → 列空 + 测量限制登记。"
+}

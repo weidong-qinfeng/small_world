@@ -6,7 +6,7 @@
     "seed": 0,
     "n_smoke": 5,
     "activation_nA": 0.5,
-    "wall_s": 133.86
+    "wall_s": 128.18
   },
   "baseline": {
     "frac": {

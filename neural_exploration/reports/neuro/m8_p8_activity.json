@@ -8,7 +8,7 @@
     "dt_img_ms": 500.0,
     "act_bin_ms": 100.0,
     "trans_win_ms": 2000.0,
-    "wall_s": 26.66
+    "wall_s": 26.52
   },
   "rates": {
     "median_hz": 0.6666666666666682,

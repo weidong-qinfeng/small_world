@@ -1,0 +1,5 @@
+layer,coverage_metric,numerator,denominator,coverage_pct,note,provenance
+neuron,有出边神经元递质标注,138005,139255,99.1,出边 dominant 递质（proofread_connections 六递质概率 syn 加权 argmax）；无出边神经元递质不可得（测量限制，不臆造）,Zenodo 10676866 proofread_connections_783.feather（Eckstein 2024 预测）
+connection,化学连接行递质标注,15091983,15091983,100.0,每连接六递质平均概率齐全，dominant 递质入列,同上
+synapse,逐突触递质预测,0,unavailable,0.0,9.49GB 文件网络受限未下载 → 不可得（测量限制，以连接级覆盖代替）,Zenodo 10676866 flywire_synapses_783.feather
+receptor,DA 神经元受体映射,0,0,0.0,v783 发布不含受体标注；DA 递质映射 'mod'（M6 功能门控语义，不臆造受体作用域）→ 测量限制登记（M8 R6 承接）,M9 清单 §1.2.2

@@ -111,7 +111,7 @@
     "fidelity": "two_comp",
     "n_trials": 5,
     "escape_t_ms": 1000.0,
-    "wall_s": 25.02
+    "wall_s": 24.59
   },
   "plot": "/Users/weidong/ai/small_world/neural_exploration/reports/neuro/m8_p6_nociceptive.png"
 }

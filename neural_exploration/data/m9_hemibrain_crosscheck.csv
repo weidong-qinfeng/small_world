@@ -1,0 +1,4 @@
+check,status,value,preregistered_band,detail,provenance
+hemibrain 神经元映射率,OUT,文件不完整（99.0/212.1MB）,≥80% informational,nblast_flywire_hemibrain_min_comp.feather 下载未完成（Zenodo 网络受限）→ 测量限制登记，待网络恢复后补跑,/Users/weidong/ai/small_world/neural_exploration/data/m9_raw/zenodo/nblast_flywire_hemibrain_min_comp.feather
+突触数一致性（hemibrain vs FlyWire 对应子集）,OUT,不可测,计数 ±10%,neuprint API 需注册凭据（实测 401）；hemibrain v1.2.1 连通性权威导出不可直接下载 → 测量限制登记，映射率与递质一致性先行（informational）,neuprint.janelia.org（401）
+递质一致性（hemibrain vs FlyWire 对应子集）,OUT,不可得,统计级一致,Eckstein 2024 hemibrain NT 表（442MB bz2）未下载（网络受限）→ 测量限制,Zenodo 10593546

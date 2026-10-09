@@ -1,0 +1,8 @@
+# M9 引擎选型判据定稿（§2.2 预注册；正确性对齐 > 速度；最终由主 agent 裁决）
+# 实测：.venv-m9 torch 2.8.0 MPS available=True；Brian2CUDA/NEST GPU 本机不可行
+criterion,route_mps_pytorch,route_brian2cuda,route_nest_gpu,weight,decision,note
+对齐可实现性（同一网络定义语义下逐神经元比对）,高（等价参考实现 + 对齐探针 §2.3）,最高（同一 Brian2 定义直换后端）,中（网络定义迁移 + 等价性验证）,1,mps_pytorch,实测：torch 2.8.0 MPS available=True；对齐探针数据见 m9_engine_probe.csv
+本机硬件现实性（macOS 无 NVIDIA）,✅ MPS 本机可行,❌ 需云/外置 NVIDIA GPU,⚠️ macOS 编译支持有限,2,mps_pytorch,api.flywire.ai/cave 网络受限记录；云 GPU 需主 agent 裁决
+开发风险/成本（5–10 天含探针）,中（内核自研，bug 面可控）,低（生态成熟）,中,3,mps_pytorch,exponential_euler 逐变量闭式已核实（brian2 2.6.0 源码）
+确定性可工程化（固定 kernel/seed）,高（完全可控）,高,中,4,mps_pytorch,固定 kernel + seed + 统计级重跑一致
+规模/速度（54.5M 突触点神经元）,单 GPU 实时~数倍实时（预注册）,需云 GPU,需 Linux,5,mps_pytorch,内存预注册 <1.5GB（§2.2）；探针墙钟实测落盘
