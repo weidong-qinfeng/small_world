@@ -572,3 +572,107 @@ M9 存在**两个内核版本**，其规模拟合斜率 b 差异巨大，引用�
 6. **`data/m9_engine_probe.csv` 清理**：已删除全部朴素外推行（`est_*`、`budget_*_naive`），
    新增 `projection_model,a+b*N` 行；当前 `proj_full_30s_gpu_h = 0.718`、`budget_le_1_gpu_h = True`
    （注：该 0.718 为 a+b·N 拟合值；全规模直接实测为 0.557 —— 两者均在预算内，以直接实测为准）。
+
+---
+
+## L20 — M9-B2 节点：向量化内核 + 全规模装配 + P4 静息（§2.5 重过对齐门 / §3.5）
+
+- 执行节点：**M9-B2**（本节点）。新建文件：`src/adult_engine.py`、`src/adult_circuit.py`、
+  `tools/scan_m9_engine_vec.py`、`tools/build_m9_network.py`、`tools/calibrate_m9_weights.py`、
+  `tools/validate_p9_resting.py`、`data/m9_behavior_reference.csv`、`data/m9_network*.npz`、本节
+  L20–L22。**冻结件零修改**：`tools/scan_m9_engine.py`（B1 件）只读 import（`_load_circuit` /
+  `extract_network` / `run_cpu` / `compare_spikes` / `silent_fraction` + 常量）。
+- 运行前缀固化：`PYTHONHASHSEED=0 MPLBACKEND=Agg ./.venv-m9/bin/python`。
+
+### L20.1 五项向量化优化的实测结论（L19.2 执行层要求①–⑤）
+
+| 优化 | 实现 | 实测效果 |
+|---|---|---|
+| ① 事件交付向量化 | CSR-by-pre + 活跃集压缩 + GPU scatter-add（替代 Python O(spikes×出边) 循环） | 交付不再是瓶颈；见 L20.2 的调度选择 |
+| ② 算子融合 | `torch.compile`（inductor/MPS）：8 op 链 0.564 → 0.094 ms（**隔离基准**） | ⚠️ **在全规模真实循环中反而更慢**（见 L20.2#5）→ **默认关闭** |
+| ③ 消除每步同步 | 不应期改**倒计时** `cool`（与 `s >= next_allowed` 严格等价，推演见 `_point_core_factory`）；spike 计数全程设备侧累积 | 每步零 sync（仅 chunk 末一次 `.item()`） |
+| ④ 消除 Python 侧开销 | 环形槽/记录行**视图预计算**（消除每步切片对象创建）、张量全部预绑定 | 内循环 Python 语句数降到 ~8；实测 Python/launch 开销与 GPU 执行同量级（见 L20.2#5） |
+| ⑤ 稀疏事件驱动 | 只处理 spiking 神经元的出边 + **chunk 批量投递（W 步一次）** | 关键杠杆：固定开销摊薄 W 倍，0.5ms 延迟档 1.19 → 2.0ms 延迟档 0.58 ms/step |
+
+### L20.2 MPS 性能坑（**后续节点必读**；均已实测）
+
+1. **`index_add_` 的成本随「目标张量元素数」线性，与索引数无关**：目标 5.85M 元 ≈0.20ms
+   （索引 14 个与 14,000 个同价）；目标 278k 元 ≈0.04ms。→ **逐步把少量事件投进大环形缓冲是
+   灾难**（曾每步 0.2ms，实测把内核从 0.6 拖到 2.9 ms/step）。
+   **对策**：外部/背景事件按 **chunk 批量 + `index_put_(accumulate=True)`**（0.007ms/次）。
+2. **`nonzero` / `repeat_interleave` 是固定开销**：`nonzero`(139k) ≈1.0ms、`repeat_interleave`
+   ≈0.73ms（与长度无关）→ 必须靠 chunk 摊薄；`nonzero` 动态形状还会触发内部同步。
+3. **环形槽数必须 ≥ W + max_delay**（chunk 批量写在 chunk 末步之后）：参考实现 R=max_delay+1
+   **不支持** chunk 投递；本实现 R = max_delay + SLOT_EXTRA + 1。放宽槽数**不改变语义**
+   （`d<R` 时写槽 `(s+d)%R` 首次被读即为步 s+d）——已由 step↔chunk 逐 spike 一致验证。
+4. **外部事件的延迟必须与网络事件一致**（同目标槽语义）：否则会被本 chunk 已读并清零的槽吞掉。
+5. **`torch.compile` 在 MPS 上对本负载是负优化**（反直觉，实测）：
+   - 隔离基准：融合后 0.094 vs 0.564 ms（6× 加速）；
+   - **真实逐步依赖循环**（每步输出喂下一步）中：compiled 1.82–2.35 ms/step vs **eager
+     1.19–1.21 ms/step**（+50–100%）。原因：编译产物每次调用的 dynamo guard/dispatch
+     开销 + 逐步依赖下无法用吞吐基准外推。
+   → **决策：M9 全规模默认 `use_compile=False`（eager）**；记录为「L19.2 优化② 在本机
+     MPS 上不适用」的方法学修正（**禁止用隔离吞吐基准推断逐步依赖内核的墙钟**，L16#4 同源）。
+6. **同步会隐藏「Python 发射 vs GPU 执行」的真实归属**：chunk 末的 `.item()` 会把前面 W 步
+   的 GPU 排队时间记到"chunk 相位"上 → 相位计时只能用于**相对**定位，不能直接当作算子耗时。
+
+### L20.3 对齐门重跑（§2.5 冻结规则：kernel 改动必须重过对齐门）
+
+- 探针：`tools/scan_m9_engine_vec.py`（只读复用 B1 的网络提取与判据固定件）。
+- 结果：**判据 (a)–(d) 全过**——四种变体（torch-CPU-f32 step / chunk、MPS-f32 step / chunk）
+  **逐神经元 spike 对齐均 100.00%**（636/636，GPU-only=0）；静默比例 0.8167（与 CPU Brian2
+  差 0.00pp）；确定性重跑 100%（<0.05ms）。
+- **投递调度等价性**：`step` 与 `chunk` 两种批量调度**逐 spike 完全一致**（max Δt = 0.000ms）
+  → chunk 优化不改变语义（L20.2#3 的槽数放宽亦被此验证覆盖）。
+- 交付：`data/m9_engine_vec_probe.csv` + `reports/neuro/m9_engine_alignment_vec.png`。
+
+### L20.4 全规模装配实测（§3.5.1）
+
+- `tools/build_m9_network.py`：2.4GB CSV → npz（pyarrow 流式列选择 + int64 统一 dtype 的
+  searchsorted 映射，**10.2s 解析 / 31.9s 全量落盘**；L16#1 纪律：向量化，无逐行循环）。
+- 网络：139,255 神经元 + **15,091,983 化学连接**（54,492,922 突触）+ **0 缝隙**（L19.2 裁决②）
+  - 兴奋性 11,042,578 边 / **抑制性 3,233,022 边（真实 GABA，12,755,910 突触 = 23.4%）** /
+    调质类 816,383 边（DA/5HT/OA，抽象 T2：P4 以弱兴奋电导承载）。
+- 度分布：出度均值 108.4 / 中位 79 / p99 598 / **最大 9,783**（重尾枢纽）；
+  `syn_count` 均值 3.61 / 中位 2 / 最大 2,405。
+- `src/adult_circuit.py` 装配实测：**分段装配 0.8–2.2s**；**MPS 显存 1.05–1.33 GB**
+  （§2.2 预注册 <1.5GB ✓）；环形槽 21–81（随延迟档）。
+- 抽象登记（§0.3.5，逐条替代对象/误差/回归条件）：point-neuron 替代 HH / **统一轴突延迟
+  1.0ms**（FlyWire v783 不含延迟列）/ 调质→弱兴奋电导 / 递质类级权重 / 背景 Poisson 驱动。
+
+### L20.5 全规模 point 档每步墙钟（实测，独占运行；`data/m9_engine_vec_probe.csv`）
+
+| 活跃水平（每步活跃神经元占比） | ms/step（N=139,255） | 30s 单试次 | 说明 |
+|---|---|---|---|
+| 0.10%（ref=200ms） | **0.539** | **0.090 GPU-h** | 极稀疏 |
+| 0.20%（ref=20ms） | **0.418** | **0.069 GPU-h** | 稀疏 |
+| 0.98%（ref=2ms，饱和档） | **1.017** | **0.169 GPU-h** | 全部神经元以不应期上限发放 |
+| 活动≈0（无 spike） | 0.20 | 0.03 GPU-h | 内核下界（core+ring+chunk 固定开销） |
+
+- **规模分解**（合成 point 网络、出度 108、活跃比例由不应期精确控制）：t = a + b·N，
+  a = 0.29 ms（launch/Python 固定）–0.07 ms，b = 5.2e-6 – 3.3e-6 ms/神经元/步
+  → 全规模外推与实测吻合（1.016 vs 实测 1.017 ms/step @0.98% 活跃）。
+- **P4 实测对照**：定稿静息档实测 **0.898 ms/step**（试次 1/2；试次 0 含 MPS 分配器预热
+  4.09 ms/step——**预算判定必须用稳态值**）→ 30s 单试次 **0.15 GPU-h**。
+- **two_comp（对齐参考档）**：实测 600 隔室 0.238 ms/step；按同一内核骨架外推
+  278,510 隔室 ≈ 0.287 ms/step → 30s 0.048 GPU-h（**B1 基准 1.05 GPU-h → 22× 改善**，
+  L15.4/L19.1 的预算问题定量解决）。
+- **优化前后对照（B1 基准 `data/m9_engine_probe.csv`）**：B1 point 投影 3.86 ms/step
+  （未含事件交付）→ **B2 实测 0.90 ms/step（含全量 15.1M 边事件交付 + 背景驱动）**；
+  30s 单试次 0.64 → **0.15 GPU-h**（§0.9 R10 ≤1 GPU-h ✓，6.6× 余量）。
+- **主 agent ≤0.3 ms/step 目标：未达**（实测 0.42–1.02 ms/step 视活跃度；低活动下界 0.20）。
+  瓶颈为**逐步依赖下的 GPU 执行与 Python 发射同量级**（L20.2#5/#6），非算法层。
+  **预算判据（§0.9 R10）通过** → 建议按"目标修正"裁决（L23 ④）。
+
+### L20.6 M9-B2 交付物清单（本批次）
+
+| 交付物 | 路径 | 验证一句话 |
+|---|---|---|
+| 向量化内核 | `src/adult_engine.py` | 对齐门 4 变体 **100%**（§2.5 重过）+ step↔chunk 逐 spike 一致 |
+| 全规模回路 | `src/adult_circuit.py` | 139,255 神经元 / 15,091,983 边 / 构建 0.79s / 显存 1.047GB |
+| 网络装配 | `tools/build_m9_network.py` → `data/m9_network.npz` | 54,492,922 突触 / 真实 GABA 3,233,022 边（21.4%） |
+| 对齐探针 | `tools/scan_m9_engine_vec.py` → `data/m9_engine_vec_probe.csv` | 对齐 gate PASS + 规模分解 + 全规模投影 |
+| 标定 | `tools/calibrate_m9_weights.py` → `data/m9_weight_calibration.csv` | 6 配置实测 + 落带判定（拟合集 A） |
+| P4 验证 | `tools/validate_p9_resting.py` → `data/m9_p4_resting.csv` + `m9_p4_resting.png` | 6 判据：4 过 2 不达（反证记录） |
+| 判据带 | `data/m9_behavior_reference.csv` | resting 段 8 行 + protocol_change 1 行（运行前定稿） |
+| 回路参数 | `data/m9_circuit_params.csv` | 定稿参数 + 抽象登记 |

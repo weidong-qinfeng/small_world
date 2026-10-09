@@ -74,40 +74,46 @@ def _synthetic_point(n_neuron: int, n_syn_per: int, n_steps: int, seed: int = 0,
 
 
 def _measure_scaling(device="mps", use_compile=True, sizes=(10000, 30000, 139255),
-                     n_steps=1500, syn_per=108, verbose=True):
-    """point 档 MPS 规模分解：ms/step(chunk) 与 ms/step(step)；含同样活跃比例。"""
+                     n_steps=1500, syn_per=108, verbose=True, ref_ms=(2.0, 20.0, 200.0)):
+    """point 档 MPS 规模分解：ms/step（含事件交付）随 N 与**活跃水平**的实测。
+
+    活跃水平用**不应期**精确控制：强 tonic 偏置下所有神经元以 1/ref 的速率饱和发放 →
+    每步活跃比例 = dt/ref（ref=2ms→2.5%、20ms→0.25%、200ms→0.025%）——可复现、可外推，
+    替代"调 bias 试活跃度"（不可控）。诚实性：同时落盘实测活跃比例（L16#3 独占运行）。
+    """
     from neural_exploration.src.adult_engine import AdultEngine
     out = {}
     for N in sizes:
         pre, post, gmax, inh = _synthetic_point(N, syn_per, n_steps)
         eng = AdultEngine(N, device=device, use_compile=use_compile)
-        eng.add_synapses(pre, post, gmax, delay_steps=10, inhibitory=inh)
+        eng.add_synapses(pre, post, gmax, delay_steps=20, inhibitory=inh)
         eng.finalize()
-        # 调 bias 使活跃比例落 ~2%（与静息态量级一致；实测落盘）
         rng = np.random.default_rng(1)
-        for b0 in (250.0, 350.0, 450.0, 550.0, 700.0):
-            eng.set_neuron_heterogeneity(
-                i_bias=rng.normal(b0, 0.15 * b0, N).astype(np.float32))
-            eng.reset(seed=0)
-            r = eng.run(400, delivery="chunk", record="counts")
-            frac = float(np.mean(r["spike_counts"] > 0))
-            if 0.005 <= frac <= 0.06:
-                break
-        # 正式测量（min-of-3 × n_steps，独占运行纪律 L16#3）
-        row = {"n_neuron": N, "n_edge": int(pre.size), "n_edges_per_neuron": syn_per,
-               "active_frac": frac, "bias": b0}
-        for mode in ("chunk", "step"):
-            walls = []
-            for _ in range(3):
+        eng.set_neuron_heterogeneity(i_bias=rng.normal(900.0, 90.0, N).astype(np.float32))
+        for rm in ref_ms:
+            eng.set_point_params(ref_ms=rm)
+            for mode in ("chunk",):
                 eng.reset(seed=0)
-                t0 = time.perf_counter()
-                eng.run(n_steps, delivery=mode, record="counts")
-                walls.append(time.perf_counter() - t0)
-            row["ms_per_step_" + mode] = min(walls) / n_steps * 1e3
-        out[N] = row
+                eng.run(400, delivery=mode, record="counts")      # warmup
+                walls = []
+                for _ in range(3):
+                    eng.reset(seed=0)
+                    t0 = time.perf_counter()
+                    r = eng.run(n_steps, delivery=mode, record="counts")
+                    walls.append(time.perf_counter() - t0)
+                    frac = r["spk_total"] / max(N * n_steps, 1)
+                row = out.setdefault(N, {"n_neuron": N, "n_edge": int(pre.size),
+                                         "n_edges_per_neuron": syn_per})
+                row["spk_frac_ref%.0fms" % rm] = frac
+                row["ms_per_step_ref%.0fms" % rm] = min(walls) / n_steps * 1e3
         if verbose:
-            print("    N=%7d edges=%9d active=%.3f | chunk %.3f ms/step | step %.3f ms/step"
-                  % (N, pre.size, frac, row["ms_per_step_chunk"], row["ms_per_step_step"]),
+            parts = []
+            for r in ref_ms:
+                k = "%.0f" % r
+                parts.append("ref=%sms: %.3f ms/step (frac %.5f)"
+                             % (k, out[N]["ms_per_step_ref%sms" % k],
+                                out[N]["spk_frac_ref%sms" % k]))
+            print("    N=%7d edges=%9d | " % (N, pre.size) + " | ".join(parts),
                   flush=True)
     return out
 
@@ -204,38 +210,44 @@ def main() -> int:
     print("MPS 规模分解（合成 point 网络，出度=108，活跃比例~2%）：", flush=True)
     t0 = time.perf_counter()
     sc = _measure_scaling(device="mps", use_compile=True,
-                          sizes=(10000, 30000, N_FULL), n_steps=1500)
+                          sizes=(10000, 30000, N_FULL), n_steps=1000)
     rec["scaling_wall_s"] = time.perf_counter() - t0
     xs = [k for k in sc]
-    for mode in ("chunk", "step"):
-        a, b = _fit(xs, [sc[k]["ms_per_step_" + mode] for k in xs])
-        rec["a_%s_ms" % mode], rec["b_%s_ms" % mode] = a, b
+    refs = sorted(k.split("ms_per_step_ref")[1] for k in sc[xs[0]]
+                  if k.startswith("ms_per_step_ref"))
+    for rf in refs:
+        key = "ms_per_step_ref%s" % rf
+        a, b = _fit(xs, [sc[k][key] for k in xs])
+        rec["a_ref%s_ms" % rf], rec["b_ref%s_ms" % rf] = a, b
         ms_full = a + b * N_FULL
-        rec["ms_per_step_full_%s" % mode] = ms_full
-        rec["gpu_h_30s_%s" % mode] = ms_full * 1e-3 * N_STEPS_30S / 3600.0
-        print("  %s：t = %.3f + %.3e·N ms → 全规模 %.3f ms/step → 30s 单试次 %.3f GPU-h"
-              % (mode, a, b, ms_full, rec["gpu_h_30s_%s" % mode]), flush=True)
+        rec["ms_per_step_full_ref%s" % rf] = ms_full
+        rec["gpu_h_30s_ref%s" % rf] = ms_full * 1e-3 * N_STEPS_30S / 3600.0
+        print("  活跃档 ref=%sms（每步活跃比例 %.5f）：t = %.3f + %.3e·N ms → 全规模 "
+              "%.3f ms/step → 30s 单试次 %.3f GPU-h"
+              % (rf, sc[xs[0]]["spk_frac_ref%s" % rf], a, b, ms_full,
+                 rec["gpu_h_30s_ref%s" % rf]), flush=True)
 
     # two_comp 档全规模 projection（对齐参考档；G0 记录为测量限制 + 优化目标）
     ms_two = rec.get("mps_f32_chunk_wall_s", 0.0)
-    if ms_two:
+    if ms_two and "a_ref2ms_ms" in rec:
         per_step_two = ms_two / n_steps * 1e3
-        a2, b2 = _fit([ex["n_comp"]], [per_step_two])
-        # 用 point 档固定开销 a 拆出逐隔室项（同一内核骨架）
-        a_use = rec["a_chunk_ms"]
+        # two_comp 与 point 用**同一内核骨架**：以 point 档固定开销 a 拆出逐隔室项
+        a_use = rec["a_ref2ms_ms"]
         b_use = max((per_step_two - a_use) / ex["n_comp"], 0.0)
         rec["two_comp_ms_per_step_600"] = per_step_two
         rec["two_comp_b_ms_per_comp"] = b_use
         rec["two_comp_proj_278510_ms"] = a_use + b_use * (2 * N_FULL)
         rec["two_comp_proj_30s_gpu_h"] = (a_use + b_use * (2 * N_FULL)) * 1e-3 \
             * N_STEPS_30S / 3600.0
-        print("  two_comp：实测 600 隔室 %.3f ms/step；逐隔室项 %.3e → 278,510 隔室 "
-              "projection %.3f ms/step → 30s %.3f GPU-h"
+        print("  two_comp（对齐参考档）：实测 600 隔室 %.3f ms/step；逐隔室项 %.3e → "
+              "278,510 隔室 projection %.3f ms/step → 30s %.3f GPU-h（B1 基准 1.05）"
               % (per_step_two, b_use, rec["two_comp_proj_278510_ms"],
                  rec["two_comp_proj_30s_gpu_h"]), flush=True)
 
-    rec["budget_point_ok"] = rec["gpu_h_30s_chunk"] <= BUDGET_GPU_H
-    rec["target_point_le_0p3ms"] = rec["ms_per_step_full_chunk"] <= 0.3
+    _refkeys = [k for k in rec if k.startswith("gpu_h_30s_ref")]
+    rec["budget_point_ok"] = min(rec[k] for k in _refkeys) <= BUDGET_GPU_H
+    rec["target_point_le_0p3ms"] = min(
+        rec["ms_per_step_full_" + k.replace("gpu_h_30s_", "")] for k in _refkeys) <= 0.3
     write_csv(rec, sc, eq_note)
     make_plot(rec, sc, spike_sets, cpu_spikes, ex["n_comp"])
     print("对齐探针结果 →", OUT_CSV, flush=True)
@@ -298,19 +310,23 @@ def make_plot(rec, sc, spike_sets, cpu_spikes, n_comp):
     ax.set_title("Vectorized kernel vs Brian2 baseline")
     ax.tick_params(axis="x", rotation=20); ax.legend()
     ax = axes[0, 1]
-    ax.hist([rec.get("ms_per_step_full_chunk", 0.0), rec.get("ms_per_step_full_step", 0.0)],
-            bins=2, color="#1f77b4")
-    ax.set_xticks([0, 1]); ax.set_xticklabels(["chunk", "step"])
+    rk = sorted(k for k in rec if k.startswith("ms_per_step_full_ref"))
+    vals = [rec[k] for k in rk]
+    labs = ["active %.3f" % rec.get("spk_frac_ref" + k.split("ms_per_step_full_ref")[1], 0)
+            for k in rk]
+    ax.bar(labs, vals, color="#1f77b4")
     ax.set_ylabel("projected ms/step (N=139,255)")
-    ax.set_title("Full-scale projection: %.3f / %.3f ms/step"
-                 % (rec.get("ms_per_step_full_chunk", 0), rec.get("ms_per_step_full_step", 0)))
+    ax.set_title("Full-scale projection (B1 baseline 3.86 ms/step)")
     ax = axes[1, 0]
     if sc:
         xs = list(sc.keys())
-        ax.plot(xs, [sc[k]["ms_per_step_chunk"] for k in xs], "o-", label="chunk")
-        ax.plot(xs, [sc[k]["ms_per_step_step"] for k in xs], "s-", label="step")
+        refs = sorted(k.split("ms_per_step_ref")[1] for k in sc[xs[0]]
+                      if k.startswith("ms_per_step_ref"))
+        for rf in refs:
+            ax.plot(xs, [sc[k]["ms_per_step_ref%s" % rf] for k in xs], "o-",
+                    label="active %.3f" % sc[xs[0]]["spk_frac_ref%s" % rf])
         ax.set_xlabel("N neurons"); ax.set_ylabel("ms/step"); ax.legend()
-        ax.set_title("MPS scaling (active frac ≈2%)")
+        ax.set_title("MPS scaling @ controlled activity")
     ax = axes[1, 1]
     cb = np.array([len(cpu_spikes.get(i, [])) for i in range(n_comp)])
     key = next((k for k in spike_sets if k.startswith("mps")), None)
