@@ -71,6 +71,7 @@ G_AX_S = 5.4e-9
 TAU_AMPA_S, TAU_GABA_S = 3.0e-3, 5.0e-3
 
 SLOT_EXTRA = 10          # 环形槽余量（chunk 模式 W ≤ SLOT_EXTRA）
+MAX_EDGES_PER_FLUSH = 4_000_000   # 单次批量投递的边数上限（超限退化为逐步，防 OOM）
 
 
 # ---------------------------------------------------------------------------
@@ -421,6 +422,37 @@ class AdultEngine:
         for grp in self._groups:
             grp["t_gmax"] = torch.as_tensor(values[grp["edge_idx"]], device=self.device)
 
+    def set_external_events(self, steps, neurons, gmax, n_steps: int,
+                            inhibitory=None) -> Dict[str, Any]:
+        """外部 Poisson 背景驱动（虚拟突触事件；逐神经元独立，固定 seed 确定性）。
+
+        语义：事件于步 s 投递 → 步 s+1 生效（进入兴奋/抑制电导累加器，随 tau 衰减）——
+        等价于一个虚拟突触前神经元在步 s 发放。**无 host 同步**：事件按步预排序，
+        逐步计数前缀和存为 numpy 数组（host 侧整数索引，零同步）。
+        抽象登记：持续感觉/内在驱动（真实值不可得，按拟合集 A 标定）。
+        """
+        steps = np.asarray(steps, dtype=np.int64).ravel()
+        neurons = np.asarray(neurons, dtype=np.int64).ravel()
+        gmax = np.asarray(gmax, dtype=np.float32).ravel()
+        inh = (np.zeros(steps.shape, dtype=bool) if inhibitory is None
+               else np.asarray(inhibitory, dtype=bool).ravel())
+        if not (steps.shape == neurons.shape == gmax.shape == inh.shape):
+            raise ValueError("外部事件数组形状不一致")
+        order = np.argsort(steps, kind="stable")
+        steps, neurons, gmax, inh = steps[order], neurons[order], gmax[order], inh[order]
+        counts = np.bincount(steps, minlength=int(n_steps))[:int(n_steps)]
+        off = np.concatenate([[0], np.cumsum(counts)]).astype(np.int64)
+        self._ext_neuron = torch.as_tensor(
+            (neurons + self.n * inh.astype(np.int64)).astype(np.int32),
+            device=self.device)
+        self._ext_amp = torch.as_tensor(gmax, device=self.device)
+        from_neuron = self.device
+        self._ext_off = off
+        self._ext_n_steps = int(n_steps)
+        self._ext_active = bool(steps.size)
+        return {"n_events": int(steps.size), "max_events_per_step": int(counts.max() if counts.size else 0),
+                "mean_events_per_step": float(counts.mean() if counts.size else 0.0)}
+
     def reset_counts(self) -> None:
         """清零逐神经元 spike 计数与群体计数（静息协议 settle 窗后用）。"""
         self.t_count.zero_()
@@ -514,6 +546,11 @@ class AdultEngine:
         t_stim = self.t_stim; t_stim_col = self.t_stim_col
         has_stim = t_stim is not None
         ring_flat = rings[0] if len_rings == 1 else None
+        ext_active = getattr(self, "_ext_active", False) and ring_flat is not None
+        ext_off = getattr(self, "_ext_off", None)
+        ext_neuron = getattr(self, "_ext_neuron", None)
+        ext_amp = getattr(self, "_ext_amp", None)
+        ext_n_steps = getattr(self, "_ext_n_steps", 0)
 
         deliver_step = self._deliver_step
         chunk_mode = (delivery == "chunk")
@@ -556,6 +593,12 @@ class AdultEngine:
                             t_v, t_ge, t_gi, t_cool, ev_e, ev_i, iext)
                     for r in rings:
                         r[slot:slot + n2].zero_()
+                if ext_active and s < ext_n_steps:
+                    ea = int(ext_off[s]); eb = int(ext_off[s + 1])
+                    if eb > ea:
+                        ring_flat.index_add_(
+                            0, ext_neuron[ea:eb] + ((s + 1) % n_slot) * n2,
+                            ext_amp[ea:eb])
                 if chunk_mode:
                     spk_ring[rec_ptr].copy_(spk)
                     rec_ptr += 1
@@ -641,6 +684,14 @@ class AdultEngine:
         flat = rows.reshape(-1).nonzero(as_tuple=False).flatten()
         if flat.numel() == 0:
             return 0
+        n_spk = int(flat.numel())
+        # 过载保护：spike 过密时退化为逐步投递（避免 tot 级临时张量 OOM——
+        # 全活跃网络 chunk 投递需 150M 边 → 数个 GB 临时量）
+        if n_spk * (self.n_edge / max(self.n, 1)) > MAX_EDGES_PER_FLUSH:
+            tot_all = 0
+            for k in range(w):
+                tot_all += self._deliver_step(rows[k], step0 + k)
+            return tot_all
         n = self.n
         kk = torch.div(flat, n, rounding_mode="floor")
         nn = flat - kk * n

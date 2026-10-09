@@ -192,6 +192,40 @@ class AdultCircuit:
         self.engine.set_neuron_heterogeneity(
             i_bias=self.bias_vector(bias_mv_s, bias_cv))
 
+    # ---------------- 背景驱动（虚拟突触前 Poisson 事件） ----------------
+    def build_background(self, rate_hz: float = 1.0, g_ext: float = 0.04,
+                         n_steps: int = 40000, seed: int = 0, cv: float = 0.0,
+                         inh_frac: float = 0.0, rate_cv: float = 0.0) -> Dict[str, Any]:
+        """逐神经元独立 Poisson 背景突触驱动（确定性，固定 seed）。
+
+        抽象登记：持续感觉/内在驱动（果蝇中枢脑永不静默——视觉 ME 占 49% 神经元）；
+        真实背景率/电导不可得 → 标定于拟合集 A（静息判据带）。
+        """
+        p = self.params
+        T_s = n_steps * p.dt_ms * 1e-3
+        rng = np.random.default_rng(seed + 9001)
+        lam = np.full(self.n_neurons, float(rate_hz), dtype=np.float64)
+        if rate_cv > 0:
+            lam = np.maximum(lam * (1.0 + rate_cv * rng.standard_normal(self.n_neurons)),
+                             0.0)
+        n_ev = rng.poisson(lam * T_s)
+        total = int(n_ev.sum())
+        if total == 0:
+            self.engine.set_external_events(np.zeros(0, np.int64), np.zeros(0, np.int64),
+                                            np.zeros(0, np.float32), n_steps)
+            return {"n_events": 0}
+        neurons = np.repeat(np.arange(self.n_neurons, dtype=np.int64), n_ev)
+        steps = rng.integers(0, n_steps, size=total).astype(np.int64)
+        inh = rng.random(total) < float(inh_frac)
+        amp = (g_ext * (1.0 + 0.15 * rng.standard_normal(total))).astype(np.float32)
+        amp = np.maximum(amp, 0.0)
+        st = self.engine.set_external_events(steps, neurons, amp, n_steps, inhibitory=inh)
+        st.update({"rate_hz": rate_hz, "g_ext": g_ext, "T_s": T_s})
+        if self.verbose:
+            print("背景驱动：%d 事件（%.2f 事件/步；率 %.2f Hz；g_ext %.4f）"
+                  % (total, st["mean_events_per_step"], rate_hz, g_ext), flush=True)
+        return st
+
     # ---------------- 运行 ----------------
     def run_resting(self, T_ms: float = 1000.0, settle_ms: float = 200.0,
                     seed: int = 0, delivery: str = "chunk", pop_trace: bool = False,
@@ -203,8 +237,10 @@ class AdultCircuit:
         dt = p.dt_ms
         n_settle = int(round(settle_ms / dt))
         n_meas = int(round(T_ms / dt))
-        rng = np.random.default_rng(seed if v0_seed is None else v0_seed)
+        rng = np.random.default_rng(1 if v0_seed is None else v0_seed)
         v0 = (p.v_rest + 2.0 * rng.standard_normal(self.n_neurons)).astype(np.float32)
+        if getattr(self, "_bg_steps", 0) < n_settle + n_meas:
+            self.build_background(*(self._bg_args or ()), n_steps=n_settle + n_meas)
         self.engine.reset(v0=v0, seed=seed)
         t0 = time.perf_counter()
         if n_settle > 0:

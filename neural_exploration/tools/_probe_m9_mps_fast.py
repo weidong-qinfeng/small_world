@@ -85,7 +85,7 @@ class FastKernel:
         am = 0.1 * x_m / (1.0 - em) * 1e3
         bm = 4.0 * torch.exp(x_h * (-1.0 / 18.0)) * 1e3
         ah = 0.07 * torch.exp(x_h * (-0.05)) * 1e3
-        bh = 1.0 / (1.0 + torch.exp(x_h * (1.0 / 10.0))) * 1e3
+        bh = 1.0 / (1.0 + torch.exp((x_h - 30.0) * -0.1)) * 1e3  # -(vm+35)/10
         en = torch.exp(x_n * (-0.1))
         an = 0.01 * x_n / (1.0 - en) * 1e3
         bn = 0.125 * torch.exp(x_h * (-1.0 / 80.0)) * 1e3

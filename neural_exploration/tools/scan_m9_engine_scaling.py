@@ -98,7 +98,7 @@ def run_gpu_fast(ex, device, dtype, n_total_steps, step0, record_from=0):
         am = 0.1 * x_m / (1.0 - torch.exp(x_m * -0.1)) * 1e3
         bm = 4.0 * torch.exp(x_h * (-1.0 / 18.0)) * 1e3
         ah = 0.07 * torch.exp(x_h * -0.05) * 1e3
-        bh = 1.0 / (1.0 + torch.exp(x_h * 0.1)) * 1e3
+        bh = 1.0 / (1.0 + torch.exp((x_h - 30.0) * -0.1)) * 1e3  # -(vm+35)/10
         an = 0.01 * x_n / (1.0 - torch.exp(x_n * -0.1)) * 1e3
         bn = 0.125 * torch.exp(x_h * (-1.0 / 80.0)) * 1e3
         # ③ 门控闭式（去守卫：HH 下 α+β>0 恒成立）
@@ -200,6 +200,40 @@ def main() -> int:
                  "N=300→2.142 / 1000→2.183 / 3000→2.308 / 10000→2.282 / 30000→2.792 / "
                  "139255→4.948 ms/step；N×100 → MPS 仅×1.3（固定开销主导）"])
 
+    # ---------- A2. 宽范围合成 scaling（多尺寸 → 稳健拟合；避免 2 点噪声）----------
+    def synth(N, n_steps=300):
+        peer = np.empty(N, dtype=np.int64)
+        peer[0::2] = np.arange(1, N, 2)
+        peer[1::2] = np.arange(0, N, 2)
+        return {
+            "n_comp": N, "dt_ms": 0.05, "dt_s": 5e-5, "two_comp": True,
+            "state": {"v": np.full(N, -65e-3), "m": np.full(N, 0.0529),
+                      "h": np.full(N, 0.596), "n": np.full(N, 0.3177),
+                      "g_ampa": np.zeros(N), "g_gaba": np.zeros(N)},
+            "gNa": np.where(np.arange(N) % 2 == 0, 1200.0, 3000.0),
+            "gK": np.full(N, 360.0), "gL": np.full(N, 3.0),
+            "AREA": np.where(np.arange(N) % 2 == 0, 1.257e-9, 9.4248e-12),
+            "stim_col": np.zeros(N, dtype=np.int64), "peer": peer,
+            "stim": np.zeros((n_steps, 1)), "syn": {},
+        }
+    syn_pts = []
+    for N in (600, 3000, 10000, 30000, 60000, 139256):   # two_comp 需偶数隔室
+        exs = synth(N)
+        _ = run_gpu(exs, dev, torch.float32, 50, 0, record_from=0)   # warmup
+        walls = []
+        for _rep in range(3):
+            t0 = time.perf_counter()
+            _ = run_gpu(exs, dev, torch.float32, 300, 0, record_from=0)
+            if dev == "mps":
+                torch.mps.synchronize()
+            walls.append(time.perf_counter() - t0)
+        ms = min(walls) / 300 * 1e3
+        syn_pts.append((N, ms))
+        rows.append(["scaling_synth", str(N // 2), "two_comp_synth", str(N // 2), str(N),
+                     dev, "%.3f" % ms, "%.2f" % min(walls),
+                     "合成同构（无突触）min of 3 × 300 步 → 拟合用"])
+        print("  synth N=%6d 隔室：MPS %.3f ms/step" % (N, ms), flush=True)
+
     # ---------- B. 真实内核优化（scale=300，500ms 窗；正确性门：spike 输出一致）----------
     import neural_exploration.tools.scan_m9_engine as S
     S.SCALE, S.FIDELITY = 300, "two_comp"
@@ -222,7 +256,7 @@ def main() -> int:
                  "严格等价性 %.2f%%（spike 输出一致）" % (base_ms, base_ms / fast_ms, rate)])
 
     # ---------- C. 修正推算（固定开销 + 线性项）----------
-    mps = [r for r in rows if r[0] == "scaling_mps" and r[6]]
+    mps = [r for r in rows if r[0] == "scaling_synth" and r[6]]
     xs = np.array([float(r[4]) for r in mps])
     ys = np.array([float(r[6]) for r in mps])
     if xs.size >= 2:
@@ -231,12 +265,26 @@ def main() -> int:
         b, a = 0.0, float(ys[0])
     N_FULL = 139255                      # 全规模 = point 神经元（§2.4）
     steps_30s = int(30.0 / 5e-5)
-    per_step_full = a + b * N_FULL
+    # 本机实测斜率在本尺寸范围内噪声大 → 用区间：b=0（纯固定下界）与
+    # b=2.0e-5（主 agent 独立宽范围表斜率，N=300→30000 拟合）作上界
+    b_ext = 2.0e-5
+    per_step_full = a + max(b, 0.0) * N_FULL
+    per_step_full_ext = a + b_ext * N_FULL
     proj_gpu_h = per_step_full * 1e-3 * steps_30s / 3600.0
+    proj_gpu_h_ext = per_step_full_ext * 1e-3 * steps_30s / 3600.0
+    # 真实网络交叉核对（2 点；仅作定性验证固定开销主导）
+    real = [(float(r[4]), float(r[6])) for r in rows
+            if r[0] == "scaling_mps" and r[6]]
+    note_real = "；".join("N=%d→%.3f" % (N, v) for N, v in real)
+    rows.append(["crosscheck", "real_network", "two_comp", "", "", dev, "", "",
+                 "真实 LarvaCircuit 实测（固定开销主导交叉核对）：" + note_real])
     rows.append(["projection", "full", "point", "139255", str(N_FULL), dev,
-                 "%.3f" % per_step_full, "%.2f" % proj_gpu_h,
-                 "修正推算：a=%.3f ms/step（固定）+ b=%.3e ms/隔室/step；"
-                 "30s 单试次 = %.2f GPU-h（预算 ≤1）" % (a, b, proj_gpu_h)])
+                 "%.3f" % per_step_full_ext, "%.2f" % proj_gpu_h_ext,
+                 "修正推算区间：固定项 a=%.3f ms/step；b∈[0, %.1e]（本机斜率 b=%.2e 噪声大，"
+                 "上界取主 agent 独立宽范围表斜率）→ 全规模 %.3f–%.3f ms/step → "
+                 "30s 单试次 %.2f–%.2f GPU-h（预算 ≤1）" % (
+                     a, b_ext, b, a + max(b, 0.0) * N_FULL, per_step_full_ext,
+                     proj_gpu_h, proj_gpu_h_ext)])
     print("  修正推算：a=%.3f ms/step + b=%.3e → 全规模(%d 隔室) %.3f ms/step → %.2f GPU-h" % (
         a, b, N_FULL, per_step_full, proj_gpu_h), flush=True)
 

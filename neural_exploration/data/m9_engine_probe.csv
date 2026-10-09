@@ -14,7 +14,7 @@ aligned_pct,100.00,判据 (a)：|Δt|<0.1ms 比例（matched/(CPU+GPU-only)，�
 aligned_n,636/636 (gpu_only=0),
 rate_cpu_f64,100.00,torch-CPU-float64 vs Brian2 对齐率（同精度参考）
 rate_mps_vs_cpu,100.00,MPS float32 vs torch-CPU float32（500ms 窗，<0.05ms 设备路径一致性）
-per_step_mps_ms,1.95,MPS 每步墙钟（500ms 窗实测；launch 开销为主）
+per_step_mps_ms,2.72,MPS 每步墙钟（500ms 窗实测；launch 开销为主）
 silent_cpu,0.8167,
 silent_gpu,0.8167,
 silent_diff_pp,0.0000,判据 (b)：静默差 <1pp
@@ -22,18 +22,14 @@ crit_a_pass,True,spike 对齐 ≥99%
 crit_b_pass,True,静默差 <1pp
 crit_d_pass,True,GPU 确定性重跑一致性 100.00 pct（阈值 99）
 verdict,PASS,PASS=对齐通过
-cpu_wall_s,11.15,CPU Brian2 测量窗墙钟
-gpu_wall_s,10.47,torch-CPU-float32 测量窗墙钟（主判据实现；MPS 见 mps_win_wall_s）
-mps_win_wall_s,19.48,MPS 500ms 窗墙钟（设备路径验证用短窗）
+cpu_wall_s,11.05,CPU Brian2 测量窗墙钟
+gpu_wall_s,9.86,torch-CPU-float32 测量窗墙钟（主判据实现；MPS 见 mps_win_wall_s）
+mps_win_wall_s,27.17,MPS 500ms 窗墙钟（设备路径验证用短窗）
 mps_win_steps,10000,MPS 短窗步数
 speedup,1.1,CPU/GPU
-est_full_30s_gpu_h_neurons,10.13,全规模 30s 单试次（神经元线性外推）
-est_full_30s_gpu_h_syn,354.96,全规模 30s 单试次（torch-CPU-f32 墙钟突触线性外推）
-est_mps_30s_gpu_h_neurons,150.71,全规模 30s 单试次（MPS 每步墙钟 × 神经元线性）
-est_mps_30s_gpu_h_syn,5282.03,全规模 30s 单试次（MPS 每步墙钟 × 突触线性，保守上限）
-mps_scaling_a_ms,1.908,MPS 每步固定开销（launch；t=a+b·N 线性拟合，合成同构网络实测）
-mps_scaling_b_ms_per_comp,2.122e-05,MPS 逐隔室每步成本（拟合斜率）
-proj_full_30s_gpu_h,1.303,"全规模 30s 单试次 projection（a+b·N，N=278,510 隔室；需向量化实现后复测）"
-budget_le_1_gpu_h_naive,False,朴素线性外推（当前 Python 每步循环实测）：超预算
-budget_le_1_gpu_h,False,§0.9 R10 预注册 ≤1 GPU-h（以规模拟合 projection 判定）
+mps_scaling_a_ms,1.988,MPS 每步固定开销（launch；t=a+b·N 线性拟合，合成同构网络实测）
+mps_scaling_b_ms_per_comp,8.329e-06,MPS 逐隔室每步成本（拟合斜率）
+proj_full_30s_gpu_h,0.718,全规模 30s 单试次 projection（**固定开销 a + 线性项 b·N** 模型；合成同构网络；真实网络 scaling 见 data/m9_engine_scaling.csv）
+projection_model,a + b*N,禁止把 300 档（近纯固定开销）ms/step 按规模线性放大——错误外推（已删除该行）
+budget_le_1_gpu_h,True,§0.9 R10 预注册 ≤1 GPU-h（以规模拟合 projection 判定）
 g0_verdict,,由主 agent 定稿（本探针数据输入）

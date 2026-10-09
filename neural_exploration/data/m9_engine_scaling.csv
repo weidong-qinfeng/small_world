@@ -1,0 +1,18 @@
+# M9 G0 真实网络 scaling 与内核优化（主 agent 诊断修订：固定开销 + 线性项模型）
+# 说明：不得把 300 档（近纯固定开销）ms/step 按规模线性放大（错误外推）
+section,scale,fidelity,n_neurons,n_comp,device,ms_per_step,wall_s,note
+scaling_mps,300,two_comp,300,600,mps,2.385,23.85,MPS min of 2 × 500ms 窗（真实 LarvaCircuit）
+scaling_cpu,300,two_comp,300,600,cpu,0.245,,torch-CPU 对照（500ms 窗）
+scaling_mps,1000,two_comp,1000,2000,mps,2.662,26.62,MPS min of 2 × 500ms 窗（真实 LarvaCircuit）
+scaling_cpu,1000,two_comp,1000,2000,cpu,0.411,,torch-CPU 对照（500ms 窗）
+scaling_skipped,3016,point,,,mps,,,"跳过：3016 档 CPU Brian2(numpy 后端, 110k 突触) 基线实测 >15min 未完成（预算纪律；M8 锚 3016 point 30s=843s 为 cython 编译后端）"
+external_scaling,139255,synthetic,139255,139255,mps,4.948,,主 agent 独立 scaling 诊断（合成稀疏 SNN 同构内核）：N=300→2.142 / 1000→2.183 / 3000→2.308 / 10000→2.282 / 30000→2.792 / 139255→4.948 ms/step；N×100 → MPS 仅×1.3（固定开销主导）
+scaling_synth,300,two_comp_synth,300,600,mps,2.147,0.64,合成同构（无突触）min of 3 × 300 步 → 拟合用
+scaling_synth,1500,two_comp_synth,1500,3000,mps,2.410,0.72,合成同构（无突触）min of 3 × 300 步 → 拟合用
+scaling_synth,5000,two_comp_synth,5000,10000,mps,1.764,0.53,合成同构（无突触）min of 3 × 300 步 → 拟合用
+scaling_synth,15000,two_comp_synth,15000,30000,mps,2.066,0.62,合成同构（无突触）min of 3 × 300 步 → 拟合用
+scaling_synth,30000,two_comp_synth,30000,60000,mps,2.606,0.78,合成同构（无突触）min of 3 × 300 步 → 拟合用
+scaling_synth,69628,two_comp_synth,69628,139256,mps,3.341,1.00,合成同构（无突触）min of 3 × 300 步 → 拟合用
+kernel_opt,300,two_comp,300,600,mps,1.694,16.94,run_gpu_fast（融合/预绑定/去 stack）vs 基线 2.459 ms/step → 1.45×；严格等价性 100.00%（spike 输出一致）
+crosscheck,real_network,two_comp,,,mps,,,真实 LarvaCircuit 实测（固定开销主导交叉核对）：N=600→2.385；N=2000→2.662
+projection,full,point,139255,139255,mps,4.804,0.80,"修正推算区间：固定项 a=2.019 ms/step；b∈[0, 2.0e-05]（本机斜率 b=9.14e-06 噪声大，上界取主 agent 独立宽范围表斜率）→ 全规模 3.292–4.804 ms/step → 30s 单试次 0.55–0.80 GPU-h（预算 ≤1）"
