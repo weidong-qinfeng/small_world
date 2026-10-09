@@ -1,0 +1,106 @@
+# M9 P4 静息 sanity（§3.5.2/§3.5.3）；判据带定稿于 m9_behavior_reference.csv
+section,key,value,note
+protocol,T_ms,2000.0,测量窗（预注册）
+protocol,settle_ms,1000.0,settle 窗（丢弃；M5 L37#2）
+protocol,n_trials,3,固定 seed 0/1/2（确定性）
+protocol,bout_bin_ms,100.0,bout 分箱（阈值 3× 中位箱值）
+protocol,dt_ms,0.05,M8 FIDELITY_DT 定稿
+build,n_neurons,139255,FlyWire v783 全脑（P1）
+build,n_edges,15091983,"化学连接（54,492,922 突触）"
+build,n_gap,0,官方发布不含缝隙（L19.2 裁决②）
+build,inhibitory_edge_frac,0.2142,真实 GABA 边占比（P1 递质标注）
+build,build_wall_s,0.79,分段装配
+build,vram_gb,1.047,MPS 显存（预注册 <1.5GB）
+build,n_slot,61,环形事件槽
+param,w_exc,0.3,类级全局参数（≤40，§8 ①）
+param,w_inh,1.0,类级全局参数（≤40，§8 ①）
+param,w_mod,0.3,类级全局参数（≤40，§8 ①）
+param,syn_count_gamma,1.0,类级全局参数（≤40，§8 ①）
+param,bias_mv_s,290.0,类级全局参数（≤40，§8 ①）
+param,bias_cv,0.25,类级全局参数（≤40，§8 ①）
+param,bias_mode,lognormal,类级全局参数（≤40，§8 ①）
+param,ahp_tau_ms,700.0,类级全局参数（≤40，§8 ①）
+param,ahp_inc,2500.0,类级全局参数（≤40，§8 ①）
+param,v_rest,-52.0,类级全局参数（≤40，§8 ①）
+param,v_th,-45.0,类级全局参数（≤40，§8 ①）
+param,v_reset,-55.0,类级全局参数（≤40，§8 ①）
+param,tau_m,20.0,类级全局参数（≤40，§8 ①）
+param,tau_e,2.0,类级全局参数（≤40，§8 ①）
+param,tau_i,5.0,类级全局参数（≤40，§8 ①）
+param,ref_ms,2.0,类级全局参数（≤40，§8 ①）
+param,dt_ms,0.05,类级全局参数（≤40，§8 ①）
+param,delay_ms,1.0,类级全局参数（≤40，§8 ①）
+bg,rate_hz,0.5,背景驱动（抽象登记：持续感觉/内在驱动）
+bg,epsp_mv,2.0,背景驱动（抽象登记：持续感觉/内在驱动）
+bg,seed,0,背景驱动（抽象登记：持续感觉/内在驱动）
+trial_seed0,seed,0,
+trial_seed0,rate_median_hz,0.0,
+trial_seed0,rate_mean_hz,0.12654482783383003,
+trial_seed0,rate_p95_hz,0.5,
+trial_seed0,rate_max_hz,1.0,
+trial_seed0,silent_frac,0.7473627517862913,
+trial_seed0,active_frac,0.25263724821370864,
+trial_seed0,pop_rate_hz,0.12654482783383003,
+trial_seed0,n_spikes,35244.0,
+trial_seed0,spk_frac_per_step,6.327241391691501e-06,
+trial_seed0,ms_per_step,4.0856100374999995,
+trial_seed0,wall_s,213.50022049999998,
+trial_seed0,n_nan,0,
+trial_seed0,bout_active_fraction,0.0,
+trial_seed0,bout_count_per_min,0.0,
+trial_seed0,bout_median_len_ms,0.0,
+trial_seed0,bin_median_spk,1789.0,
+trial_seed0,bout_threshold_spk,5367.0,
+trial_seed1,seed,1,
+trial_seed1,rate_median_hz,0.0,
+trial_seed1,rate_mean_hz,0.12654482783383003,
+trial_seed1,rate_p95_hz,0.5,
+trial_seed1,rate_max_hz,1.0,
+trial_seed1,silent_frac,0.7473627517862913,
+trial_seed1,active_frac,0.25263724821370864,
+trial_seed1,pop_rate_hz,0.12654482783383003,
+trial_seed1,n_spikes,35244.0,
+trial_seed1,spk_frac_per_step,6.327241391691501e-06,
+trial_seed1,ms_per_step,0.9195626197750002,
+trial_seed1,wall_s,58.01582433299998,
+trial_seed1,n_nan,0,
+trial_seed1,bout_active_fraction,0.0,
+trial_seed1,bout_count_per_min,0.0,
+trial_seed1,bout_median_len_ms,0.0,
+trial_seed1,bin_median_spk,1789.0,
+trial_seed1,bout_threshold_spk,5367.0,
+trial_seed2,seed,2,
+trial_seed2,rate_median_hz,0.0,
+trial_seed2,rate_mean_hz,0.12654482783383003,
+trial_seed2,rate_p95_hz,0.5,
+trial_seed2,rate_max_hz,1.0,
+trial_seed2,silent_frac,0.7473627517862913,
+trial_seed2,active_frac,0.25263724821370864,
+trial_seed2,pop_rate_hz,0.12654482783383003,
+trial_seed2,n_spikes,35244.0,
+trial_seed2,spk_frac_per_step,6.327241391691501e-06,
+trial_seed2,ms_per_step,0.89789121875,
+trial_seed2,wall_s,57.084226375000014,
+trial_seed2,n_nan,0,
+trial_seed2,bout_active_fraction,0.0,
+trial_seed2,bout_count_per_min,0.0,
+trial_seed2,bout_median_len_ms,0.0,
+trial_seed2,bin_median_spk,1789.0,
+trial_seed2,bout_threshold_spk,5367.0,
+agg,rate_median_hz,0.000000,"判据 (a) 带 [0.1,10]"
+agg,silent_fraction,0.747363,判据 (b)
+agg,rate_p95_hz,0.500000,判据 (c)
+agg,pop_rate_hz,0.126545,群体发放率
+agg,bout_active_fraction,0.000000,判据 (d) 双状态
+agg,bout_count_per_min,0.000,判据 (d)
+agg,ms_per_step_best,0.8979,最快试次每步墙钟
+agg,gpu_h_per_30s_trial,0.0100,判据 (f)：≤1 GPU-h（§3.5.4）
+agg,determinism_spearman,1.000000,判据 (e)
+agg,determinism_bitwise,True,逐位一致（不承诺）
+crit,a_rate_median,False,
+crit,b_silent_fraction,True,
+crit,c_rate_p95,True,
+crit,d_bout,False,
+crit,e_determinism,True,
+crit,f_wallclock,True,
+crit,verdict,FAIL,P4 三态判定（规划节点复核）

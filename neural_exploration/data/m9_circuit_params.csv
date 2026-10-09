@@ -1,0 +1,24 @@
+param,value,note
+w_exc,0.3,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
+w_inh,1.0,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
+w_mod,0.3,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
+syn_count_gamma,1.0,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
+bias_mv_s,290.0,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
+bias_cv,0.25,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
+bias_mode,lognormal,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
+ahp_tau_ms,700.0,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
+ahp_inc,2500.0,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
+v_rest,-52.0,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
+v_th,-45.0,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
+v_reset,-55.0,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
+tau_m,20.0,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
+tau_e,2.0,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
+tau_i,5.0,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
+ref_ms,2.0,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
+dt_ms,0.05,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
+delay_ms,1.0,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
+bg_rate_hz,0.5,背景 Poisson 驱动
+bg_epsp_mv,2.0,背景 Poisson 驱动
+bg_seed,0,背景 Poisson 驱动
+delay_model,uniform_1.00ms,抽象登记：FlyWire v783 不含延迟列 → 统一轴突延迟
+vram_gb,1.047,实测
