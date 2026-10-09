@@ -32,15 +32,13 @@ BAND = {"rate_median_hz": (0.1, 10.0), "silent_fraction": (0.5, 0.9),
 
 #: 标定网格（阶段 1 粗扫 → 阶段 2 细化；类级全局参数）
 GRID_STAGE1 = [
-    # w_exc, w_inh, b0(mV/s), cv, lam(Hz), epsp(mV), ahp_inc(mV/s)
-    (1.0, 4.0, 380.0, 0.12, 2.0, 2.0, 2500.0),
-    (1.0, 4.0, 420.0, 0.12, 2.0, 2.0, 2500.0),
-    (1.0, 4.0, 460.0, 0.12, 2.0, 2.0, 2500.0),
-    (1.0, 4.0, 500.0, 0.12, 2.0, 2.0, 2500.0),
-    (2.0, 8.0, 420.0, 0.12, 2.0, 2.0, 2500.0),
-    (1.0, 4.0, 420.0, 0.20, 2.0, 2.0, 2500.0),
-    (1.0, 4.0, 500.0, 0.12, 2.0, 2.0, 5000.0),
-    (1.0, 4.0, 600.0, 0.12, 2.0, 2.0, 5000.0),
+    # w_exc, w_inh, b0(mV/s 中位), cv(lognormal σ), lam(Hz), epsp(mV), ahp_inc(mV/s)
+    # 标定网格（最终档 1.0/4.0/355/0.60 的出带记录 + 定稿档 0.3/1.0/290/0.25 的落带记录；
+    #  背景率 λ 与 bias 中位为两个主杠杆，见 docs/m9_env_notes.md L21.1）
+    (0.3, 1.0, 290.0, 0.25, 0.50, 2.0, 2500.0),
+    (0.3, 1.0, 250.0, 0.25, 0.50, 2.0, 2500.0),
+    (0.3, 1.0, 320.0, 0.25, 0.50, 2.0, 2500.0),
+    (0.3, 1.0, 290.0, 0.25, 1.00, 2.0, 2500.0),
 ]
 
 
@@ -66,7 +64,8 @@ def main() -> int:
     t00 = time.perf_counter()
     c = AdultCircuit(device="mps",
                      params=CircuitParams(bias_mv_s=0.0, bias_cv=0.0,
-                                          syn_count_gamma=1.0, delay_ms=1.0),
+                                          syn_count_gamma=1.0, delay_ms=1.0,
+                                          ahp_tau_ms=700.0, ahp_inc=2500.0),
                      use_compile=False)
     c.build()
     rows = []
@@ -76,7 +75,7 @@ def main() -> int:
            "pop_rate_hz", "spk_frac_per_step", "ms_per_step", "in_band", "wall_s"]
     for cfg in GRID_STAGE1:
         t0 = time.perf_counter()
-        st = _run_config(c, cfg, T_ms=2000.0, settle_ms=200.0)
+        st = _run_config(c, cfg, T_ms=1000.0, settle_ms=200.0)
         in_band = (BAND["rate_median_hz"][0] <= st["rate_median_hz"]
                    <= BAND["rate_median_hz"][1]
                    and BAND["silent_fraction"][0] <= st["silent_frac"]

@@ -64,8 +64,8 @@ class CircuitParams:
     w_mod: float = 0.3          # 调质类边权重系数（抽象 T2）
     syn_count_gamma: float = 1.0
     w_jitter_cv: float = 0.0    # 逐边权重抖动（0 = 关；固定 seed 确定性）
-    bias_mv_s: float = 400.0    # tonic 偏置电流（mV/s）均值
-    bias_cv: float = 0.30       # 偏置逐神经元变异系数
+    bias_mv_s: float = 355.0    # tonic 偏置电流（mV/s）中位（对数正态）
+    bias_cv: float = 0.60       # 偏置对数正态 sigma（异质兴奋性分布宽度）
     v_rest: float = -52.0
     v_th: float = -45.0
     v_reset: float = -55.0
@@ -73,10 +73,11 @@ class CircuitParams:
     tau_e: float = 2.0
     tau_i: float = 5.0
     ref_ms: float = 2.0
-    ahp_tau_ms: float = 100.0   # ms 适应电流时间常数（后超极化）
-    ahp_inc: float = 120.0      # mV/s 每 spike 注入（发放率限幅；标定参数）
+    ahp_tau_ms: float = 700.0   # ms 适应电流时间常数（后超极化；发放率上限杠杆）
+    ahp_inc: float = 2500.0     # mV/s 每 spike 注入（发放率限幅；标定参数）
     dt_ms: float = 0.05
-    delay_ms: float = 0.5
+    delay_ms: float = 1.0
+    bias_mode: str = "lognormal"
     seed: int = 0
 
     def as_dict(self) -> Dict[str, float]:
@@ -101,6 +102,7 @@ class AdultCircuit:
         self.nt_code = d["nt_code"].astype(np.int8)
         self.root_ids = d["root_ids"].astype(np.int64)
         n = self.n_neurons = int(self.root_ids.size)
+        self.n_edge = int(self.pre.size)
         try:
             nt = np.load(NEURON_NPZ, allow_pickle=False)
             self.region_code = nt["region_code"].astype(np.int32)
@@ -136,13 +138,24 @@ class AdultCircuit:
             gmax = np.maximum(gmax, 0.0)
         return gmax.astype(np.float32)
 
-    def bias_vector(self, bias_mv_s=None, cv=None) -> np.ndarray:
-        """逐神经元 tonic 偏置（确定性；异质杠杆，M8 语义）。"""
+    def bias_vector(self, bias_mv_s=None, cv=None, mode=None) -> np.ndarray:
+        """逐神经元 tonic 偏置（确定性；异质兴奋性杠杆）。
+
+        `mode="lognormal"`（默认）：b = b_med · exp(σ z) —— 重尾正偏（脑区间兴奋性差异，
+        如视叶 vs 中央脑）→ 静息发放率分布呈"多数极低 + 少数较高"形状（拟合集 A 标定）。
+        `mode="normal"`：b ~ N(b_med, σ·b_med)。
+        """
         p = self.params
         b0 = p.bias_mv_s if bias_mv_s is None else float(bias_mv_s)
         c = p.bias_cv if cv is None else float(cv)
+        m = getattr(p, "bias_mode", "lognormal") if mode is None else mode
         rng = np.random.default_rng(p.seed + 11)
-        return rng.normal(b0, c * abs(b0), self.n_neurons).astype(np.float32)
+        z = rng.standard_normal(self.n_neurons)
+        if m == "lognormal":
+            b = b0 * np.exp(c * z)
+        else:
+            b = b0 + c * abs(b0) * z
+        return np.maximum(b, 0.0).astype(np.float32)
 
     # ---------------- 装配 ----------------
     def build(self, gmax=None, bias=None) -> Dict[str, Any]:
