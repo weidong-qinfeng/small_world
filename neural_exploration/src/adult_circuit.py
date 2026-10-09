@@ -73,6 +73,8 @@ class CircuitParams:
     tau_e: float = 2.0
     tau_i: float = 5.0
     ref_ms: float = 2.0
+    ahp_tau_ms: float = 100.0   # ms 适应电流时间常数（后超极化）
+    ahp_inc: float = 120.0      # mV/s 每 spike 注入（发放率限幅；标定参数）
     dt_ms: float = 0.05
     delay_ms: float = 0.5
     seed: int = 0
@@ -151,7 +153,8 @@ class AdultCircuit:
         delay_steps = max(1, int(round(p.delay_ms / p.dt_ms)))
         self.engine.set_point_params(v_rest=p.v_rest, v_th=p.v_th, v_reset=p.v_reset,
                                      tau_m=p.tau_m, tau_e=p.tau_e, tau_i=p.tau_i,
-                                     ref_ms=p.ref_ms, dt_ms=p.dt_ms)
+                                     ref_ms=p.ref_ms, dt_ms=p.dt_ms,
+                                     ahp_tau_ms=p.ahp_tau_ms, ahp_inc=p.ahp_inc)
         n_chunk = 4
         step = int(np.ceil(self.pre.size / n_chunk))
         for k in range(n_chunk):        # 分段装配（M8 分批语义；构建墙钟探针）
@@ -219,7 +222,9 @@ class AdultCircuit:
         inh = rng.random(total) < float(inh_frac)
         amp = (g_ext * (1.0 + 0.15 * rng.standard_normal(total))).astype(np.float32)
         amp = np.maximum(amp, 0.0)
-        st = self.engine.set_external_events(steps, neurons, amp, n_steps, inhibitory=inh)
+        delay_steps = max(1, int(round(p.delay_ms / p.dt_ms)))
+        st = self.engine.set_external_events(steps, neurons, amp, n_steps,
+                                             inhibitory=inh, delay_steps=delay_steps)
         st.update({"rate_hz": rate_hz, "g_ext": g_ext, "T_s": T_s})
         if self.verbose:
             print("背景驱动：%d 事件（%.2f 事件/步；率 %.2f Hz；g_ext %.4f）"

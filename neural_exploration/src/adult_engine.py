@@ -44,6 +44,7 @@ kernel 改动必须重过对齐探针）/§3.5.1（全规模装配）/§0.9 R10�
 from __future__ import annotations
 
 import math
+import os
 import time
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple
@@ -70,7 +71,7 @@ E_GABA_V = -70.0e-3
 G_AX_S = 5.4e-9
 TAU_AMPA_S, TAU_GABA_S = 3.0e-3, 5.0e-3
 
-SLOT_EXTRA = 10          # 环形槽余量（chunk 模式 W ≤ SLOT_EXTRA）
+SLOT_EXTRA = 40          # 环形槽余量（chunk 模式 W ≤ SLOT_EXTRA）
 MAX_EDGES_PER_FLUSH = 4_000_000   # 单次批量投递的边数上限（超限退化为逐步，防 OOM）
 
 
@@ -91,6 +92,8 @@ class PointParams:
     ref_ms: float = 2.0        # ms 绝对不应期
     dt_ms: float = 0.05        # ms（与 two_comp 档一致，M8 FIDELITY_DT 定稿）
     v_floor: float = -80.0     # mV（数值地板，防发散）
+    ahp_tau_ms: float = 100.0  # ms 适应电流（后超极化）时间常数（0 = 关闭）
+    ahp_inc: float = 0.0       # mV/s 每 spike 注入量（发放率限幅，标定参数）
 
     def as_dict(self) -> Dict[str, float]:
         return {k: float(v) for k, v in self.__dict__.items()}
@@ -111,16 +114,21 @@ def _point_core_factory(p: PointParams):
     vr, vth, vres = p.v_rest, p.v_th, p.v_reset
     ee, ei, vfloor = p.e_exc, p.e_inh, p.v_floor
     ref_m1 = float(max(p.ref_ms / p.dt_ms - 1.0, 0.0))
+    aa = (math.exp(-p.dt_ms / p.ahp_tau_ms) if p.ahp_tau_ms and p.ahp_tau_ms > 0
+          else 0.0)
+    ahp_inc = float(p.ahp_inc)
 
-    def core(v, ge, gi, cool, ev_e, ev_i, iext):
+    def core(v, ge, gi, cool, a_ahp, ev_e, ev_i, iext):
         ge2 = ge + ev_e                       # 步起点交付（事件在步起点生效）
         gi2 = gi + ev_i
-        drive = gl * (vr - v) + ge2 * (ee - v) + gi2 * (ei - v) + iext
+        a2 = a_ahp * aa                       # 适应电流衰减（步起点同步估值）
+        drive = gl * (vr - v) + ge2 * (ee - v) + gi2 * (ei - v) - a2 + iext
         v2 = torch.clamp(v + dt_s * drive, min=vfloor)
         spk = (v2 >= vth) & (cool <= 0.0)
         cool2 = torch.where(spk, ref_m1, torch.clamp(cool - 1.0, min=0.0))
+        a3 = torch.where(spk, a2 + ahp_inc, a2)
         v3 = torch.where(cool2 > 0.0, vres, v2)   # 不应期钳位于 v_reset（标准 LIF）
-        return v3, ge2 * ae, gi2 * ai, cool2, spk
+        return v3, ge2 * ae, gi2 * ai, cool2, a3, spk
 
     return core
 
@@ -312,6 +320,7 @@ class AdultEngine:
         self.t_ge = torch.zeros(n, dtype=self.dtype, device=self.device)
         self.t_gi = torch.zeros(n, dtype=self.dtype, device=self.device)
         self.t_cool = torch.zeros(n, dtype=self.dtype, device=self.device)
+        self.t_ahp = torch.zeros(n, dtype=self.dtype, device=self.device)
         self.t_count = torch.zeros(n, dtype=self.dtype, device=self.device)
         self.t_iext = torch.zeros(n, dtype=self.dtype, device=self.device)
         self.t_stim = None
@@ -423,13 +432,16 @@ class AdultEngine:
             grp["t_gmax"] = torch.as_tensor(values[grp["edge_idx"]], device=self.device)
 
     def set_external_events(self, steps, neurons, gmax, n_steps: int,
-                            inhibitory=None) -> Dict[str, Any]:
+                            inhibitory=None, delay_steps: Optional[int] = None
+                            ) -> Dict[str, Any]:
         """外部 Poisson 背景驱动（虚拟突触事件；逐神经元独立，固定 seed 确定性）。
 
         语义：事件于步 s 投递 → 步 s+1 生效（进入兴奋/抑制电导累加器，随 tau 衰减）——
         等价于一个虚拟突触前神经元在步 s 发放。**无 host 同步**：事件按步预排序，
         逐步计数前缀和存为 numpy 数组（host 侧整数索引，零同步）。
         抽象登记：持续感觉/内在驱动（真实值不可得，按拟合集 A 标定）。
+        性能：投递按 **chunk 批量 + `index_put_(accumulate=True)`**（实测 `index_add_` 成本
+        随**目标张量尺寸**线性（5.85M 元 ≈0.20ms，与索引数无关）→ 每步一次不可接受）。
         """
         steps = np.asarray(steps, dtype=np.int64).ravel()
         neurons = np.asarray(neurons, dtype=np.int64).ravel()
@@ -443,10 +455,14 @@ class AdultEngine:
         counts = np.bincount(steps, minlength=int(n_steps))[:int(n_steps)]
         off = np.concatenate([[0], np.cumsum(counts)]).astype(np.int64)
         self._ext_neuron = torch.as_tensor(
-            (neurons + self.n * inh.astype(np.int64)).astype(np.int32),
+            (neurons + self.n * inh.astype(np.int64)).astype(np.int64),
             device=self.device)
         self._ext_amp = torch.as_tensor(gmax, device=self.device)
-        from_neuron = self.device
+        # 目标槽：与网络事件同延迟（保证 chunk 末批量写入后**才**被读取——见环形槽说明）
+        self._ext_delay = int(delay_steps)
+        self._ext_slot = torch.as_tensor(
+            ((steps + self._ext_delay) % self.n_slot) * (2 * self.n),
+            device=self.device)
         self._ext_off = off
         self._ext_n_steps = int(n_steps)
         self._ext_active = bool(steps.size)
@@ -471,6 +487,7 @@ class AdultEngine:
         self.t_ge = torch.zeros(n, dtype=self.dtype, device=self.device)
         self.t_gi = torch.zeros(n, dtype=self.dtype, device=self.device)
         self.t_cool = torch.zeros(n, dtype=self.dtype, device=self.device)
+        self.t_ahp = torch.zeros(n, dtype=self.dtype, device=self.device)
         self.t_count = torch.zeros(n, dtype=self.dtype, device=self.device)
         for r in self._rings.values():
             r.zero_()
@@ -504,7 +521,7 @@ class AdultEngine:
         W = int(chunk_steps if chunk_steps else 0)
         if delivery == "chunk":
             if W <= 0:
-                W = int(min(10, self.max_delay))
+                W = int(min(SLOT_EXTRA, self.max_delay))
             W = int(min(W, self.max_delay, SLOT_EXTRA))
             if W < 1:
                 delivery = "step"
@@ -539,6 +556,7 @@ class AdultEngine:
 
         # 预绑定（④ 消除 Python 侧开销：循环内无属性查找/字典查找）
         t_v = self.t_v; t_ge = self.t_ge; t_gi = self.t_gi; t_cool = self.t_cool
+        t_ahp = self.t_ahp
         t_mhn = getattr(self, "t_mhn", None)
         t_gNa = getattr(self, "t_gNa", None); t_gK = getattr(self, "t_gK", None)
         t_gL = getattr(self, "t_gL", None); t_AREA = getattr(self, "t_AREA", None)
@@ -546,14 +564,29 @@ class AdultEngine:
         t_stim = self.t_stim; t_stim_col = self.t_stim_col
         has_stim = t_stim is not None
         ring_flat = rings[0] if len_rings == 1 else None
+        # 预计算槽/行**视图**（避免每步 Python 切片对象创建——Python 侧开销实测主导）
+        rv_e = [None] * n_slot
+        rv_i = [None] * n_slot
+        if ring_flat is not None:
+            rf = ring_flat
+            for _k in range(n_slot):
+                _o = _k * n2
+                rv_e[_k] = rf[_o:_o + n]
+                rv_i[_k] = rf[_o + n:_o + n2]
+        rec_rows_v = list(spk_ring.unbind(0)) if spk_ring is not None else None
+        zero_ev = None if ring_flat is None else ring_flat[n2:2 * n2]
         ext_active = getattr(self, "_ext_active", False) and ring_flat is not None
         ext_off = getattr(self, "_ext_off", None)
         ext_neuron = getattr(self, "_ext_neuron", None)
         ext_amp = getattr(self, "_ext_amp", None)
         ext_n_steps = getattr(self, "_ext_n_steps", 0)
+        ext_slot = getattr(self, "_ext_slot", None)
 
         deliver_step = self._deliver_step
         chunk_mode = (delivery == "chunk")
+        _prof = bool(os.environ.get("M9_ENGINE_PROF"))
+        _pt = {"core": 0.0, "ring": 0.0, "copy": 0.0, "ext": 0.0,
+               "chunk": 0.0, "flush": 0.0, "py": 0.0}
 
         t0 = time.perf_counter()
         step = 0
@@ -561,21 +594,29 @@ class AdultEngine:
             w = min(W, n_steps - step) if chunk_mode else 1
             for k in range(w):
                 s = step + k
-                slot = (s % n_slot) * n2
+                _sl = s % n_slot
+                if _prof:
+                    _tprev = time.perf_counter()
                 if len_rings == 1:
-                    ev_e = ring_flat[slot:slot + n]
-                    ev_i = ring_flat[slot + n:slot + n2]
+                    ev_e = rv_e[_sl]
+                    ev_i = rv_i[_sl]
                     if two:
                         t_v, t_mhn, t_ge, t_gi, t_cool, spk = core(
                             t_v, t_mhn, t_ge, t_gi, t_cool, ev_e, ev_i,
                             t_stim[s][t_stim_col] if has_stim else zero_iext,
                             t_gNa, t_gK, t_gL, t_AREA, t_peer, t_axd)
                     else:
-                        t_v, t_ge, t_gi, t_cool, spk = core(
-                            t_v, t_ge, t_gi, t_cool, ev_e, ev_i,
+                        t_v, t_ge, t_gi, t_cool, t_ahp, spk = core(
+                            t_v, t_ge, t_gi, t_cool, t_ahp, ev_e, ev_i,
                             t_stim[s][t_stim_col] if has_stim else zero_iext)
-                    ring_flat[slot:slot + n2].zero_()
+                    if _prof:
+                        _b = time.perf_counter(); _pt["core"] += _b - _tprev; _tprev = _b
+                    ev_e.zero_()
+                    ev_i.zero_()             # 读后清零（预计算槽视图；等价整槽清零）
+                    if _prof:
+                        _c = time.perf_counter(); _pt["ring"] += _c - _tprev; _tprev = _c
                 else:
+                    slot = _sl * n2
                     ev_e = None
                     ev_i = None
                     for r in rings:
@@ -589,23 +630,25 @@ class AdultEngine:
                             t_v, t_mhn, t_ge, t_gi, t_cool, ev_e, ev_i, iext,
                             t_gNa, t_gK, t_gL, t_AREA, t_peer, t_axd)
                     else:
-                        t_v, t_ge, t_gi, t_cool, spk = core(
-                            t_v, t_ge, t_gi, t_cool, ev_e, ev_i, iext)
+                        t_v, t_ge, t_gi, t_cool, t_ahp, spk = core(
+                            t_v, t_ge, t_gi, t_cool, t_ahp, ev_e, ev_i, iext)
                     for r in rings:
                         r[slot:slot + n2].zero_()
-                if ext_active and s < ext_n_steps:
+                if ext_active and not chunk_mode and s < ext_n_steps:
                     ea = int(ext_off[s]); eb = int(ext_off[s + 1])
                     if eb > ea:
-                        ring_flat.index_add_(
-                            0, ext_neuron[ea:eb] + ((s + 1) % n_slot) * n2,
-                            ext_amp[ea:eb])
+                        ring_flat.index_put_(
+                            (ext_neuron[ea:eb] + ext_slot[ea:eb],), ext_amp[ea:eb],
+                            accumulate=True)
                 if chunk_mode:
-                    spk_ring[rec_ptr].copy_(spk)
+                    if _prof:
+                        _a = time.perf_counter(); _pt["py"] += _a - _tprev; _tprev = _a
+                    rec_rows_v[rec_ptr].copy_(spk)
                     rec_ptr += 1
                 else:
                     t_count += spk
                     if record == "full":
-                        spk_ring[rec_ptr].copy_(spk)
+                        rec_rows_v[rec_ptr].copy_(spk)
                         rec_ptr += 1
                     deliver_step(spk, s)
                     if pop_dev is not None:
@@ -613,7 +656,19 @@ class AdultEngine:
                             spk.sum().reshape(1).to(self.dtype))
             # ---- 批量投递（chunk：固定开销摊薄 w 倍） ----
             if chunk_mode:
+                if _prof:
+                    _d = time.perf_counter(); _pt["copy"] += _d - _tprev; _tprev = _d
+                if ext_active:
+                    ea = int(ext_off[step]); eb = int(ext_off[step + w])
+                    if eb > ea:
+                        ring_flat.index_put_(
+                            (ext_neuron[ea:eb] + ext_slot[ea:eb],), ext_amp[ea:eb],
+                            accumulate=True)
+                if _prof:
+                    _e = time.perf_counter(); _pt["ext"] += _e - _tprev; _tprev = _e
                 self._deliver_chunk(spk_ring, w, step, t_count)
+                if _prof:
+                    _f = time.perf_counter(); _pt["chunk"] += _f - _tprev; _tprev = _f
                 if pop_dev is not None:
                     pop_dev[step:step + w].copy_(spk_ring[:w].sum(dim=1).to(self.dtype))
             # ---- 记录刷回 host ----
@@ -628,11 +683,18 @@ class AdultEngine:
                 progress(step, n_steps, time.perf_counter() - t0)
 
         wall = time.perf_counter() - t0
+        if _prof:
+            self.stats["phase_ms_per_step"] = {
+                k: v / max(n_steps, 1) * 1e3 for k, v in _pt.items()}
+            print("  [engine 相位] " + " ".join(
+                "%s=%.3f" % (k, v / max(n_steps, 1) * 1e3) for k, v in _pt.items()),
+                flush=True)
         if record == "full" and rec_ptr > 0:
             self._flush_rec(spk_ring, rec_ptr, rec_base - record_from,
                             spike_steps, spike_idx)
 
         self.t_v, self.t_ge, self.t_gi, self.t_cool = t_v, t_ge, t_gi, t_cool
+        self.t_ahp = t_ahp
         if two:
             self.t_mhn = t_mhn
         counts = self.t_count.detach().cpu().numpy().astype(np.float64)

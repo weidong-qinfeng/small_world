@@ -1,0 +1,20 @@
+# M9 成年果蝇行为学/静息判据带（唯一定稿源，含 provenance）
+# ——《生物仿真M9实施清单》§0.7 #8（判据带定稿于 CSV，不做事后调）/§3.5.2（静息协议）/
+#    §3.5.3（双状态）/§4（P5–P8 判据带）/§0.8（数据隔离：拟合集 A = 静息判据带）。
+# 列：role, metric, lo, hi, unit, tol_lo, tol_hi, target, provenance, note
+# 语义：
+#   - role=<resting|learning|heading|sleep|decision|perturbation|activity|body>（行为域）
+#   - metric=指标名；lo/hi=预注册判据带；tol_lo/tol_hi=容差窗（判定用）；
+#   - target=带中心（参考值）；provenance=来源（文献/清单条款）；note=操作化语义。
+# 定稿纪律：本文件在协议运行**之前**写盘；P4 段先于 `tools/validate_p9_resting.py` 落盘。
+# 数据诚实（M8 R7 先例）：成年果蝇全脑静息发放率的**本机可及成像/电生理数据不可得** →
+# 判据带按清单 §3.5.2 预注册草案带定稿 + 文献统计回退，测量限制逐条登记（不伪造对照）。
+role,metric,lo,hi,unit,tol_lo,tol_hi,target,provenance,note
+resting,rate_median_hz,0.1,10.0,Hz,0.0,20.0,1.0,"清单 §3.5.2 预注册草案带（静息发放率中位 [0.1,10] Hz）；成年带以中枢脑成像/电生理文献校准（本机数据不可得 → M8 R7 文献统计回退 + 测量限制）","操作化：测量窗内逐神经元发放率（spike 数 / T）× 全 139,255 神经元的中位数；T=30s、settle=1s、N≥3 试次（固定 seed）"
+resting,silent_fraction,0.5,0.9,fraction,0.0,1.0,0.7,"同上（清单 §3.5.2 草案带 [50,90]%）；M8 G1 幼虫锚 0.8477/0.8167 为量级参照（不同物种/尺度，不作等号）","操作化：测量窗内发放率 <0.5 Hz 的神经元占比（M8 G1 静默定义同款）"
+resting,rate_p95_hz,0.0,50.0,Hz,0.0,100.0,25.0,"sanity 上界（防饱和/癫痫态；清单 §3.5.2 判据 (a) '无爆炸'）","操作化：逐神经元发放率 95 分位；>50 Hz 视为饱和态（非静息）"
+resting,pop_rate_hz,0.0,20.0,Hz,0.0,40.0,5.0,"sanity 上界（群体平均发放率；清单 §3.5.2 判据 (a)）","操作化：全网络总 spike 数 / N / T"
+resting,bout_active_fraction,0.05,0.9,fraction,0.02,0.98,0.4,"清单 §3.5.3（双状态：静息低活动 + 活动 bout；M8 G1 三杠杆经验的 M9 升级）","操作化：测量窗按 100ms 分箱，箱内 spike 数 > 群体中位箱值的 3 倍记为活动箱，活动箱占比"
+resting,bout_count_per_min,1.0,600.0,count,0.0,2000.0,60.0,"清单 §3.5.3（活动 bout 存在，bout 时长分布与成像/睡眠文献统计级一致——P7 前置）","操作化：100ms 分箱活动箱的连续段计数 / 分钟；bout 定义阈值同上（定稿不事后调）"
+resting,determinism,0.99,1.01,fraction,0.95,1.05,1.0,"清单 §0.7 #3（统计级确定性：GPU 浮点重排为测量限制，逐位一致不承诺）/§3.5.2 判据 (c)","操作化：同参数重跑两次，逐神经元发放率的 Spearman 相关 ≥0.99 且中位差 <5%"
+resting,ms_per_step_budget,0.0,6.0,ms,0.0,12.0,3.0,"清单 §3.5.4（单试次墙钟 ≤ 预算上限；G0 探针实测修正）+ §10.1（P4 ≤24 GPU-h）","操作化：全规模 point 档每步墙钟；30s 单试次 ≈ ms/step × 600,000 步 ≤1 GPU-h（3600s）→ 阈值 6.0 ms/step"
