@@ -1,0 +1,13 @@
+# M9 G0 有限优化尝试（≤3 次；独立脚本 tools/_probe_m9_mps_fast.py；合成同构网络无突触）
+# 结论：MPS 每步成本为 **launch 开销主导**（非内存带宽/架构瓶颈）→ 融合后 5–36× 改善可达
+# 注意：优化内核尚未接入突触事件交付（需 GPU 侧 scatter-add 向量化）；接入后必须重跑 G0 对齐门（§2.5）
+attempt,description,N_comp,baseline_ms_per_step,optimized_ms_per_step,speedup,note
+baseline,scan_m9_engine.run_gpu（每步 Python 循环 + 多张小张量 + |A|<1e-12 守卫）,600,1.503,,,min of 3 × 1500 步；MPS float32
+baseline,同上,6000,1.886,,,
+baseline,同上,60000,2.983,,,
+② fusion+inplace,手写融合 + in-place + 预分配；去守卫（HH 下 α+β>0、gsum>0 恒成立）；门控改 (x−α/(α+β))e^{−(α+β)dt}+α/(α+β)；v 改 (v−Bv/gsum)e^{−gsum·dt/Cm}+Bv/gsum,600,1.503,0.298,5.05,健全性：float32/float64 轨迹 finite 且稳态 v=−65.8mV（无自发发放，预期 0）
+② fusion+inplace,同上,6000,1.886,0.296,6.36,
+② fusion+inplace,同上,60000,2.983,0.586,5.09,
+② 拟合,t = a + b·N,,a=1.612 ms + b=2.305e-05 ms/隔室,a=0.281 ms + b=5.065e-06 ms/隔室,,"全规模(278,510 隔室) 30s 单试次：基线 1.34 GPU-h → 优化 0.28 GPU-h（≤1 ✓）"
+① torch.compile,"torch.compile(inductor, mode=default) 编译整步函数（MPS）",600,1.503,0.042,35.8,首次 20 步含编译 0.8s；融合为少数 kernel → launch 开销基本消除
+③ launch floor,每步 1 个平凡算子（乘）,600,,0.0074,—,整步全融合的理论地板量级；实际受逐元素项限制

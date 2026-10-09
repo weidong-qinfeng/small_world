@@ -1,0 +1,43 @@
+# M9 抑制/递质清单（真实抑制边承接 M8 R2；P4 双状态 H6 消融接口）
+# 来源：data/m9_flywire_connectome.csv（Zenodo 10676866 v783 官方解析，Eckstein 2024 递质预测）
+category,item,metric,value,share_pct,note
+neurotransmitter,cholinergic,synapses,30429211,55.841,Eckstein 2024 逐连接 dominant 递质（v783 官方发布）
+neurotransmitter,cholinergic,connections,8075700,53.51,
+neurotransmitter,GABA,synapses,12755910,23.408,Eckstein 2024 逐连接 dominant 递质（v783 官方发布）
+neurotransmitter,GABA,connections,3233022,21.422,
+neurotransmitter,glutamatergic,synapses,9668065,17.742,Eckstein 2024 逐连接 dominant 递质（v783 官方发布）
+neurotransmitter,glutamatergic,connections,2966878,19.659,
+neurotransmitter,dopaminergic,synapses,708265,1.3,Eckstein 2024 逐连接 dominant 递质（v783 官方发布）
+neurotransmitter,dopaminergic,connections,413938,2.743,
+neurotransmitter,serotonergic,synapses,610902,1.121,Eckstein 2024 逐连接 dominant 递质（v783 官方发布）
+neurotransmitter,serotonergic,connections,225156,1.492,
+neurotransmitter,octopaminergic,synapses,320569,0.588,Eckstein 2024 逐连接 dominant 递质（v783 官方发布）
+neurotransmitter,octopaminergic,connections,177289,1.175,
+receptor,gaba,connections,3233022,21.422,gaba=抑制性离子通道 / ampa=兴奋性占位 / mod=调质门控（M6 语义）
+receptor,gaba,synapses,12755910,23.408,
+receptor,ampa,connections,11042578,73.169,gaba=抑制性离子通道 / ampa=兴奋性占位 / mod=调质门控（M6 语义）
+receptor,ampa,synapses,40097276,73.583,
+receptor,mod,connections,816383,5.409,gaba=抑制性离子通道 / ampa=兴奋性占位 / mod=调质门控（M6 语义）
+receptor,mod,synapses,1639736,3.009,
+neuron_output,cholinergic,neurons_dominant,90478,65.561,出边 syn 加权 dominant 递质（有出边神经元 138005 个）
+neuron_output,GABA,neurons_dominant,19182,13.899,出边 syn 加权 dominant 递质（有出边神经元 138005 个）
+neuron_output,glutamatergic,neurons_dominant,24987,18.106,出边 syn 加权 dominant 递质（有出边神经元 138005 个）
+neuron_output,dopaminergic,neurons_dominant,896,0.649,出边 syn 加权 dominant 递质（有出边神经元 138005 个）
+neuron_output,serotonergic,neurons_dominant,2213,1.604,出边 syn 加权 dominant 递质（有出边神经元 138005 个）
+neuron_output,octopaminergic,neurons_dominant,249,0.18,出边 syn 加权 dominant 递质（有出边神经元 138005 个）
+inhibition,GABA edges,connections,3233022,21.422,真实抑制边（M8 R2 承接）
+inhibition,GABA edges,synapses,12755910,23.408,H6 消融接口：该边集 g→0 = 抑制平衡消融（§3.5.5）
+inhibition,GABA presynaptic neurons,neurons,104634,0.0,GABA 能输出神经元数
+inhibition,GABA-receiving neurons,neurons,129857,0.0,接收至少 1 条 GABA 边的神经元数
+GABA_by_neuropil,ME_R,synapses,2499340,19.594,GABA 突触的脑区来源（结构分布）
+GABA_by_neuropil,ME_L,synapses,2233860,17.512,GABA 突触的脑区来源（结构分布）
+GABA_by_neuropil,LO_R,synapses,806106,6.319,GABA 突触的脑区来源（结构分布）
+GABA_by_neuropil,LO_L,synapses,768265,6.023,GABA 突触的脑区来源（结构分布）
+GABA_by_neuropil,GNG,synapses,733265,5.748,GABA 突触的脑区来源（结构分布）
+GABA_by_neuropil,AVLP_R,synapses,484353,3.797,GABA 突触的脑区来源（结构分布）
+GABA_by_neuropil,LOP_R,synapses,389612,3.054,GABA 突触的脑区来源（结构分布）
+GABA_by_neuropil,AVLP_L,synapses,337284,2.644,GABA 突触的脑区来源（结构分布）
+GABA_by_neuropil,LOP_L,synapses,295095,2.313,GABA 突触的脑区来源（结构分布）
+GABA_by_neuropil,SAD,synapses,224076,1.757,GABA 突触的脑区来源（结构分布）
+GABA_by_neuropil,EB,synapses,196812,1.543,GABA 突触的脑区来源（结构分布）
+GABA_by_neuropil,PVLP_L,synapses,190106,1.49,GABA 突触的脑区来源（结构分布）
