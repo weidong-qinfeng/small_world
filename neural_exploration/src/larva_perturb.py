@@ -122,26 +122,33 @@ def run_spont_protocol(circ: LarvaCircuit, t_total_ms: float, seed: int,
     n_epochs = max(1, int(round(t_total_ms / circ.dt_b)))
     ch_acc = dict(fwd=0.0, back=0.0, left=0.0, right=0.0, curl=0.0)
     states, vs, omegas = [], [], []
-    for e in range(n_epochs):
-        mus = sess.run_epoch(circ.dt_b, 0.0)
-        c_fwd = float(mus.get("fwd", 0.0))
-        c_back = float(mus.get("back", 0.0))
-        c_left = float(mus.get("left", 0.0))
-        c_right = float(mus.get("right", 0.0))
-        c_curl = float(mus.get("curl", 0.0))
-        ch_acc["fwd"] += c_fwd
-        ch_acc["back"] += c_back
-        ch_acc["left"] += c_left
-        ch_acc["right"] += c_right
-        ch_acc["curl"] += c_curl
-        v = body.speed(c_fwd, c_back)
-        omega = body.turn_rate(c_left, c_right, e * circ.dt_b)
-        st = classify_state(v, omega, c_fwd, c_back,
-                            v_fwd0=circ.v_fwd0, omega_max=circ.omega_max)
-        body.step(c_fwd, c_back, c_left, c_right, circ.dt_b, e * circ.dt_b)
-        states.append(st)
-        vs.append(v)
-        omegas.append(omega)
+    try:
+        for e in range(n_epochs):
+            mus = sess.run_epoch(circ.dt_b, 0.0)
+            c_fwd = float(mus.get("fwd", 0.0))
+            c_back = float(mus.get("back", 0.0))
+            c_left = float(mus.get("left", 0.0))
+            c_right = float(mus.get("right", 0.0))
+            c_curl = float(mus.get("curl", 0.0))
+            ch_acc["fwd"] += c_fwd
+            ch_acc["back"] += c_back
+            ch_acc["left"] += c_left
+            ch_acc["right"] += c_right
+            ch_acc["curl"] += c_curl
+            v = body.speed(c_fwd, c_back)
+            omega = body.turn_rate(c_left, c_right, e * circ.dt_b)
+            st = classify_state(v, omega, c_fwd, c_back,
+                                v_fwd0=circ.v_fwd0, omega_max=circ.omega_max)
+            body.step(c_fwd, c_back, c_left, c_right, circ.dt_b, e * circ.dt_b)
+            states.append(st)
+            vs.append(v)
+            omegas.append(omega)
+    finally:
+        # 内存纪律（B2 实测：P7 批量 session 无 gc → RSS 累积到 8GB 级 → 系统
+        # swap 病态；每次协议后显式释放会话 + GC，长批量运行内存稳定 ~1GB）
+        import gc
+        del sess
+        gc.collect()
     m5 = state_fractions(states)
     # 幼虫语义（larva_loop 映射）：run=fwd、turn=turn+rev、pause=pause、curl=0
     frac = dict(run=m5.get("fwd", 0.0),

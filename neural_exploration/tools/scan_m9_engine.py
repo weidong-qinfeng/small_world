@@ -104,12 +104,15 @@ def extract_network(circ):
     ex["state"]["m"] = np.full(n_comp, float(m0))
     ex["state"]["h"] = np.full(n_comp, float(h0))
     ex["state"]["n"] = np.full(n_comp, float(n0))
-    # gNa：soma 120 / node3 300 mS/cm²（已含量纲 ×10 → S/m²）
-    gna_mS = np.asarray(circ.group.gNa[:], dtype=np.float64)
-    if gna_mS.size == n_comp:
-        ex["gNa"] = gna_mS * 10.0
+    # gNa：Brian2 VariableView 已返回 SI（S/m²）——120 mS/cm² = 1200 S/m²（实测确认，勿再缩放）
+    gna_raw = np.asarray(circ.group.gNa[:], dtype=np.float64)
+    if gna_raw.size == n_comp:
+        ex["gNa"] = gna_raw                      # 已在 SI（S/m²）
+        print("  gNa[S/m²]：soma=%.1f node=%.1f（SI，未缩放）" % (
+            gna_raw[0], gna_raw[1] if gna_raw.size > 1 else float("nan")),
+            flush=True)
     else:
-        ex["gNa"] = np.where(np.arange(n_comp) % 2 == 0, 120.0, 300.0) * 10.0
+        ex["gNa"] = np.where(np.arange(n_comp) % 2 == 0, 1200.0, 3000.0)
     if ex["two_comp"]:
         peer = np.empty(n_comp, dtype=np.int64)
         peer[0::2] = np.arange(1, n_comp, 2)
@@ -151,7 +154,7 @@ def run_cpu(circ, seed: int = 0):
 
 
 def run_gpu(ex, device: str, dtype, n_total_steps: int, step0: int,
-            max_steps: int = None, record_from: int = None):
+            max_steps: int = None, record_from: int = None, trace_idx=None):
     """torch 内核：全窗跑（settle 演化 + 测量窗记录）→ 逐隔室 spike 时间（ms）。
 
     spike 语义（实测 Brian2 numpy 后端）：状态更新后检查 v_new > TH；spike 时间记
@@ -189,80 +192,146 @@ def run_gpu(ex, device: str, dtype, n_total_steps: int, step0: int,
     record_from = step0 if record_from is None else record_from
     n_end = n_total_steps if max_steps is None else min(max_steps, n_total_steps)
     spikes = defaultdict(list)
+    _trace = []
     t0w = time.perf_counter()
     exp_dec_ampa = float(np.exp(-dt / 3.0e-3))
     exp_dec_gaba = float(np.exp(-dt / 5.0e-3))
     for s in range(n_end):
-        # ---- 事件交付（环形缓冲：先应用本槽再清零——Brian2 语义：事件在状态更新前生效） ----
+        # ---- 1) 事件交付（环形缓冲：先应用本槽再清零——Brian2 语义：事件在步起点生效） ----
         slot = s % max_delay
         for stype, sd in buf.items():
             t["g_" + stype] = t["g_" + stype] + buf[stype][slot]
             buf[stype][slot] = 0.0
-        v = t["v"]
-        vm = v * 1e3
-        # ---- 门控系数（Hz；堆叠 (3,N)） ----
-        aa = torch.stack([
-            (0.1 * (vm + 40.0) / (1.0 - torch.exp(-(vm + 40.0) / 10.0))) * 1e3
-            + 4.0 * torch.exp(-(vm + 65.0) / 18.0) * 1e3,
-            (0.07 * torch.exp(-(vm + 65.0) / 20.0) * 1e3
-             + 1.0 / (1.0 + torch.exp(-(vm + 35.0) / 10.0)) * 1e3),
-            (0.01 * (vm + 55.0) / (1.0 - torch.exp(-(vm + 55.0) / 10.0))) * 1e3
-            + 0.125 * torch.exp(-(vm + 65.0) / 80.0) * 1e3,
-        ])                      # A = alpha+beta（(3,N)）
-        bb = torch.stack([
-            (0.1 * (vm + 40.0) / (1.0 - torch.exp(-(vm + 40.0) / 10.0))) * 1e3,
-            (0.07 * torch.exp(-(vm + 65.0) / 20.0)) * 1e3,
-            (0.01 * (vm + 55.0) / (1.0 - torch.exp(-(vm + 55.0) / 10.0))) * 1e3,
-        ])                      # B = alpha（(3,N)）
-        mhn = torch.stack([t["m"], t["h"], t["n"]])
-        a_safe = torch.where(torch.abs(aa) < 1e-12,
-                             torch.ones_like(aa), aa)
-        mhn_new = torch.where(
-            torch.abs(aa) < 1e-12, mhn + dt * bb,
-            (mhn + bb / a_safe) * torch.exp(-a_safe * dt) - bb / a_safe)
-        t["m"], t["h"], t["n"] = mhn_new[0], mhn_new[1], mhn_new[2]
-        # ---- 突触电导衰减 ----
-        t["g_ampa"] = t["g_ampa"] * exp_dec_ampa
-        t["g_gaba"] = t["g_gaba"] * exp_dec_gaba
-        # ---- v 更新 ----
-        m, h, n_ = t["m"], t["h"], t["n"]
-        m3h = m ** 3 * h
-        n4 = n_ ** 4
-        gsum = t["gL"] + t["gNa"] * m3h + t["gK"] * n4 + t["g_ampa"] + t["g_gaba"]
-        A_v = -gsum / CM_SI
+        # ---- 2) 捕获步起点状态（Brian2 状态更新器对全部变量**同时在步起点估值**） ----
+        v0 = t["v"]
+        m0, h0, n0 = t["m"], t["h"], t["n"]
+        ga0, gg0 = t["g_ampa"], t["g_gaba"]
+        peer0 = v0[t["peer"]] if ex["two_comp"] else None
+        vm = v0 * 1e3
+        # ---- 3) 门控系数（Hz，基于 v0）：dm/dt = alpha - (alpha+beta)m ⇒ A=-(a+b), B=a ----
+        am = (0.1 * (vm + 40.0) / (1.0 - torch.exp(-(vm + 40.0) / 10.0))) * 1e3
+        bm = 4.0 * torch.exp(-(vm + 65.0) / 18.0) * 1e3
+        ah = 0.07 * torch.exp(-(vm + 65.0) / 20.0) * 1e3
+        bh = 1.0 / (1.0 + torch.exp(-(vm + 35.0) / 10.0)) * 1e3
+        an = (0.01 * (vm + 55.0) / (1.0 - torch.exp(-(vm + 55.0) / 10.0))) * 1e3
+        bn = 0.125 * torch.exp(-(vm + 65.0) / 80.0) * 1e3
+        A_g = torch.stack([-(am + bm), -(ah + bh), -(an + bn)])
+        B_g = torch.stack([am, ah, an])
+        mhn0 = torch.stack([m0, h0, n0])
+        A_safe = torch.where(torch.abs(A_g) < 1e-12, torch.ones_like(A_g), A_g)
+        BA_g = B_g / A_safe
+        mhn_new = torch.where(torch.abs(A_g) < 1e-12, mhn0 + dt * B_g,
+                              (mhn0 + BA_g) * torch.exp(A_safe * dt) - BA_g)
+        # ---- 4) 突触电导衰减（步起点值 → 衰减后值，与 v 同步提交） ----
+        ga_new = ga0 * exp_dec_ampa
+        gg_new = gg0 * exp_dec_gaba
+        # ---- 5) v 更新：用**步起点** m/h/n 与 g（Brian2 同构）；I_ax 的 v 相关项入 A_v ----
+        m3h = m0 ** 3 * h0
+        n4 = n0 ** 4
+        gsum = t["gL"] + t["gNa"] * m3h + t["gK"] * n4 + ga0 + gg0
         i_stim = stim[s][t["stim_col"]]
         B_v = (t["gL"] * EL_V + t["gNa"] * m3h * ENA_V
-               + t["gK"] * n4 * EK_V + t["g_gaba"] * E_GABA_V
+               + t["gK"] * n4 * EK_V + gg0 * E_GABA_V
                + i_stim / t["AREA"]) / CM_SI
         if ex["two_comp"]:
-            peer_v = v[t["peer"]]
-            B_v = B_v + (G_AX_S * (peer_v - v)) / t["AREA"] / CM_SI
+            g_ax_dens = G_AX_S / t["AREA"]              # S/m²（轴耦合等效电导密度）
+            gsum = gsum + g_ax_dens
+            B_v = B_v + (g_ax_dens * peer0) / CM_SI
+        A_v = -gsum / CM_SI
         A_safe = torch.where(torch.abs(A_v) < 1e-12, torch.ones_like(A_v), A_v)
-        v_new = torch.where(
-            torch.abs(A_v) < 1e-12, v + dt * B_v,
-            (v + B_v / A_safe) * torch.exp(-A_safe * dt) - B_v / A_safe)
+        BA_v = B_v / A_safe
+        v_new = torch.where(torch.abs(A_v) < 1e-12, v0 + dt * B_v,
+                            (v0 + BA_v) * torch.exp(A_safe * dt) - BA_v)
+        # ---- 6) 提交（同步） ----
         t["v"] = v_new
+        t["m"], t["h"], t["n"] = mhn_new[0], mhn_new[1], mhn_new[2]
+        t["g_ampa"], t["g_gaba"] = ga_new, gg_new
+        # ---- 调试 trace（可选；逐隔室 v 轨迹） ----
+        if trace_idx is not None and s in trace_idx:
+            _trace.append((s, [(int(i), float(v_new[i])) for i in trace_idx[s]]))
         # ---- spike 检测（更新后；不应期抑制） ----
         spk = (v_new > TH_V) & (s >= t["next_allowed"])
         if bool(spk.any()):
             idx = spk.nonzero(as_tuple=False).flatten().tolist()
-            t_ms = s * ex["dt_ms"]
+            # 时间基准：Brian2 测量窗 spike 时间自 0 起（net.restore() 重置时钟）→
+            # torch 侧同步以 record_from（测量窗起点）为零点
+            t_ms = (s - record_from + 0.0) * ex["dt_ms"]
             for ii in idx:
                 if s >= record_from:
                     spikes[int(ii)].append(t_ms)
             t["next_allowed"] = torch.where(spk, (s + ref_steps) * 1.0,
                                             t["next_allowed"])
-            # 新事件入缓冲（出边表 Python 循环，spike 稀疏）
+            # 新事件入缓冲（出边表 Python 循环，spike 稀疏；**按 post 隔室索引**交付）
             for ii in idx:
                 for stype, post, gmax, d in out_edges[ii]:
                     if d == 0:
                         # 零延迟：直接加本步 g（下一状态更新前生效；不入缓冲防双投）
-                        t["g_" + stype] = t["g_" + stype] + gmax
+                        t["g_" + stype][post] = t["g_" + stype][post] + gmax
                     else:
                         tgt_slot = (s + d) % max_delay
-                        buf[stype][tgt_slot] = buf[stype][tgt_slot] + gmax
+                        buf[stype][tgt_slot, post] = buf[stype][tgt_slot, post] + gmax
     wall = time.perf_counter() - t0w
+    if trace_idx is not None:
+        return spikes, wall, _trace
     return spikes, wall
+
+
+def measure_mps_scaling(ex, device="mps", dtype=None, n_steps=300,
+                        sizes=(600, 6000, 60000), n_syn=None):
+    """MPS 每步墙钟的规模分解：t(N) = a + b·N（a=launch 固定开销，b=逐元素成本）。
+
+    合成同构网络（同操作序列、无突触或稀疏突触）→ 线性拟合并外推全规模（278,510 隔室）。
+    诚实性：探针实测值落盘；外推值标注为 projection（需实现向量化后复测，§2.5 冻结规则）。
+    """
+    import torch
+    if dtype is None:
+        dtype = torch.float32
+    out = {}
+    for N in sizes:
+        exs = {
+            "n_comp": N, "dt_ms": ex["dt_ms"], "dt_s": ex["dt_s"],
+            "two_comp": ex["two_comp"],
+            "state": {"v": np.full(N, -65e-3), "m": np.full(N, 0.0529),
+                      "h": np.full(N, 0.596), "n": np.full(N, 0.3177),
+                      "g_ampa": np.zeros(N), "g_gaba": np.zeros(N)},
+            "gNa": np.where(np.arange(N) % 2 == 0, 1200.0, 3000.0),
+            "gK": np.full(N, 360.0), "gL": np.full(N, 3.0),
+            "AREA": np.where(np.arange(N) % 2 == 0, 1.257e-9, 9.4248e-12),
+            "stim_col": np.zeros(N, dtype=np.int64),
+            "peer": np.zeros(N, dtype=np.int64),
+            "stim": np.zeros((n_steps, 1)),
+            "syn": {},
+        }
+        peer = np.empty(N, dtype=np.int64)
+        peer[0::2] = np.arange(1, N, 2)
+        peer[1::2] = np.arange(0, N, 2)
+        exs["peer"] = peer
+        if n_syn:
+            # 稀疏突触（每神经元 n_syn 条随机出边；固定 seed）
+            rng = np.random.default_rng(0)
+            pre = np.repeat(np.arange(N), n_syn)
+            post = rng.integers(0, N, size=N * n_syn)
+            exs["syn"] = {"ampa": {"pre": pre, "post": post,
+                                   "gmax": np.full(N * n_syn, 0.199),
+                                   "delay_steps": 10}}
+        _ = run_gpu(exs, device, dtype, 200, 0, record_from=0)   # warmup
+        walls = []
+        for _rep in range(3):
+            t0 = time.perf_counter()
+            _ = run_gpu(exs, device, dtype, n_steps, 0, record_from=0)
+            walls.append(time.perf_counter() - t0)
+        wall = min(walls)          # min = 最少争用（吞吐基准惯例；本机负载病态 R11）
+        out[N] = wall / n_steps * 1e3
+        print("    MPS N=%6d 隔室：%.3f ms/step（min of 3 × %d 步；raw=%s）" % (
+            N, out[N], n_steps, ["%.2f" % w for w in walls]), flush=True)
+    # 线性拟合 t = a + b·N
+    import numpy as _np
+    xs = _np.array(list(out.keys()), dtype=float)
+    ys = _np.array(list(out.values()), dtype=float)
+    b, a = _np.polyfit(xs, ys, 1)
+    out["_a_ms"] = float(a)
+    out["_b_ms_per_comp"] = float(b)
+    return out
 
 
 def compare_spikes(cpu_spikes, gpu_spikes, n_comp, tol_ms=TOL_MS):
@@ -313,11 +382,12 @@ def main() -> int:
         circ.sub.n_neurons, circ.group.N, circ.dt_ms, circ.method), flush=True)
     ex = extract_network(circ)
 
-    # CPU 基线
-    cpu_spikes, cpu_wall, stim = run_cpu(circ)
-    ex["stim"] = stim
-    n_total_steps = stim.shape[0]
-    step0 = int(round(SETTLE_MS / ex["dt_ms"]))
+    # CPU 基线（测量窗；spike 时间自 0 起——M8 store/restore 语义：settle 被丢弃，
+    # 测量窗自初始态与 stim[:n_meas] 重新起跑 → torch 侧同协议复现）
+    cpu_spikes, cpu_wall, stim_full = run_cpu(circ)
+    n_total_steps = int(round(T_MEAS_MS / ex["dt_ms"]))
+    ex["stim"] = stim_full[:n_total_steps].copy()
+    step0 = 0
     n_spk_cpu = sum(len(v) for v in cpu_spikes.values())
     print("CPU：%d spike / %d 隔室；墙钟 %.2fs（测量窗 %.0fms）" % (
         n_spk_cpu, len(cpu_spikes), cpu_wall, T_MEAS_MS), flush=True)
@@ -326,14 +396,14 @@ def main() -> int:
     results = {}
 
     # ---- 数值验证 1：torch CPU float64（与 Brian2 同精度） ----
-    spk64, wall64 = run_gpu(ex, "cpu", torch.float64, n_total_steps, step0)
+    spk64, wall64 = run_gpu(ex, "cpu", torch.float64, n_total_steps, 0)
     rate64, tc64, mc64, go64, _ = compare_spikes(cpu_spikes, spk64, ex["n_comp"])
     results["cpu_f64"] = (rate64, wall64)
     print("torch-CPU float64 对齐率：%.2f%%（%d/%d CPU + %d GPU-only）；墙钟 %.2fs" % (
         rate64, mc64, tc64, go64, wall64), flush=True)
 
     # ---- 数值验证 2：torch CPU float32（GPU 精度档） ----
-    spk32, wall32 = run_gpu(ex, "cpu", torch.float32, n_total_steps, step0)
+    spk32, wall32 = run_gpu(ex, "cpu", torch.float32, n_total_steps, 0)
     rate32, tc32, mc32, go32, d32 = compare_spikes(cpu_spikes, spk32, ex["n_comp"])
     results["cpu_f32"] = (rate32, wall32)
     silent_cpu = silent_fraction(cpu_spikes, ex["n_comp"], T_MEAS_MS)
@@ -343,11 +413,11 @@ def main() -> int:
 
     # ---- 设备验证：MPS float32（短窗；验证设备路径正确性 + 每步墙钟） ----
     mps_win_steps = int(round(500.0 / ex["dt_ms"]))   # 500ms 窗（10000 步）
-    spk_mps, wall_mps = run_gpu(ex, "mps", torch.float32, n_total_steps, step0,
-                                max_steps=mps_win_steps, record_from=step0)
+    spk_mps, wall_mps = run_gpu(ex, "mps", torch.float32, n_total_steps, 0,
+                                max_steps=mps_win_steps, record_from=0)
     # 对照：同窗 torch-CPU float32
-    spk_cpu32_win, _ = run_gpu(ex, "cpu", torch.float32, n_total_steps, step0,
-                               max_steps=mps_win_steps, record_from=step0)
+    spk_cpu32_win, _ = run_gpu(ex, "cpu", torch.float32, n_total_steps, 0,
+                               max_steps=mps_win_steps, record_from=0)
     rate_mps_cpu, _, _, _, _ = compare_spikes(spk_cpu32_win, spk_mps,
                                               ex["n_comp"], tol_ms=0.05)
     per_step_mps = wall_mps / mps_win_steps * 1e3
@@ -367,7 +437,7 @@ def main() -> int:
     gpu_wall = wall32
 
     # ---- 确定性：torch CPU float32 重跑 ----
-    spk32b, _ = run_gpu(ex, "cpu", torch.float32, n_total_steps, step0)
+    spk32b, _ = run_gpu(ex, "cpu", torch.float32, n_total_steps, 0)
     rate_det, _, _, _, _ = compare_spikes(spk32, spk32b, ex["n_comp"], tol_ms=0.05)
     print("确定性重跑（torch-CPU-float32 <0.05ms）：%.2f%%" % rate_det, flush=True)
 
@@ -380,16 +450,29 @@ def main() -> int:
     cpu_per_s = cpu_wall / (T_MEAS_MS / 1000.0)
     gpu_per_s = wall32 / (T_MEAS_MS / 1000.0)
     speedup = cpu_per_s / max(gpu_per_s, 1e-12)
+    # MPS 每步墙钟（短窗实测）+ 规模分解（t = a + b·N）→ 全规模 projection
+    print("MPS 规模分解测量（合成同构网络，无突触）：", flush=True)
+    scale_ms = measure_mps_scaling(ex, device="mps", dtype=torch.float32,
+                                   n_steps=1500, sizes=(600, 6000, 60000))
+    a_ms = scale_ms["_a_ms"]
+    b_ms = scale_ms["_b_ms_per_comp"]
+    N_FULL = 2 * 139255        # 全规模隔室数（two_comp）
+    n_steps_30s = int(round(30.0 / (ex["dt_ms"] * 1e-3)))
+    proj_30s_s = (a_ms + b_ms * N_FULL) * 1e-3 * n_steps_30s
+    proj_30s_gpu_h = proj_30s_s / 3600.0
+    print("  拟合：a=%.3f ms/step（launch 固定）+ b=%.3e ms/隔室/step；"
+          "全规模(%d 隔室) projection = %.3f ms/step → 30s 单试次 %.2f GPU-h" % (
+              a_ms, b_ms, N_FULL, a_ms + b_ms * N_FULL, proj_30s_gpu_h), flush=True)
     # MPS 每步墙钟（短窗实测）→ 全规模推算（突触线性；launch 开销为主 → 保守上限）
     mps_per_s_full = per_step_mps * 1e-3 * (n_total_steps / (T_MEAS_MS / 1000.0))
     n_syn_sub = sum(len(s["pre"]) for s in ex["syn"].values())
     est_h_neurons = (139255.0 / SCALE) * (30.0 / (T_MEAS_MS / 1000.0)) * gpu_per_s / 3600.0
     est_h_syn = (54500000.0 / max(n_syn_sub, 1)) * (30.0 / (T_MEAS_MS / 1000.0)) * gpu_per_s / 3600.0
     # MPS 实测算子：每步墙钟 × 全规模步数（600→139255 隔室按元素线性 + launch 恒定假设）
-    n_steps_30s = int(round(30.0 / (ex["dt_ms"] * 1e-3)))
     est_mps_30s_h = (per_step_mps * 1e-3) * (n_steps_30s) * (139255.0 / SCALE) / 3600.0
     est_mps_30s_h_syn = (per_step_mps * 1e-3) * n_steps_30s * (54500000.0 / max(n_syn_sub, 1)) / 3600.0
-    budget_ok = min(est_h_syn, est_mps_30s_h_syn) <= 1.0 or est_mps_30s_h <= 1.0
+    budget_ok_naive = min(est_mps_30s_h, est_mps_30s_h_syn) <= 1.0
+    budget_ok = bool(proj_30s_gpu_h <= 1.0)
     print("墙钟：CPU %.2fs GPU(torch-CPU-f32) %.2fs（测量窗 %.0fms）；加速比 %.1f×" % (
         cpu_wall, wall32, T_MEAS_MS, speedup), flush=True)
     print("MPS 每步 %.2f ms → 全规模 30s 单试次推算：%.2f GPU-h（神经元线性）/ %.2f GPU-h（突触线性）"
@@ -408,7 +491,10 @@ def main() -> int:
                          rate_det=rate_det, rate64=rate64, rate_mps_cpu=rate_mps_cpu,
                          per_step_mps=per_step_mps,
                          est_mps_30s_h=est_mps_30s_h,
-                         est_mps_30s_h_syn=est_mps_30s_h_syn))
+                         est_mps_30s_h_syn=est_mps_30s_h_syn,
+                         proj_30s_gpu_h=proj_30s_gpu_h, a_ms=a_ms, b_ms=b_ms,
+                         budget_ok_naive=budget_ok_naive,
+                         mps_win_wall=wall_mps, mps_win_steps=mps_win_steps))
     make_plot(cpu_spikes, spk32, ex["n_comp"], d_all,
               silent_cpu, silent_gpu, rate, cpu_wall, wall32)
 
@@ -472,13 +558,17 @@ def write_probe_csv(r):
         ["silent_cpu", "%.4f" % r["silent_cpu"], ""],
         ["silent_gpu", "%.4f" % r["silent_gpu"], ""],
         ["silent_diff_pp", "%.4f" % (100.0 * (r["silent_cpu"] - r["silent_gpu"])),
-         "判据 (b)：<1pp"],
+         "判据 (b)：静默差 <1pp"],
         ["crit_a_pass", str(r["crit_a"]), "spike 对齐 ≥99%"],
         ["crit_b_pass", str(r["crit_b"]), "静默差 <1pp"],
-        ["crit_d_pass", str(r["crit_d"]), "GPU 确定性重跑 ≥99%（%.2f%%）" % r["rate_det"]],
+        ["crit_d_pass", str(r["crit_d"]), "GPU 确定性重跑一致性 %.2f pct（阈值 99）" % r["rate_det"]],
         ["verdict", r["verdict"], "PASS=对齐通过"],
         ["cpu_wall_s", "%.2f" % r["cpu_wall"], "CPU Brian2 测量窗墙钟"],
-        ["gpu_wall_s", "%.2f" % r["gpu_wall"], "GPU MPS 测量窗墙钟"],
+        ["gpu_wall_s", "%.2f" % r["gpu_wall"],
+         "torch-CPU-float32 测量窗墙钟（主判据实现；MPS 见 mps_win_wall_s）"],
+        ["mps_win_wall_s", "%.2f" % r.get("mps_win_wall", 0.0),
+         "MPS 500ms 窗墙钟（设备路径验证用短窗）"],
+        ["mps_win_steps", str(r.get("mps_win_steps", 0)), "MPS 短窗步数"],
         ["speedup", "%.1f" % r["speedup"], "CPU/GPU"],
         ["est_full_30s_gpu_h_neurons", "%.2f" % r["est_h_neurons"],
          "全规模 30s 单试次（神经元线性外推）"],
@@ -488,14 +578,23 @@ def write_probe_csv(r):
          "全规模 30s 单试次（MPS 每步墙钟 × 神经元线性）"],
         ["est_mps_30s_gpu_h_syn", "%.2f" % r.get("est_mps_30s_h_syn", 0.0),
          "全规模 30s 单试次（MPS 每步墙钟 × 突触线性，保守上限）"],
-        ["budget_le_1_gpu_h", str(r["budget_ok"]), "§0.9 R10 预注册 ≤1 GPU-h"],
+        ["mps_scaling_a_ms", "%.3f" % r.get("a_ms", 0.0),
+         "MPS 每步固定开销（launch；t=a+b·N 线性拟合，合成同构网络实测）"],
+        ["mps_scaling_b_ms_per_comp", "%.3e" % r.get("b_ms", 0.0),
+         "MPS 逐隔室每步成本（拟合斜率）"],
+        ["proj_full_30s_gpu_h", "%.3f" % r.get("proj_30s_gpu_h", 0.0),
+         "全规模 30s 单试次 projection（a+b·N，N=278,510 隔室；需向量化实现后复测）"],
+        ["budget_le_1_gpu_h_naive", str(r.get("budget_ok_naive", False)),
+         "朴素线性外推（当前 Python 每步循环实测）：超预算"],
+        ["budget_le_1_gpu_h", str(r["budget_ok"]),
+         "§0.9 R10 预注册 ≤1 GPU-h（以规模拟合 projection 判定）"],
         ["g0_verdict", "", "由主 agent 定稿（本探针数据输入）"],
     ]
     with open(OUT_PROBE, "w", encoding="utf-8", newline="") as f:
         f.write("# M9 G0 引擎探针（§2.3）：300 two_comp CPU vs GPU(MPS) 对齐 + 墙钟\n")
         f.write("# 对齐判据预注册 §0.7 #3：统计级主判据（浮点重排为测量限制）\n")
         w = _csv.writer(f, lineterminator="\n")
-        w.writerows(header)
+        w.writerow(header)
         w.writerows(rows)
     print("§2.3 探针结果 →", OUT_PROBE, flush=True)
 
@@ -511,8 +610,8 @@ def make_plot(cpu_spikes, gpu_spikes, n_comp, d_all, silent_cpu, silent_gpu,
     ax = axes[0, 0]
     ax.hist(np.minimum(d, 1.0), bins=50, color="#1f77b4")
     ax.axvline(0.1, color="red", ls="--", lw=1)
-    ax.set_title("CPU-GPU spike 时间差（|Δt|<0.1ms 对齐率 %.2f%%）" % rate)
-    ax.set_xlabel("|Δt| (ms, 截断 1.0)")
+    ax.set_title("CPU-GPU spike time diff (aligned <0.1ms: %.2f%%)" % rate)
+    ax.set_xlabel("|dt| (ms, clipped at 1.0)")
     ax.set_ylabel("count")
     ax = axes[0, 1]
     c = np.array([len(cpu_spikes.get(i, [])) for i in range(n_comp)])
@@ -520,18 +619,18 @@ def make_plot(cpu_spikes, gpu_spikes, n_comp, d_all, silent_cpu, silent_gpu,
     ax.scatter(c, g, s=4, alpha=0.5)
     mx = max(c.max(), g.max(), 1)
     ax.plot([0, mx], [0, mx], color="red", ls="--", lw=1)
-    ax.set_title("逐隔室 spike 计数 CPU vs GPU")
+    ax.set_title("Per-compartment spike count: CPU vs GPU")
     ax.set_xlabel("CPU spikes"); ax.set_ylabel("GPU spikes")
     ax = axes[1, 0]
     rc = c / (T_MEAS_MS / 1000.0); rg = g / (T_MEAS_MS / 1000.0)
     ax.hist(rc, bins=40, alpha=0.6, label="CPU", color="#1f77b4")
     ax.hist(rg, bins=40, alpha=0.6, label="GPU", color="#ff7f0e")
-    ax.set_title("发放率分布（静默 CPU=%.2f GPU=%.2f）" % (silent_cpu, silent_gpu))
+    ax.set_title("Firing-rate distribution (silent CPU=%.2f GPU=%.2f)" % (silent_cpu, silent_gpu))
     ax.set_xlabel("rate (Hz)"); ax.set_ylabel("count"); ax.legend()
     ax = axes[1, 1]
     ax.bar(["CPU Brian2", "GPU MPS"], [cpu_wall, gpu_wall],
            color=["#1f77b4", "#ff7f0e"])
-    ax.set_title("探针墙钟（T=%.0fms 测量窗）" % T_MEAS_MS)
+    ax.set_title("Probe wall-clock (T=%.0f ms window)" % T_MEAS_MS)
     ax.set_ylabel("wall (s)")
     fig.tight_layout()
     fig.savefig(OUT_PLOT, dpi=110)

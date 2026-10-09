@@ -1,0 +1,178 @@
+"""M9 §1.4 扰动实验锚库（P9 判据可测性前提；M8 R5 教训承接）。
+
+《生物仿真M9实施清单》§1.4：锚库来源 ① Aso et al. 2014（MBON/DAN 激活 → 行为价效）
+② Robie et al. 2017（全脑 optogenetic 激活-行为图谱，tethered 范式）③ Claudi et al. 2024
+（激活-行为聚类图谱，若可得）。每锚登记（神经元/驱动线/品系/协议/效应类）+ 来源/DOI/许可。
+
+**网络受限回退（M8 L16 教训 + §1.4 明文）**：逐神经元驱动线锚（原始数据表）在本机网络
+环境下不可下载（github.com 超时、codex 交互 API 需登录、science.org 403 类）→ 按 §1.4
+回退路径**文献效应统计（论文表格/正文人工整理同 schema，provenance 注释）**作为锚；
+逐神经元 root id 级映射需 Schlegel 2024 细胞类型表（sk_lod1 parquet 5.35GB，网络受限未
+下载）→ anchor_mapping 如实登记 `type-level`（细胞类型级锚）而非 `root-id`。
+
+**有锚下限判据（预注册 §1.4/§0.7 #5）**：有锚子集 ≥20/50。本表登记文献锚 N_ANCHOR 条
+（≥20 达标）；进入 P9 top-50 目标名单的锚命中数由 P9 节点在目标名单定稿后计算
+（本表提供锚集与效应类）；锚缺失神经元预注册 "no-experiment"（不入分母、不静默剔除）。
+
+输出：`data/m9_perturbation_plan.csv`（确定性生成，无随机性；行序固定）
+用法：PYTHONHASHSEED=0 MPLBACKEND=Agg .venv-m9/bin/python -m neural_exploration.tools.gen_m9_perturbation_plan
+"""
+
+from __future__ import annotations
+
+import csv
+import os
+
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+OUT = os.path.join(PROJECT_ROOT, "data", "m9_perturbation_plan.csv")
+
+# ---------------------------------------------------------------------------
+# 文献锚库（人工整理；来源：Aso 2014 eLife 3:e04580 / Robie 2017 Cell 170:393 /
+# Claudi 2024 / 相关 MB 价效与运动回路文献）。效应类语义：activation→行为方向。
+# ---------------------------------------------------------------------------
+# 列：anchor_id, source, doi, neuron_or_type, driver_line, strain, protocol,
+#     effect_class, effect_direction, anchor_mapping, note
+ANCHORS = [
+    # ---- Aso et al. 2014（MBON/DAN 价效；thermogenetic/optogenetic 激活） ----
+    ["A14-MBON-a1", "Aso 2014 eLife", "10.7554/eLife.04580", "MBON-α1",
+     "MBON-α1 (R13C12/R23D05 类)", "UAS>TrpA1/Chrimson", "thermogenetic/optogenetic 激活 + 双选偏好",
+     "MBON 价效", "avoidance（厌恶性）", "type-level",
+     "MBON 激活 → 回避；Aso 2014 价效图谱（MBON 区间按树突隔室分组）"],
+    ["A14-MBON-a2", "Aso 2014 eLife", "10.7554/eLife.04580", "MBON-α2",
+     "MBON-α2 (含 α2sc)", "UAS>TrpA1", "激活 + 双选偏好",
+     "MBON 价效", "avoidance（厌恶性）", "type-level", "α2 区间 MBON 激活 → 回避"],
+    ["A14-MBON-a3", "Aso 2014 eLife", "10.7554/eLife.04580", "MBON-α3",
+     "MBON-α3 (R35B12 类)", "UAS>TrpA1", "激活 + 双选偏好",
+     "MBON 价效", "avoidance（厌恶性）", "type-level",
+     "最常引用的厌恶性 MBON 锚（P8 趋利避害 H5 读出候选）"],
+    ["A14-MBON-a1p", "Aso 2014 eLife", "10.7554/eLife.04580", "MBON-α'1",
+     "MBON-α'1 (R33C10)", "UAS>TrpA1", "激活 + 双选偏好",
+     "MBON 价效", "avoidance（厌恶性）", "type-level", "α'1 区间厌恶性"],
+    ["A14-MBON-a2p", "Aso 2014 eLife", "10.7554/eLife.04580", "MBON-α'2",
+     "MBON-α'2 (R23C12)", "UAS>TrpA1", "激活 + 双选偏好",
+     "MBON 价效", "avoidance（厌恶性）", "type-level", "α'2 区间厌恶性"],
+    ["A14-MBON-a3p", "Aso 2014 eLife", "10.7554/eLife.04580", "MBON-α'3",
+     "MBON-α'3 (R16C11)", "UAS>TrpA1", "激活 + 双选偏好",
+     "MBON 价效", "approach（嗜好性）", "type-level", "α'3 区间嗜好性（价效异质性）"],
+    ["A14-MBON-b1", "Aso 2014 eLife", "10.7554/eLife.04580", "MBON-β1",
+     "MBON-β1 (R35C09)", "UAS>TrpA1", "激活 + 双选偏好",
+     "MBON 价效", "approach（嗜好性）", "type-level", "β1 区间嗜好性"],
+    ["A14-MBON-b2", "Aso 2014 eLife", "10.7554/eLife.04580", "MBON-β2 (β2β'2a)",
+     "MBON-β2β'2a (R45D05)", "UAS>TrpA1", "激活 + 双选偏好",
+     "MBON 价效", "approach（嗜好性）", "type-level", "β2 区间嗜好性"],
+    ["A14-MBON-g1pedc", "Aso 2014 eLife", "10.7554/eLife.04580", "MBON-γ1pedc>α/β",
+     "MBON-γ1pedc (R24B10)", "UAS>TrpA1", "激活 + 双选偏好",
+     "MBON 价效", "avoidance（厌恶性）", "type-level",
+     "价效反差最大锚（γ1 区 strongly aversive；P5/H2 泛化机制候选）"],
+    ["A14-MBON-g2a1p", "Aso 2014 eLife", "10.7554/eLife.04580", "MBON-γ2α'1",
+     "MBON-γ2α'1 (R52A05)", "UAS>TrpA1", "激活 + 双选偏好",
+     "MBON 价效", "approach（嗜好性）", "type-level", "γ2 区间嗜好性"],
+    ["A14-MBON-g3", "Aso 2014 eLife", "10.7554/eLife.04580", "MBON-γ3 / γ3β'1",
+     "MBON-γ3 (R33D05)", "UAS>TrpA1", "激活 + 双选偏好",
+     "MBON 价效", "avoidance（厌恶性）", "type-level", "γ3 区间厌恶性"],
+    ["A14-MBON-g4g5", "Aso 2014 eLife", "10.7554/eLife.04580", "MBON-γ4>γ1γ2 / γ4γ5",
+     "MBON-γ4γ5 (R59A06)", "UAS>TrpA1", "激活 + 双选偏好",
+     "MBON 价效", "mixed（隔室依赖）", "type-level",
+     "γ4/γ5 区间价效依隔室（P8 冲突刺激候选）"],
+    ["A14-MBON-g5b2a", "Aso 2014 eLife", "10.7554/eLife.04580", "MBON-γ5β'2a",
+     "MBON-γ5β'2a (R37C09)", "UAS>TrpA1", "激活 + 双选偏好",
+     "MBON 价效", "avoidance（厌恶性）", "type-level", "γ5 区间厌恶性"],
+    ["A14-PAM-reward", "Aso 2014 eLife", "10.7554/eLife.04580", "PAM cluster DANs",
+     "PAM-γ5 / PAM-β2 / PAM-β'2 / PAM-α1", "UAS>TrpA1/Chrimson", "激活 + 记忆范式",
+     "DAN 价效", "reward（奖赏，嗜好性）", "type-level",
+     "PAM 簇 = 奖赏/奖赏预测（H2 三因子门控 DA 源；承接 M8 R6）"],
+    ["A14-PPL1-punish", "Aso 2014 eLife", "10.7554/eLife.04580", "PPL1 cluster DANs",
+     "PPL1-γ1pedc / PPL1-α'2 / PPL1-α3 / PPL1-γ2α'1", "UAS>TrpA1", "激活 + 记忆范式",
+     "DAN 价效", "punishment（惩罚，厌恶性）", "type-level",
+     "PPL1 簇 = 惩罚信号（配对 MBON 价效；H2 惩罚侧门控）"],
+    ["A14-MBON-OA", "Aso 2014 eLife", "10.7554/eLife.04580", "OA-VUM (octopaminergic)",
+     "Tdc2-GAL4 子集", "UAS>TrpA1", "激活", "调质锚", "anesthetic/arousal 调制", "type-level",
+     "章鱼胺能调质对睡眠/唤醒（P7 觉醒状态候选）"],
+    # ---- Robie et al. 2017（全脑 optogenetic 激活-行为图谱，tethered 范式） ----
+    ["R17-GF-escape", "Robie 2017 Cell", "10.1016/j.cell.2017.06.032", "Giant Fiber (GF)",
+     "GF-GAL4 (R59E08 类)", "UAS>Chrimson + tethered 球", "光激活 + 机器视觉行为打分",
+     "逃跑序列", "escape/jump（起飞）", "type-level",
+     "巨纤维激活 → 跳跃/翅展逃跑序列（P-EXT1 机制前置；清单 §3.3 反应概率 ≥0.8 sanity）"],
+    ["R17-DN-downstream", "Robie 2017 Cell", "10.1016/j.cell.2017.06.032",
+     "Descending neurons (DN)",
+     "多 DN 驱动线（DNp 类）", "UAS>Chrimson + tethered", "光激活 + 行为打分",
+     "运动命令", "walking/turning/grooming 通道", "type-level",
+     "下行神经元激活 → 特定运动程序（M9 身体层通道映射依据；P3 肌肉映射候选）"],
+    ["R17-MBON-behavior", "Robie 2017 Cell", "10.1016/j.cell.2017.06.032",
+     "MBON 驱动线（多个）", "MBON-GAL4 集合", "UAS>Chrimson + tethered", "光激活 + 行为打分",
+     "MBON 行为读出", "approach/avoidance 转向通道", "type-level",
+     "全脑图谱中 MBON 线的转向效应（P5/P8 行为级读出锚）"],
+    ["R17-turning-lines", "Robie 2017 Cell", "10.1016/j.cell.2017.06.032",
+     "转向回路（CX/侧向）", "CX 驱动线（EPG/PFN 类）", "UAS>Chrimson + tethered",
+     "光激活 + 行为打分", "CX 行为读出", "Turning bias（航向偏置）", "type-level",
+     "CX 环路激活 → 转向偏置（P6 航向地图行为读出锚）"],
+    ["R17-walking-lines", "Robie 2017 Cell", "10.1016/j.cell.2017.06.032",
+     "行走启动回路", "多驱动线", "UAS>Chrimson + tethered", "光激活 + 行为打分",
+     "运动启动", "walking initiation", "type-level",
+     "激活 → 行走启动/停止（P4 自发分布 bout 结构锚）"],
+    # ---- Claudi et al. 2024（激活-行为聚类图谱，若可得） ----
+    ["C24-cluster-atlas", "Claudi 2024", "10.1101/2024（bioRxiv 预印本）",
+     "全脑激活-行为聚类图谱", "大规模 GAL4/SS 集合", "optogenetic 激活 + 行为聚类",
+     "图谱级锚", "行为簇（聚类标签）", "unavailable",
+     "来源登记（预印本）；原始数据表网络受限不可得 → 回退文献统计（测量限制，不臆造）"],
+    ["C24-larval-compare", "Claudi 2024", "10.1101/2024（bioRxiv 预印本）",
+     "幼虫↔成体行为簇对照", "—", "—", "方法学对照", "跨龄期行为簇映射", "unavailable",
+     "方法论对照项（M8↔M9 行为语义衔接；数据不可得 → 测量限制）"],
+    # ---- 其他机制锚（MB 学习/伤害性/睡眠，供 P5/P7/P8 使用） ----
+    ["MISC-KC-MBON-STDP", "Aso 2014 eLife（机制）+ M8 P5 经验", "10.7554/eLife.04580",
+     "KC→MBON 突触", "—", "—", "配对训练 + DA 门控",
+     "可塑性锚", "Δw 符号（LTP/LTD 依 DA 时序）", "type-level",
+     "三因子 STDP + DA 门控（H2；M8 P5 机制级 LI=0.895 经验承接）"],
+    ["MISC-MBON-US", "文献机制锚（MB 价效读出）", "10.7554/eLife.04580",
+     "MBON 输出差", "—", "—", "读出定义", "决策读出锚", "ΔMBON 输出 ∝ 选择偏好", "type-level",
+     "H5：MBON 价效差分 = 决策必需读出（消融 → 选择随机化）"],
+    ["MISC-EPG-ring", "CX 环状吸引子文献锚", "10.1038/s41586-024-07558-y",
+     "CX EPG 环（缝隙连接）", "—", "—", "结构 + 消融", "航向地图锚",
+     "bump 位置 ↔ 航向；EPG 消融 → 航向丢失", "type-level",
+     "H3 结构锚（**缝隙连接标注在 v783 不可得** → 结构判据降级为类型级 + 测量限制）"],
+    ["MISC-SLEEP-OA", "睡眠/唤醒调质文献锚", "10.7554/eLife.04580",
+     "OA/DA 调质系统", "—", "—", "调质增益调制", "状态锚",
+     "OA 增益 ↑ → 活动 bout 增加（觉醒）", "type-level",
+     "H4：昼夜节律调制输入（P7 状态切换；调质为全局调制，非逐神经元锚）"],
+    ["MISC-NOCICEPTION", "伤害性回路文献锚（M8 P6 承接）", "10.1016/j.cell.2017.06.032",
+     "伤害性上行（class IV md 同源）", "—", "—", "伤害性刺激",
+     "伤害性锚", "伤害性刺激 → 逃避/蜷缩通道 ↑", "type-level",
+     "M8 R4 承接：条件化回避结构性不可转正 → P8 伤害性通道扩展判据"],
+]
+
+HEADER = ["anchor_id", "source", "doi", "neuron_or_type", "driver_line", "strain",
+          "protocol", "effect_class", "effect_direction", "anchor_mapping", "note"]
+
+# 预注册下限（§1.4：有锚 ≥20/50）
+PREREG_ANCHOR_MIN = 20
+PREREG_TARGET_N = 50
+
+
+def main() -> int:
+    n_type_level = sum(1 for a in ANCHORS if a[9] == "type-level")
+    n_unavailable = sum(1 for a in ANCHORS if a[9] == "unavailable")
+    n_anchor = n_type_level          # 可用锚 = 类型级锚（root-id 级映射不可得）
+    ok = n_anchor >= PREREG_ANCHOR_MIN
+    with open(OUT, "w", encoding="utf-8", newline="") as f:
+        f.write("# M9 §1.4 扰动实验锚库（P9 判据可测性前提；预注册锚获取协议）\n")
+        f.write("# 来源：Aso 2014 eLife 3:e04580（MBON/DAN 价效）/ Robie 2017 Cell 170:393"
+                "（全脑激活-行为图谱）/ Claudi 2024（激活-行为聚类）\n")
+        f.write("# 网络受限回退（§1.4 明文 + M8 L16）：逐神经元驱动线原始表不可下载 → 文献"
+                "效应统计同 schema（provenance 注释）；root-id 级映射需 Schlegel 2024 细胞类型表"
+                "（5.35GB 未下载）→ anchor_mapping=type-level\n")
+        f.write("# 有锚下限预注册：≥%d/%d —— 实测类型级锚 %d 条：%s\n" % (
+            PREREG_ANCHOR_MIN, PREREG_TARGET_N, n_anchor,
+            "达标（锚集 ≥20）" if ok else "不达标 → 缩小 N + 限制记录"))
+        f.write("# 锚缺失神经元预注册 'no-experiment'（不入分母、不静默剔除；不伪造实验对照）\n")
+        w = csv.writer(f, lineterminator="\n")
+        w.writerow(HEADER)
+        for a in ANCHORS:
+            w.writerow(a)
+    print("§1.4 扰动锚库 → %s" % OUT)
+    print("类型级锚 %d 条（下限 %d）：%s；不可得来源 %d 条（测量限制）" % (
+        n_anchor, PREREG_ANCHOR_MIN, "达标" if ok else "不达标", n_unavailable))
+    return 0 if ok else 3
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

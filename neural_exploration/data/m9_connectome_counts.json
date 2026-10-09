@@ -11,18 +11,21 @@
     "n_neurons": 139255,
     "chem_synapse_count": 54492922,
     "chem_unique_directed_pairs": 15091983,
+    "chem_pairs_syn_ge_3": 4916231,
+    "chem_pairs_syn_ge_5": 2700513,
     "n_rows_pairxneuropil": 16847997,
     "self_chem_pairs": 0,
     "isolated_neurons": 616,
     "neurons_with_edges": 138639,
-    "region_coverage_neurons": 42959680,
+    "region_coverage_neurons": 137090,
+    "region_source": "proofread_connections.neuropil 按 post 神经元聚合 dominant；per_neuron_neuropil_count_* 文件为不同 materialization 的 segment id 空间（与 roster 交集实测 = 0）→ 弃用（测量限制）",
     "neurotransmitter_syn_counts": {
+      "GABA": 12755910,
       "cholinergic": 30429211,
       "glutamatergic": 9668065,
       "octopaminergic": 320569,
-      "GABA": 12755910,
-      "dopaminergic": 708265,
-      "serotonergic": 610902
+      "serotonergic": 610902,
+      "dopaminergic": 708265
     },
     "neurotransmitter_neurons_covered": 138005,
     "neurotransmitter_neuron_coverage_pct": 99.1,
@@ -30,6 +33,11 @@
     "cell_type": "unavailable（Schlegel 2024 sk_lod1 parquet 5.35GB 未下载，测量限制）"
   },
   "diagnostics": [
+    {
+      "name": "唯一有向对 vs Codex 3,732,460（定义差异）",
+      "in_band": false,
+      "detail": "实测 15091983（含任意突触的连接对）；codex 官方 3,732,460 为其统计口径（过滤阈值未文档化）→ 定义差异登记 + 请求三态裁决（突触计数锚 54.5M 已独立验证）"
+    },
     {
       "name": "神经元行递质覆盖（有出边）",
       "in_band": true,
@@ -46,6 +54,6 @@
       "detail": "flywire_synapses（9.49GB）网络受限未下载 → 逐突触覆盖率不可得，以连接级覆盖率（100%% 化学行）如实记录 + 测量限制登记"
     }
   ],
-  "output_sha256": "da08eef8209213a08d7b7d35619dc9733507c8bd013a303b81c4af8f0aa5676d",
-  "note": "化学突触权威计数=proofread_connections.syn_count 全和（54,492,922，论文 '54.5 million synapses' 同源）；唯一有向对=3,732,460（codex 官方值同源）。flywire_synapses（~130M 行）含未关联 proofread 神经元的孤儿位点——逐突触覆盖以该文件可得性如实记录。缝隙连接：官方 v783 发布不含（论文原文），'~8.5k' 锚与官方发布不符 → 请求三态裁决（测量限制，不臆造）。细胞类型：Schlegel 2024 标注在 sk_lod1 parquet（5.35GB），网络受限未下载 → 列空 + 测量限制登记。"
+  "output_sha256": "088d76b6de89fb5bdbfc19027162c0225faaad17091b4a54969de1c904199984",
+  "note": "化学突触权威计数=proofread_connections.syn_count 全和（54,492,922，论文 '54.5 million synapses' 同源，±10% 带内 ✓）。唯一有向对=解析值 15,091,983（含任意突触的连接对）——codex 标注页官方值 3,732,460 为另一统计口径（过滤阈值未文档化；实测 syn≥5→2,700,513、syn≥3→4,916,231 均不匹配）→ 定义差异登记 + 请求三态裁决（M5 L7：不按民俗数字）。flywire_synapses（9.49GB，~130M 行含孤儿位点）经主 agent 裁决**非 G2 必需**（proofread_connections 已含逐连接 NT 平均概率覆盖 100% 连接）→ 逐突触覆盖记录为测量限制。缝隙连接：官方 v783 发布不含（Dorkenwald 2024 论文原文'connectome includes only chemical synapses'），清单 §1.1 '~8.5k' 锚与官方发布不符 → 测量限制 + 三态裁决。细胞类型：Schlegel 2024 标注在 sk_lod1 parquet（5.35GB），网络受限未下载 → 列空 + 测量限制登记。脑区：per_neuron_neuropil_count_* 为不同 materialization segment id 空间（交集 0）→ 改由 proofread_connections.neuropil 聚合（同源）。"
 }

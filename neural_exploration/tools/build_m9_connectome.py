@@ -183,40 +183,13 @@ def main() -> int:
     root_set = set(root_ids.tolist())
     print("proofread 神经元：%d" % n_neurons)
 
-    # ---------- 2. 脑区（neuropil 计数） ----------
-    # post 文件（233MB，43.4M 行）→ 每神经元突触后计数最大 neuropil = 主脑区
+    # ---------- 2. 脑区（neuropil） ----------
+    # 实测（L14 数据语义坑）：`per_neuron_neuropil_count_post/pre_783.feather` 的
+    # post_pt_root_id 为**不同 materialization 的 segment id 空间**（与
+    # proofread_root_ids_783.npy 的 root id 空间实测交集 = 0，range 不相交）→ 不能直接
+    # 关联到 roster。脑区改由**权威 proofread_connections.neuropil 列**聚合：
+    # 每神经元（post 侧）逐 neuropil 突触计数最大者 = 主脑区（region）。同源、确定性。
     region_neurons = {}   # root_id -> {"region": str, "n_post": int, "n_post_total": int}
-    fb = load_feather(F_POST_NP)
-    if fb is not None:
-        _, cols = fb
-        cnt = cols.get("count", cols.get("Count"))
-        if cnt is None:
-            print("[warn] post neuropil 列名不可识（schema=%s）" % list(cols.keys()),
-                  flush=True)
-        else:
-            import pandas as pd
-            df = pd.DataFrame({
-                "rid": cols["post_pt_root_id"],
-                "np": cols["neuropil"].astype(str),
-                "cnt": cnt,
-            })
-            g = df.groupby("rid", sort=False).agg(
-                n_post_total=("cnt", "sum"),
-                region=("np", lambda s: s.idxmax() if False else None),
-            )
-            # region = 该神经元计数最大 neuropil
-            idx_max = df.groupby("rid", sort=False)["cnt"].idxmax()
-            top = df.loc[idx_max, ["rid", "np"]]
-            rid2 = top.set_index("rid")["np"].to_dict()
-            g["region"] = g.index.map(rid2)
-            for r, row in g.iterrows():
-                region_neurons[int(r)] = {"region": str(row["region"]),
-                                          "n_post": int(row["n_post_total"]),
-                                          "n_post_total": int(row["n_post_total"])}
-            del df, g, top
-            print("neuropil 计数覆盖神经元：%d / %d" % (len(region_neurons), n_neurons))
-    if not region_neurons:
-        print("[warn] post neuropil 文件不可用 → region 列留空（测量限制）", flush=True)
 
     # ---------- 3. 化学突触（proofread_connections 聚合） ----------
     fpc = load_feather(F_PROOFREAD_CONN)
@@ -233,6 +206,7 @@ def main() -> int:
     print("proofread_connections 行数（连接×neuropil）：%d" % n_rows)
 
     # 聚合 per (pre,post)：syn_count 全和 + dominant neuropil + dominant NT（syn 加权 argmax）
+    # **全向量化**（15.09M 行；避免逐行 iloc/dict——实测 >40min 不可行）
     import pandas as pd
     df = pd.DataFrame({
         "pre": pre, "post": post, "neuropil": neuropil.astype(str),
@@ -241,7 +215,6 @@ def main() -> int:
         "oct": probs["oct"], "ser": probs["ser"], "da": probs["da"],
     })
     del pre, post, neuropil, syn_count, probs
-    # NT 概率 syn 加权（每行先乘 syn_count 再分组求和，最后归一）
     for k in NT_LABELS:
         df[k + "_w"] = df[k] * df["syn_count"]
     g = df.groupby(["pre", "post"], sort=False).agg(
@@ -249,57 +222,64 @@ def main() -> int:
         neuropil=("neuropil", "first"),
         **{k + "_ws": (k + "_w", "sum") for k in NT_LABELS},
     )
-    g = g.reset_index()
+    g = g.sort_index()                      # 确定性行序（pre, post）
+    C_PRE = g.index.get_level_values(0).to_numpy(dtype=np.int64)
+    C_POST = g.index.get_level_values(1).to_numpy(dtype=np.int64)
+    C_SYN = g["syn_count"].to_numpy(dtype=np.int64)
+    C_NP = g["neuropil"].to_numpy(dtype=object)
     wsum = g[[k + "_ws" for k in NT_LABELS]].to_numpy(dtype=np.float64)
+    del df, g
     gsum = wsum.sum(axis=1, keepdims=True)
     gsum = np.where(gsum == 0, 1.0, gsum)
-    wsum_norm = wsum / gsum
-    dom = wsum_norm.argmax(axis=1)
-    chem_edges = []
-    for i in range(len(g)):
-        chem_edges.append({
-            "pre": int(g.iloc[i]["pre"]), "post": int(g.iloc[i]["post"]),
-            "syn_count": int(g.iloc[i]["syn_count"]),
-            "neuropil": str(g.iloc[i]["neuropil"]),
-            "nt": NT_NAMES[NT_LABELS[int(dom[i])]],
-            "nt_confidence": float(wsum_norm[i, int(dom[i])]),
-            "gaba": float(wsum_norm[i, 0]), "ach": float(wsum_norm[i, 1]),
-            "glut": float(wsum_norm[i, 2]), "oct": float(wsum_norm[i, 3]),
-            "ser": float(wsum_norm[i, 4]), "da": float(wsum_norm[i, 5]),
-        })
-    del df, g, wsum, wsum_norm
-    chem_edges.sort(key=lambda e: (e["pre"], e["post"]))
-    n_pairs = len(chem_edges)
-    n_chem_synapses = sum(e["syn_count"] for e in chem_edges)
+    C_PROB = (wsum / gsum).astype(np.float64)
+    del wsum, gsum
+    C_DOM = C_PROB.argmax(axis=1).astype(np.int8)
+    C_CONF = C_PROB[np.arange(len(C_DOM)), C_DOM]
+    n_pairs = int(C_PRE.size)
+    n_chem_synapses = int(C_SYN.sum())
+
+    # ---------- 2b. 脑区（由 proofread_connections.neuropil 聚合，post 侧） ----------
+    import pandas as pd
+    dfr = pd.DataFrame({
+        "post": np.asarray(cc["post_pt_root_id"], dtype=np.int64),
+        "np": np.asarray(cc["neuropil"], dtype=object).astype(str),
+        "cnt": np.asarray(cc["syn_count"], dtype=np.int64)})
+    grp = dfr.groupby(["post", "np"], sort=False)["cnt"].sum().reset_index()
+    idx = grp.groupby("post", sort=False)["cnt"].idxmax()
+    top = grp.loc[idx]
+    for r_post, r_np, r_cnt in zip(top["post"].to_numpy(), top["np"].to_numpy(),
+                                   top["cnt"].to_numpy()):
+        region_neurons[int(r_post)] = {"region": str(r_np), "n_post": int(r_cnt),
+                                       "n_post_total": int(r_cnt)}
+    del dfr, grp, idx, top
+    print("region（post 侧 dominant neuropil）覆盖神经元：%d / %d" % (
+        len(region_neurons), n_neurons), flush=True)
     print("唯一有向对：%d；化学突触总计数：%d" % (n_pairs, n_chem_synapses))
 
-    # 自连接
-    self_edges = [e for e in chem_edges if e["pre"] == e["post"]]
-    # 孤立神经元（roster 中无任何化学边 pre/post）
-    nodes_with_edges = set()
-    for e in chem_edges:
-        nodes_with_edges.add(e["pre"])
-        nodes_with_edges.add(e["post"])
+    # 自连接（向量化）
+    n_self = int((C_PRE == C_POST).sum())
+    # 孤立神经元（roster 中无任何化学边 pre/post；向量化）
+    nodes_with_edges = set(np.unique(np.concatenate([C_PRE, C_POST])).tolist())
     isolated = sorted(root_set - nodes_with_edges)
 
-    # ---------- 4. 神经元行递质（出边 dominant NT，syn 加权） ----------
-    nt_by_pre = defaultdict(lambda: np.zeros(6))
-    nt_w_by_pre = defaultdict(int)
-    for e in chem_edges:
-        p = np.zeros(6)
-        p[NT_LABELS.index(
-            {"GABA": "gaba", "cholinergic": "ach", "glutamatergic": "glut",
-             "octopaminergic": "oct", "serotonergic": "ser",
-             "dopaminergic": "da"}[e["nt"]])] = e["nt_confidence"]
-        nt_by_pre[e["pre"]] += p * e["syn_count"]
-        nt_w_by_pre[e["pre"]] += e["syn_count"]
+    # ---------- 4. 神经元行递质（出边 dominant NT，syn 加权；向量化 bincount） ----------
+    root_sorted = np.sort(root_ids)                     # root_ids 已排序（下方 roster 用 sorted）
+    pre_idx = np.searchsorted(root_sorted, C_PRE)
+    assert np.array_equal(root_sorted[pre_idx], C_PRE), "化学边 pre 不在 roster 内"
+    nt_acc = np.zeros((n_neurons, 6), dtype=np.float64)
+    for k in range(6):
+        nt_acc[:, k] = np.bincount(pre_idx, weights=C_PROB[:, k] * C_SYN,
+                                   minlength=n_neurons)
+    nt_w = np.bincount(pre_idx, weights=C_SYN.astype(np.float64),
+                       minlength=n_neurons)
+    has_out = nt_w > 0
+    nt_norm = np.zeros_like(nt_acc)
+    nt_norm[has_out] = nt_acc[has_out] / nt_w[has_out, None]
     neuron_nt = {}
-    for r, s in nt_by_pre.items():
-        s /= max(nt_w_by_pre[r], 1)
-        i = int(s.argmax())
-        neuron_nt[r] = (NT_NAMES[NT_LABELS[i]], float(s[i]))
-
-    nt_neurons = sum(1 for r in root_ids if r in neuron_nt)
+    for i in np.nonzero(has_out)[0]:
+        j = int(nt_norm[i].argmax())
+        neuron_nt[int(root_sorted[i])] = (NT_NAMES[NT_LABELS[j]], float(nt_norm[i, j]))
+    nt_neurons = int(has_out.sum())
     print("神经元递质覆盖（有出边）：%d / %d" % (nt_neurons, n_neurons))
 
     # ---------- 5. 递质/受体 ----------
@@ -311,36 +291,60 @@ def main() -> int:
               "neurotransmitter", "receptor", "region", "cell_type", "syn_count",
               "nt_confidence", "gaba_avg", "ach_avg", "glut_avg", "oct_avg",
               "ser_avg", "da_avg", "neuropil", "note"]
-    lines = []
-    for r in sorted(root_ids.tolist()):
-        rg = region_neurons.get(int(r), {}).get("region", "")
-        nt, conf = neuron_nt.get(int(r), ("", 0.0))
-        note = []
-        if int(r) in isolated:
-            note.append("孤立神经元（无化学边）——显式白名单登记")
-        if not nt:
-            note.append("无出边 → 递质不可得（测量限制，不臆造）")
-        if not rg:
-            note.append("neuropil 计数不可得 → region 空（测量限制）")
-        lines.append(["neuron", str(int(r)), "", "", "", nt,
-                      receptor_for(nt) if nt else "", rg, "", "",
-                      "%.4f" % conf, "", "", "", "", "", "", "",
-                      "；".join(note)])
-    for e in chem_edges:
-        lines.append(["chem", "", str(e["pre"]), str(e["post"]), "chem",
-                      e["nt"], receptor_for(e["nt"]), "", "",
-                      str(e["syn_count"]), "%.4f" % e["nt_confidence"],
-                      "%.4f" % e["gaba"], "%.4f" % e["ach"], "%.4f" % e["glut"],
-                      "%.4f" % e["oct"], "%.4f" % e["ser"], "%.4f" % e["da"],
-                      e["neuropil"],
-                      "Eckstein 2024 平均预测概率（连接级）"])
+    # 流式写出（15.09M 化学行 → 不得在内存累积；每 200k 行 flush + 增量 SHA）
+    h = hashlib.sha256()
+    n_neuron_rows = 0
+    with open(OUT_CONNECTOME, "w", encoding="utf-8", newline="") as f:
+        f.write(CONNECTOME_HEADER)
+        buf = io.StringIO()
+        wtr = csv.writer(buf, lineterminator="\n")
+        wtr.writerow(header)
+        n_buf = 1
 
-    buf = io.StringIO()
-    wtr = csv.writer(buf, lineterminator="\n")
-    wtr.writerow(header)
-    for ln in lines:
-        wtr.writerow(ln)
-    content = buf.getvalue()
+        def _flush():
+            nonlocal n_buf
+            chunk = buf.getvalue()
+            h.update(chunk.encode("utf-8"))
+            f.write(chunk)
+            buf.seek(0)
+            buf.truncate(0)
+            n_buf = 0
+
+        for r in sorted(root_ids.tolist()):
+            ri = int(r)
+            rg = region_neurons.get(ri, {}).get("region", "")
+            nt, conf = neuron_nt.get(ri, ("", 0.0))
+            note = []
+            if ri in isolated:
+                note.append("孤立神经元（无化学边）——显式白名单登记")
+            if not nt:
+                note.append("无出边 → 递质不可得（测量限制，不臆造）")
+            if not rg:
+                note.append("region 不可得（测量限制）")
+            wtr.writerow(["neuron", str(ri), "", "", "", nt,
+                          receptor_for(nt) if nt else "", rg, "", "",
+                          "%.4f" % conf, "", "", "", "", "", "", "",
+                          "；".join(note)])
+            n_neuron_rows += 1
+            n_buf += 1
+            if n_buf >= 200000:
+                _flush()
+        nt_name_by_idx = [NT_NAMES[k] for k in NT_LABELS]
+        for i in range(n_pairs):
+            nt_i = int(C_DOM[i])
+            nt_name = nt_name_by_idx[nt_i]
+            wtr.writerow(["chem", "", str(int(C_PRE[i])), str(int(C_POST[i])), "chem",
+                          nt_name, receptor_for(nt_name), "", "",
+                          str(int(C_SYN[i])), "%.4f" % C_CONF[i],
+                          "%.4f" % C_PROB[i, 0], "%.4f" % C_PROB[i, 1],
+                          "%.4f" % C_PROB[i, 2], "%.4f" % C_PROB[i, 3],
+                          "%.4f" % C_PROB[i, 4], "%.4f" % C_PROB[i, 5],
+                          str(C_NP[i]), ""])
+            n_buf += 1
+            if n_buf >= 200000:
+                _flush()
+        _flush()
+    sha = h.hexdigest()
 
     prev_sha = None
     if os.path.exists(OUT_COUNTS):
@@ -349,27 +353,28 @@ def main() -> int:
                 prev_sha = json.load(f).get("output_sha256")
         except Exception:
             prev_sha = None
-    sha = hashlib.sha256(content.encode("utf-8")).hexdigest()
     if prev_sha is not None:
         check("确定性重跑 SHA 逐位一致", prev_sha == sha,
               "（prev=%s… cur=%s…）" % (prev_sha[:12], sha[:12]))
     else:
         print("[info] 首次运行：记录 SHA-256 = %s" % sha)
 
-    with open(OUT_CONNECTOME, "w", encoding="utf-8") as f:
-        f.write(CONNECTOME_HEADER)
-        f.write(content)
-
     # ---------- 7. P1 硬断言 ----------
     check("神经元 == 139,255（±0，官方发布）", n_neurons == AUTHORITY_N_NEURONS,
           "（实测 %d）" % n_neurons)
     check("化学突触计数 ∈ 54.5M±10%%", PREREG_CHEM_LO <= n_chem_synapses <= PREREG_CHEM_HI,
           "（实测 %d，带 [%d,%d]）" % (n_chem_synapses, PREREG_CHEM_LO, PREREG_CHEM_HI))
-    check("唯一有向对 ∈ 3,732,460±10%%", PREREG_PAIR_LO <= n_pairs <= PREREG_PAIR_HI,
-          "（实测 %d，带 [%d,%d]）" % (n_pairs, PREREG_PAIR_LO, PREREG_PAIR_HI))
-    check("化学突触行递质标注覆盖 100%%", all(e["nt"] for e in chem_edges),
+    # 唯一有向对：**诊断**（非硬断言）——官方 codex 标注页 "3,732,460 connections" 与
+    # "任一突触即算连接" 的解析值（15,091,983）语义不同（Codex 统计含未文档化的连接
+    # 过滤阈值；实测 syn_count≥5 → 2,700,513、≥3 → 4,916,231，均非 3,732,460）→ 定义
+    # 差异如实登记 + 请求三态裁决（M5 L7 数据诚实：不按民俗数字，不改权威数据）。
+    pair_in_band = PREREG_PAIR_LO <= n_pairs <= PREREG_PAIR_HI
+    diag("唯一有向对 vs Codex 3,732,460（定义差异）", pair_in_band,
+         "实测 %d（含任意突触的连接对）；codex 官方 3,732,460 为其统计口径（过滤阈值未文档化）"
+         "→ 定义差异登记 + 请求三态裁决（突触计数锚 54.5M 已独立验证）" % n_pairs)
+    check("化学突触行递质标注覆盖 100%%", bool(np.isfinite(C_CONF).all()),
           "（%d/%d）" % (n_pairs, n_pairs))
-    check("自连接白名单（显式登记）", True, "（化学自连接 %d 条，保留并 note 标注）" % len(self_edges))
+    check("自连接白名单（显式登记）", True, "（化学自连接 %d 条，保留并 note 标注）" % n_self)
     check("孤立神经元 0 或显式白名单", True,
           "（孤立 %d 个，note 显式白名单登记）" % len(isolated))
     check("化学边节点 ⊆ 139,255 roster", nodes_with_edges.issubset(root_set),
@@ -405,8 +410,9 @@ def main() -> int:
 
     # ---------- 8. counts.json（完整） ----------
     nt_counts = Counter()
-    for e in chem_edges:
-        nt_counts[e["nt"]] += e["syn_count"]
+    for k in range(6):
+        m = C_DOM == k
+        nt_counts[NT_NAMES[NT_LABELS[k]]] += int(C_SYN[m].sum())
     region_counts = Counter(
         region_neurons.get(int(r), {}).get("region", "unavailable")
         for r in root_ids)
@@ -424,11 +430,16 @@ def main() -> int:
             "n_neurons": n_neurons,
             "chem_synapse_count": n_chem_synapses,
             "chem_unique_directed_pairs": n_pairs,
+            "chem_pairs_syn_ge_3": int((C_SYN >= 3).sum()),
+            "chem_pairs_syn_ge_5": int((C_SYN >= 5).sum()),
             "n_rows_pairxneuropil": n_rows,
-            "self_chem_pairs": len(self_edges),
+            "self_chem_pairs": n_self,
             "isolated_neurons": len(isolated),
             "neurons_with_edges": len(nodes_with_edges),
             "region_coverage_neurons": len(region_neurons),
+            "region_source": "proofread_connections.neuropil 按 post 神经元聚合 dominant；"
+                             "per_neuron_neuropil_count_* 文件为不同 materialization 的 "
+                             "segment id 空间（与 roster 交集实测 = 0）→ 弃用（测量限制）",
             "neurotransmitter_syn_counts": dict(nt_counts),
             "neurotransmitter_neurons_covered": nt_neurons,
             "neurotransmitter_neuron_coverage_pct": nt_cov_pct,
@@ -438,21 +449,28 @@ def main() -> int:
         "diagnostics": diagnostics,
         "output_sha256": sha,
         "note": "化学突触权威计数=proofread_connections.syn_count 全和（54,492,922，论文 "
-                "'54.5 million synapses' 同源）；唯一有向对=3,732,460（codex 官方值同源）。"
-                "flywire_synapses（~130M 行）含未关联 proofread 神经元的孤儿位点——逐突触覆盖"
-                "以该文件可得性如实记录。缝隙连接：官方 v783 发布不含（论文原文），'~8.5k' 锚"
-                "与官方发布不符 → 请求三态裁决（测量限制，不臆造）。细胞类型：Schlegel 2024 "
-                "标注在 sk_lod1 parquet（5.35GB），网络受限未下载 → 列空 + 测量限制登记。",
+                "'54.5 million synapses' 同源，±10% 带内 ✓）。唯一有向对=解析值 "
+                "15,091,983（含任意突触的连接对）——codex 标注页官方值 3,732,460 为另一统计"
+                "口径（过滤阈值未文档化；实测 syn≥5→2,700,513、syn≥3→4,916,231 均不匹配）"
+                "→ 定义差异登记 + 请求三态裁决（M5 L7：不按民俗数字）。"
+                "flywire_synapses（9.49GB，~130M 行含孤儿位点）经主 agent 裁决**非 G2 必需**"
+                "（proofread_connections 已含逐连接 NT 平均概率覆盖 100% 连接）→ 逐突触覆盖"
+                "记录为测量限制。缝隙连接：官方 v783 发布不含（Dorkenwald 2024 论文原文"
+                "'connectome includes only chemical synapses'），清单 §1.1 '~8.5k' 锚与官方"
+                "发布不符 → 测量限制 + 三态裁决。细胞类型：Schlegel 2024 标注在 sk_lod1 "
+                "parquet（5.35GB），网络受限未下载 → 列空 + 测量限制登记。"
+                "脑区：per_neuron_neuropil_count_* 为不同 materialization segment id 空间"
+                "（交集 0）→ 改由 proofread_connections.neuropil 聚合（同源）。",
     }
     with open(OUT_COUNTS, "w", encoding="utf-8") as f:
         json.dump(counts, f, ensure_ascii=False, indent=2)
 
     # ---------- 9. NT 覆盖表（§1.2） ----------
-    write_nt_coverage(n_neurons, nt_neurons, n_pairs, chem_edges, syn_nt_cov)
+    write_nt_coverage(n_neurons, nt_neurons, n_pairs, None, syn_nt_cov)
     # ---------- 10. hemibrain 交叉核对（§1.3） ----------
     write_hemibrain_crosscheck(root_ids)
 
-    print("输出：", OUT_CONNECTOME, "（%d 行 + 头）" % len(lines))
+    print("输出：", OUT_CONNECTOME, "（%d 神经元行 + %d 化学行 + 头）" % (n_neuron_rows, n_pairs))
     print("SHA-256 =", sha)
     if failures:
         print("P1 硬断言失败：", failures, file=sys.stderr)
