@@ -1,0 +1,69 @@
+# M9 向量化内核对齐探针（§2.5：kernel 改动后重过对齐门）
+# 被验证对象 src/adult_engine.AdultEngine；参考 = CPU Brian2 2.6.0 + tools/scan_m9_engine.py 提取网络
+metric,value,note
+n_comp,600,M8 冻结 300 two_comp 网络的隔室数（G0 对齐参考）
+cpu_spikes,636,CPU Brian2 基线 spike 数（测量窗 2000ms）
+cpu_wall_s,11.2558,CPU Brian2 墙钟（参考实现基线，L15.4）
+silent_cpu,0.8167,CPU 静默比例（率<0.5Hz）
+cpu_f32_step_align_pct,100.0000,
+cpu_f32_step_silent,0.8167,
+cpu_f32_step_wall_s,9.8359,
+cpu_f32_step_n_spk,636,
+cpu_f32_chunk_align_pct,100.0000,
+cpu_f32_chunk_silent,0.8167,
+cpu_f32_chunk_wall_s,9.6260,
+cpu_f32_chunk_n_spk,636,
+mps_f32_step_align_pct,100.0000,
+mps_f32_step_silent,0.8167,
+mps_f32_step_wall_s,26.8583,
+mps_f32_step_n_spk,636,
+mps_f32_chunk_align_pct,100.0000,
+mps_f32_chunk_silent,0.8167,
+mps_f32_chunk_wall_s,10.9021,
+mps_f32_chunk_n_spk,636,
+delivery_equiv,True,
+determinism_pct,100.0000,
+scaling_wall_s,390.3093,
+a_chunk_ms,0.7860,
+b_chunk_ms,0.0000,
+ms_per_step_full_chunk,3.0040,
+gpu_h_30s_chunk,0.5007,
+a_step_ms,1.9391,
+b_step_ms,0.0000,
+ms_per_step_full_step,5.8297,
+gpu_h_30s_step,0.9716,
+two_comp_ms_per_step_600,0.2726,
+two_comp_b_ms_per_comp,0.0000,
+two_comp_proj_278510_ms,0.7860,
+two_comp_proj_30s_gpu_h,0.1310,
+budget_point_ok,True,
+target_point_le_0p3ms,False,
+scale_N10000_n_neuron,10000,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
+scale_N10000_n_edge,1080000,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
+scale_N10000_n_edges_per_neuron,108,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
+scale_N10000_active_frac,1.0000,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
+scale_N10000_bias,700.0000,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
+scale_N10000_ms_per_step_chunk,0.8113,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
+scale_N10000_ms_per_step_step,2.3916,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
+scale_N30000_n_neuron,30000,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
+scale_N30000_n_edge,3240000,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
+scale_N30000_n_edges_per_neuron,108,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
+scale_N30000_active_frac,1.0000,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
+scale_N30000_bias,700.0000,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
+scale_N30000_ms_per_step_chunk,1.4223,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
+scale_N30000_ms_per_step_step,2.5724,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
+scale_N139255_n_neuron,139255,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
+scale_N139255_n_edge,15039540,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
+scale_N139255_n_edges_per_neuron,108,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
+scale_N139255_active_frac,1.0000,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
+scale_N139255_bias,700.0000,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
+scale_N139255_ms_per_step_chunk,2.9795,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
+scale_N139255_ms_per_step_step,5.8614,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
+delivery_equivalence,step↔chunk 逐 spike 一致=True（max Δt=0.000ms）,step↔chunk 投递调度等价性（同精度 CPU 档）
+crit_a_pass,True,判据 (a) 全部变体 spike 对齐 ≥99%
+crit_b_pass,True,判据 (b) 静默比例差 <1pp
+crit_c_pass,True,判据 (c) 精度/设备档一致（CPU-f32 + MPS-f32）
+crit_d_pass,True,判据 (d) 确定性重跑 <0.05ms ≥99%
+alignment_gate,PASS,§2.5 kernel 改动重过对齐门
+budget_point_le_1_gpu_h,True,§0.9 R10：单试次 ≤1 GPU-h（point 档全规模 30s）
+target_point_le_0p3ms,False,主 agent 优化目标 ≤0.3 ms/step（point 档；实测值见上）

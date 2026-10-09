@@ -1,0 +1,53 @@
+{
+  "generated_by": "tools/build_m9_network.py",
+  "n_neurons": 139255,
+  "n_chem_connections": 15091983,
+  "n_chem_synapses": 54492922,
+  "n_gap": 0,
+  "nt_class_edge_counts": {
+    "excitatory": 11042578,
+    "inhibitory": 3233022,
+    "modulatory": 816383
+  },
+  "nt_class_synapse_counts": {
+    "excitatory": 40097276,
+    "inhibitory": 12755910,
+    "modulatory": 1639736
+  },
+  "inhibitory_edge_fraction_pct": 21.422115304529562,
+  "syn_count": {
+    "mean": 3.6107198106438365,
+    "median": 2.0,
+    "max": 2405
+  },
+  "degree": {
+    "out_mean": 108.37659689059639,
+    "out_p99": 598.0,
+    "out_max": 9783,
+    "in_mean": 108.37659689059639,
+    "in_p99": 661.0,
+    "in_max": 10356,
+    "isolated": 616
+  },
+  "region_coverage_pct": 100.0,
+  "n_regions": 78,
+  "region_top": {
+    "ME_L": 34165,
+    "ME_R": 34017,
+    "LO_L": 7445,
+    "LO_R": 6965,
+    "GNG": 6006,
+    "LA_R": 4440,
+    "LA_L": 4118,
+    "None": 2165,
+    "AVLP_R": 2013,
+    "MB_CA_L": 1913,
+    "MB_CA_R": 1906,
+    "LOP_R": 1851,
+    "FB": 1810,
+    "AL_L": 1800,
+    "AVLP_L": 1766
+  },
+  "diagnostics": {},
+  "build_wall_s": 32.233175583
+}

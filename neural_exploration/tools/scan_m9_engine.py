@@ -475,9 +475,9 @@ def main() -> int:
     budget_ok = bool(proj_30s_gpu_h <= 1.0)
     print("墙钟：CPU %.2fs GPU(torch-CPU-f32) %.2fs（测量窗 %.0fms）；加速比 %.1f×" % (
         cpu_wall, wall32, T_MEAS_MS, speedup), flush=True)
-    print("MPS 每步 %.2f ms → 全规模 30s 单试次推算：%.2f GPU-h（神经元线性）/ %.2f GPU-h（突触线性）"
-          " → 预算 %s" % (per_step_mps, est_mps_30s_h, est_mps_30s_h_syn,
-                        "≤1 GPU-h OK" if budget_ok else "OVER"), flush=True)
+    print("修正模型（固定开销 a + 线性项 b·N，见 data/m9_engine_scaling.csv）："
+          "全规模 30s 单试次 %.3f GPU-h → 预算 %s（禁用作废的线性外推）" % (
+              proj_30s_gpu_h, "≤1 GPU-h OK" if budget_ok else "OVER"), flush=True)
 
     write_probe_csv(dict(device="mps+torch-cpu", n_comp=ex["n_comp"],
                          n_spk_cpu=n_spk_cpu, n_spk_gpu=sum(len(v) for v in spk32.values()),
@@ -570,22 +570,14 @@ def write_probe_csv(r):
          "MPS 500ms 窗墙钟（设备路径验证用短窗）"],
         ["mps_win_steps", str(r.get("mps_win_steps", 0)), "MPS 短窗步数"],
         ["speedup", "%.1f" % r["speedup"], "CPU/GPU"],
-        ["est_full_30s_gpu_h_neurons", "%.2f" % r["est_h_neurons"],
-         "全规模 30s 单试次（神经元线性外推）"],
-        ["est_full_30s_gpu_h_syn", "%.2f" % r["est_h_syn"],
-         "全规模 30s 单试次（torch-CPU-f32 墙钟突触线性外推）"],
-        ["est_mps_30s_gpu_h_neurons", "%.2f" % r.get("est_mps_30s_h", 0.0),
-         "全规模 30s 单试次（MPS 每步墙钟 × 神经元线性）"],
-        ["est_mps_30s_gpu_h_syn", "%.2f" % r.get("est_mps_30s_h_syn", 0.0),
-         "全规模 30s 单试次（MPS 每步墙钟 × 突触线性，保守上限）"],
         ["mps_scaling_a_ms", "%.3f" % r.get("a_ms", 0.0),
          "MPS 每步固定开销（launch；t=a+b·N 线性拟合，合成同构网络实测）"],
         ["mps_scaling_b_ms_per_comp", "%.3e" % r.get("b_ms", 0.0),
          "MPS 逐隔室每步成本（拟合斜率）"],
         ["proj_full_30s_gpu_h", "%.3f" % r.get("proj_30s_gpu_h", 0.0),
-         "全规模 30s 单试次 projection（a+b·N，N=278,510 隔室；需向量化实现后复测）"],
-        ["budget_le_1_gpu_h_naive", str(r.get("budget_ok_naive", False)),
-         "朴素线性外推（当前 Python 每步循环实测）：超预算"],
+         "全规模 30s 单试次 projection（**固定开销 a + 线性项 b·N** 模型；合成同构网络；真实网络 scaling 见 data/m9_engine_scaling.csv）"],
+        ["projection_model", "a + b*N",
+         "禁止把 300 档（近纯固定开销）ms/step 按规模线性放大——错误外推（已删除该行）"],
         ["budget_le_1_gpu_h", str(r["budget_ok"]),
          "§0.9 R10 预注册 ≤1 GPU-h（以规模拟合 projection 判定）"],
         ["g0_verdict", "", "由主 agent 定稿（本探针数据输入）"],

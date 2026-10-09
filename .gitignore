@@ -31,3 +31,6 @@ neural_exploration/data/m8_raw/winding_s1/Supplementary-Data-S1/*
 # M9 FlyWire 连接组解析产物（2.4GB 超大 CSV，本地保留；git 只存工具+计数报告）
 neural_exploration/data/m9_flywire_connectome.csv
 neural_exploration/data/m9_raw/
+
+# M9 全规模网络缓存（76MB，可由 tools/build_m9_network.py 确定性重建）
+neural_exploration/data/m9_network.npz
