@@ -1,0 +1,42 @@
+# M9 P3 虚拟身体验证（§3.3；判据带只读 m9_behavior_reference.csv body 段）
+section,key,value,note
+protocol,T_smoke_ms,2000.0,单通道驱动冒烟窗
+protocol,n_escape_trials,20,逃跑 sanity 试次数
+params,gait_freq_hz,7.0,CSV 定稿
+params,tripod_phase_deg,180.0,CSV 定稿
+params,wing_freq_hz,200.0,CSV 定稿（采样限制）
+params,ball_diameter_mm,6.0,VR 协议参数（§3.2）
+measure,gait_freq_measured_hz,7.0000,FFT 主峰
+measure,tripod_cross_phase_deg,180.00,组 A/B 相位差
+measure,tripod_intragroup_max_deg,0.00,组内最大相位差
+measure,disp_fwd_mm,7.4907,C_leg_fwd=1 净位移
+measure,disp_back_mm,-7.4907,C_leg_back=1 净位移
+measure,theta_left_rad,2.9430,
+measure,theta_right_rad,-2.9430,
+measure,curl_peak,1.0000,
+measure,curl_disp_mm,0.0000,
+measure,wing_freq_measured_hz,200.0000,采样限制登记
+measure,wing_spread_escape,1.0000,
+measure,escape_resp_prob,1.0000,
+measure,escape_resp_prob_subthr,0.0000,
+measure,state_frac_run,0.9960,
+measure,state_frac_curl,1.0000,
+measure,state_frac_pause,1.0000,
+measure,determinism_bitwise,True,
+measure,trajectory_finite,True,
+measure,joint_angle_bounded,True,
+crit,a1_gait_freq,True,
+crit,a1_tripod_phase,True,
+crit,a1_intragroup,True,
+crit,a2_v_fwd_sign,True,
+crit,a2_v_magnitude,True,
+crit,a3_turn_sign,True,
+crit,a4_curl_saturate,True,
+crit,a5_wing_freq,True,
+crit,a5_wing_spread,True,
+crit,b_state_semantics,True,
+crit,c_escape_resp,True,
+crit,c_escape_subthr,True,
+crit,d_determinism,True,
+crit,d_finite_bounded,True,
+crit,verdict,PASS,P3 三态判定（规划节点复核）
