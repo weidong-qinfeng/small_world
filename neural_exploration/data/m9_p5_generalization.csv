@@ -1,0 +1,48 @@
+# M9 P5 MB 联想泛化（§4.1；判据带只读 m9_behavior_reference.csv learning 段）
+section,key,value,note
+structure,n_kc,3819,KC（主脑区 MB_CA 代理；抽象登记①）
+structure,n_mbon,1374,MBON（MB_ML/MB_VL/MB_PED 代理）
+structure,n_al,3449,AL（触角叶）
+structure,n_da,868,多巴胺能神经元（US 门控源）
+structure,n_edge_kc_mbon,100533,真实 KC→MBON 连接组边
+structure,n_edge_al_kc,24012,真实 AL→KC 边
+protocol,n_pairs,12,气味对总数（配对组/对照组各 12）
+protocol,n_pairing,3,配对训练轮数
+protocol,eta,0.02,学习率（三因子）
+protocol,tau_e_ms,200.0,eligibility 时间常数
+protocol,kc_sparsity,0.08,KC 稀疏码比例
+protocol,n_generalization,12,泛化梯度档数
+measure,li_paired,0.283874,判据 (a) LI
+measure,li_control,0.163672,未配对对照臂 LI
+measure,perm_p,0.000488281,符号翻转置换检验（exact）
+measure,cohen_d,4146352253619672.0000,配对效应量
+measure,dw_l1,19431.87,权重 L1 变化（机制级）
+measure,gen_halfwidth,0.5122,泛化半宽（相似度）
+measure,gen_spearman,1.0000,相似度-响应单调性
+measure,ablation_eta0_li,0.163672,η=0
+measure,ablation_da0_li,0.163672,DA 门控=0（H2）
+measure,ablation_subgraph_li,0.000000,KC→MBON=0（H1）
+measure,determinism_bitwise,True,
+measure,wall_s,90.8,全协议墙钟（CPU）
+gen_curve,sim1.000,1.000000,档 0
+gen_curve,sim0.917,0.886997,档 1
+gen_curve,sim0.833,0.621215,档 2
+gen_curve,sim0.750,0.566138,档 3
+gen_curve,sim0.667,0.557786,档 4
+gen_curve,sim0.583,0.523657,档 5
+gen_curve,sim0.500,0.495929,档 6
+gen_curve,sim0.417,0.444485,档 7
+gen_curve,sim0.333,0.392391,档 8
+gen_curve,sim0.250,0.355475,档 9
+gen_curve,sim0.167,0.195958,档 10
+gen_curve,sim0.083,0.173970,档 11
+crit,a_li_in_band,True,
+crit,a_paired_gt_control,True,
+crit,b_gen_halfwidth,True,
+crit,b_gen_monotonic,True,
+crit,c_ablation_eta0,False,
+crit,c_ablation_da0,False,
+crit,c_ablation_subgraph,True,
+crit,d_mbon_valence_sign,True,
+crit,e_determinism,True,
+crit,verdict,FAIL,P5 三态判定

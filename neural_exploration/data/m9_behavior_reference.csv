@@ -32,3 +32,13 @@ body,escape_resp_prob,0.8,1.0,fraction,0.7,1.0,1.0,"清单 §3.3（**巨纤维�
 body,escape_resp_prob_subthr,0.0,0.2,fraction,0.0,0.35,0.0,"副判据（剂量-反应 sanity）：亚阈值刺激不应触发逃跑","操作化：刺激强度 = 0.4×阈值 时的 escape 比例"
 body,determinism_bitwise,1.0,1.0,1.0,1.0,1.0,1.0,"清单 §0.7 #3（确定性：p=1/n=1 → 重跑逐位一致）","操作化：同参数重跑两次，18 关节角时序 + 轨迹逐位相等（np.array_equal）"
 body,trajectory_finite,1.0,1.0,1.0,1.0,1.0,1.0,"清单 §3.1（轨迹有界、无 NaN）","操作化：全部关节角/位置/速度有限且 |角|≤180°、位置有界（arena）"
+learning,li_gain,0.1,1.0,index,0.05,1.0,0.45,"M8 清单 §0.7 #8（LI 获得带草案 [0.1,0.8] 的 M9 沿用）；M8 P5 机制级 LI=0.895 为参照上界",操作化：LI = (R_CS+ − R_CS−)/(R_CS+ + R_CS−)，R = 训练后 MBON 价效读出对气味的响应；n=12 气味对
+learning,li_paired_gt_control_p,0.0,0.05,p,0.0,0.1,0.01,清单 §4.1 判据 (a)：训练后偏好显著 > 未配对对照（配对 t 检验 p<0.05 且 d≥0.5）,操作化：配对组 vs 未配对组 LI 的配对 t 检验 p 值（n=12 对）
+learning,li_paired_gt_control_d,0.5,10.0,cohen_d,0.3,20.0,1.0,同上（效应量）：Cohen d ≥ 0.5,操作化：配对组 vs 未配对组 LI 的 Cohen d
+learning,generalization_halfwidth,0.15,0.95,similarity,0.05,1.0,0.5,"果蝇嗅觉泛化行为学：泛化较宽（相似度-响应的半宽量级 ~0.5）；本机无成虫嗅觉泛化数据集 → **文献回退 + 测量限制**（M8 R7 先例）；清单 §4.1 判据 (b) ""形状/半宽落带""",操作化：泛化曲线（气味相似度 1.0→0.0 的对数间距 12 档）归一到峰值后的半高全宽的**相似度半宽**
+learning,generalization_monotonic,1.0,1.0,bool,1.0,1.0,1.0,清单 §4.1 判据 (b)：相似度 → 行为相似（单调泛化梯度）,操作化：泛化响应随相似度单调不降（Spearman ρ ≥ 0.9）
+learning,ablation_eta0_li_max,0.0,0.05,index,0.0,0.1,0.0,清单 §4.1 判据 (c)：η=0 → 无学习（机制归属）,操作化：学习率 η=0 臂的 |LI|
+learning,ablation_da0_li_max,0.0,0.05,index,0.0,0.1,0.0,清单 §4.1 判据 (c)：DA 门控=0 → 无学习（H2 机制归属）,操作化：DA 信号置 0 臂的 |LI|
+learning,ablation_subgraph_li_max,0.0,0.05,index,0.0,0.1,0.0,清单 §4.1 判据 (c)：KC→MBON 子图消融 → 学习/泛化消失（H1）,操作化：KC→MBON 权重置 0 臂的 |LI|
+learning,mbon_valence_sign,1.0,1.0,sign,0.5,1.5,1.0,清单 §4.1 判据 (d)：MBON 价效编码方向与 Aso 2014 一致（奖赏 DAN 门控 → 趋近型 MBON 增强）,操作化：奖赏配对后 MBON 响应变化符号（+ = 预期趋近）
+learning,determinism_bitwise,1.0,1.0,bool,1.0,1.0,1.0,清单 §0.7 #3：确定性（逐位）,操作化：同参数重跑 LI / 权重时序逐位一致
