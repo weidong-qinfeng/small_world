@@ -38,6 +38,13 @@ OUT_PNG = os.path.join(REPORT_DIR, "m9_sleep_states.png")
 T_MS = 1000.0        # 协议窗（时间压缩后的"一整日"）
 SETTLE_MS = 300.0
 BIN_MS = 100.0
+#: 分段长度。**必须 << n_meas**：`AdultCircuit.run_resting` 只在 `segment_steps < n_meas`
+#: 时走分段分支，本协议 n_meas = 20000 → 取 2000 = 10 段。实测教训（L38）：首版直接传
+#: `segment_steps=20000`（等于 n_meas）→ 走**非分段长单次调用**，第二条件停滞 >16 分钟无进展。
+#: 现改为**本脚本自带全分段协议循环**（settle 亦分段），彻底规避长单次调用退化。
+SEG_STEPS = int(os.environ.get("M9_P7_SEG", "2000"))
+#: 单段墙钟上限（秒）：超过即判引擎退化并**主动中止**（纪律：不静默烧预算，先探后终止）
+SEG_ABORT_S = float(os.environ.get("M9_P7_ABORT_S", "180"))
 BG_LAM0 = 0.5        # 背景率基准（Hz）
 BG_EPsp = 2.0        # 每事件 EPSP（mV）→ g_ext = epsp/0.104
 
@@ -106,12 +113,52 @@ def main() -> int:
     c.build()
     g_ext = BG_EPsp / 0.104
     n_steps = int(round((SETTLE_MS + T_MS) / P["dt_ms"])) + 8
-    print("协议：T=%.0fms（时间压缩后的一日）、settle=%.0fms、分段 20k 步、bg λ0=%.2fHz"
-          % (T_MS, SETTLE_MS, BG_LAM0), flush=True)
+    print("协议：T=%.0fms（时间压缩后的一日）、settle=%.0fms、**全分段** %d 步/段、bg λ0=%.2fHz"
+          % (T_MS, SETTLE_MS, SEG_STEPS, BG_LAM0), flush=True)
+
+    def segmented_run(T_ms, settle_ms, seed, pop_trace, tag):
+        """**自带全分段协议循环**（复刻 `run_resting` 语义：reset → settle → reset_counts → measure）。
+
+        绕过长单次调用退化（L32.5 / L38）；分段不改变结果（step↔chunk 逐 spike 一致，对齐门 PASS）。
+        """
+        p = c.params
+        dt = p.dt_ms
+        n_settle = int(round(settle_ms / dt))
+        n_meas = int(round(T_ms / dt))
+        rng0 = np.random.default_rng(1)
+        v0 = (p.v_rest + 2.0 * rng0.standard_normal(c.n_neurons)).astype(np.float32)
+        c.engine.reset(v0=v0, seed=seed)
+        wall0 = time.perf_counter()
+        done = 0
+        while done < n_settle:
+            m = min(SEG_STEPS, n_settle - done)
+            c.engine.run(m, delivery="chunk", record="counts")
+            done += m
+        c.engine.reset_counts()
+        pops, done, tseg = [], 0, time.perf_counter()
+        while done < n_meas:
+            m = min(SEG_STEPS, n_meas - done)
+            tt = time.perf_counter()
+            rr = c.engine.run(m, delivery="chunk", record="counts", pop_trace=pop_trace)
+            if time.perf_counter() - tt > SEG_ABORT_S:
+                raise RuntimeError(
+                    "段墙钟 %.0fs > 上限 %.0fs（%d 步/段）→ 判为引擎退化/停滞，主动中止并登记"
+                    % (time.perf_counter() - tt, SEG_ABORT_S, m))
+            if pop_trace:
+                pops.append(rr["pop"])
+            done += m
+            if (done // SEG_STEPS) % 5 == 0 or done == n_meas:
+                print("      [%s] %d/%d 段步数  测量窗 %.1fs（自协议起 %.1fs）"
+                      % (tag, done, n_meas, time.perf_counter() - tseg,
+                         time.perf_counter() - wall0), flush=True)
+        st = c.engine.firing_stats(T_ms)
+        st["ms_per_step"] = (time.perf_counter() - tseg) / max(n_meas, 1) * 1e3
+        st["wall_s"] = time.perf_counter() - wall0
+        st["pop"] = np.concatenate(pops) if pops else None
+        return st
 
     def run_condition(lam_fn, tag, seed=0):
-        """lam_fn(t_ms) → 该步的背景率（Hz）；用时间依赖背景由采样实现（分段构造事件表）。"""
-        # 以"时变率"重采样背景事件：按 λ(t) 的非齐次 Poisson（thinning 简化为分段常值）
+        """lam_fn(t_ms) → 该步的背景率（Hz）；以非齐次 Poisson 采样实现时变背景。"""
         nn = n_steps
         t_ms = np.arange(nn) * P["dt_ms"]
         lam = np.maximum(lam_fn(t_ms), 0.0)
@@ -131,8 +178,7 @@ def main() -> int:
             amp = np.full(steps.size, g_ext, dtype=np.float32)
             c.engine.set_external_events(steps, neurons, amp, nn)
         c._bg_steps = nn; c._bg_args = (BG_LAM0, g_ext)
-        st = c.run_resting(T_ms=T_MS, settle_ms=SETTLE_MS, seed=seed, pop_trace=True,
-                           segment_steps=20000)
+        st = segmented_run(T_MS, SETTLE_MS, seed, True, tag)
         pop = st["pop"]
         # **昼/夜窗按 λ(t) 相位定义**（实测踩坑：取"前后两半"时两半的 λ 均值都 = λ0 →
         # 昼/夜比恒 ≈1，掩盖真实调制）
@@ -140,13 +186,18 @@ def main() -> int:
         q = pop.size // 4
         day = float(pop[:q].mean())
         night = float(pop[2 * q:3 * q].mean())
+        # 昼夜显著性的**真实配对置换检验**：昼/夜窗各切 K 个不重叠子窗，取逐对计数差做符号翻转
+        # （旧版把两个窗口均值各复制 10 份做检验 → p 只由符号决定，是伪检验，已废弃）
+        K = 10
+        day_sub = pop[:q].reshape(K, -1).sum(1).astype(np.float64)
+        night_sub = pop[2 * q:2 * q + K * (q // K)].reshape(K, -1).sum(1).astype(np.float64)
         bt = bout_stats(pop, int(round(BIN_MS / P["dt_ms"])))
         print("  [%s] pop=%.4f（昼 %.4f / 夜 %.4f）bout 占比=%.3f 时长中位=%.0fms n=%d（%.1fs）"
               % (tag, st["pop_rate_hz"], day, night, bt["active_frac"], bt["bout_med_ms"],
                  bt["n_bouts"], time.perf_counter() - t0), flush=True)
         return {"pop_rate": st["pop_rate_hz"], "day": day, "night": night,
                 "ratio": day / max(night, 1e-12), **bt, "silent": st["silent_frac"],
-                "ms_per_step": st["ms_per_step"]}
+                "ms_per_step": st["ms_per_step"], "sub_diff": day_sub - night_sub}
 
     A = 0.8      # 节律调制幅度
     day_night = run_condition(lambda t: BG_LAM0 * (1.0 + A * np.cos(2 * np.pi * t / T_MS)),
@@ -156,19 +207,16 @@ def main() -> int:
     hc = {}
     for f in (0.98, 1.00, 1.02):
         c.reweight(bias_mv_s=P["bias_mv_s"] * f)
-        st = c.run_resting(T_ms=T_MS, settle_ms=SETTLE_MS, seed=0, pop_trace=False,
-                           segment_steps=20000)
+        st = segmented_run(T_MS, SETTLE_MS, 0, False, "H-c %.2f" % f)
         hc[f] = st["pop_rate_hz"]
     c.reweight(bias_mv_s=P["bias_mv_s"])
     hc_delta = max(abs(hc[f] - hc[1.0]) / max(hc[1.0], 1e-12) for f in (0.98, 1.02))
     print("  [H-c] bias±2%%: pop=%s → 最大相对变化 %.3f"
           % ({k: round(v, 4) for k, v in hc.items()}, hc_delta), flush=True)
-    # 昼夜显著性（把昼/夜箱差做符号翻转置换）
-    diffs = np.array([day_night["day"] - day_night["night"]])
-    p_day = float("nan")
-    # 用箱级配对（两半各取 10 个不重叠箱）提升检验效力
-    day_bins = np.array([day_night["day"]] * 10); night_bins = np.array([day_night["night"]] * 10)
-    p_day = perm_p(day_bins - night_bins)
+    # 昼夜显著性：昼/夜窗各 10 个不重叠子窗的**配对置换检验**（符号翻转，exact）
+    p_day = perm_p(day_night["sub_diff"])
+    print("  昼夜配对置换检验：p=%.4g（day−night 子窗差均值 %.1f）"
+          % (p_day, float(np.mean(day_night["sub_diff"]))), flush=True)
 
     def _in(metric, val):
         b = band.get(metric)
@@ -177,7 +225,8 @@ def main() -> int:
     crit = {
         "a_bout_active": _in("bout_active_fraction", day_night["active_frac"]),
         "a_bout_duration": _in("bout_duration_median_ms", day_night["bout_med_ms"]),
-        "b_day_night_diff": (day_night["ratio"] > 1.05) and (p_day < 0.05),
+        "b_day_night_diff": _in("day_night_activity_ratio", day_night["ratio"])
+                            and (p_day < 0.05),
         "c_rhythm0_no_diff": _in("rhythm0_ratio_max", no_rhythm["ratio"]),
         "hc_workpoint_stable": _in("hc_stability_delta_max", hc_delta),
         "d_determinism": True,   # 分段确定性由同 seed 复跑验证（下方补充）
@@ -193,12 +242,17 @@ def main() -> int:
             ["protocol", "bin_ms", BIN_MS, "bout 分箱"],
             ["protocol", "rhythm_A", A, "节律调制幅度（λ(t)=λ0(1+A cos)）"],
             ["protocol", "bg_lam0_hz", BG_LAM0, ""],
-            ["protocol", "segment_steps", 20000, "分段调用（规避长试次退化）"],
+            ["protocol", "segment_steps", SEG_STEPS,
+             "**全分段**调用（SEG_STEPS < n_meas=20000 才走分段分支；规避长单次调用退化 L38）"],
+            ["protocol", "n_meas_steps", int(round(T_MS / P["dt_ms"])), "测量窗步数"],
             ["measure", "pop_rate_circadian", "%.4f" % day_night["pop_rate"], ""],
-            ["measure", "day_rate", "%.4f" % day_night["day"], "昼窗 = t∈[0,T/4]（λ 峰值段）"],
-            ["measure", "night_rate", "%.4f" % day_night["night"], "夜窗 = t∈[T/2,3T/4]（λ 谷值段）"],
+            ["measure", "day_count_per_step", "%.4f" % day_night["day"],
+             "昼窗 = t∈[0,T/4) 内**逐步群体脉冲计数均值**（λ 峰值段；非 Hz）"],
+            ["measure", "night_count_per_step", "%.4f" % day_night["night"],
+             "夜窗 = t∈[T/2,3T/4) 内逐步群体脉冲计数均值（λ 谷值段；非 Hz）"],
             ["measure", "day_night_ratio", "%.4f" % day_night["ratio"], "判据 (b)"],
-            ["measure", "perm_p_daynight", "%.4g" % p_day, ""],
+            ["measure", "perm_p_daynight", "%.4g" % p_day,
+             "10 对子窗配对符号翻转（exact）；子窗存在时间自相关 → p 偏乐观，如实登记"],
             ["measure", "bout_active_frac", "%.4f" % day_night["active_frac"], "判据 (a)"],
             ["measure", "bout_med_ms", "%.1f" % day_night["bout_med_ms"], "判据 (a)"],
             ["measure", "bout_count", str(day_night["n_bouts"]), ""],
@@ -227,7 +281,7 @@ def make_plot(dn, nr, hc, crit):
     fig, axes = plt.subplots(1, 3, figsize=(15, 4.5))
     ax = axes[0]
     ax.bar(["day (λ high)", "night (λ low)"], [dn["day"], dn["night"]], color=["#ff7f0e", "#1f77b4"])
-    ax.set_ylabel("population rate (Hz)")
+    ax.set_ylabel("population spikes / step")
     ax.set_title("(b) Circadian modulation\nratio=%.3f" % dn["ratio"])
     ax = axes[1]
     ax.bar(["circadian", "rhythm=0"], [dn["ratio"], nr["ratio"]], color=["#2ca02c", "#7f7f7f"])

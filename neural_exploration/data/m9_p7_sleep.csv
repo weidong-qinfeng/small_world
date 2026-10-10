@@ -1,29 +1,27 @@
-# M9 P7 觉醒/睡眠样状态（§4.3）——部分取得 + 反证登记
+# M9 P7 觉醒/睡眠样状态（§4.3；判据带只读 m9_behavior_reference.csv sleep 段）
 section,key,value,note
-protocol,T_ms,1000,**时间压缩后的一整日**（§0.7 #1 语义：只承诺统计级，不声称逐时刻相位）
-protocol,settle_ms,300,
-protocol,bin_ms,100,bout 分箱（阈值 3× 中位箱值）
-protocol,rhythm_A,0.8,节律调制幅度：λ(t)=λ0(1+A·cos(2πt/T_cycle))
-protocol,bg_lam0_hz,0.50,
-protocol,segment_steps,20000,**分段调用**（规避 MPS 长单次调用退化，L32.5）
-protocol,kernel,conductance (定稿档 ahp_g=25),E_GABA=−80 < E_K=−77
-measure,circadian_pop_rate_hz,4.7680,节律调制条件下的群体发放率
-measure,circadian_ms_per_step,~12,争用下实测（安静窗口 0.9–4.6）
-measure,bout_active_frac,0.0000,"活动箱占比（判据 (a) 带 [0.05,0.90]）"
-measure,bout_count,0,活动 bout 数 = 0
-measure,bout_median_ms,0.0,"bout 时长中位（判据 (a) 带 [100, 60000] ms）"
-crit,a_bout_structure,False,"❌ **反证**：定稿内核 + 真实 GABA 下网络为**平坦高活动态**，无静息/活动双状态 → 与 P4 判据 (d)（bout 0.0000, T=10s）独立一致"
-crit,b_day_night,NOT_OBTAINED,"⏳ 首轮实现取前后两半 → 两半 λ 均值同为 λ0 → 比值恒 ≈1（**已定位为实现 bug**：须按 λ(t) 相位取 t∈[0,T/4] 与 t∈[T/2,3T/4]）；修正已落盘，复跑因争用未完成"
-crit,c_rhythm0,NOT_OBTAINED,⏳ 同上（依赖 (b) 的窗口修正）
-crit,hc_workpoint_stable,NOT_OBTAINED,⏳ H-c 前置（bias ±2% 微扰）同上
-crit,d_determinism,NOT_OBTAINED,⏳ 同上
-crit,verdict,FAIL(1 反证) + NOT_OBTAINED(4),判据 (a) 为真实反证；其余待复跑（脚本就位、修正已落盘）
-
-# ---- 与 P4 的独立一致性 ----,,,
-cross_check,P4 (d) bout,0.0000 (T=10s),两条独立路径（T=10s 全规模静息 / T=1s 节律协议）均给出 bout≈0 → **定稿模型无静息/活动双状态**，结论稳健
-
-# ---- 缺失机制清单（§8 反证路径；供 M10 承接）----,,,
-missing_mechanism,① 短时程可塑性 STP,M8 R1 承接,突触短期动态可提供 bout 级慢变（易化/耗竭）→ 把平坦态变成成簇态
-missing_mechanism,② GABA 亚型/时间常数异质,L28.2#4b,当前单一 τ_i=5ms、单一 w_inh；快/慢抑制共存可产生网络级慢振荡 → bout
-missing_mechanism,③ 调质层增益控制,抽象 T2,DA/5HT/OA 当前以弱兴奋电导承载；真实调质可产生昼夜/状态切换
-missing_mechanism,④ AHP 物理形式细化,L28.2#4a,已电导化，但 τ/幅度标定与 bout 结构的关系未探索
+protocol,T_ms,1000.0,时间压缩后的一整日（§0.7 #1 语义）
+protocol,settle_ms,300.0,
+protocol,bin_ms,100.0,bout 分箱
+protocol,rhythm_A,0.8,节律调制幅度（λ(t)=λ0(1+A cos)）
+protocol,bg_lam0_hz,0.5,
+protocol,segment_steps,2000,**全分段**调用（SEG_STEPS < n_meas=20000 才走分段分支；规避长单次调用退化 L38）
+protocol,n_meas_steps,20000,测量窗步数
+measure,pop_rate_circadian,4.8867,
+measure,day_count_per_step,33.9476,"昼窗 = t∈[0,T/4) 内**逐步群体脉冲计数均值**（λ 峰值段；非 Hz）"
+measure,night_count_per_step,33.9380,"夜窗 = t∈[T/2,3T/4) 内逐步群体脉冲计数均值（λ 谷值段；非 Hz）"
+measure,day_night_ratio,1.0003,判据 (b)
+measure,perm_p_daynight,0.9844,10 对子窗配对符号翻转（exact）；子窗存在时间自相关 → p 偏乐观，如实登记
+measure,bout_active_frac,0.0000,判据 (a)
+measure,bout_med_ms,0.0,判据 (a)
+measure,bout_count,0,
+measure,rhythm0_ratio,1.0137,判据 (c)
+measure,hc_bias_delta_max,0.0969,H-c 前置
+measure,ms_per_step,2.963,争用下实测
+crit,a_bout_active,False,
+crit,a_bout_duration,False,
+crit,b_day_night_diff,False,
+crit,c_rhythm0_no_diff,True,
+crit,hc_workpoint_stable,True,
+crit,d_determinism,True,
+crit,verdict,FAIL,P7 三态判定
