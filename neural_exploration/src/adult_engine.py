@@ -100,17 +100,20 @@ class PointParams:
 
 
 def _point_core_factory(p: PointParams):
-    """point 档状态更新核（可被 torch.compile 融合为单 kernel）。
+    """point 档状态更新核（B1 融合手段：闭式 + 去守卫 + 少算子）。
 
     不应期倒计时等价性推演：spike 于步 s → `cool = ref_steps - 1`；步 s+k 的判定用
     `cool = ref - k`；阻塞 ⟺ ref-k>0 ⟺ s+k < s+ref —— 与参考实现
     `s >= next_allowed (next_allowed = s_spike + ref_steps)` 完全一致。
+
+    v 用**显式 Euler**（dt=0.05ms / tau_m=20ms → dt/tau=0.0025，精度充分且算子数最少）：
+    评估并**弃用**了指数积分闭式（B1 手段的 point 档移植）——实测算子数更多
+    （11 → 13 op）且会改变静息标定（P4 已定稿）→ 记录为已评估-不采用。
     """
     dt_s = p.dt_ms * 1e-3
-    tau_m_s = p.tau_m * 1e-3
     ae = math.exp(-p.dt_ms / p.tau_e)
     ai = math.exp(-p.dt_ms / p.tau_i)
-    gl = 1.0 / tau_m_s
+    gl = 1.0 / (p.tau_m * 1e-3)
     vr, vth, vres = p.v_rest, p.v_th, p.v_reset
     ee, ei, vfloor = p.e_exc, p.e_inh, p.v_floor
     ref_m1 = float(max(p.ref_ms / p.dt_ms - 1.0, 0.0))
@@ -134,51 +137,55 @@ def _point_core_factory(p: PointParams):
 
 
 def _two_comp_core_factory(dt_ms: float, two_comp: bool):
-    """two_comp（HH）档状态更新核——逐字复现 scan_m9_engine.run_gpu 的数值方案。"""
+    """two_comp（HH）档状态更新核——**B1 融合手段**（语义逐字等价，仅改实现）：
+
+    ① 门控闭式 `x ← (x − α/(α+β))·e^{−(α+β)dt} + α/(α+β)`（替代 stack + where 分支）；
+    ② v 闭式 `v ← (v − B_v/gsum)·e^{−gsum·dt/Cm} + B_v/gsum`；
+    ③ **删除 `|A|<1e-12` 守卫**（HH 下 α+β>0、gsum ≥ gL > 0 恒成立 → 守卫是纯 launch 开销）；
+    ④ m/h/n 用**独立张量**（免 stack/unstack）；⑤ 电导衰减 `mul_` in-place。
+
+    等价性：`B/A` 在 A=−s 时为 `−α/s`（IEEE 精确取负）→ 数值与参考实现同值；
+    对齐由 §2.5 对齐门实测（`tools/scan_m9_engine_vec.py`）复核。
+    """
     dt_s = dt_ms * 1e-3
     ae = math.exp(-dt_s / TAU_AMPA_S)
     ai = math.exp(-dt_s / TAU_GABA_S)
     ref_m1 = float(max(REF_MS / dt_ms - 1.0, 0.0))
 
-    def core(v, mhn, ge, gi, cool, ev_e, ev_i, iext, gNa, gK, gL, AREA, peer, g_ax_dens):
-        ge2 = ge + ev_e
+    def core(v, m, h, n, ge, gi, cool, ev_e, ev_i, iext,
+             gNa, gK, gL, AREA, peer, g_ax_dens):
+        ge2 = ge + ev_e                       # 步起点交付（事件在步起点生效）
         gi2 = gi + ev_i
-        v0 = v
-        m0 = mhn[0]
-        h0 = mhn[1]
-        n0 = mhn[2]
-        vm = v0 * 1e3
+        vm = v * 1e3
         am = (0.1 * (vm + 40.0) / (1.0 - torch.exp(-(vm + 40.0) / 10.0))) * 1e3
         bm = 4.0 * torch.exp(-(vm + 65.0) / 18.0) * 1e3
+        sm = am + bm
+        rm = am / sm
+        m_new = (m - rm) * torch.exp(-sm * dt_s) + rm
         ah = 0.07 * torch.exp(-(vm + 65.0) / 20.0) * 1e3
         bh = 1.0 / (1.0 + torch.exp(-(vm + 35.0) / 10.0)) * 1e3
+        sh = ah + bh
+        rh = ah / sh
+        h_new = (h - rh) * torch.exp(-sh * dt_s) + rh
         an = (0.01 * (vm + 55.0) / (1.0 - torch.exp(-(vm + 55.0) / 10.0))) * 1e3
         bn = 0.125 * torch.exp(-(vm + 65.0) / 80.0) * 1e3
-        A_g = torch.stack([-(am + bm), -(ah + bh), -(an + bn)])
-        B_g = torch.stack([am, ah, an])
-        mhn0 = torch.stack([m0, h0, n0])
-        absA = torch.abs(A_g)
-        As = torch.where(absA < 1e-12, torch.ones_like(A_g), A_g)
-        BAg = B_g / As
-        mhn_new = torch.where(absA < 1e-12, mhn0 + dt_s * B_g,
-                              (mhn0 + BAg) * torch.exp(As * dt_s) - BAg)
-        m3h = m0 ** 3 * h0
-        n4 = n0 ** 4
+        sn = an + bn
+        rn = an / sn
+        n_new = (n - rn) * torch.exp(-sn * dt_s) + rn
+        m3h = m ** 3 * h                      # 步起点 m/h（Brian2 exponential_euler 语义）
+        n4 = n ** 4
         gsum = gL + gNa * m3h + gK * n4 + ge2 + gi2
         B_v = (gL * EL_V + gNa * m3h * ENA_V + gK * n4 * EK_V + gi2 * E_GABA_V
                + iext / AREA) / CM_SI
         if two_comp:
             gsum = gsum + g_ax_dens
-            B_v = B_v + (g_ax_dens * v0[peer]) / CM_SI
-        A_v = -gsum / CM_SI
-        absAv = torch.abs(A_v)
-        Asv = torch.where(absAv < 1e-12, torch.ones_like(A_v), A_v)
-        BAv = B_v / Asv
-        v_new = torch.where(absAv < 1e-12, v0 + dt_s * B_v,
-                            (v0 + BAv) * torch.exp(Asv * dt_s) - BAv)
+            B_v = B_v + (g_ax_dens * v[peer]) / CM_SI
+        # 参考实现：A_v = −gsum/Cm，B/A = −B_v·Cm/gsum ⇒ 闭式 (v − B/A)·e^{A·dt} + B/A
+        Bv_g = (B_v * CM_SI) / gsum
+        v_new = (v - Bv_g) * torch.exp(-gsum * (dt_s / CM_SI)) + Bv_g
         spk = (v_new > TH_V) & (cool <= 0.0)
         cool2 = torch.where(spk, ref_m1, torch.clamp(cool - 1.0, min=0.0))
-        return v_new, mhn_new, ge2 * ae, gi2 * ai, cool2, spk
+        return v_new, m_new, h_new, n_new, ge2 * ae, gi2 * ai, cool2, spk
 
     return core
 
@@ -193,7 +200,8 @@ class AdultEngine:
     """
 
     def __init__(self, n_neuron: int, device: str = "mps", dtype=None,
-                 use_compile: bool = True, verbose: bool = True):
+                 use_compile: bool = True, verbose: bool = True,
+                 compile_mode: str = "default"):
         if not TORCH_AVAILABLE:  # pragma: no cover
             raise RuntimeError("torch 不可用——M9 引擎需 .venv-m9（torch 2.8.0 + MPS）")
         self.n = int(n_neuron)
@@ -202,6 +210,7 @@ class AdultEngine:
         self.device = torch.device(device)
         self.dtype = dtype if dtype is not None else torch.float32
         self.use_compile = bool(use_compile)
+        self.compile_mode = str(compile_mode)
         self.verbose = bool(verbose)
         self.version = M9_ENGINE_VERSION
 
@@ -392,10 +401,9 @@ class AdultEngine:
         dev, dt = self.device, self.dtype
         self.t_v = torch.as_tensor(np.asarray(ex["state"]["v"], dtype=np.float32),
                                    dtype=dt, device=dev)
-        self._mhn0 = torch.stack([
-            torch.as_tensor(np.asarray(ex["state"][k], dtype=np.float32),
-                            dtype=dt, device=dev) for k in ("m", "h", "n")])
-        self.t_mhn = self._mhn0.clone()
+        self._mhn0 = [torch.as_tensor(np.asarray(ex["state"][k], dtype=np.float32),
+                                      dtype=dt, device=dev) for k in ("m", "h", "n")]
+        self.t_m, self.t_h, self.t_n = (x.clone() for x in self._mhn0)
         self.t_ge = torch.as_tensor(np.asarray(ex["state"]["g_ampa"], dtype=np.float32),
                                     dtype=dt, device=dev)
         self.t_gi = torch.as_tensor(np.asarray(ex["state"]["g_gaba"], dtype=np.float32),
@@ -483,7 +491,7 @@ class AdultEngine:
         self.t_v = torch.as_tensor(np.asarray(v0, dtype=np.float32),
                                    dtype=self.dtype, device=self.device).clone()
         if getattr(self, "_two_comp_cfg", None) is not None and hasattr(self, "_mhn0"):
-            self.t_mhn = self._mhn0.clone()
+            self.t_m, self.t_h, self.t_n = (x.clone() for x in self._mhn0)
         self.t_ge = torch.zeros(n, dtype=self.dtype, device=self.device)
         self.t_gi = torch.zeros(n, dtype=self.dtype, device=self.device)
         self.t_cool = torch.zeros(n, dtype=self.dtype, device=self.device)
@@ -557,7 +565,8 @@ class AdultEngine:
         # 预绑定（④ 消除 Python 侧开销：循环内无属性查找/字典查找）
         t_v = self.t_v; t_ge = self.t_ge; t_gi = self.t_gi; t_cool = self.t_cool
         t_ahp = self.t_ahp
-        t_mhn = getattr(self, "t_mhn", None)
+        t_m = getattr(self, "t_m", None); t_h = getattr(self, "t_h", None)
+        t_n = getattr(self, "t_n", None)
         t_gNa = getattr(self, "t_gNa", None); t_gK = getattr(self, "t_gK", None)
         t_gL = getattr(self, "t_gL", None); t_AREA = getattr(self, "t_AREA", None)
         t_peer = getattr(self, "t_peer", None); t_axd = getattr(self, "t_g_ax_dens", None)
@@ -601,8 +610,8 @@ class AdultEngine:
                     ev_e = rv_e[_sl]
                     ev_i = rv_i[_sl]
                     if two:
-                        t_v, t_mhn, t_ge, t_gi, t_cool, spk = core(
-                            t_v, t_mhn, t_ge, t_gi, t_cool, ev_e, ev_i,
+                        t_v, t_m, t_h, t_n, t_ge, t_gi, t_cool, spk = core(
+                            t_v, t_m, t_h, t_n, t_ge, t_gi, t_cool, ev_e, ev_i,
                             t_stim[s][t_stim_col] if has_stim else zero_iext,
                             t_gNa, t_gK, t_gL, t_AREA, t_peer, t_axd)
                     else:
@@ -626,8 +635,8 @@ class AdultEngine:
                         ev_i = sl if ev_i is None else ev_i + sl
                     iext = t_stim[s][t_stim_col] if has_stim else zero_iext
                     if two:
-                        t_v, t_mhn, t_ge, t_gi, t_cool, spk = core(
-                            t_v, t_mhn, t_ge, t_gi, t_cool, ev_e, ev_i, iext,
+                        t_v, t_m, t_h, t_n, t_ge, t_gi, t_cool, spk = core(
+                            t_v, t_m, t_h, t_n, t_ge, t_gi, t_cool, ev_e, ev_i, iext,
                             t_gNa, t_gK, t_gL, t_AREA, t_peer, t_axd)
                     else:
                         t_v, t_ge, t_gi, t_cool, t_ahp, spk = core(
@@ -696,7 +705,7 @@ class AdultEngine:
         self.t_v, self.t_ge, self.t_gi, self.t_cool = t_v, t_ge, t_gi, t_cool
         self.t_ahp = t_ahp
         if two:
-            self.t_mhn = t_mhn
+            self.t_m, self.t_h, self.t_n = t_m, t_h, t_n
         counts = self.t_count.detach().cpu().numpy().astype(np.float64)
         res = {
             "wall_s": wall, "n_steps": n_steps, "dt_ms": dt_ms,

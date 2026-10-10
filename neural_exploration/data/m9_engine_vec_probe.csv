@@ -3,72 +3,72 @@
 metric,value,note
 n_comp,600,M8 冻结 300 two_comp 网络的隔室数（G0 对齐参考）
 cpu_spikes,636,CPU Brian2 基线 spike 数（测量窗 2000ms）
-cpu_wall_s,10.5413,CPU Brian2 墙钟（参考实现基线，L15.4）
+cpu_wall_s,10.9588,CPU Brian2 墙钟（参考实现基线，L15.4）
 silent_cpu,0.8167,CPU 静默比例（率<0.5Hz）
 cpu_f32_step_align_pct,100.0000,
 cpu_f32_step_silent,0.8167,
-cpu_f32_step_wall_s,10.1060,
+cpu_f32_step_wall_s,8.5901,
 cpu_f32_step_n_spk,636,
 cpu_f32_chunk_align_pct,100.0000,
 cpu_f32_chunk_silent,0.8167,
-cpu_f32_chunk_wall_s,9.6202,
+cpu_f32_chunk_wall_s,8.9025,
 cpu_f32_chunk_n_spk,636,
 mps_f32_step_align_pct,100.0000,
 mps_f32_step_silent,0.8167,
-mps_f32_step_wall_s,25.5688,
+mps_f32_step_wall_s,35.0686,
 mps_f32_step_n_spk,636,
 mps_f32_chunk_align_pct,100.0000,
 mps_f32_chunk_silent,0.8167,
-mps_f32_chunk_wall_s,9.5189,
+mps_f32_chunk_wall_s,13.0291,
 mps_f32_chunk_n_spk,636,
 delivery_equiv,True,
 determinism_pct,100.0000,
-scaling_wall_s,27.2190,
-a_ref200ms_ms,0.0727,
+scaling_wall_s,32.3822,
+a_ref200ms_ms,0.1010,
 b_ref200ms_ms,0.0000,
-ms_per_step_full_ref200ms,0.5342,
-gpu_h_30s_ref200ms,0.0890,
-a_ref20ms_ms,0.1152,
+ms_per_step_full_ref200ms,0.6233,
+gpu_h_30s_ref200ms,0.1039,
+a_ref20ms_ms,0.1416,
 b_ref20ms_ms,0.0000,
-ms_per_step_full_ref20ms,0.4153,
-gpu_h_30s_ref20ms,0.0692,
-a_ref2ms_ms,0.2866,
+ms_per_step_full_ref20ms,0.6442,
+gpu_h_30s_ref20ms,0.1074,
+a_ref2ms_ms,0.3907,
 b_ref2ms_ms,0.0000,
-ms_per_step_full_ref2ms,1.0162,
-gpu_h_30s_ref2ms,0.1694,
-two_comp_ms_per_step_600,0.2380,
+ms_per_step_full_ref2ms,1.3360,
+gpu_h_30s_ref2ms,0.2227,
+two_comp_ms_per_step_600,0.3257,
 two_comp_b_ms_per_comp,0.0000,
-two_comp_proj_278510_ms,0.2866,
-two_comp_proj_30s_gpu_h,0.0478,
+two_comp_proj_278510_ms,0.3907,
+two_comp_proj_30s_gpu_h,0.0651,
 budget_point_ok,True,
 target_point_le_0p3ms,False,
 scale_N10000_n_neuron,10000,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
 scale_N10000_n_edge,1080000,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
 scale_N10000_n_edges_per_neuron,108,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
 scale_N10000_spk_frac_ref2ms,0.0091,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
-scale_N10000_ms_per_step_ref2ms,0.3431,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
+scale_N10000_ms_per_step_ref2ms,0.4458,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
 scale_N10000_spk_frac_ref20ms,0.0020,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
-scale_N10000_ms_per_step_ref20ms,0.1505,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
+scale_N10000_ms_per_step_ref20ms,0.1977,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
 scale_N10000_spk_frac_ref200ms,0.0010,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
-scale_N10000_ms_per_step_ref200ms,0.1344,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
+scale_N10000_ms_per_step_ref200ms,0.1638,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
 scale_N30000_n_neuron,30000,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
 scale_N30000_n_edge,3240000,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
 scale_N30000_n_edges_per_neuron,108,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
 scale_N30000_spk_frac_ref2ms,0.0091,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
-scale_N30000_ms_per_step_ref2ms,0.4390,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
+scale_N30000_ms_per_step_ref2ms,0.6095,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
 scale_N30000_spk_frac_ref20ms,0.0020,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
-scale_N30000_ms_per_step_ref20ms,0.1636,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
+scale_N30000_ms_per_step_ref20ms,0.2261,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
 scale_N30000_spk_frac_ref200ms,0.0010,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
-scale_N30000_ms_per_step_ref200ms,0.1383,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
+scale_N30000_ms_per_step_ref200ms,0.1836,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
 scale_N139255_n_neuron,139255,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
 scale_N139255_n_edge,15039540,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
 scale_N139255_n_edges_per_neuron,108,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
 scale_N139255_spk_frac_ref2ms,0.0098,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
-scale_N139255_ms_per_step_ref2ms,1.0170,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
+scale_N139255_ms_per_step_ref2ms,1.3337,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
 scale_N139255_spk_frac_ref20ms,0.0020,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
-scale_N139255_ms_per_step_ref20ms,0.4179,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
+scale_N139255_ms_per_step_ref20ms,0.6479,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
 scale_N139255_spk_frac_ref200ms,0.0010,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
-scale_N139255_ms_per_step_ref200ms,0.5395,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
+scale_N139255_ms_per_step_ref200ms,0.6280,规模分解原始实测（合成 point 网络，min-of-3 × 1500 步，独占运行）
 delivery_equivalence,step↔chunk 逐 spike 一致=True（max Δt=0.000ms）,step↔chunk 投递调度等价性（同精度 CPU 档）
 crit_a_pass,True,判据 (a) 全部变体 spike 对齐 ≥99%
 crit_b_pass,True,判据 (b) 静默比例差 <1pp
