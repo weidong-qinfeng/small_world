@@ -35,10 +35,10 @@ GRID_STAGE1 = [
     # w_exc, w_inh, b0(mV/s 中位), cv(lognormal σ), lam(Hz), epsp(mV), ahp_inc(mV/s)
     # 标定网格（最终档 1.0/4.0/355/0.60 的出带记录 + 定稿档 0.3/1.0/290/0.25 的落带记录；
     #  背景率 λ 与 bias 中位为两个主杠杆，见 docs/m9_env_notes.md L21.1）
-    (0.3, 1.0, 290.0, 0.25, 0.50, 2.0, 2500.0),
-    (0.3, 1.0, 250.0, 0.25, 0.50, 2.0, 2500.0),
-    (0.3, 1.0, 320.0, 0.25, 0.50, 2.0, 2500.0),
-    (0.3, 1.0, 290.0, 0.25, 1.00, 2.0, 2500.0),
+    (0.3, 1.0, 290.0, 0.25, 0.50, 2.0, 100.0),
+    (0.3, 1.0, 290.0, 0.25, 0.50, 2.0, 50.0),
+    (0.3, 1.0, 290.0, 0.25, 0.50, 2.0, 25.0),
+    (0.3, 1.0, 290.0, 0.25, 0.50, 2.0, 0.0),
 ]
 
 
@@ -47,8 +47,8 @@ def _run_config(c, cfg, T_ms=2000.0, settle_ms=200.0, seed=0):
     g_ext = epsp / 0.104
     c.params.bias_cv = cv
     if abs(c.params.ahp_inc - ahp) > 1e-9:
-        c.params.ahp_inc = ahp
-        c.engine.set_point_params(ahp_inc=ahp)
+        c.params.ahp_g_inc = ahp
+        c.engine.set_point_params(ahp_g_inc=ahp)
     n_steps = int(round((settle_ms + T_ms) / c.params.dt_ms)) + 4
     c.build_background(rate_hz=lam, g_ext=g_ext, n_steps=n_steps, seed=seed)
     c._bg_steps = n_steps
@@ -65,12 +65,12 @@ def main() -> int:
     c = AdultCircuit(device="mps",
                      params=CircuitParams(bias_mv_s=0.0, bias_cv=0.0,
                                           syn_count_gamma=1.0, delay_ms=1.0,
-                                          ahp_tau_ms=700.0, ahp_inc=2500.0),
+                                          ahp_tau_ms=700.0, ahp_g_inc=100.0),
                      use_compile=False)
     c.build()
     rows = []
     hdr = ["w_exc", "w_inh", "b0_mv_s", "bias_cv", "bg_rate_hz", "bg_epsp_mv",
-           "ahp_inc",
+           "ahp_g_inc",
            "rate_median_hz", "rate_mean_hz", "rate_p95_hz", "silent_fraction",
            "pop_rate_hz", "spk_frac_per_step", "ms_per_step", "in_band", "wall_s"]
     for cfg in GRID_STAGE1:

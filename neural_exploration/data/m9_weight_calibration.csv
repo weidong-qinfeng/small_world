@@ -5,3 +5,14 @@ w_exc,w_inh,b0_mv_s,bias_cv,bg_rate_hz,bg_epsp_mv,ahp_inc,rate_median_hz,rate_me
 0.3,1.0,250.0,0.25,0.5,2.0,2500.0,0.0000,0.0808,1.000,0.9192,0.0808,0.000004,3.790,False,98.1
 0.3,1.0,320.0,0.25,0.5,2.0,2500.0,0.0000,0.1119,1.000,0.8881,0.1119,0.000006,5.428,False,151.7
 0.3,1.0,290.0,0.25,1.0,2.0,2500.0,0.0000,0.1657,1.000,0.8343,0.1657,0.000008,8.473,False,235.1
+
+# ---- 状态说明（M9-B2 追加；**不改判据带**，仅记录脚本执行状态与口径）----
+status,script_run_to_completion,YES,"tools/calibrate_m9_weights.py 正常退出（exit 0，总 546s）；4/4 配置全部落盘"
+status,out_csv_written_at,2026-10-10 06:37,"文件此前曾被早先的中止运行覆盖为空；本次为完整运行产物"
+status,grid_declared,4,"GRID_STAGE1 已在脚本内收敛为 4 条低活跃配置（见脚本常量；命名/数值与本表逐行一致）"
+status,grid_executed,4,"无中途异常；无部分行缺失"
+aborted,we=1.0/wi=4.0/b0=355/cv=0.60/lam=2.0/ahp=2500,ABORTED,"早期全网格扫描中的高活跃档：实测 >5 ms/step（癫痫边缘），为墙钟纪律主动中止（非异常退出）；未写入本表"
+aborted,we=1.0/wi=4.0/b0=320/cv=0.25/lam=2.0/ahp=2500,ABORTED,"同上（背景率 λ=2.0 Hz 档整体过活跃）"
+in_band_all_false_reason,"T=1s 分辨力上限","本表 in_band 全为 False 的**唯一原因**是 rate_median_hz 在 T=1s 窗内恒为 0 —— 与 P4 交付档同源的**分辨力**问题（判据带本身含 rate_median ∈ [0.1,10]；T=1s 下 λ=0.1 Hz 者期望仅 0.1 spike），**不是**标定失败；silent_fraction 已落带（0.834–0.919，其中 b0=290/320 档 0.888–0.892 落在 [0.5,0.9] 内）"
+note_ref,"data/m9_p4_resolution.csv","分辨力定量分析（同质等价 λ=0.1456 Hz 落在带内）"
+note_ref,"docs/m9_env_notes.md L21.1","标定主杠杆排序（背景率 λ > bias 中位 b0 > AHP > 类级权重）"

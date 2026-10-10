@@ -1,24 +1,20 @@
 param,value,note
-w_exc,0.3,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
-w_inh,1.0,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
-w_mod,0.3,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
-syn_count_gamma,1.0,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
-bias_mv_s,290.0,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
-bias_cv,0.25,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
-bias_mode,lognormal,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
-ahp_tau_ms,700.0,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
-ahp_inc,2500.0,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
-v_rest,-52.0,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
-v_th,-45.0,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
-v_reset,-55.0,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
-tau_m,20.0,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
-tau_e,2.0,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
-tau_i,5.0,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
-ref_ms,2.0,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
-dt_ms,0.05,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
-delay_ms,1.0,类级全局参数（§8 ①；标定见 m9_weight_calibration.csv）
-bg_rate_hz,0.5,背景 Poisson 驱动
-bg_epsp_mv,2.0,背景 Poisson 驱动
-bg_seed,0,背景 Poisson 驱动
-delay_model,uniform_1.00ms,抽象登记：FlyWire v783 不含延迟列 → 统一轴突延迟
-vram_gb,1.047,实测
+w_exc,0.3,类级兴奋权重（gmax = w·syn_count^γ）
+w_inh,1.0,"类级抑制权重（真实 GABA 边 3,233,022 条）"
+w_mod,0.3,调质类（抽象 T2）
+syn_count_gamma,1.0,
+bias_mv_s,290.0,tonic 偏置中位（对数正态）
+bias_cv,0.25,对数正态 σ
+bias_mode,lognormal,
+e_inh,-80.0,**修复**：GABA_A 反转电位（须严格 < E_K）
+ek,-77.0,**修复**：钾平衡电位（AHP 电导反转电位）
+ahp_tau_ms,700.0,AHP 电导衰减 τ
+ahp_g_inc,25.0,**修复**：每 spike AHP 电导增量 (1/s)；I_ahp = g_ahp·(E_K−v)
+v_floor,-85.0,纯数值保护（低于全部反转电位）
+v_rest / v_th / v_reset,-52 / -45 / -55,mV
+tau_m / tau_e / tau_i,20 / 2 / 5,ms
+ref_ms / dt_ms,2.0 / 0.05,
+delay_ms,1.0,抽象登记：FlyWire v783 无延迟列
+bg_rate_hz,0.5,背景 Poisson 率（抽象登记）
+bg_g_ext,19.2308,= 2 mV EPSP / 0.104（抽象登记）
+fix_note,AHP 物理化 + E_GABA 修正,主agent 裁决 2026-10-10；H6 方向由 ✗ 转 ✓

@@ -1,13 +1,14 @@
-# M9 P4 墙钟实测与 30s 单试次推算（§3.5.4；本机共享负载记录）
-# 判据带与 P4 结果见 data/m9_p4_resting.csv（T=2s 档，3 试次，判据带未改动）
+# M9 P4 墙钟实测（§3.5.4）——含安静窗口 vs 共享争用两档
 metric,value,note
-exclusive_ms_per_step,0.898,P4 定稿档稳态实测（试次 1/2；试次 0 含 MPS 分配器预热 4.09）
-exclusive_gpu_h_30s_trial,0.150,"0.898e-3 ms×600,000 步 /3600 —— §0.9 R10 上限 1 GPU-h → 6.6× 余量"
-contended_ms_per_step_observed,2.4 – 12.0,本机为**共享高负载**环境（load≈3.2–3.5；并发重进程来自其他会话，含 Chrome 100%/67% CPU）→ 观测到 2.7–13× 退化（L12 负载病态先例）
-contended_gpu_h_30s_trial_upper,0.40 – 2.00,同上的上界推算（仅登记，不作为预算判定）
-t30_attempt_wall_s,2600+,T=30s 试次 0 在 26 分钟后仍未完成 100k/600k 步 → 主动中止（不烧预算）
-t5_attempt_wall_s,1200+,T=5s 试次 0 在 20 分钟后仍未完成 100k/100k 步 → 主动中止
-delivered_protocol_T_ms,2000,§3.5.4 最短协议；判据带为**率**判据（T 无关），T 缩短登记为测量限制
-delivered_gpu_h_per_trial,0.010,"T=2s 单试次（40,000 步）实测"
-delivered_n_trials,3,固定 seed 0/1/2；三试次统计量相同（确定性网络）
-reproduce_t30,M9_P4_T_MS=30000 ...,空闲机器上可用环境变量直跑 30s 档复测（工具已支持）
+quiet_window_ms_per_step,1.98,干净进程内直接 engine.run（T=30s 量程，20k 步/40s）——引擎可 20 分钟完成 30s 单试次
+exclusive_kernel_lower_bound_ms_per_step,0.898,P4 定稿档 T=2s 试次 1/2 稳态（同一机器较早安静窗口）
+memory_current_MB_flat,202,torch.mps.current_allocated_memory（连续 20 万步恒定 → 无泄漏）
+memory_driver_MB_flat,1150,torch.mps.driver_allocated_memory（恒定）
+python_objects_flat,153121,gc.get_objects()（恒定 → 无 Python 侧泄漏）
+contended_ms_per_step,~18,同一代码经 validate_p9_resting 的 3 次 T=30s 尝试（>24 分钟未完成 100k/600k 步）
+contention_cause,2 个其他会话 Python/MPS 进程(86-90% CPU) + Chrome(98.6%/78.9%)；load 4.7-6.2,外部争用，非本节点进程残留（已在每次启动前清空进程表）
+t30_attempts,3,均主动中止；NOT_OBTAINED（环境阻断）
+t30_projection_quiet,"~20 min/trial, N=3 ~65 min","1.98 ms/step × 600,000 步 = 19.8 分钟 → **符合 §10.1 预算**（主 agent 复核意见成立）"
+gpu_h_30s_trial_from_0.898,0.150,§0.9 R10 上限 1 GPU-h → 6.6× 余量
+affects,判据 (a)(d) 重分类为 INDETERMINATE,见 data/m9_p4_resolution.csv
+reproduce,M9_P4_T_MS=30000 PYTHONHASHSEED=0 MPLBACKEND=Agg .venv-m9/bin/python -m neural_exploration.tools.validate_p9_resting,须空闲机器

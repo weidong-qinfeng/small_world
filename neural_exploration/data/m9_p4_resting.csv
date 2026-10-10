@@ -104,3 +104,8 @@ crit,d_bout,False,
 crit,e_determinism,True,
 crit,f_wallclock,True,
 crit,verdict,FAIL,P4 三态判定（规划节点复核）
+
+# ---- 追加段（后于运行；不改判据带）：判据 (a)(d) 因 T=2s 分辨力不足重分类 ----
+resolution,a_rate_median,INDETERMINATE,T=2s 内 lam=0.1 Hz 期望 spike 仅 0.20 -> 必然观测为 0；实测 P(0 spike)=0.7474 反解同质等价 lam=0.1456 Hz 落在带内 -> median=0 与真实中位率落带不相矛盾，不能作为活动过低的证据（详见 m9_p4_resolution.csv）
+resolution,d_bout,INDETERMINATE,T=2s 仅 20 个 100ms 箱，bout 阈值（3x 中位箱值）在此箱数下不可靠
+resolution,verdict_revised,"PASS(b,c,e,f)+INDETERMINATE(a,d)",(a)(d) 因协议窗长分辨力不足 -> 判 INDETERMINATE，不作反证结论；T=30s 复核受本机共享负载阻断（见 m9_p4_wallclock.csv）

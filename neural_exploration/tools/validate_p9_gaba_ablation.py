@@ -42,14 +42,14 @@ SETTLE_MS = 500.0
 N_TRIALS = 1
 #: L25.2 机制假说检验：把 v_floor 抬到 E_GABA 之上（−70 > −75 mV）→ 抑制驱动项恒 ≤0。
 #: 若 H6 方向随之**转正**（消融 → 活动↑/静默↓），则 L25.2 的机制定位得到确证。
-V_FLOOR_ARMS = (-80.0, -70.0)
+V_FLOOR_ARMS = (-85.0,)   # 修复后 v_floor 为纯数值保护（低于全部反转电位）
 BG = dict(rate_hz=0.5, epsp_mv=2.0, seed=0)
 
 #: 与 P4 定稿同源参数（`tools/validate_p9_resting.py::PARAMS`）
 PARAMS = dict(
     w_exc=0.3, w_inh=1.0, w_mod=0.3, syn_count_gamma=1.0,
     bias_mv_s=290.0, bias_cv=0.25, bias_mode="lognormal",
-    ahp_tau_ms=700.0, ahp_inc=2500.0,
+    e_inh=-80.0, ek=-77.0, ahp_tau_ms=700.0, ahp_g_inc=100.0,
     v_rest=-52.0, v_th=-45.0, v_reset=-55.0, tau_m=20.0, tau_e=2.0, tau_i=5.0,
     ref_ms=2.0, dt_ms=0.05, delay_ms=1.0,
 )

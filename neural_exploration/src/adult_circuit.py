@@ -73,8 +73,10 @@ class CircuitParams:
     tau_e: float = 2.0
     tau_i: float = 5.0
     ref_ms: float = 2.0
-    ahp_tau_ms: float = 700.0   # ms 适应电流时间常数（后超极化；发放率上限杠杆）
-    ahp_inc: float = 2500.0     # mV/s 每 spike 注入（发放率限幅；标定参数）
+    e_inh: float = -80.0        # mV GABA_A 反转电位（必须 < E_K = -77 mV）
+    ek: float = -77.0           # mV 钾平衡电位（AHP 电导反转电位）
+    ahp_tau_ms: float = 700.0   # ms AHP 电导时间常数（发放率上限杠杆）
+    ahp_g_inc: float = 100.0    # 1/s 每 spike 的 AHP 电导增量（= 0 关闭适应）
     dt_ms: float = 0.05
     delay_ms: float = 1.0
     bias_mode: str = "lognormal"
@@ -167,7 +169,8 @@ class AdultCircuit:
         self.engine.set_point_params(v_rest=p.v_rest, v_th=p.v_th, v_reset=p.v_reset,
                                      tau_m=p.tau_m, tau_e=p.tau_e, tau_i=p.tau_i,
                                      ref_ms=p.ref_ms, dt_ms=p.dt_ms,
-                                     ahp_tau_ms=p.ahp_tau_ms, ahp_inc=p.ahp_inc)
+                                     e_inh=p.e_inh, ek=p.ek,
+                                     ahp_tau_ms=p.ahp_tau_ms, ahp_g_inc=p.ahp_g_inc)
         n_chunk = 4
         step = int(np.ceil(self.pre.size / n_chunk))
         for k in range(n_chunk):        # 分段装配（M8 分批语义；构建墙钟探针）

@@ -88,50 +88,56 @@ class PointParams:
     tau_e: float = 2.0         # ms（AMPA/cholinergic）
     tau_i: float = 5.0         # ms（GABA）
     e_exc: float = 0.0         # mV
-    e_inh: float = -75.0       # mV
+    e_inh: float = -80.0       # mV（GABA_A 反转电位；预注册：主agent 裁决 2026-10-10
+                               #  ——须严格负于 E_K=-77 mV，使静息与 AHP 期间均满足
+                               #  v > E_GABA ⇒ 抑制边恒为抑制）
     ref_ms: float = 2.0        # ms 绝对不应期
     dt_ms: float = 0.05        # ms（与 two_comp 档一致，M8 FIDELITY_DT 定稿）
-    v_floor: float = -80.0     # mV（数值地板，防发散）
-    ahp_tau_ms: float = 100.0  # ms 适应电流（后超极化）时间常数（0 = 关闭）
-    ahp_inc: float = 0.0       # mV/s 每 spike 注入量（发放率限幅，标定参数）
+    v_floor: float = -85.0     # mV（**纯数值**保护；低于全部反转电位 → 正常运行不触发）
+    ek: float = -77.0          # mV 钾平衡电位（AHP 电导的反转电位）
+    ahp_tau_ms: float = 700.0  # ms AHP 电导衰减时间常数（0 = 关闭）
+    ahp_g_inc: float = 0.0     # 1/s 每 spike 注入的 AHP **电导**增量（物理形式：I_ahp=g_ahp·(E_K−v)）
 
     def as_dict(self) -> Dict[str, float]:
         return {k: float(v) for k, v in self.__dict__.items()}
 
 
 def _point_core_factory(p: PointParams):
-    """point 档状态更新核（B1 融合手段：闭式 + 去守卫 + 少算子）。
+    """point 档状态更新核（含**物理自洽的 AHP 钾电导**）。
 
-    不应期倒计时等价性推演：spike 于步 s → `cool = ref_steps - 1`；步 s+k 的判定用
-    `cool = ref - k`；阻塞 ⟺ ref-k>0 ⟺ s+k < s+ref —— 与参考实现
-    `s >= next_allowed (next_allowed = s_spike + ref_steps)` 完全一致。
+    AHP 修复（主agent 裁决 2026-10-10；替代 v1 的恒流注入）：
+        旧：`drive -= a_ahp`（a 为 mV/s 恒流）→ 平衡点 `v_rest − a/g_L` 可达 **−102 mV**，
+            低于 E_K（−77）与 E_GABA（−75）→ **GABA 驱动项符号反转**（L25 机制定位）。
+        新：`I_ahp = g_ahp·(E_K − v)`（钾电导，τ_ahp 动力学；spike 时 g_ahp += ahp_g_inc）
+            → v 被 E_K **硬性限制**在 −77 mV 之上，永不越过 E_GABA（−80）→ 抑制边恒为抑制。
 
-    v 用**显式 Euler**（dt=0.05ms / tau_m=20ms → dt/tau=0.0025，精度充分且算子数最少）：
-    评估并**弃用**了指数积分闭式（B1 手段的 point 档移植）——实测算子数更多
-    （11 → 13 op）且会改变静息标定（P4 已定稿）→ 记录为已评估-不采用。
+    不应期倒计时等价性（不变）：spike 于步 s → `cool = ref_steps − 1`；步 s+k 判定用
+    `cool = ref − k`；阻塞 ⟺ s+k < s+ref（与参考实现一致）。
+    v 用显式 Euler（dt=0.05 ms / τ_m=20 ms → dt/τ=0.0025，精度充分且算子数最少）。
     """
     dt_s = p.dt_ms * 1e-3
     ae = math.exp(-p.dt_ms / p.tau_e)
     ai = math.exp(-p.dt_ms / p.tau_i)
     gl = 1.0 / (p.tau_m * 1e-3)
     vr, vth, vres = p.v_rest, p.v_th, p.v_reset
-    ee, ei, vfloor = p.e_exc, p.e_inh, p.v_floor
+    ee, ei, ek, vfloor = p.e_exc, p.e_inh, p.ek, p.v_floor
     ref_m1 = float(max(p.ref_ms / p.dt_ms - 1.0, 0.0))
     aa = (math.exp(-p.dt_ms / p.ahp_tau_ms) if p.ahp_tau_ms and p.ahp_tau_ms > 0
           else 0.0)
-    ahp_inc = float(p.ahp_inc)
+    ahp_g_inc = float(p.ahp_g_inc)
 
-    def core(v, ge, gi, cool, a_ahp, ev_e, ev_i, iext):
+    def core(v, ge, gi, g_ahp, cool, ev_e, ev_i, iext):
         ge2 = ge + ev_e                       # 步起点交付（事件在步起点生效）
         gi2 = gi + ev_i
-        a2 = a_ahp * aa                       # 适应电流衰减（步起点同步估值）
-        drive = gl * (vr - v) + ge2 * (ee - v) + gi2 * (ei - v) - a2 + iext
+        ga2 = g_ahp * aa                      # AHP 电导衰减（步起点同步估值）
+        drive = (gl * (vr - v) + ge2 * (ee - v) + gi2 * (ei - v)
+                 + ga2 * (ek - v) + iext)
         v2 = torch.clamp(v + dt_s * drive, min=vfloor)
         spk = (v2 >= vth) & (cool <= 0.0)
         cool2 = torch.where(spk, ref_m1, torch.clamp(cool - 1.0, min=0.0))
-        a3 = torch.where(spk, a2 + ahp_inc, a2)
+        ga3 = torch.where(spk, ga2 + ahp_g_inc, ga2)
         v3 = torch.where(cool2 > 0.0, vres, v2)   # 不应期钳位于 v_reset（标准 LIF）
-        return v3, ge2 * ae, gi2 * ai, cool2, a3, spk
+        return v3, ge2 * ae, gi2 * ai, cool2, ga3, spk
 
     return core
 
@@ -334,7 +340,7 @@ class AdultEngine:
         self.t_iext = torch.zeros(n, dtype=self.dtype, device=self.device)
         self.t_stim = None
         self.t_stim_col = None
-        self._ar_cache: Dict[int, Any] = {}
+        self._ar_buf = None
         self._build_cores()
         self._built = True
         self.stats["build_s"] = time.perf_counter() - t0
@@ -502,10 +508,20 @@ class AdultEngine:
         self._rng_seed = int(seed)
 
     def _arange(self, cap: int):
-        if cap not in self._ar_cache or self._ar_cache[cap].numel() < cap:
-            self._ar_cache[cap] = torch.arange(max(cap, 1024), dtype=torch.int64,
-                                               device=self.device)
-        return self._ar_cache[cap]
+        """单调增长的 arange 缓冲（**单一**缓冲，按容量扩容）。
+
+        踩坑（本节点实测，性能/内存双重 bug）：初版以 `cap` 为键做缓存
+        （`_ar_cache[cap] = arange(max(cap,1024))`）——但 chunk 的活跃边数 `tot` **每 chunk 都不同**
+        → 缓存条目无界增长（30s 试次 3 万 chunk → GB 级滞留张量）+ 每次新分配，
+        实测使全规模长试次从 0.9 ms/step 退化到 >15 ms/step 且 RSS 持续膨胀（7.5→14GB）。
+        正确做法：只保留**一个**可增长缓冲，超出容量才重新分配（摊薄 O(1)）。
+        """
+        buf = self._ar_buf
+        if buf is None or buf.numel() < cap:
+            self._ar_buf = torch.arange(max(int(cap * 1.25), 4096), dtype=torch.int64,
+                                        device=self.device)
+            buf = self._ar_buf
+        return buf
 
     def run(self, n_steps: int, *, fidelity: str = "point", record: str = "counts",
             delivery: Optional[str] = None, pop_trace: bool = False,

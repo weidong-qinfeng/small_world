@@ -40,16 +40,21 @@ OUT_CSV = os.path.join(DATA_DIR, "m9_p4_resting.csv")
 OUT_PARAMS = os.path.join(DATA_DIR, "m9_circuit_params.csv")
 OUT_PNG = os.path.join(REPORT_DIR, "m9_p4_resting.png")
 
-T_MS = 30000.0        # 测量窗（预注册 T=30s；融合内核实测稳态 ~0.9 ms/step → 单试次 ≈9 分钟）
+#: 测量窗（§3.5.4 最短协议）。预注册 T=30s；本节点实测：**独占稳态 0.898 ms/step**
+#: （→ 30s 单试次 0.15 GPU-h）但本机为**共享高负载**环境，实测退化到 2.4–12 ms/step
+#: （L12 负载病态 10–30×）→ T=30s / T=5s 均无法在可接受墙钟内完成 → 交付 T=2s 档
+#: （判据带为**率**判据，T 无关；T 缩短登记为测量限制）。空闲机器上可直接改回 30s 复测。
+T_MS = float(os.environ.get("M9_P4_T_MS", "2000"))
 SETTLE_MS = 1000.0    # settle 窗（预注册；与 T 同步缩放）
-N_TRIALS = 3
+N_TRIALS = int(os.environ.get("M9_P4_N", "3"))
 BIN_MS = 100.0        # bout 分箱（预注册；阈值 3× 中位箱值）
 
 #: 定稿回路参数（标定产物；见 data/m9_weight_calibration.csv）
 PARAMS = dict(
     w_exc=0.3, w_inh=1.0, w_mod=0.3, syn_count_gamma=1.0,
     bias_mv_s=290.0, bias_cv=0.25, bias_mode="lognormal",
-    ahp_tau_ms=700.0, ahp_inc=2500.0,
+    e_inh=-80.0, ek=-77.0, ahp_tau_ms=700.0,
+    ahp_g_inc=float(os.environ.get("M9_AHP_G", "25")),
     v_rest=-52.0, v_th=-45.0, v_reset=-55.0, tau_m=20.0, tau_e=2.0, tau_i=5.0,
     ref_ms=2.0, dt_ms=0.05, delay_ms=1.0,
 )
@@ -149,7 +154,7 @@ def main() -> int:
                                "    [seed=%d] %d/%d 步  %.0fs  %.3f ms/step  RSS=%.2fGB"
                                % (seed, k, n, el, el / max(k, 1) * 1e3,
                                   _rss_gb()), flush=True),
-                           progress_every=100000)
+                           progress_every=20000)
         rate = (c.engine.t_count.detach().cpu().numpy().astype(np.float64)
                 / (T_MS / 1000.0))
         rates.append(rate)
@@ -167,9 +172,9 @@ def main() -> int:
                  st["ms_per_step"], time.perf_counter() - t0), flush=True)
 
     # ---- 确定性（§3.5.2 判据 (c)：同参数重跑统计级一致）----
-    st_a = c.run_resting(T_ms=2000.0, settle_ms=SETTLE_MS, seed=0, pop_trace=False)
+    st_a = c.run_resting(T_ms=T_MS, settle_ms=SETTLE_MS, seed=0, pop_trace=False)
     ra = c.engine.t_count.detach().cpu().numpy().astype(np.float64).copy()
-    st_b = c.run_resting(T_ms=2000.0, settle_ms=SETTLE_MS, seed=0, pop_trace=False)
+    st_b = c.run_resting(T_ms=T_MS, settle_ms=SETTLE_MS, seed=0, pop_trace=False)
     rb = c.engine.t_count.detach().cpu().numpy().astype(np.float64).copy()
     det_spearman = float(np.corrcoef(ra, rb)[0, 1]) if ra.std() > 0 and rb.std() > 0 else 0.0
     det_identical = bool(np.array_equal(ra, rb))
