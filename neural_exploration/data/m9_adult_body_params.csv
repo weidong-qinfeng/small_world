@@ -1,0 +1,40 @@
+# M9 成年果蝇身体参数与状态分类阈值定稿（唯一定稿源）——
+# M9-B2 节点生成（src/adult_body.py::load_adult_body_params 读取；value 在 fields[9]，位置解析，
+# M5-B1d L23 语义沿用）。
+# 对应《生物仿真M9实施清单》§3.1（虚拟身体规格：六足 3 关节 ×6 = 18 驱动通道 + 翅 + 触角/复眼 +
+# 全行为通道肌肉映射含 curl（M8 R3 承接）+ 状态分类阈值 CSV 定稿，**不做事后调**）。
+role,neuron_class,synapse_from,synapse_to,synapse_type,g_max_ns,delay_ms,tonic_uA_cm2,value,note
+# ---- 形态与步态（tripod 三足步态为主；tetrapod 备选）----
+body,n_legs,,,,,,,,6,六足
+body,joints_per_leg,,,,,,,,3,每足 3 关节（coxa/femur/tibia）→ 18 驱动通道
+body,gait_freq_hz,,,,,,,,7.0,步频（tripod 对角三足交替；带见 m9_behavior_reference.csv body 段）
+body,tripod_phase_deg,,,,,,,,180.0,tripod 组间相位差（对角三足同相：{L1,R2,L3} vs {R1,L2,R3}）
+body,swing_amp_deg,,,,,,,,25.0,coxa 前后摆幅（protraction/retraction）
+body,lift_amp_deg,,,,,,,,18.0,femur 抬腿幅度（swing 相）
+body,tibia_amp_deg,,,,,,,,20.0,tibia 屈伸幅度
+body,coxa_bias_deg,,,,,,,,60.0,coxa 中位角（静态站立姿态）
+body,femur_bias_deg,,,,,,,,90.0,femur 中位角
+body,tibia_bias_deg,,,,,,,,90.0,tibia 中位角
+body,leg_len_mm,,,,,,,,2.5,足长（皿单位 mm；用于足尖运动学与位移方向）
+body,body_len_mm,,,,,,,,3.0,体长（mm）
+body,duty_factor,,,,,,,,0.5,占空比（stance/swing = 0.5 → tripod）
+# ---- 翅（翅拍 ~200Hz；降采样/统计级 → 测量限制登记）----
+body,wing_freq_hz,,,,,,,,200.0,翅拍频率（成虫 ~200Hz；本模块按 body dt 降采样，**测量限制**）
+body,wing_amp_deg,,,,,,,,60.0,翅拍角幅（wingbeat 摆动）
+body,wing_song_freq_hz,,,,,,,,30.0,求偶翅歌调制频率（延展旋律 vs 脉冲歌统计级）
+body,wing_spread_deg,,,,,,,,80.0,展翅角（逃跑/求偶翅展）
+# ---- 触角/复眼感觉输入 ----
+body,orn_tau_ms,,,,,,,,50.0,嗅觉 ORN 转导时间常数（M8 幼虫转导惯例升级）
+body,orn_gain,,,,,,,,1.0,气味浓度 → ORN 发放增益
+body,mech_gain,,,,,,,,1.0,触角机械感受（风/触）增益
+body,eye_flow_gain,,,,,,,,1.0,视觉流增益（球转速度 → 光流）
+body,ball_diameter_mm,,,,,,,,6.0,VR 球直径（mm；§3.2 协议参数）
+body,ball_gain,,,,,,,,1.0,球转速度 → 视觉流换算增益
+# ---- 状态分类阈值（定稿后不做事后调；M3 P5 教训）----
+state,v_run_frac,,,,,,,,0.15,run 速度阈值分数（v_thr = v_run_frac·v_fwd0）
+state,omega_turn_frac,,,,,,,,0.20,turn 转向阈值分数（omega_thr = omega_turn_frac·omega_max）
+state,curl_thr,,,,,,,,0.30,curl 蜷缩通道阈值（C_curl ≥ curl_thr → curl 防御态）
+state,escape_thr,,,,,,,,0.50,escape 通道阈值（C_escape ≥ escape_thr → escape 态）
+state,escape_latency_ms,,,,,,,,6.0,巨纤维逃跑潜伏期（机械/光刺激 → 跳跃起始）
+state,escape_refractory_ms,,,,,,,,80.0,逃跑不应期（防止连续触发）
+state,note_curl_priority,,,,,,,,1,分类优先级：escape > curl > turn > run > pause（固定语义）
