@@ -161,23 +161,31 @@ class AdultMB:
         self._kc_norm = 0.0
 
     # ---------------- 气味编码（抽象登记 ②） ----------------
-    def odor_pattern(self, n_odor: int = 1, overlap: Optional[float] = None
-                     ) -> np.ndarray:
+    def odor_pattern(self, n_odor: int = 1, overlap: Optional[float] = None,
+                     start: Optional[int] = None) -> np.ndarray:
         """生成 AL 空间的稀疏气味模式（形状 (n_odor, n_glomeruli)）。
 
         第 0 个为基准气味（CS+）；其后为与基准重叠度递减的相似气味（泛化梯度）。
+
+        `start`：基准块在 glomerulus 环上的**起始位置**（`None` = 0，即**原行为**）。
+        不同 `start` 给出**结构相同但神经元身份不同**的气味 → 用于让"气味对"成为
+        **真正独立的重复**（实测踩坑：`start` 全为 0 时 12 个气味对的 ΔLI **逐位相同** →
+        伪重复，置换检验的有效样本量实为 1、Cohen d 退化为 1e15）。
         """
         p = self.p
         base_ov = p.odor_overlap if overlap is None else float(overlap)
         g = p.n_glomeruli
         B = int(np.ceil(self.n_al / g))                # 每个"glomerulus"覆盖的 AL 神经元数
+        s0 = 0 if start is None else int(start) % g
+
         def _mk(n_glom_active: int) -> np.ndarray:
-            # 前 n_glom_active 个 glomerulus 的 AL 神经元置 1（抽象登记 ②：相似度 =
+            # 自 s0 起连续 nb 个 glomerulus 的 AL 神经元置 1（抽象登记 ②：相似度 =
             # AL 激活模式的 Jaccard 重叠，由 glomerulus 数控制）
             v = np.zeros(self.n_al, dtype=np.float64)
-            nb = max(1, int(round(n_glom_active))) 
+            nb = max(1, int(round(n_glom_active)))
             for gi in range(min(nb, g)):
-                a, b2 = gi * B, min((gi + 1) * B, self.n_al)
+                j = (s0 + gi) % g
+                a, b2 = j * B, min((j + 1) * B, self.n_al)
                 v[a:b2] = 1.0
             return v
         pats = [_mk(base_ov * g)]
@@ -239,11 +247,19 @@ class AdultMB:
     # ---------------- 协议 ----------------
     def run_protocol(self, n_pairs: Optional[int] = None, eta: Optional[float] = None,
                      da_gain: Optional[float] = None, ablate_subgraph: bool = False,
-                     n_generalization: int = 12) -> Dict[str, Any]:
+                     n_generalization: int = 12,
+                     independent_patterns: bool = False) -> Dict[str, Any]:
         """P5 协议：配对训练（CS++US / CS− 无 US）→ 偏好测试 + 泛化梯度。
 
         臂：配对组（CS+ 与 US 配对）vs 未配对对照（CS− 仅呈现，无 US）。
         返回 LI / 泛化曲线 / Δw 等机制级判据量。
+
+        `independent_patterns=False`（默认 = **原行为**，供审计复现）：每对使用**同一组**
+          气味模式（`start=0`）。实测后果：12 个 ΔLI **逐位相同**（sd≈3e-17）→ **伪重复**，
+          置换检验有效样本量实为 1，Cohen d 退化。
+        `independent_patterns=True`（**修正口径**）：由 `seed` 派生的 rng 为**每一对**抽一个
+          不同的 glomerulus 起始位置 → 12 对成为**真正独立的重复**；气味**结构**（Jaccard
+          重叠/强度序）不变，只换神经元身份。
         """
         p = self.p
         npairs = n_pairs or p.n_train_pairs
@@ -264,7 +280,12 @@ class AdultMB:
             self._kc_norm = ref
             if ablate_subgraph:
                 self.w[:] = 0.0
-            pats = self.odor_pattern(3, overlap=p.odor_overlap)
+            # **独立重复**（修正口径）：每对抽一个不同的 glomerulus 起始位置；
+            # 默认 None → start=0（原行为，12 对逐位相同 → 伪重复，见 docstring）
+            start_k = None
+            if independent_patterns:
+                start_k = int(rng.integers(0, p.n_glomeruli))
+            pats = self.odor_pattern(3, overlap=p.odor_overlap, start=start_k)
             cs_plus, cs_ctrl = pats[0], pats[1]
             # **训练前基线**（相对读法主判据；M8 §6 限制 2 语义 / 清单 §4.1 "未配对漂移读法"）：
             # 权重异质使 CS+ 与 CS− 的读出本身有非零差 → 必须以**学习前后差值**为 LI，
@@ -293,10 +314,12 @@ class AdultMB:
             li_list.append(li)
             li_abs_list.append(li_after); li_base_list.append(li_base)
             paired_list.append(li)
-            unpaired_list.append(0.0)     # 未配对对照臂：CS− 无 US → LI 定义上为 0
-            # 泛化梯度（以 CS+ 为基准的相似度递减气味）
+            # 未配对对照臂：CS− 无 US ⇒ 三因子规则下 Δw≡0 ⇒ LI **结构上恒为 0**
+            # （**不是测量值**；登记为不可判别，判别力须由 Δw 读回提供 —— 见 L40）
+            unpaired_list.append(0.0)
+            # 泛化梯度（以 CS+ 为基准的相似度递减气味；与 k=0 的 CS+ 同一 start）
             if k == 0:
-                gp = self.odor_pattern(n_generalization, overlap=p.odor_overlap)
+                gp = self.odor_pattern(n_generalization, overlap=p.odor_overlap, start=start_k)
                 for o in gp:
                     gen_curves.append(self.present(o, da=0.0, learn=False)["mbon_approach"])
         gen = np.asarray(gen_curves, dtype=np.float64)

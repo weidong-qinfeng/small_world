@@ -1,0 +1,81 @@
+# M9 P5 验收诊断（消融生效性 + 基线成分来源 + 可判别性补强；判据带未改）
+section,key,value,note
+protocol,eta_param,0.05,MBParams.eta
+protocol,da_gain_param,1.0,MBParams.da_gain
+protocol,n_pairs,12,气味对数
+protocol,odor_overlap,0.3,AL 重叠度
+micro,da_pos_eta_on_dw_l1,10827.46402,η=0.05 da=1
+micro,da_pos_eta_on_max_abs_dw,6.001572,
+micro,da_pos_eta_on_branch_taken,True,`if learn and da:` 是否进入
+micro,da_zero_dw_l1,0,η=0.05 da=0
+micro,da_zero_max_abs_dw,0,
+micro,da_zero_branch_taken,False,`if learn and da:` 是否进入
+micro,eta_zero_dw_l1,0,η=0 da=1
+micro,eta_zero_max_abs_dw,0,
+micro,eta_zero_branch_taken,False,`if learn and da:` 是否进入
+micro,da_pos_eta_on_rep_dw_l1,10827.46402,η=0.05 da=1
+micro,da_pos_eta_on_rep_max_abs_dw,6.001572,
+micro,da_pos_eta_on_rep_branch_taken,True,`if learn and da:` 是否进入
+crit,wiring_ok,True,DA 门控与 η 均**真的参与乘法**（在线读回）；否则消融未生效
+baseline,r_cs_plus_pre,5.4641422,训练前 CS+ 读出
+baseline,r_cs_ctrl_pre,3.9270652,训练前 CS− 读出
+baseline,li_base,0.163672,**训练前基线 LI**（= 主agent 看到的 0.163672 量级）
+baseline,kc_active_cs_plus,319,CS+ 的 KC 激活数
+baseline,kc_active_cs_ctrl,319,CS− 的 KC 激活数
+baseline,kc_drive_sum_cs_plus,163.657143,
+baseline,kc_drive_sum_cs_ctrl,122.164286,
+baseline,patterns_nested,True,CS− 是 CS+ 的**真子集**（嵌套）→ 训练前读出差主要来自**气味强度序**，非纯权重异质
+audit,legacy_same_pattern_effective_n,1,**原口径伪重复**：12 个 ΔLI 逐位相同 → 有效样本量 1
+audit,legacy_same_pattern_sd,0,原口径 ΔLI 标准差（≈3e-17 → Cohen d 退化）
+audit,independent_effective_n,12,**修正口径**下互不相同的 ΔLI 个数（= 有效样本量）
+audit,independent_sd,0.025961,修正口径 ΔLI 标准差
+arm_paired,li_mean,0.1408468042,η=0.05 da=1
+arm_paired,li_abs,0.2566883593,η=0.05 da=1
+arm_paired,li_base,0.1158415551,η=0.05 da=1
+arm_paired,dw_l1,27586.79865,η=0.05 da=1
+arm_paired,max_dw,7,η=0.05 da=1
+arm_paired,n_branch,36,η=0.05 da=1
+arm_paired,n_calls,36,η=0.05 da=1
+arm_paired,spec_mean,-0.0794102957,η=0.05 da=1
+arm_eta0,li_mean,0,η=0 da=1
+arm_eta0,li_abs,0.1158415551,η=0 da=1
+arm_eta0,li_base,0.1158415551,η=0 da=1
+arm_eta0,dw_l1,0,η=0 da=1
+arm_eta0,max_dw,0,η=0 da=1
+arm_eta0,n_branch,0,η=0 da=1
+arm_eta0,n_calls,36,η=0 da=1
+arm_eta0,spec_mean,0,η=0 da=1
+arm_da0,li_mean,0,η=0.05 da=0
+arm_da0,li_abs,0.1158415551,η=0.05 da=0
+arm_da0,li_base,0.1158415551,η=0.05 da=0
+arm_da0,dw_l1,0,η=0.05 da=0
+arm_da0,max_dw,0,η=0.05 da=0
+arm_da0,n_branch,0,η=0.05 da=0
+arm_da0,n_calls,36,η=0.05 da=0
+arm_da0,spec_mean,0,η=0.05 da=0
+arm_subgraph0,li_mean,0,η=0.05 da=1
+arm_subgraph0,li_abs,0,η=0.05 da=1
+arm_subgraph0,li_base,0,η=0.05 da=1
+arm_subgraph0,dw_l1,0,η=0.05 da=1
+arm_subgraph0,max_dw,0,η=0.05 da=1
+arm_subgraph0,n_branch,36,η=0.05 da=1
+arm_subgraph0,n_calls,36,η=0.05 da=1
+arm_subgraph0,spec_mean,0,η=0.05 da=1
+arm_specificity,li_mean,-0.04271360706,η=0.05 da=1
+arm_specificity,li_abs,0.07312794807,η=0.05 da=1
+arm_specificity,li_base,0.1158415551,η=0.05 da=1
+arm_specificity,dw_l1,12267.06734,η=0.05 da=1
+arm_specificity,max_dw,7,η=0.05 da=1
+arm_specificity,n_branch,36,η=0.05 da=1
+arm_specificity,n_calls,72,η=0.05 da=1
+arm_specificity,spec_mean,0.1081692221,η=0.05 da=1
+crit,mirror_matches_run_protocol,True,插桩镜像与模块 run_protocol 的 ΔLI 差 0.00e+00
+crit,ablation_weight_change_zero,True,η=0 / DA=0 / 子图=0 三臂 Δw_l1 == 0 → **消融确实生效（假设 ② 排除）**
+crit,paired_weight_change_positive,True,配对臂 Δw_l1 = 27586.8 > 0
+crit,ablation_non_discriminative,True,**登记**：相对读法下无权重变化 ⇒ ΔLI 结构上恒为 0 → 三臂**不可能失败**；其判别力**完全来自 Δw 读回**，不来自 ΔLI
+crit,specificity_control_discriminative,True,CS+（未配对）ΔLI=-0.042714 应≈0；C（与 US 配对）ΔLI=0.108169 应>0 → **该对照能失败**
+measured,baseline_share_of_abs_li,0.4513,基线成分占绝对 LI 的比例（主agent 假设 ① 的定量形式）
+measured,delta_li_paired,0.140847,**主判据口径**：ΔLI = LI_after − LI_base
+measured,li_abs_paired,0.256688,绝对读法（= li_base + ΔLI），如实登记
+measured,li_base_paired,0.115842,训练前基线（非可塑性成分）
+measured,wall_s,114.8,纯 CPU
