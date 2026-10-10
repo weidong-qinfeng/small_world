@@ -1,0 +1,75 @@
+# M9 P9 类型级锚 → 代理目标 + **预注册因果方向预测**（运行前写盘；不做事后调）
+# 预测规则：操纵边主导递质类 C → 激活：C 抑制 ⇒ 伙伴池 ↓ / C 兴奋·调质 ⇒ 伙伴池 ↑；沉默反号
+# 代理塌缩：无 cell_type（R7）→ 同池多锚共享同一目标集（池级命中率为统计诚实单位）
+anchor_id,kind,target,target_nt_class_diag,slot,readout,predicted,pred_source,lit_direction,map_reason
+A14-MBON-a1,pool,MBON,excitatory,S1_silence_partner,MBON.partner,activity_up,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,avoidance,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-a1,pool,MBON,excitatory,S2_silence_self,MBON.self,no_change,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,avoidance,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-a1,pool,MBON,excitatory,A1_activation_partner,MBON.partner,activity_down,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,avoidance,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-a2,pool,MBON,excitatory,S1_silence_partner,MBON.partner,activity_up,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,avoidance,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-a2,pool,MBON,excitatory,S2_silence_self,MBON.self,no_change,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,avoidance,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-a2,pool,MBON,excitatory,A1_activation_partner,MBON.partner,activity_down,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,avoidance,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-a3,pool,MBON,excitatory,S1_silence_partner,MBON.partner,activity_up,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,avoidance,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-a3,pool,MBON,excitatory,S2_silence_self,MBON.self,no_change,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,avoidance,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-a3,pool,MBON,excitatory,A1_activation_partner,MBON.partner,activity_down,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,avoidance,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-a1p,pool,MBON,excitatory,S1_silence_partner,MBON.partner,activity_up,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,avoidance,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-a1p,pool,MBON,excitatory,S2_silence_self,MBON.self,no_change,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,avoidance,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-a1p,pool,MBON,excitatory,A1_activation_partner,MBON.partner,activity_down,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,avoidance,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-a2p,pool,MBON,excitatory,S1_silence_partner,MBON.partner,activity_up,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,avoidance,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-a2p,pool,MBON,excitatory,S2_silence_self,MBON.self,no_change,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,avoidance,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-a2p,pool,MBON,excitatory,A1_activation_partner,MBON.partner,activity_down,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,avoidance,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-a3p,pool,MBON,excitatory,S1_silence_partner,MBON.partner,activity_up,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,approach,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-a3p,pool,MBON,excitatory,S2_silence_self,MBON.self,no_change,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,approach,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-a3p,pool,MBON,excitatory,A1_activation_partner,MBON.partner,activity_down,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,approach,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-b1,pool,MBON,excitatory,S1_silence_partner,MBON.partner,activity_up,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,approach,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-b1,pool,MBON,excitatory,S2_silence_self,MBON.self,no_change,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,approach,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-b1,pool,MBON,excitatory,A1_activation_partner,MBON.partner,activity_down,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,approach,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-b2,pool,MBON,excitatory,S1_silence_partner,MBON.partner,activity_up,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,approach,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-b2,pool,MBON,excitatory,S2_silence_self,MBON.self,no_change,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,approach,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-b2,pool,MBON,excitatory,A1_activation_partner,MBON.partner,activity_down,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,approach,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-g1pedc,pool,MBON,excitatory,S1_silence_partner,MBON.partner,activity_up,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,avoidance,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-g1pedc,pool,MBON,excitatory,S2_silence_self,MBON.self,no_change,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,avoidance,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-g1pedc,pool,MBON,excitatory,A1_activation_partner,MBON.partner,activity_down,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,avoidance,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-g2a1p,pool,MBON,excitatory,S1_silence_partner,MBON.partner,activity_up,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,approach,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-g2a1p,pool,MBON,excitatory,S2_silence_self,MBON.self,no_change,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,approach,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-g2a1p,pool,MBON,excitatory,A1_activation_partner,MBON.partner,activity_down,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,approach,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-g3,pool,MBON,excitatory,S1_silence_partner,MBON.partner,activity_up,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,avoidance,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-g3,pool,MBON,excitatory,S2_silence_self,MBON.self,no_change,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,avoidance,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-g3,pool,MBON,excitatory,A1_activation_partner,MBON.partner,activity_down,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,avoidance,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-g4g5,pool,MBON,excitatory,S1_silence_partner,MBON.partner,activity_up,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,mixed,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-g4g5,pool,MBON,excitatory,S2_silence_self,MBON.self,no_change,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,mixed,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-g4g5,pool,MBON,excitatory,A1_activation_partner,MBON.partner,activity_down,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,mixed,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-g5b2a,pool,MBON,excitatory,S1_silence_partner,MBON.partner,activity_up,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,avoidance,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-g5b2a,pool,MBON,excitatory,S2_silence_self,MBON.self,no_change,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,avoidance,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-MBON-g5b2a,pool,MBON,excitatory,A1_activation_partner,MBON.partner,activity_down,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,avoidance,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
+A14-PAM-reward,pool,MOD_MB,modulatory,S1_silence_partner,MOD_MB.partner,activity_down,登记抽象 T2（§0.3.5）：调质类（DA/5HT/OA）在本模型中由**弱兴奋电导**承载（受体映射 v783 不可得）→ 激活 ⇒ 伙伴池 ↑,reward,PAM 簇（奖赏 DAN）→ 投射 MB 的调质类神经元代理
+A14-PAM-reward,pool,MOD_MB,modulatory,S2_silence_self,MOD_MB.self,no_change,登记抽象 T2（§0.3.5）：调质类（DA/5HT/OA）在本模型中由**弱兴奋电导**承载（受体映射 v783 不可得）→ 激活 ⇒ 伙伴池 ↑,reward,PAM 簇（奖赏 DAN）→ 投射 MB 的调质类神经元代理
+A14-PAM-reward,pool,MOD_MB,modulatory,A1_activation_partner,MOD_MB.partner,activity_up,登记抽象 T2（§0.3.5）：调质类（DA/5HT/OA）在本模型中由**弱兴奋电导**承载（受体映射 v783 不可得）→ 激活 ⇒ 伙伴池 ↑,reward,PAM 簇（奖赏 DAN）→ 投射 MB 的调质类神经元代理
+A14-PPL1-punish,pool,MOD_MB,modulatory,S1_silence_partner,MOD_MB.partner,activity_down,登记抽象 T2（§0.3.5）：调质类（DA/5HT/OA）在本模型中由**弱兴奋电导**承载（受体映射 v783 不可得）→ 激活 ⇒ 伙伴池 ↑,punishment,PPL1 簇（惩罚 DAN）→ 投射 MB 的调质类神经元代理（与 PAM 同池：递质类级不可分）
+A14-PPL1-punish,pool,MOD_MB,modulatory,S2_silence_self,MOD_MB.self,no_change,登记抽象 T2（§0.3.5）：调质类（DA/5HT/OA）在本模型中由**弱兴奋电导**承载（受体映射 v783 不可得）→ 激活 ⇒ 伙伴池 ↑,punishment,PPL1 簇（惩罚 DAN）→ 投射 MB 的调质类神经元代理（与 PAM 同池：递质类级不可分）
+A14-PPL1-punish,pool,MOD_MB,modulatory,A1_activation_partner,MOD_MB.partner,activity_up,登记抽象 T2（§0.3.5）：调质类（DA/5HT/OA）在本模型中由**弱兴奋电导**承载（受体映射 v783 不可得）→ 激活 ⇒ 伙伴池 ↑,punishment,PPL1 簇（惩罚 DAN）→ 投射 MB 的调质类神经元代理（与 PAM 同池：递质类级不可分）
+A14-MBON-OA,pool,MOD_ALL,modulatory,S1_silence_partner,MOD_ALL.partner,activity_down,登记抽象 T2（§0.3.5）：调质类（DA/5HT/OA）在本模型中由**弱兴奋电导**承载（受体映射 v783 不可得）→ 激活 ⇒ 伙伴池 ↑,arousal,OA-VUM → 全脑调质类代理（递质类级不可分 DA/5HT/OA）
+A14-MBON-OA,pool,MOD_ALL,modulatory,S2_silence_self,MOD_ALL.self,no_change,登记抽象 T2（§0.3.5）：调质类（DA/5HT/OA）在本模型中由**弱兴奋电导**承载（受体映射 v783 不可得）→ 激活 ⇒ 伙伴池 ↑,arousal,OA-VUM → 全脑调质类代理（递质类级不可分 DA/5HT/OA）
+A14-MBON-OA,pool,MOD_ALL,modulatory,A1_activation_partner,MOD_ALL.partner,activity_up,登记抽象 T2（§0.3.5）：调质类（DA/5HT/OA）在本模型中由**弱兴奋电导**承载（受体映射 v783 不可得）→ 激活 ⇒ 伙伴池 ↑,arousal,OA-VUM → 全脑调质类代理（递质类级不可分 DA/5HT/OA）
+R17-GF-escape,unavailable,,-,,,no-experiment,,escape/jump,GF 为单对神经元；无 super_class/cell_type（R7）→ 无法隔离 → no-experiment
+R17-DN-downstream,unavailable,,-,,,no-experiment,,walking/turn/grooming,descending neuron 身份需 cell_type/super_class；神经域标注无 VNC/SEG → 无法映射 → no-experiment
+R17-MBON-behavior,pool,MBON,excitatory,S1_silence_partner,MBON.partner,activity_up,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,approach/avoidance 转向,MBON 驱动线集合 → MBON 池代理（**行为通道读出 P9 不可测**：P9 仅活动级，行为级登记限制）
+R17-MBON-behavior,pool,MBON,excitatory,S2_silence_self,MBON.self,no_change,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,approach/avoidance 转向,MBON 驱动线集合 → MBON 池代理（**行为通道读出 P9 不可测**：P9 仅活动级，行为级登记限制）
+R17-MBON-behavior,pool,MBON,excitatory,A1_activation_partner,MBON.partner,activity_down,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,approach/avoidance 转向,MBON 驱动线集合 → MBON 池代理（**行为通道读出 P9 不可测**：P9 仅活动级，行为级登记限制）
+R17-turning-lines,pool,CX_ALL,excitatory,S1_silence_partner,CX_ALL.partner,activity_down,连接组结构：该通路主导递质为兴奋性（ACh/谷氨酸）→ 激活 ⇒ 伙伴池 ↑,turning bias,CX 驱动线（EPG/PFN 类）→ 中央复合体（EB+PB+FB）代理
+R17-turning-lines,pool,CX_ALL,excitatory,S2_silence_self,CX_ALL.self,no_change,连接组结构：该通路主导递质为兴奋性（ACh/谷氨酸）→ 激活 ⇒ 伙伴池 ↑,turning bias,CX 驱动线（EPG/PFN 类）→ 中央复合体（EB+PB+FB）代理
+R17-turning-lines,pool,CX_ALL,excitatory,A1_activation_partner,CX_ALL.partner,activity_up,连接组结构：该通路主导递质为兴奋性（ACh/谷氨酸）→ 激活 ⇒ 伙伴池 ↑,turning bias,CX 驱动线（EPG/PFN 类）→ 中央复合体（EB+PB+FB）代理
+R17-walking-lines,unavailable,,-,,,no-experiment,,walking initiation,‘多驱动线’无类型/区域可分辨代理 → no-experiment
+C24-cluster-atlas,unavailable,,-,,,no-experiment,,行为簇,原始数据表不可得（anchor_mapping=unavailable 由锚库自身登记）→ no-experiment
+C24-larval-compare,unavailable,,-,,,no-experiment,,跨龄期对照,方法学对照项，无神经元目标 → no-experiment
+MISC-KC-MBON-STDP,edge,KC_TO_MBON,excitatory,S1_edge_silence_post,KC_TO_MBON.post,activity_up,"连接组结构：KC→MBON 边为兴奋性（KC 胆碱能）→ 边沉默 ⇒ MBON（post）池 ↓；承接 P5 真实边 100,533 条",Δw 符号（DA 门控）,KC→MBON 突触锚 → **边级**目标（pre∈MB_CA & post∈MBON），沉默其 gmax 读 MBON 池后果
+MISC-KC-MBON-STDP,edge,KC_TO_MBON,excitatory,S2_edge_silence_pre,KC_TO_MBON.pre,no_change,"连接组结构：KC→MBON 边为兴奋性（KC 胆碱能）→ 边沉默 ⇒ MBON（post）池 ↓；承接 P5 真实边 100,533 条",Δw 符号（DA 门控）,KC→MBON 突触锚 → **边级**目标（pre∈MB_CA & post∈MBON），沉默其 gmax 读 MBON 池后果
+MISC-MBON-US,pool,MBON,excitatory,S1_silence_partner,MBON.partner,activity_up,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,ΔMBON 输出 ∝ 偏好,MBON 输出差分读出锚 → MBON 池代理（价效差分本身为 P8 读出，P9 只测活动级后果）
+MISC-MBON-US,pool,MBON,excitatory,S2_silence_self,MBON.self,no_change,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,ΔMBON 输出 ∝ 偏好,MBON 输出差分读出锚 → MBON 池代理（价效差分本身为 P8 读出，P9 只测活动级后果）
+MISC-MBON-US,pool,MBON,excitatory,A1_activation_partner,MBON.partner,activity_down,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,ΔMBON 输出 ∝ 偏好,MBON 输出差分读出锚 → MBON 池代理（价效差分本身为 P8 读出，P9 只测活动级后果）
+MISC-EPG-ring,pool,CX_EB,inhibitory,S1_silence_partner,CX_EB.partner,activity_down,连接组结构：该通路主导递质为兴奋性（ACh/谷氨酸）→ 激活 ⇒ 伙伴池 ↑,bump ↔ 航向；EPG 消融 → 丢失,EPG 环锚 → EB 池代理（缝隙连接 v783=0：环序为图论代理，R8）
+MISC-EPG-ring,pool,CX_EB,inhibitory,S2_silence_self,CX_EB.self,no_change,连接组结构：该通路主导递质为兴奋性（ACh/谷氨酸）→ 激活 ⇒ 伙伴池 ↑,bump ↔ 航向；EPG 消融 → 丢失,EPG 环锚 → EB 池代理（缝隙连接 v783=0：环序为图论代理，R8）
+MISC-EPG-ring,pool,CX_EB,inhibitory,A1_activation_partner,CX_EB.partner,activity_up,连接组结构：该通路主导递质为兴奋性（ACh/谷氨酸）→ 激活 ⇒ 伙伴池 ↑,bump ↔ 航向；EPG 消融 → 丢失,EPG 环锚 → EB 池代理（缝隙连接 v783=0：环序为图论代理，R8）
+MISC-SLEEP-OA,pool,MOD_ALL,modulatory,S1_silence_partner,MOD_ALL.partner,activity_down,登记抽象 T2（§0.3.5）：调质类（DA/5HT/OA）在本模型中由**弱兴奋电导**承载（受体映射 v783 不可得）→ 激活 ⇒ 伙伴池 ↑,OA 增益 ↑ → 觉醒,OA/DA 调质系统锚 → 全脑调质类代理
+MISC-SLEEP-OA,pool,MOD_ALL,modulatory,S2_silence_self,MOD_ALL.self,no_change,登记抽象 T2（§0.3.5）：调质类（DA/5HT/OA）在本模型中由**弱兴奋电导**承载（受体映射 v783 不可得）→ 激活 ⇒ 伙伴池 ↑,OA 增益 ↑ → 觉醒,OA/DA 调质系统锚 → 全脑调质类代理
+MISC-SLEEP-OA,pool,MOD_ALL,modulatory,A1_activation_partner,MOD_ALL.partner,activity_up,登记抽象 T2（§0.3.5）：调质类（DA/5HT/OA）在本模型中由**弱兴奋电导**承载（受体映射 v783 不可得）→ 激活 ⇒ 伙伴池 ↑,OA 增益 ↑ → 觉醒,OA/DA 调质系统锚 → 全脑调质类代理
+MISC-NOCICEPTION,unavailable,,-,,,no-experiment,,逃避/蜷缩 ↑,成虫伤害性类型（class IV md 同源）无 cell_type 可分辨 → no-experiment

@@ -1,0 +1,43 @@
+# M9 P10 活动金标准（§4.6；判据带只读 m9_behavior_reference.csv activity 段）
+# 成像数据不可得（R9）→ 文献参数化回退 + 只承诺统计级；不声称逐神经元成像对应
+section,key,value,note
+protocol,device,mps,
+protocol,T_ms,200,成像协议窗（预算受限；登记为测量限制）
+protocol,settle_ms,50,
+protocol,segment_steps,1000,全分段
+protocol,ca_tau_s,1.0,单指数核（预注册）
+protocol,single_spike_dff,0.15,单脉冲峰幅（预注册；Chen 2013 量级）
+protocol,frame_rate_hz,2.0,预注册 1–2 Hz
+protocol,n_frames,10,
+protocol,params_readback,"{'e_inh': -80.0, 'ek': -77.0, 'ahp_form': 'conductance', 'ahp_g_inc': 25.0, 'v_floor': -85.0}",构建后读回断言 ✓
+protocol,reference_distribution,"lognormal(median=1.0 Hz, sigma_log=1.4)",**文献参数化回退**（R9：成像数据不可得）
+measure,rate_mean_hz,4.7968,
+measure,rate_median_hz,0.0000,
+measure,silent_frac_true,0.6728,承接 P4 (b) 0.524
+measure,ks_D_true_vs_lit,0.6728,判据 (a)；p=0
+measure,ks_D_ca_recon_vs_lit,0.6728,描述性（成像式重建）
+measure,mean_pair_corr_2hz,0.6220,判据 (d)
+measure,mean_pair_corr_surrogate_null,-0.0717,相位随机化代理（采样噪声地板对照）
+measure,mean_pair_corr_fine_100ms,0.6782,描述性（精细时间尺度）
+measure,fano_median,nan,判据 (e)
+measure,silent_frac_ca,0.6728,判据 (f)
+measure,dff_peak_median,0.0000,
+measure,recon_rate_median_window,0.0000,窗内 ΔF/F 积分重建（含钙尾截断偏低偏置）
+measure,recon_rate_median_full,0.0000,补零全尾重建（无边界截断；单脉冲自检精确）
+measure,recon_window_bias,0.0000,窗内/全尾（成像式估计的系统性偏低；τ/T 效应）
+measure,spearman_recon_vs_true_rate,0.9997,判据 (g)：模型自检
+measure,n_detectable,45571,真率 ≥0.5 Hz（相关估计子集；成像常规）
+measure,wall_s,16,两次运行（主 + 确定性复跑）
+confound,win2s_frame1Hz,corr=0.6220 surrogate=-0.0717 frames=10,窗长/帧率对相关估计的混淆诊断（同一记录，无额外运行）
+confound,win2s_frame2Hz,corr=0.6220 surrogate=-0.0717 frames=10,窗长/帧率对相关估计的混淆诊断（同一记录，无额外运行）
+confound,win5s_frame1Hz,corr=0.6220 surrogate=-0.0717 frames=10,窗长/帧率对相关估计的混淆诊断（同一记录，无额外运行）
+confound,win5s_frame2Hz,corr=0.6220 surrogate=-0.0717 frames=10,窗长/帧率对相关估计的混淆诊断（同一记录，无额外运行）
+crit,a_ks_vs_literature,False,
+crit,b_ca_tau_registered,True,
+crit,c_frame_rate_registered,True,
+crit,d_mean_pair_corr_in_band,False,
+crit,e_fano_in_band,False,
+crit,f_silent_ca_le_max,True,
+crit,g_ca_rate_rank_corr,True,
+crit,h_determinism_bitwise,True,
+crit,verdict,FAIL(部分),P10 三态判定（5/8）
