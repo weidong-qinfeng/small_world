@@ -1,0 +1,93 @@
+# M9 P4 附加：真实 GABA 边 H6 消融 sanity（§3.5.5；配对设计，拓扑不变）
+section,key,value,note
+build,n_neurons,139255,
+build,n_edges,15091983,
+build,gaba_edges,3233022,真实抑制边（g→0 = H6 消融边集；来源 m9_flywire_connectome.csv 递质标注）
+build,gaba_edge_share_pct,21.422,与 data/m9_inhibition_inventory.csv 21.42% 一致
+build,gaba_synapses,12755910,"12,755,910（23.4%）"
+protocol,T_ms,1000.0,与 P4 同（§3.5.4 最短协议）
+protocol,settle_ms,500.0,
+protocol,n_trials,1,固定 seed
+protocol,bg,rate=0.50Hz epsp=2.0 mV,逐神经元独立 Poisson 虚拟突触驱动
+arm_baseline_real_gaba_vfloor-80_seed0,arm,baseline_real_gaba_vfloor-80,
+arm_baseline_real_gaba_vfloor-80_seed0,w_inh,1.0,
+arm_baseline_real_gaba_vfloor-80_seed0,v_floor,-80.0,
+arm_baseline_real_gaba_vfloor-80_seed0,seed,0,
+arm_baseline_real_gaba_vfloor-80_seed0,gaba_edge_scale,1.0,
+arm_baseline_real_gaba_vfloor-80_seed0,rate_median_hz,0.0,
+arm_baseline_real_gaba_vfloor-80_seed0,rate_mean_hz,0.06318624106854331,
+arm_baseline_real_gaba_vfloor-80_seed0,rate_p95_hz,1.0,
+arm_baseline_real_gaba_vfloor-80_seed0,silent_frac,0.9368137589314567,
+arm_baseline_real_gaba_vfloor-80_seed0,pop_rate_hz,0.06318624106854331,
+arm_baseline_real_gaba_vfloor-80_seed0,n_spikes,8799.0,
+arm_baseline_real_gaba_vfloor-80_seed0,ms_per_step,2.3341872437499998,
+arm_baseline_real_gaba_vfloor-80_seed0,wall_s,72.29677775,
+arm_h6_gaba_off_vfloor-80_seed0,arm,h6_gaba_off_vfloor-80,
+arm_h6_gaba_off_vfloor-80_seed0,w_inh,0.0,
+arm_h6_gaba_off_vfloor-80_seed0,v_floor,-80.0,
+arm_h6_gaba_off_vfloor-80_seed0,seed,0,
+arm_h6_gaba_off_vfloor-80_seed0,gaba_edge_scale,0.0,
+arm_h6_gaba_off_vfloor-80_seed0,rate_median_hz,0.0,
+arm_h6_gaba_off_vfloor-80_seed0,rate_mean_hz,0.024774693906861513,
+arm_h6_gaba_off_vfloor-80_seed0,rate_p95_hz,0.0,
+arm_h6_gaba_off_vfloor-80_seed0,silent_frac,0.9752253060931385,
+arm_h6_gaba_off_vfloor-80_seed0,pop_rate_hz,0.024774693906861513,
+arm_h6_gaba_off_vfloor-80_seed0,n_spikes,3450.0,
+arm_h6_gaba_off_vfloor-80_seed0,ms_per_step,1.9111226854000007,
+arm_h6_gaba_off_vfloor-80_seed0,wall_s,83.74252704100002,
+arm_baseline_real_gaba_vfloor-70_seed0,arm,baseline_real_gaba_vfloor-70,
+arm_baseline_real_gaba_vfloor-70_seed0,w_inh,1.0,
+arm_baseline_real_gaba_vfloor-70_seed0,v_floor,-70.0,
+arm_baseline_real_gaba_vfloor-70_seed0,seed,0,
+arm_baseline_real_gaba_vfloor-70_seed0,gaba_edge_scale,1.0,
+arm_baseline_real_gaba_vfloor-70_seed0,rate_median_hz,0.0,
+arm_baseline_real_gaba_vfloor-70_seed0,rate_mean_hz,0.06335140569458907,
+arm_baseline_real_gaba_vfloor-70_seed0,rate_p95_hz,1.0,
+arm_baseline_real_gaba_vfloor-70_seed0,silent_frac,0.9366485943054109,
+arm_baseline_real_gaba_vfloor-70_seed0,pop_rate_hz,0.06335140569458907,
+arm_baseline_real_gaba_vfloor-70_seed0,n_spikes,8822.0,
+arm_baseline_real_gaba_vfloor-70_seed0,ms_per_step,3.412585200000001,
+arm_baseline_real_gaba_vfloor-70_seed0,wall_s,122.48135187500003,
+arm_h6_gaba_off_vfloor-70_seed0,arm,h6_gaba_off_vfloor-70,
+arm_h6_gaba_off_vfloor-70_seed0,w_inh,0.0,
+arm_h6_gaba_off_vfloor-70_seed0,v_floor,-70.0,
+arm_h6_gaba_off_vfloor-70_seed0,seed,0,
+arm_h6_gaba_off_vfloor-70_seed0,gaba_edge_scale,0.0,
+arm_h6_gaba_off_vfloor-70_seed0,rate_median_hz,0.0,
+arm_h6_gaba_off_vfloor-70_seed0,rate_mean_hz,0.024379735018491257,
+arm_h6_gaba_off_vfloor-70_seed0,rate_p95_hz,0.0,
+arm_h6_gaba_off_vfloor-70_seed0,silent_frac,0.9756202649815088,
+arm_h6_gaba_off_vfloor-70_seed0,pop_rate_hz,0.024379735018491257,
+arm_h6_gaba_off_vfloor-70_seed0,n_spikes,3395.0,
+arm_h6_gaba_off_vfloor-70_seed0,ms_per_step,1.5989960458500008,
+arm_h6_gaba_off_vfloor-70_seed0,wall_s,67.21224208400002,
+section,key,value,note
+agg,vfloor-80_baseline_rate_median_hz,0.000000,真实 GABA 边臂（v_floor=-80 mV）
+agg,vfloor-80_h6off_rate_median_hz,0.000000,GABA 边 g→0 臂（v_floor=-80 mV）
+agg,vfloor-80_delta_rate_median_hz,0.000000,消融 − 基线；Δ 率均值>0 且 Δ静默<0 = H6 方向正确
+agg,vfloor-80_baseline_rate_mean_hz,0.063186,真实 GABA 边臂（v_floor=-80 mV）
+agg,vfloor-80_h6off_rate_mean_hz,0.024775,GABA 边 g→0 臂（v_floor=-80 mV）
+agg,vfloor-80_delta_rate_mean_hz,-0.038412,消融 − 基线；Δ 率均值>0 且 Δ静默<0 = H6 方向正确
+agg,vfloor-80_baseline_silent_frac,0.936814,真实 GABA 边臂（v_floor=-80 mV）
+agg,vfloor-80_h6off_silent_frac,0.975225,GABA 边 g→0 臂（v_floor=-80 mV）
+agg,vfloor-80_delta_silent_frac,0.038412,消融 − 基线；Δ 率均值>0 且 Δ静默<0 = H6 方向正确
+agg,vfloor-80_baseline_pop_rate_hz,0.063186,真实 GABA 边臂（v_floor=-80 mV）
+agg,vfloor-80_h6off_pop_rate_hz,0.024775,GABA 边 g→0 臂（v_floor=-80 mV）
+agg,vfloor-80_delta_pop_rate_hz,-0.038412,消融 − 基线；Δ 率均值>0 且 Δ静默<0 = H6 方向正确
+agg,vfloor-70_baseline_rate_median_hz,0.000000,真实 GABA 边臂（v_floor=-70 mV）
+agg,vfloor-70_h6off_rate_median_hz,0.000000,GABA 边 g→0 臂（v_floor=-70 mV）
+agg,vfloor-70_delta_rate_median_hz,0.000000,消融 − 基线；Δ 率均值>0 且 Δ静默<0 = H6 方向正确
+agg,vfloor-70_baseline_rate_mean_hz,0.063351,真实 GABA 边臂（v_floor=-70 mV）
+agg,vfloor-70_h6off_rate_mean_hz,0.024380,GABA 边 g→0 臂（v_floor=-70 mV）
+agg,vfloor-70_delta_rate_mean_hz,-0.038972,消融 − 基线；Δ 率均值>0 且 Δ静默<0 = H6 方向正确
+agg,vfloor-70_baseline_silent_frac,0.936649,真实 GABA 边臂（v_floor=-70 mV）
+agg,vfloor-70_h6off_silent_frac,0.975620,GABA 边 g→0 臂（v_floor=-70 mV）
+agg,vfloor-70_delta_silent_frac,0.038972,消融 − 基线；Δ 率均值>0 且 Δ静默<0 = H6 方向正确
+agg,vfloor-70_baseline_pop_rate_hz,0.063351,真实 GABA 边臂（v_floor=-70 mV）
+agg,vfloor-70_h6off_pop_rate_hz,0.024380,GABA 边 g→0 臂（v_floor=-70 mV）
+agg,vfloor-70_delta_pop_rate_hz,-0.038972,消融 − 基线；Δ 率均值>0 且 Δ静默<0 = H6 方向正确
+crit,rate_mean_up,False,H6 方向断言
+crit,silent_down,False,H6 方向断言
+crit,pop_rate_up,False,H6 方向断言
+crit,verdict,FAIL,PASS=真实 GABA 边起抑制平衡作用（消融 → 活动↑/静默↓）
+note,m8_context,"M8 冻结基线 run=9.9% vs 行为带 [60,85]%（缺 GABA 语境）；M9 数据侧已解除（真实 GABA 21.42%）",本表只给 P4 静息统计，行为级 run 判据属 P3/P5（下一批次）
