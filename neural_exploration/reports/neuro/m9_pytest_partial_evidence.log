@@ -1,0 +1,18 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.9.6, pytest-8.4.2, pluggy-1.6.0
+rootdir: /Users/weidong/ai/small_world
+configfile: pyproject.toml
+collected 88 items
+
+neural_exploration/tests/neuro/test_adult_smoke.py ............          [ 13%]
+neural_exploration/tests/neuro/test_chemotaxis_smoke.py .........        [ 23%]
+neural_exploration/tests/neuro/test_m6_learning_smoke.py ........        [ 32%]
+neural_exploration/tests/neuro/test_m6_neuromod.py .........             [ 43%]
+neural_exploration/tests/neuro/test_m8_larva_smoke.py ........           [ 52%]
+neural_exploration/tests/neuro/test_multicomp_determinism.py ..          [ 54%]
+neural_exploration/tests/neuro/test_multicomp_smoke.py ...               [ 57%]
+neural_exploration/tests/neuro/test_multicomp_validation.py .....        [ 63%]
+neural_exploration/tests/neuro/test_reflex_smoke.py .......              [ 71%]
+neural_exploration/tests/neuro/test_smoke.py ....                        [ 76%]
+neural_exploration/tests/neuro/test_synapse_smoke.py ......              [ 82%]
+neural_exploration/tests/neuro/test_synapse_validation.py .
