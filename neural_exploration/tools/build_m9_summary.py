@@ -123,8 +123,10 @@ def main() -> int:
     # ---------------- P3 ----------------
     crit["P3_virtual_body"] = {
         "name": "虚拟果蝇身体（P3）", "verdict": "PASS", "pass": 14, "total": 14,
-        "key_values": {"gait_freq_hz": num(p3.get("gait_freq_hz")),
-                       "tripod_phase_deg": num(p3.get("tripod_phase_deg")),
+        "key_values": {"gait_freq_hz": num(p3.get("gait_freq_measured_hz"),
+                                          num(p3.get("gait_freq_hz"))),
+                       "tripod_phase_deg": num(p3.get("tripod_cross_phase_deg"),
+                                               num(p3.get("tripod_phase_deg"))),
                        "escape_resp_prob": num(p3.get("escape_resp_prob")),
                        "smoke_pytest": "12 passed"},
         "evidence": ["src/adult_body.py + tools/validate_p9_body.py + data/m9_p3_body.csv",
@@ -274,8 +276,11 @@ def main() -> int:
          "strength": "强（机制性诊断）",
          "missing_mechanism": "tonic 偏置主导 → 放大背景驱动无效；必须新增状态变量",
          "evidence": ["data/m9_p7_drive_sensitivity.csv",
-                      "rel_zero_drive=%s, rel_4x_drive=%s" % (drv.get("rel_zero_drive", "n/a"),
-                                                              drv.get("rel_4x_drive", "n/a"))]},
+                      "rel_zero_drive=%s, rel_4x_drive=%s" % (
+                          read_kv(os.path.join(DATA_DIR, "m9_p7_drive_sensitivity.csv")).get(
+                              "rel_zero_drive", "n/a"),
+                          read_kv(os.path.join(DATA_DIR, "m9_p7_drive_sensitivity.csv")).get(
+                              "rel_4x_drive", "n/a"))]},
         {"id": "R4", "statement": "静息发放率偏高（rate_mean 4.77 Hz vs 文献 ~1–2 Hz）",
          "strength": "中（bias_cv / 背景 λ 标定空间仍在）",
          "missing_mechanism": "标定待优化（登记，非缺陷）",
@@ -348,6 +353,8 @@ def main() -> int:
                                         if str(v.get("verdict", "")).startswith("PASS(")),
             "fail": sum(1 for v in crit.values() if str(v.get("verdict", "")).startswith("FAIL")),
             "pending": sum(1 for v in crit.values() if v.get("verdict") == "pending"),
+            "partial": sum(1 for v in crit.values()
+                           if str(v.get("verdict", "")).startswith("PARTIAL")),
         },
         "refutations": refutations,
         "missing_mechanisms": missing_mechs,
@@ -420,6 +427,12 @@ def _est_cpu_h() -> float:
 
 
 def make_three_channel(p4, p3, P, p9, p10, drv, crit):
+    def num(x, d=0.0):
+        try:
+            return float(str(x).split()[0])
+        except Exception:  # noqa: BLE001
+            return d
+
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -462,9 +475,10 @@ def make_three_channel(p4, p3, P, p9, p10, drv, crit):
     ax = axes[1][1]
     k = ["bout_active_frac\n(P4/P7)", "day/night\n(P7)", "zero-drive\nretention",
          "4x-drive\ngain"]
+    drv_kv = read_kv(os.path.join(DATA_DIR, "m9_p7_drive_sensitivity.csv"))
     v = [num(p4.get("bout_active_fraction"), 0.0),
          float(P.get("P7_wake_sleep_states", {}).get("key_values", {}).get("day_night_ratio", 0.0)),
-         num(drv.get("rel_zero_drive"), 0.0), num(drv.get("rel_4x_drive"), 0.0)]
+         num(drv_kv.get("rel_zero_drive"), 0.0), num(drv_kv.get("rel_4x_drive"), 0.0)]
     ax.bar(k, v, color="#d62728")
     ax.axhline(1.0, color="k", ls=":", lw=1)
     ax.set_title("(d) state-switching refutation (R1/R2/R3): flat autonomous activity")

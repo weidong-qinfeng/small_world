@@ -15,51 +15,66 @@ anchor,n_anchors_mapped,22,可映射到代理池（≥20 下限）
 anchor,n_anchors_unavailable,6,no-experiment（不入分母）
 anchor,n_prediction_slots,65,池锚 3 槽 / 边级锚 2 槽
 anchor,pool_collapse_log,"{""MBON"": 45, ""MOD_MB"": 6, ""MOD_ALL"": 6, ""CX_EB"": 3, ""CX_ALL"": 3, ""KC_TO_MBON"": 2}",同池多锚共享目标集（无 cell_type → 区间不可分；池级为统计诚实单位）
-pool,MBON_status,unavailable,子进程失败/结果缺失（不静默）
+pool,MBON_n_target,1374,
+pool,MBON_n_partner,12259,
+pool,MBON_n_target_edges,183316,
+pool,MBON_nt_class_diag,excitatory,代理边主导递质类（诊断列）
+pool,MBON_nt_frac_exc_inh_mod,0.655/0.067/0.278,代理混类程度（限制 R7 直接证据）
+pool,MBON_self_base_hz,8.7103,基线测量窗
+pool,MBON_partner_base_hz,7.5773,
+measure,MBON_silence_partner_rel_delta,0.0669,相对 sham 基线（同 seed 配对）
+measure,MBON_silence_self_rel_delta,0.0116,相对 sham 基线（同 seed 配对）
+measure,MBON_activation_partner_rel_delta,0.4375,相对 sham 基线（同 seed 配对）
+measure,MBON_activation_self_rel_delta,3.3943,相对 sham 基线（同 seed 配对）
+measure,MBON_random_silence_partner_rel_delta,nan,相对 sham 基线（同 seed 配对）
+measure,MBON_random_activation_partner_rel_delta,nan,相对 sham 基线（同 seed 配对）
+measure,MBON_class_silence_partner,activity_up,
+measure,MBON_class_silence_self,no_change,
+measure,MBON_class_activation_partner,activity_up,
 pool,MOD_MB_status,unavailable,子进程失败/结果缺失（不静默）
 pool,MOD_ALL_status,unavailable,子进程失败/结果缺失（不静默）
 pool,CX_EB_status,unavailable,子进程失败/结果缺失（不静默）
 pool,CX_ALL_status,unavailable,子进程失败/结果缺失（不静默）
 pool,KC_TO_MBON_status,unavailable,子进程失败/结果缺失（不静默）
-slot,A14-MBON-a1|S1_silence_partner,pred=activity_up meas=unavailable hit=,target=MBON slot_dir=+1
-slot,A14-MBON-a1|S2_silence_self,pred=no_change meas=unavailable hit=,target=MBON slot_dir=+0
-slot,A14-MBON-a1|A1_activation_partner,pred=activity_down meas=unavailable hit=,target=MBON slot_dir=-1
-slot,A14-MBON-a2|S1_silence_partner,pred=activity_up meas=unavailable hit=,target=MBON slot_dir=+1
-slot,A14-MBON-a2|S2_silence_self,pred=no_change meas=unavailable hit=,target=MBON slot_dir=+0
-slot,A14-MBON-a2|A1_activation_partner,pred=activity_down meas=unavailable hit=,target=MBON slot_dir=-1
-slot,A14-MBON-a3|S1_silence_partner,pred=activity_up meas=unavailable hit=,target=MBON slot_dir=+1
-slot,A14-MBON-a3|S2_silence_self,pred=no_change meas=unavailable hit=,target=MBON slot_dir=+0
-slot,A14-MBON-a3|A1_activation_partner,pred=activity_down meas=unavailable hit=,target=MBON slot_dir=-1
-slot,A14-MBON-a1p|S1_silence_partner,pred=activity_up meas=unavailable hit=,target=MBON slot_dir=+1
-slot,A14-MBON-a1p|S2_silence_self,pred=no_change meas=unavailable hit=,target=MBON slot_dir=+0
-slot,A14-MBON-a1p|A1_activation_partner,pred=activity_down meas=unavailable hit=,target=MBON slot_dir=-1
-slot,A14-MBON-a2p|S1_silence_partner,pred=activity_up meas=unavailable hit=,target=MBON slot_dir=+1
-slot,A14-MBON-a2p|S2_silence_self,pred=no_change meas=unavailable hit=,target=MBON slot_dir=+0
-slot,A14-MBON-a2p|A1_activation_partner,pred=activity_down meas=unavailable hit=,target=MBON slot_dir=-1
-slot,A14-MBON-a3p|S1_silence_partner,pred=activity_up meas=unavailable hit=,target=MBON slot_dir=+1
-slot,A14-MBON-a3p|S2_silence_self,pred=no_change meas=unavailable hit=,target=MBON slot_dir=+0
-slot,A14-MBON-a3p|A1_activation_partner,pred=activity_down meas=unavailable hit=,target=MBON slot_dir=-1
-slot,A14-MBON-b1|S1_silence_partner,pred=activity_up meas=unavailable hit=,target=MBON slot_dir=+1
-slot,A14-MBON-b1|S2_silence_self,pred=no_change meas=unavailable hit=,target=MBON slot_dir=+0
-slot,A14-MBON-b1|A1_activation_partner,pred=activity_down meas=unavailable hit=,target=MBON slot_dir=-1
-slot,A14-MBON-b2|S1_silence_partner,pred=activity_up meas=unavailable hit=,target=MBON slot_dir=+1
-slot,A14-MBON-b2|S2_silence_self,pred=no_change meas=unavailable hit=,target=MBON slot_dir=+0
-slot,A14-MBON-b2|A1_activation_partner,pred=activity_down meas=unavailable hit=,target=MBON slot_dir=-1
-slot,A14-MBON-g1pedc|S1_silence_partner,pred=activity_up meas=unavailable hit=,target=MBON slot_dir=+1
-slot,A14-MBON-g1pedc|S2_silence_self,pred=no_change meas=unavailable hit=,target=MBON slot_dir=+0
-slot,A14-MBON-g1pedc|A1_activation_partner,pred=activity_down meas=unavailable hit=,target=MBON slot_dir=-1
-slot,A14-MBON-g2a1p|S1_silence_partner,pred=activity_up meas=unavailable hit=,target=MBON slot_dir=+1
-slot,A14-MBON-g2a1p|S2_silence_self,pred=no_change meas=unavailable hit=,target=MBON slot_dir=+0
-slot,A14-MBON-g2a1p|A1_activation_partner,pred=activity_down meas=unavailable hit=,target=MBON slot_dir=-1
-slot,A14-MBON-g3|S1_silence_partner,pred=activity_up meas=unavailable hit=,target=MBON slot_dir=+1
-slot,A14-MBON-g3|S2_silence_self,pred=no_change meas=unavailable hit=,target=MBON slot_dir=+0
-slot,A14-MBON-g3|A1_activation_partner,pred=activity_down meas=unavailable hit=,target=MBON slot_dir=-1
-slot,A14-MBON-g4g5|S1_silence_partner,pred=activity_up meas=unavailable hit=,target=MBON slot_dir=+1
-slot,A14-MBON-g4g5|S2_silence_self,pred=no_change meas=unavailable hit=,target=MBON slot_dir=+0
-slot,A14-MBON-g4g5|A1_activation_partner,pred=activity_down meas=unavailable hit=,target=MBON slot_dir=-1
-slot,A14-MBON-g5b2a|S1_silence_partner,pred=activity_up meas=unavailable hit=,target=MBON slot_dir=+1
-slot,A14-MBON-g5b2a|S2_silence_self,pred=no_change meas=unavailable hit=,target=MBON slot_dir=+0
-slot,A14-MBON-g5b2a|A1_activation_partner,pred=activity_down meas=unavailable hit=,target=MBON slot_dir=-1
+slot,A14-MBON-a1|S1_silence_partner,pred=activity_up meas=activity_up hit=True,target=MBON slot_dir=+1
+slot,A14-MBON-a1|S2_silence_self,pred=no_change meas=no_change hit=True,target=MBON slot_dir=+0
+slot,A14-MBON-a1|A1_activation_partner,pred=activity_down meas=activity_up hit=False,target=MBON slot_dir=-1
+slot,A14-MBON-a2|S1_silence_partner,pred=activity_up meas=activity_up hit=True,target=MBON slot_dir=+1
+slot,A14-MBON-a2|S2_silence_self,pred=no_change meas=no_change hit=True,target=MBON slot_dir=+0
+slot,A14-MBON-a2|A1_activation_partner,pred=activity_down meas=activity_up hit=False,target=MBON slot_dir=-1
+slot,A14-MBON-a3|S1_silence_partner,pred=activity_up meas=activity_up hit=True,target=MBON slot_dir=+1
+slot,A14-MBON-a3|S2_silence_self,pred=no_change meas=no_change hit=True,target=MBON slot_dir=+0
+slot,A14-MBON-a3|A1_activation_partner,pred=activity_down meas=activity_up hit=False,target=MBON slot_dir=-1
+slot,A14-MBON-a1p|S1_silence_partner,pred=activity_up meas=activity_up hit=True,target=MBON slot_dir=+1
+slot,A14-MBON-a1p|S2_silence_self,pred=no_change meas=no_change hit=True,target=MBON slot_dir=+0
+slot,A14-MBON-a1p|A1_activation_partner,pred=activity_down meas=activity_up hit=False,target=MBON slot_dir=-1
+slot,A14-MBON-a2p|S1_silence_partner,pred=activity_up meas=activity_up hit=True,target=MBON slot_dir=+1
+slot,A14-MBON-a2p|S2_silence_self,pred=no_change meas=no_change hit=True,target=MBON slot_dir=+0
+slot,A14-MBON-a2p|A1_activation_partner,pred=activity_down meas=activity_up hit=False,target=MBON slot_dir=-1
+slot,A14-MBON-a3p|S1_silence_partner,pred=activity_up meas=activity_up hit=True,target=MBON slot_dir=+1
+slot,A14-MBON-a3p|S2_silence_self,pred=no_change meas=no_change hit=True,target=MBON slot_dir=+0
+slot,A14-MBON-a3p|A1_activation_partner,pred=activity_down meas=activity_up hit=False,target=MBON slot_dir=-1
+slot,A14-MBON-b1|S1_silence_partner,pred=activity_up meas=activity_up hit=True,target=MBON slot_dir=+1
+slot,A14-MBON-b1|S2_silence_self,pred=no_change meas=no_change hit=True,target=MBON slot_dir=+0
+slot,A14-MBON-b1|A1_activation_partner,pred=activity_down meas=activity_up hit=False,target=MBON slot_dir=-1
+slot,A14-MBON-b2|S1_silence_partner,pred=activity_up meas=activity_up hit=True,target=MBON slot_dir=+1
+slot,A14-MBON-b2|S2_silence_self,pred=no_change meas=no_change hit=True,target=MBON slot_dir=+0
+slot,A14-MBON-b2|A1_activation_partner,pred=activity_down meas=activity_up hit=False,target=MBON slot_dir=-1
+slot,A14-MBON-g1pedc|S1_silence_partner,pred=activity_up meas=activity_up hit=True,target=MBON slot_dir=+1
+slot,A14-MBON-g1pedc|S2_silence_self,pred=no_change meas=no_change hit=True,target=MBON slot_dir=+0
+slot,A14-MBON-g1pedc|A1_activation_partner,pred=activity_down meas=activity_up hit=False,target=MBON slot_dir=-1
+slot,A14-MBON-g2a1p|S1_silence_partner,pred=activity_up meas=activity_up hit=True,target=MBON slot_dir=+1
+slot,A14-MBON-g2a1p|S2_silence_self,pred=no_change meas=no_change hit=True,target=MBON slot_dir=+0
+slot,A14-MBON-g2a1p|A1_activation_partner,pred=activity_down meas=activity_up hit=False,target=MBON slot_dir=-1
+slot,A14-MBON-g3|S1_silence_partner,pred=activity_up meas=activity_up hit=True,target=MBON slot_dir=+1
+slot,A14-MBON-g3|S2_silence_self,pred=no_change meas=no_change hit=True,target=MBON slot_dir=+0
+slot,A14-MBON-g3|A1_activation_partner,pred=activity_down meas=activity_up hit=False,target=MBON slot_dir=-1
+slot,A14-MBON-g4g5|S1_silence_partner,pred=activity_up meas=activity_up hit=True,target=MBON slot_dir=+1
+slot,A14-MBON-g4g5|S2_silence_self,pred=no_change meas=no_change hit=True,target=MBON slot_dir=+0
+slot,A14-MBON-g4g5|A1_activation_partner,pred=activity_down meas=activity_up hit=False,target=MBON slot_dir=-1
+slot,A14-MBON-g5b2a|S1_silence_partner,pred=activity_up meas=activity_up hit=True,target=MBON slot_dir=+1
+slot,A14-MBON-g5b2a|S2_silence_self,pred=no_change meas=no_change hit=True,target=MBON slot_dir=+0
+slot,A14-MBON-g5b2a|A1_activation_partner,pred=activity_down meas=activity_up hit=False,target=MBON slot_dir=-1
 slot,A14-PAM-reward|S1_silence_partner,pred=activity_down meas=unavailable hit=,target=MOD_MB slot_dir=-1
 slot,A14-PAM-reward|S2_silence_self,pred=no_change meas=unavailable hit=,target=MOD_MB slot_dir=+0
 slot,A14-PAM-reward|A1_activation_partner,pred=activity_up meas=unavailable hit=,target=MOD_MB slot_dir=+1
@@ -71,9 +86,9 @@ slot,A14-MBON-OA|S2_silence_self,pred=no_change meas=unavailable hit=,target=MOD
 slot,A14-MBON-OA|A1_activation_partner,pred=activity_up meas=unavailable hit=,target=MOD_ALL slot_dir=+1
 slot,R17-GF-escape|-,pred=no-experiment meas=no-experiment hit=,target=None slot_dir=+0
 slot,R17-DN-downstream|-,pred=no-experiment meas=no-experiment hit=,target=None slot_dir=+0
-slot,R17-MBON-behavior|S1_silence_partner,pred=activity_up meas=unavailable hit=,target=MBON slot_dir=+1
-slot,R17-MBON-behavior|S2_silence_self,pred=no_change meas=unavailable hit=,target=MBON slot_dir=+0
-slot,R17-MBON-behavior|A1_activation_partner,pred=activity_down meas=unavailable hit=,target=MBON slot_dir=-1
+slot,R17-MBON-behavior|S1_silence_partner,pred=activity_up meas=activity_up hit=True,target=MBON slot_dir=+1
+slot,R17-MBON-behavior|S2_silence_self,pred=no_change meas=no_change hit=True,target=MBON slot_dir=+0
+slot,R17-MBON-behavior|A1_activation_partner,pred=activity_down meas=activity_up hit=False,target=MBON slot_dir=-1
 slot,R17-turning-lines|S1_silence_partner,pred=activity_down meas=unavailable hit=,target=CX_ALL slot_dir=-1
 slot,R17-turning-lines|S2_silence_self,pred=no_change meas=unavailable hit=,target=CX_ALL slot_dir=+0
 slot,R17-turning-lines|A1_activation_partner,pred=activity_up meas=unavailable hit=,target=CX_ALL slot_dir=+1
@@ -82,9 +97,9 @@ slot,C24-cluster-atlas|-,pred=no-experiment meas=no-experiment hit=,target=None 
 slot,C24-larval-compare|-,pred=no-experiment meas=no-experiment hit=,target=None slot_dir=+0
 slot,MISC-KC-MBON-STDP|S1_edge_silence_post,pred=activity_up meas=unavailable hit=,target=KC_TO_MBON slot_dir=+1
 slot,MISC-KC-MBON-STDP|S2_edge_silence_pre,pred=no_change meas=unavailable hit=,target=KC_TO_MBON slot_dir=+0
-slot,MISC-MBON-US|S1_silence_partner,pred=activity_up meas=unavailable hit=,target=MBON slot_dir=+1
-slot,MISC-MBON-US|S2_silence_self,pred=no_change meas=unavailable hit=,target=MBON slot_dir=+0
-slot,MISC-MBON-US|A1_activation_partner,pred=activity_down meas=unavailable hit=,target=MBON slot_dir=-1
+slot,MISC-MBON-US|S1_silence_partner,pred=activity_up meas=activity_up hit=True,target=MBON slot_dir=+1
+slot,MISC-MBON-US|S2_silence_self,pred=no_change meas=no_change hit=True,target=MBON slot_dir=+0
+slot,MISC-MBON-US|A1_activation_partner,pred=activity_down meas=activity_up hit=False,target=MBON slot_dir=-1
 slot,MISC-EPG-ring|S1_silence_partner,pred=activity_down meas=unavailable hit=,target=CX_EB slot_dir=-1
 slot,MISC-EPG-ring|S2_silence_self,pred=no_change meas=unavailable hit=,target=CX_EB slot_dir=+0
 slot,MISC-EPG-ring|A1_activation_partner,pred=activity_up meas=unavailable hit=,target=CX_EB slot_dir=+1
@@ -92,18 +107,19 @@ slot,MISC-SLEEP-OA|S1_silence_partner,pred=activity_down meas=unavailable hit=,t
 slot,MISC-SLEEP-OA|S2_silence_self,pred=no_change meas=unavailable hit=,target=MOD_ALL slot_dir=+0
 slot,MISC-SLEEP-OA|A1_activation_partner,pred=activity_up meas=unavailable hit=,target=MOD_ALL slot_dir=+1
 slot,MISC-NOCICEPTION|-,pred=no-experiment meas=no-experiment hit=,target=None slot_dir=+0
-agg,hit_rate_anchor_level,0.0000,0/0 槽
-agg,hit_rate_pool_level,0.0000,0/0 池×槽
-agg,sign_agreement_rate_descriptive,0.0000,**事后描述性**（非判据）：方向符号一致率 0/0
-agg,nt_class_rule_hit_rate_descriptive,0.0000,**事后描述性**：数据驱动递质类规则命中率 0/0（诊断代理混类影响）
-agg,efficacy_activation_self_up_frac,nan,0/0 池自身率↑
+agg,slots_unavailable,20,**未测槽（预算/环境限制；不入分母，未测 ≠ 未命中）**
+agg,hit_rate_anchor_level,0.6667,30/45 槽
+agg,hit_rate_pool_level,0.6667,2/3 池×槽
+agg,sign_agreement_rate_descriptive,0.6667,**事后描述性**（非判据）：方向符号一致率 30/45
+agg,nt_class_rule_hit_rate_descriptive,0.5000,**事后描述性**：数据驱动递质类规则命中率 15/30（诊断代理混类影响）
+agg,efficacy_activation_self_up_frac,1.0000,1/1 池自身率↑
 agg,sham_noop_bitwise,True,零臂自检
 agg,determinism_bitwise,True,
-agg,specificity_target_gt_control_pools,0/0,描述性（目标效应量 > 随机对照）
+agg,specificity_target_gt_control_pools,0/0（可判定池数，对照组缺失者不计）,描述性（目标效应量 > 随机对照；对照组缺失登记为不可判定）
 agg,wall_s,0,
-crit,hit_rate,True,P9 判据
+crit,hit_rate,False,P9 判据
 crit,sham_noop_identical,True,P9 判据
 crit,determinism_bitwise,True,P9 判据
 crit,efficacy_activation_self_up,True,P9 判据
 crit,anchor_min_20,True,P9 判据
-crit,verdict,PARTIAL(未测：无已运行目标池),**PARTIAL：本会话无已运行目标池 → 命中率未测（未测 ≠ 未命中；分母为 0）**
+crit,verdict,FAIL,**FAIL → 反证记录（方向不符/不显著；与 R3「活动自主自持、输入增益过低」一致）**
