@@ -19,6 +19,18 @@
   - data/m9_circuit_params.csv（回路参数定稿）
   - reports/neuro/m9_p4_resting.png（发放率分布 / 群体活动时序 / bout 结构 / 墙钟）
 
+环境变量（复现/协议控制）：
+  M9_P4_T_MS  测量窗 ms（默认 2000；预注册值 30000 须在空闲机器上跑）
+  M9_P4_N     试次数（默认 3）
+  M9_AHP_G    AHP 电导增量 1/s（默认 25；conductance 物理档）
+
+**产物溯源（重要：同一工具在不同物理档下产出不同 artifact）**：
+  - `data/m9_p4_resting.csv`（**已交付档**）由 **legacy 物理**产出：E_GABA=−75 mV + AHP **恒流** 2500 mV/s、
+    v_floor=−80 mV、T=2s、N=3。该档 H6 消融**方向反转**（见 `data/m9_p4_gaba_ablation.csv`）。
+  - **本工具当前默认 = 修复后物理档**（E_GABA=−80 < E_K=−77、AHP **钾电导** g_ahp=25、v_floor=−85）；
+    该档 H6 方向**正确**、静默 0.5388 落带（见 `data/m9_ahp_calibration.csv` / `m9_p4_fix_comparison.csv`）。
+  - 因此：**用本工具重跑会得到"修复后"结果**，与已交付 CSV 不是同一物理档 → 引用时必须标注档位。
+
 用法：
   PYTHONHASHSEED=0 MPLBACKEND=Agg .venv-m9/bin/python -m neural_exploration.tools.validate_p9_resting
 """
@@ -209,7 +221,8 @@ def main() -> int:
         w = _csv.writer(f, lineterminator="\n")
         w.writerow(["# M9 P4 静息 sanity（§3.5.2/§3.5.3）；判据带定稿于 m9_behavior_reference.csv"])
         w.writerow(["section", "key", "value", "note"])
-        w.writerow(["protocol", "T_ms", T_MS, "测量窗（预注册）"])
+        w.writerow(["protocol", "T_ms", T_MS,
+                    "测量窗（§3.5.4 最短协议；预注册 30s，见 m9_behavior_reference.csv protocol_change 行）"])
         w.writerow(["protocol", "settle_ms", SETTLE_MS, "settle 窗（丢弃；M5 L37#2）"])
         w.writerow(["protocol", "n_trials", N_TRIALS, "固定 seed 0/1/2（确定性）"])
         w.writerow(["protocol", "bout_bin_ms", BIN_MS, "bout 分箱（阈值 3× 中位箱值）"])

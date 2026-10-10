@@ -1,0 +1,22 @@
+"# M9 H-b/H-c 判别实验（真实 GABA 边 3,233,022 条 g→0 的机制归属）"
+"# 协议：全规模 139,255 神经元；T=1s、settle=0.2s、seed=0、bg 0.5Hz/g_ext=19.23、w_exc=0.3、bias 290/0.25"
+# legacy 物理档 = E_GABA=-75mV + AHP 恒流（即 H6 反转被观测到的原始档）；v_floor=-85mV（当前默认）
+# Fano = Var/Mean（1ms 箱群体 spike 计数；Fano>>1 = 强爆发/同步）；conc = 前 10% 箱的 spike 占比（集中度）
+exp,source,ahp_form,ahp_val,w_inh,e_inh,v_floor,rate_mean_hz,rate_median_hz,silent_frac,fano_factor,burst_index,concentration_top10pct,ms_per_step,note
+E1_H6_baseline,B2_battery,current,2500.0,1.0,-75.0,-85.0,1.13782,0.00000,0.5675,446.794,-0.626,0.204,3.01,真实 GABA 边（基线臂）
+E1_H6_gaba_off,B2_battery,current,2500.0,0.0,-75.0,-85.0,1.99785,0.00000,0.3050,17400.322,-0.134,0.745,5.29,GABA 边 g->0（消融臂）
+E1_H6_direction,B2_battery,current,2500.0,,,,+0.86003,,-0.2625,-,-,-,,方向正确（dRate>0 且 dSilent<0）
+E1_H6_Fano_ratio,B2_battery,current,2500.0,,,,-,,-,39.0x,,3.65x,,H-b 直接证据：移除抑制 -> Fano 446.8->17400（39x）、集中度 0.204->0.745
+E1_ahp0_gaba_on,B2_battery,current,0.0,1.0,-75.0,-85.0,,,,,,,,未完成（高活动档墙钟超限，本机争用）
+E1_ahp0_gaba_off,B2_battery,current,0.0,0.0,-75.0,-85.0,,,,,,,,未完成（同上）
+E1_ahp0_direction,main_agent_L27,current,0.0,1.0,-75.0,,5.69177/69.15103,,0.55090/0.10451,,,,,H-b 决定性：ahp=0 时 dRate=+63.46、dSilent=-0.446（方向正确）；来源=主agent L27.1（其配置 g_ext=0.04）
+E2_w_inh_sweep,B2_battery,current,2500.0,0.25/0.50/2.00,,,,,,,,,,未完成（墙钟超限）
+E4_perturb_bias,B2_battery,current,2500.0,1.0,,,,,,,,,,未完成（墙钟超限）
+--- 结论 ---,,,,,,,,,,,,,,
+verdict,H-b 与 H-c 两者皆有（H-b 为主）,,,,,,,,,,,,,
+H-b_evidence,(1) Fano 39x + 集中度 3.65x 上升（GABA off）-> 移除抑制使网络显著更爆发/同步；(2) 主agent L27：ahp_inc=0 时 H6 方向由反转为正确（dRate +63.46）-> AHP 是中介,,,,,,,,,,,,,
+H-c_evidence,同一 legacy 物理（E_GABA=-75 + AHP 恒流 2500）在不同工作点给出相反符号：旧交付档（v_floor=-80，基线 0.0632 Hz）-> dRate=-0.0384（反转）；本次（v_floor=-85，基线 1.13782 Hz）-> dRate=+0.860（正确）。基线活动相差 18x 而符号翻转 => 近临界/状态依赖：该工作点不适合做机制断言,,,,,,,,,,,,,
+mechanism_statement_Hb,抑制边通过去同步间接维持发放率：移除 GABA -> 放电成簇（Fano 39x）-> AHP（tau=700ms 强负反馈）在簇内集中累积 -> 单神经元稳态发放率被压得更低。故'移除抑制'未必提高平均发放率，净效应取决于网络处于同步或异步态,,,,,,,,,,,,,
+implication_P4,P4 静息调整方向：不能仅靠增强抑制权重提升静息率（可能适得其反）；应先去同步（降低复发同步：STP / GABA 亚型异质 / 调质增益）再调 E/I 比,,,,,,,,,,,,,
+implication_P7,睡眠 bout 可行性：当前工作点 Fano=446（强爆发）有利于产生 bout（群体活动天然成簇）-> P7 的 bout 判据在 AHP 修复后可能比预期更易达成；但须先确认 H-c（工作点稳定性）,,,,,,,,,,,,,
+limitation,本次 battery 仅完成 E1 的 2 臂（其余 6 臂因本机争用墙钟超限主动中止）；E1_ahp0 由主agent L27 覆盖（配置差异 g_ext 0.04 vs 19.23 已登记）；w_inh 单调斜率未取得 -> 请求下一批补齐,,,,,,,,,,,,,
