@@ -247,7 +247,8 @@ class AdultCircuit:
     # ---------------- 运行 ----------------
     def run_resting(self, T_ms: float = 1000.0, settle_ms: float = 200.0,
                     seed: int = 0, delivery: str = "chunk", pop_trace: bool = False,
-                    v0_seed=None) -> Dict[str, Any]:
+                    v0_seed=None, progress=None, progress_every: int = 100000
+                    ) -> Dict[str, Any]:
         """静息协议：settle 窗（丢弃）→ 测量窗统计（§3.5.2）。"""
         if not self._built:
             self.build()
@@ -265,7 +266,8 @@ class AdultCircuit:
             self.engine.run(n_settle, delivery=delivery, record="counts")
         self.engine.reset_counts()
         r = self.engine.run(n_meas, delivery=delivery, record="counts",
-                            pop_trace=pop_trace)
+                            pop_trace=pop_trace, progress=progress,
+                            progress_every=progress_every)
         wall = time.perf_counter() - t0
         st = self.engine.firing_stats(T_ms)
         st.update({"T_ms": T_ms, "settle_ms": settle_ms, "seed": seed,

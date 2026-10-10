@@ -40,9 +40,7 @@ OUT_CSV = os.path.join(DATA_DIR, "m9_p4_resting.csv")
 OUT_PARAMS = os.path.join(DATA_DIR, "m9_circuit_params.csv")
 OUT_PNG = os.path.join(REPORT_DIR, "m9_p4_resting.png")
 
-T_MS = 2000.0         # 测量窗（§3.5.4 最短协议：预注册 30s → 实测全规模每步墙钟下 T=30s
-                      # 单试次墙钟不可接受（见 L21）→ 取最短子集 T=2s；判据带为**率**判据
-                      # （T 无关），T 缩短登记为测量限制 + 三态裁决）
+T_MS = 30000.0        # 测量窗（预注册 T=30s；融合内核实测稳态 ~0.9 ms/step → 单试次 ≈9 分钟）
 SETTLE_MS = 1000.0    # settle 窗（预注册；与 T 同步缩放）
 N_TRIALS = 3
 BIN_MS = 100.0        # bout 分箱（预注册；阈值 3× 中位箱值）
@@ -104,6 +102,15 @@ def bout_stats(pop, bin_steps, n_bins_expected=None):
             "bin_median_spk": med, "bout_threshold_spk": thr}
 
 
+def _rss_gb():
+    """进程峰值 RSS（GB）——全规模长试次内存观测。"""
+    try:
+        import resource
+        return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / (1024.0 ** 3)
+    except Exception:
+        return 0.0
+
+
 def main() -> int:
     from neural_exploration.src.adult_circuit import AdultCircuit, CircuitParams
     from neural_exploration.src.adult_circuit import _mps_mem
@@ -135,7 +142,14 @@ def main() -> int:
     rates = []
     for seed in range(N_TRIALS):
         t0 = time.perf_counter()
-        st = c.run_resting(T_ms=T_MS, settle_ms=SETTLE_MS, seed=seed, pop_trace=True)
+        print("  [试次 seed=%d 开始] 步数 %d（T=%.0fs）…" % (
+            seed, int(round(T_MS / p.dt_ms)), T_MS / 1000.0), flush=True)
+        st = c.run_resting(T_ms=T_MS, settle_ms=SETTLE_MS, seed=seed, pop_trace=True,
+                           progress=lambda k, n, el: print(
+                               "    [seed=%d] %d/%d 步  %.0fs  %.3f ms/step  RSS=%.2fGB"
+                               % (seed, k, n, el, el / max(k, 1) * 1e3,
+                                  _rss_gb()), flush=True),
+                           progress_every=100000)
         rate = (c.engine.t_count.detach().cpu().numpy().astype(np.float64)
                 / (T_MS / 1000.0))
         rates.append(rate)
@@ -153,9 +167,9 @@ def main() -> int:
                  st["ms_per_step"], time.perf_counter() - t0), flush=True)
 
     # ---- 确定性（§3.5.2 判据 (c)：同参数重跑统计级一致）----
-    st_a = c.run_resting(T_ms=1000.0, settle_ms=SETTLE_MS, seed=0, pop_trace=False)
+    st_a = c.run_resting(T_ms=2000.0, settle_ms=SETTLE_MS, seed=0, pop_trace=False)
     ra = c.engine.t_count.detach().cpu().numpy().astype(np.float64).copy()
-    st_b = c.run_resting(T_ms=1000.0, settle_ms=SETTLE_MS, seed=0, pop_trace=False)
+    st_b = c.run_resting(T_ms=2000.0, settle_ms=SETTLE_MS, seed=0, pop_trace=False)
     rb = c.engine.t_count.detach().cpu().numpy().astype(np.float64).copy()
     det_spearman = float(np.corrcoef(ra, rb)[0, 1]) if ra.std() > 0 and rb.std() > 0 else 0.0
     det_identical = bool(np.array_equal(ra, rb))
