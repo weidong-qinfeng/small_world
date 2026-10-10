@@ -85,8 +85,25 @@ class CircuitParams:
     seed: int = 0
 
     def as_dict(self) -> Dict[str, float]:
-        return {k: (float(v) if not isinstance(v, int) else int(v))
-                for k, v in asdict(self).items()}
+        """参数快照（数值转 float/int；**字符串字段原样保留**）。
+
+        ⚠ 修复（2026-10-11，主agent）：引入 `ahp_form` / `bias_mode` 等 str 字段后，
+        旧实现 `float(v) if not isinstance(v, int) else int(v)` 对字符串抛
+        `ValueError: could not convert string to float: 'conductance'`
+        （P9 扰动结果写出时触发）→ 改为按类型分派，str 原样返回
+        （参数读回断言依赖该字段）。
+        """
+        out: Dict[str, Any] = {}
+        for k, v in asdict(self).items():
+            if isinstance(v, bool):
+                out[k] = v
+            elif isinstance(v, int):
+                out[k] = int(v)
+            elif isinstance(v, float):
+                out[k] = float(v)
+            else:
+                out[k] = v          # str 等（ahp_form / bias_mode）原样保留
+        return out
 
 
 class AdultCircuit:

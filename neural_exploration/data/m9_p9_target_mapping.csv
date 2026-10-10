@@ -1,6 +1,6 @@
 # M9 P9 类型级锚 → 代理目标 + **预注册因果方向预测**（运行前写盘；不做事后调）
-# 预测规则：操纵边主导递质类 C → 激活：C 抑制 ⇒ 伙伴池 ↓ / C 兴奋·调质 ⇒ 伙伴池 ↑；沉默反号
-# 代理塌缩：无 cell_type（R7）→ 同池多锚共享同一目标集（池级命中率为统计诚实单位）
+# 预测来源：锚自身的**文献机制/已登记抽象**（pred_source 列；**不由实测反推**）
+# target_nt_class_diag = 代理目标输出边主导递质类（**仅诊断**；混类 = 限制 R7 直接证据）
 anchor_id,kind,target,target_nt_class_diag,slot,readout,predicted,pred_source,lit_direction,map_reason
 A14-MBON-a1,pool,MBON,excitatory,S1_silence_partner,MBON.partner,activity_up,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,avoidance,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）
 A14-MBON-a1,pool,MBON,excitatory,S2_silence_self,MBON.self,no_change,文献机制：MBON 为抑制性（GABA 能）输出神经元 → 激活抑制下游 ⇒ 伙伴池 ↓；沉默解除抑制 ⇒ 伙伴池 ↑,avoidance,MBON 区间锚 → 区域级 MBON 池代理（无 cell_type，区间不可分）

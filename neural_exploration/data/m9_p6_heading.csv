@@ -20,7 +20,7 @@ measure,ablation_bump_amp_keep,0.0000,判据 (c) 修正后
 measure,ablation_persistence_drift_deg,19.2739,
 measure,ablation_heading_corr_prereg,1.0000,原预注册判据（**不可判别**，保留审计；见 m9_behavior_reference.csv 说明）
 measure,determinism_bitwise,True,判据 (d)
-measure,wall_s,4.48,全协议墙钟（CPU）
+measure,wall_s,16.29,全协议墙钟（CPU）
 heading_hold,theta_deg,0.00,phi_deg=-0.00
 heading_hold,theta_deg,30.00,phi_deg=30.01
 heading_hold,theta_deg,60.00,phi_deg=60.00

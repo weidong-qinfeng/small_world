@@ -1,0 +1,109 @@
+# M9 P9 扰动预测（§4.5；判据带只读 m9_behavior_reference.csv perturbation 段）
+# 槽级预测与实测逐条留档（含未命中项）；不显著/不符方向如实记录，未做选择性报告
+# 运行结构：逐池全新子进程（规避 MPS 分配器跨试次退化）；基线计数落盘跨池复用
+section,key,value,note
+protocol,device,mps,
+protocol,T_ms,1000,测量窗；率判据与 T 无关
+protocol,settle_ms,300,
+protocol,segment_steps,2000,全分段（规避长单次调用退化）
+protocol,execution,per-pool fresh subprocess,规避 MPS 分配器跨试次退化（L40）
+protocol,seed,0,确定性（基线计数落盘跨池复用，口径逐位一致）
+protocol,params_readback,"{'e_inh': -80.0, 'ek': -77.0, 'ahp_form': 'conductance', 'ahp_g_inc': 25.0, 'v_floor': -85.0}",构建后读回断言 ✓
+protocol,effect_threshold_rel,0.05,后果类判定阈值（运行前定稿）
+anchor,n_anchors_plan,28,锚库类型级锚（含 unavailable 行）
+anchor,n_anchors_mapped,22,可映射到代理池（≥20 下限）
+anchor,n_anchors_unavailable,6,no-experiment（不入分母）
+anchor,n_prediction_slots,65,池锚 3 槽 / 边级锚 2 槽
+anchor,pool_collapse_log,"{""MBON"": 45, ""MOD_MB"": 6, ""MOD_ALL"": 6, ""CX_EB"": 3, ""CX_ALL"": 3, ""KC_TO_MBON"": 2}",同池多锚共享目标集（无 cell_type → 区间不可分；池级为统计诚实单位）
+pool,MBON_status,unavailable,子进程失败/结果缺失（不静默）
+pool,MOD_MB_status,unavailable,子进程失败/结果缺失（不静默）
+pool,MOD_ALL_status,unavailable,子进程失败/结果缺失（不静默）
+pool,CX_EB_status,unavailable,子进程失败/结果缺失（不静默）
+pool,CX_ALL_status,unavailable,子进程失败/结果缺失（不静默）
+pool,KC_TO_MBON_status,unavailable,子进程失败/结果缺失（不静默）
+slot,A14-MBON-a1|S1_silence_partner,pred=activity_up meas=unavailable hit=,target=MBON slot_dir=+1
+slot,A14-MBON-a1|S2_silence_self,pred=no_change meas=unavailable hit=,target=MBON slot_dir=+0
+slot,A14-MBON-a1|A1_activation_partner,pred=activity_down meas=unavailable hit=,target=MBON slot_dir=-1
+slot,A14-MBON-a2|S1_silence_partner,pred=activity_up meas=unavailable hit=,target=MBON slot_dir=+1
+slot,A14-MBON-a2|S2_silence_self,pred=no_change meas=unavailable hit=,target=MBON slot_dir=+0
+slot,A14-MBON-a2|A1_activation_partner,pred=activity_down meas=unavailable hit=,target=MBON slot_dir=-1
+slot,A14-MBON-a3|S1_silence_partner,pred=activity_up meas=unavailable hit=,target=MBON slot_dir=+1
+slot,A14-MBON-a3|S2_silence_self,pred=no_change meas=unavailable hit=,target=MBON slot_dir=+0
+slot,A14-MBON-a3|A1_activation_partner,pred=activity_down meas=unavailable hit=,target=MBON slot_dir=-1
+slot,A14-MBON-a1p|S1_silence_partner,pred=activity_up meas=unavailable hit=,target=MBON slot_dir=+1
+slot,A14-MBON-a1p|S2_silence_self,pred=no_change meas=unavailable hit=,target=MBON slot_dir=+0
+slot,A14-MBON-a1p|A1_activation_partner,pred=activity_down meas=unavailable hit=,target=MBON slot_dir=-1
+slot,A14-MBON-a2p|S1_silence_partner,pred=activity_up meas=unavailable hit=,target=MBON slot_dir=+1
+slot,A14-MBON-a2p|S2_silence_self,pred=no_change meas=unavailable hit=,target=MBON slot_dir=+0
+slot,A14-MBON-a2p|A1_activation_partner,pred=activity_down meas=unavailable hit=,target=MBON slot_dir=-1
+slot,A14-MBON-a3p|S1_silence_partner,pred=activity_up meas=unavailable hit=,target=MBON slot_dir=+1
+slot,A14-MBON-a3p|S2_silence_self,pred=no_change meas=unavailable hit=,target=MBON slot_dir=+0
+slot,A14-MBON-a3p|A1_activation_partner,pred=activity_down meas=unavailable hit=,target=MBON slot_dir=-1
+slot,A14-MBON-b1|S1_silence_partner,pred=activity_up meas=unavailable hit=,target=MBON slot_dir=+1
+slot,A14-MBON-b1|S2_silence_self,pred=no_change meas=unavailable hit=,target=MBON slot_dir=+0
+slot,A14-MBON-b1|A1_activation_partner,pred=activity_down meas=unavailable hit=,target=MBON slot_dir=-1
+slot,A14-MBON-b2|S1_silence_partner,pred=activity_up meas=unavailable hit=,target=MBON slot_dir=+1
+slot,A14-MBON-b2|S2_silence_self,pred=no_change meas=unavailable hit=,target=MBON slot_dir=+0
+slot,A14-MBON-b2|A1_activation_partner,pred=activity_down meas=unavailable hit=,target=MBON slot_dir=-1
+slot,A14-MBON-g1pedc|S1_silence_partner,pred=activity_up meas=unavailable hit=,target=MBON slot_dir=+1
+slot,A14-MBON-g1pedc|S2_silence_self,pred=no_change meas=unavailable hit=,target=MBON slot_dir=+0
+slot,A14-MBON-g1pedc|A1_activation_partner,pred=activity_down meas=unavailable hit=,target=MBON slot_dir=-1
+slot,A14-MBON-g2a1p|S1_silence_partner,pred=activity_up meas=unavailable hit=,target=MBON slot_dir=+1
+slot,A14-MBON-g2a1p|S2_silence_self,pred=no_change meas=unavailable hit=,target=MBON slot_dir=+0
+slot,A14-MBON-g2a1p|A1_activation_partner,pred=activity_down meas=unavailable hit=,target=MBON slot_dir=-1
+slot,A14-MBON-g3|S1_silence_partner,pred=activity_up meas=unavailable hit=,target=MBON slot_dir=+1
+slot,A14-MBON-g3|S2_silence_self,pred=no_change meas=unavailable hit=,target=MBON slot_dir=+0
+slot,A14-MBON-g3|A1_activation_partner,pred=activity_down meas=unavailable hit=,target=MBON slot_dir=-1
+slot,A14-MBON-g4g5|S1_silence_partner,pred=activity_up meas=unavailable hit=,target=MBON slot_dir=+1
+slot,A14-MBON-g4g5|S2_silence_self,pred=no_change meas=unavailable hit=,target=MBON slot_dir=+0
+slot,A14-MBON-g4g5|A1_activation_partner,pred=activity_down meas=unavailable hit=,target=MBON slot_dir=-1
+slot,A14-MBON-g5b2a|S1_silence_partner,pred=activity_up meas=unavailable hit=,target=MBON slot_dir=+1
+slot,A14-MBON-g5b2a|S2_silence_self,pred=no_change meas=unavailable hit=,target=MBON slot_dir=+0
+slot,A14-MBON-g5b2a|A1_activation_partner,pred=activity_down meas=unavailable hit=,target=MBON slot_dir=-1
+slot,A14-PAM-reward|S1_silence_partner,pred=activity_down meas=unavailable hit=,target=MOD_MB slot_dir=-1
+slot,A14-PAM-reward|S2_silence_self,pred=no_change meas=unavailable hit=,target=MOD_MB slot_dir=+0
+slot,A14-PAM-reward|A1_activation_partner,pred=activity_up meas=unavailable hit=,target=MOD_MB slot_dir=+1
+slot,A14-PPL1-punish|S1_silence_partner,pred=activity_down meas=unavailable hit=,target=MOD_MB slot_dir=-1
+slot,A14-PPL1-punish|S2_silence_self,pred=no_change meas=unavailable hit=,target=MOD_MB slot_dir=+0
+slot,A14-PPL1-punish|A1_activation_partner,pred=activity_up meas=unavailable hit=,target=MOD_MB slot_dir=+1
+slot,A14-MBON-OA|S1_silence_partner,pred=activity_down meas=unavailable hit=,target=MOD_ALL slot_dir=-1
+slot,A14-MBON-OA|S2_silence_self,pred=no_change meas=unavailable hit=,target=MOD_ALL slot_dir=+0
+slot,A14-MBON-OA|A1_activation_partner,pred=activity_up meas=unavailable hit=,target=MOD_ALL slot_dir=+1
+slot,R17-GF-escape|-,pred=no-experiment meas=no-experiment hit=,target=None slot_dir=+0
+slot,R17-DN-downstream|-,pred=no-experiment meas=no-experiment hit=,target=None slot_dir=+0
+slot,R17-MBON-behavior|S1_silence_partner,pred=activity_up meas=unavailable hit=,target=MBON slot_dir=+1
+slot,R17-MBON-behavior|S2_silence_self,pred=no_change meas=unavailable hit=,target=MBON slot_dir=+0
+slot,R17-MBON-behavior|A1_activation_partner,pred=activity_down meas=unavailable hit=,target=MBON slot_dir=-1
+slot,R17-turning-lines|S1_silence_partner,pred=activity_down meas=unavailable hit=,target=CX_ALL slot_dir=-1
+slot,R17-turning-lines|S2_silence_self,pred=no_change meas=unavailable hit=,target=CX_ALL slot_dir=+0
+slot,R17-turning-lines|A1_activation_partner,pred=activity_up meas=unavailable hit=,target=CX_ALL slot_dir=+1
+slot,R17-walking-lines|-,pred=no-experiment meas=no-experiment hit=,target=None slot_dir=+0
+slot,C24-cluster-atlas|-,pred=no-experiment meas=no-experiment hit=,target=None slot_dir=+0
+slot,C24-larval-compare|-,pred=no-experiment meas=no-experiment hit=,target=None slot_dir=+0
+slot,MISC-KC-MBON-STDP|S1_edge_silence_post,pred=activity_up meas=unavailable hit=,target=KC_TO_MBON slot_dir=+1
+slot,MISC-KC-MBON-STDP|S2_edge_silence_pre,pred=no_change meas=unavailable hit=,target=KC_TO_MBON slot_dir=+0
+slot,MISC-MBON-US|S1_silence_partner,pred=activity_up meas=unavailable hit=,target=MBON slot_dir=+1
+slot,MISC-MBON-US|S2_silence_self,pred=no_change meas=unavailable hit=,target=MBON slot_dir=+0
+slot,MISC-MBON-US|A1_activation_partner,pred=activity_down meas=unavailable hit=,target=MBON slot_dir=-1
+slot,MISC-EPG-ring|S1_silence_partner,pred=activity_down meas=unavailable hit=,target=CX_EB slot_dir=-1
+slot,MISC-EPG-ring|S2_silence_self,pred=no_change meas=unavailable hit=,target=CX_EB slot_dir=+0
+slot,MISC-EPG-ring|A1_activation_partner,pred=activity_up meas=unavailable hit=,target=CX_EB slot_dir=+1
+slot,MISC-SLEEP-OA|S1_silence_partner,pred=activity_down meas=unavailable hit=,target=MOD_ALL slot_dir=-1
+slot,MISC-SLEEP-OA|S2_silence_self,pred=no_change meas=unavailable hit=,target=MOD_ALL slot_dir=+0
+slot,MISC-SLEEP-OA|A1_activation_partner,pred=activity_up meas=unavailable hit=,target=MOD_ALL slot_dir=+1
+slot,MISC-NOCICEPTION|-,pred=no-experiment meas=no-experiment hit=,target=None slot_dir=+0
+agg,hit_rate_anchor_level,0.0000,0/0 槽
+agg,hit_rate_pool_level,0.0000,0/0 池×槽
+agg,sign_agreement_rate_descriptive,0.0000,**事后描述性**（非判据）：方向符号一致率 0/0
+agg,nt_class_rule_hit_rate_descriptive,0.0000,**事后描述性**：数据驱动递质类规则命中率 0/0（诊断代理混类影响）
+agg,efficacy_activation_self_up_frac,nan,0/0 池自身率↑
+agg,sham_noop_bitwise,True,零臂自检
+agg,determinism_bitwise,True,
+agg,specificity_target_gt_control_pools,0/0,描述性（目标效应量 > 随机对照）
+agg,wall_s,0,
+crit,hit_rate,True,P9 判据
+crit,sham_noop_identical,True,P9 判据
+crit,determinism_bitwise,True,P9 判据
+crit,efficacy_activation_self_up,True,P9 判据
+crit,anchor_min_20,True,P9 判据
+crit,verdict,PARTIAL(未测：无已运行目标池),**PARTIAL：本会话无已运行目标池 → 命中率未测（未测 ≠ 未命中；分母为 0）**

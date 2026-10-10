@@ -1,0 +1,117 @@
+{
+ "readback": {
+  "e_inh": -80.0,
+  "ek": -77.0,
+  "ahp_form": "conductance",
+  "ahp_g_inc": 25.0,
+  "v_floor": -85.0
+ },
+ "params": {
+  "w_exc": 0.3,
+  "w_inh": 1.0,
+  "w_mod": 0.3,
+  "syn_count_gamma": 1.0,
+  "w_jitter_cv": 0.0,
+  "bias_mv_s": 290.0,
+  "bias_cv": 0.25,
+  "v_rest": -52.0,
+  "v_th": -45.0,
+  "v_reset": -55.0,
+  "tau_m": 20.0,
+  "tau_e": 2.0,
+  "tau_i": 5.0,
+  "ref_ms": 2.0,
+  "e_inh": -80.0,
+  "ek": -77.0,
+  "ahp_tau_ms": 700.0,
+  "ahp_g_inc": 25.0,
+  "ahp_inc": 0.0,
+  "ahp_form": "conductance",
+  "dt_ms": 0.05,
+  "delay_ms": 1.0,
+  "bias_mode": "lognormal",
+  "seed": 0
+ },
+ "n_neurons": 139255,
+ "n_edges": 15091983,
+ "pools": {
+  "CX_ALL": {
+   "kind": "pool",
+   "n_target": 2304,
+   "n_target_edges": 286348,
+   "n_partner": 7745,
+   "nt_class": 0,
+   "nt_name": "excitatory",
+   "nt_frac": [
+    0.7008674759383687,
+    0.14253286211183594,
+    0.15659966194979535
+   ]
+  },
+  "CX_EB": {
+   "kind": "pool",
+   "n_target": 381,
+   "n_target_edges": 49302,
+   "n_partner": 2592,
+   "nt_class": 1,
+   "nt_name": "inhibitory",
+   "nt_frac": [
+    0.31950022311468096,
+    0.6136667883655835,
+    0.06683298851973551
+   ]
+  },
+  "KC_TO_MBON": {
+   "kind": "edge",
+   "n_target": 3805,
+   "n_target_edges": 100533,
+   "n_partner": 1374,
+   "nt_class": 0,
+   "nt_name": "excitatory",
+   "nt_frac": [
+    0.9959316841236211,
+    0.0038295882943908967,
+    0.00023872758198800395
+   ]
+  },
+  "MBON": {
+   "kind": "pool",
+   "n_target": 1374,
+   "n_target_edges": 183316,
+   "n_partner": 12259,
+   "nt_class": 0,
+   "nt_name": "excitatory",
+   "nt_frac": [
+    0.6545309738375265,
+    0.0674136463811124,
+    0.27805537978136113
+   ]
+  },
+  "MOD_ALL": {
+   "kind": "pool",
+   "n_target": 3300,
+   "n_target_edges": 385595,
+   "n_partner": 75520,
+   "nt_class": 2,
+   "nt_name": "modulatory",
+   "nt_frac": [
+    0.14940027749322476,
+    0.03782984737872638,
+    0.8127698751280489
+   ]
+  },
+  "MOD_MB": {
+   "kind": "pool",
+   "n_target": 214,
+   "n_target_edges": 44732,
+   "n_partner": 6968,
+   "nt_class": 2,
+   "nt_name": "modulatory",
+   "nt_frac": [
+    0.033153000089421444,
+    0.021572923186980238,
+    0.9452740767235983
+   ]
+  }
+ }
+}
