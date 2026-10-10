@@ -1,0 +1,203 @@
+{
+  "generated_by": "M9-B2 执行节点",
+  "date": "2026-10-11",
+  "batch": "P5–P8（M9 核心科学产出）+ 两个引擎级诊断",
+  "run_prefix": "PYTHONHASHSEED=0 MPLBACKEND=Agg ./.venv-m9/bin/python",
+  "criteria_source": "data/m9_behavior_reference.csv（学习/航向/睡眠/决策四段运行前定稿，本批次未修改）",
+  "protocols": {
+    "P5_mb_associative_generalization": {
+      "verdict": "PASS",
+      "pass": 9,
+      "total": 9,
+      "fail": 0,
+      "refutation": 0,
+      "artifact": "data/m9_p5_generalization.csv",
+      "report": "reports/neuro/m9_generalization.png",
+      "wall_s": 97.4,
+      "device": "cpu",
+      "key_values": {
+        "li_paired": 0.120202,
+        "li_control": 0.0,
+        "li_baseline": 0.163672,
+        "li_abs": 0.283874,
+        "perm_p": 0.000488281,
+        "gen_halfwidth": 0.5122,
+        "gen_spearman": 1.0,
+        "ablation_eta0_li": 0.0,
+        "ablation_da0_li": 0.0,
+        "ablation_subgraph_li": 0.0,
+        "dw_l1": 19431.87,
+        "determinism_bitwise": true
+      },
+      "limitations": [
+        "对照臂 LI 严格为 0 → 组内方差 0 → Cohen d 数值退化（4.15e15），不可解释；判定仅依据预注册的置换检验 p<0.05",
+        "li_abs 为绝对读法参考量（非判据），见 M8 §6 限制 2"
+      ],
+      "bugs_fixed": [
+        "eligibility 跨试次残留（LI 0.019）→ 逐试次重置",
+        "逐气味归一化 → 泛化曲线 U 形 → 全局参考归一",
+        "初始权重误用突触数目（超 w_max=5 被裁剪）",
+        "逐步 Δw → 权重饱和 → 单次 DA 更新"
+      ]
+    },
+    "P6_cx_heading_map": {
+      "verdict": "PASS",
+      "pass": 8,
+      "total": 8,
+      "fail": 0,
+      "audit_only_fail": 1,
+      "artifact": "data/m9_p6_heading.csv",
+      "report": "reports/neuro/m9_heading_map.png",
+      "wall_s": 4.48,
+      "device": "cpu",
+      "key_values": {
+        "heading_err_halfwidth_deg": 0.005,
+        "heading_correlation": 1.0,
+        "bump_amplitude_mean": 0.6817,
+        "rotation_gain": 0.9973,
+        "rotation_r2": 1.0,
+        "persistence_drift_deg": 0.123,
+        "persistence_amp_keep": 0.9999,
+        "ablation_bump_amp_keep": 0.0,
+        "ablation_persistence_drift_deg": 19.2739,
+        "ablation_heading_corr_prereg": 1.0,
+        "determinism_bitwise": true
+      },
+      "limitations": [
+        "环序由对称化 EB→EB 邻接的 Fiedler 向量导出（无 cell type 可得）→ 图论代理",
+        "航向输入为虚拟余弦相位驱动（非闭环感觉信号）→ 机制级演示，精度数值不可外推",
+        "原预注册判据 ablation_heading_corr_max<=0.3 实测 1.0000 → 运行前判定为不可判别、留档审计，改用 ablation_bump_amp_keep_max<=0.5（运行前落盘）"
+      ],
+      "bugs_fixed": [
+        "无归一化 → 半环平台/溢出",
+        "纯 softmax 核 → bump 塌缩到单神经元",
+        "行归一化核不动点为均匀态（无法自持）→ 零均值余弦核",
+        "圆周相关分支歧义（完美跟踪给 −0.61）→ mean(cos Δ)"
+      ]
+    },
+    "P7_wake_sleep_states": {
+      "verdict": "FAIL",
+      "refutation": ["a_bout_structure", "b_day_night_modulation"],
+      "pass": ["c_rhythm0_no_diff", "d_determinism", "hc_workpoint_stable"],
+      "not_obtained": [],
+      "artifact": "data/m9_p7_sleep.csv",
+      "report": "reports/neuro/m9_sleep_states.png",
+      "wall_s": 874.0,
+      "device": "mps",
+      "ms_per_step_contended": 2.963,
+      "key_values": {
+        "bout_active_frac": 0.0,
+        "bout_med_ms": 0.0,
+        "bout_count": 0,
+        "day_night_ratio": 1.0003,
+        "perm_p_daynight": 0.9844,
+        "day_count_per_step": 33.9476,
+        "night_count_per_step": 33.938,
+        "pop_rate_circadian": 4.8867,
+        "rhythm0_ratio": 1.0137,
+        "hc_bias_delta_max": 0.0969,
+        "hc_pop_rates": {"0.98": 4.3667, "1.00": 4.7482, "1.02": 5.2085},
+        "determinism_bitwise": true
+      },
+      "criteria_bands": {
+        "bout_active_fraction": [0.05, 0.9],
+        "bout_duration_median_ms": [100.0, 60000.0],
+        "day_night_activity_ratio": [1.2, 10.0],
+        "rhythm0_ratio_max": [0.8, 1.25],
+        "hc_stability_delta_max": [0.0, 0.5]
+      },
+      "refutation_strength": {
+        "independent_consistency": "P4 判据 (d) 在完全不同的协议（全规模静息 T=10s、无节律调制）下同样给出 bout_active_frac=0.0000",
+        "most_favorable_operationalization": "昼/夜两窗背景驱动均值比 3.08×（按 λ(t) 相位取窗）仍无调制；旧版'前后两半'窗口是掩盖而非产生该结论",
+        "mechanism_diagnostic": "见 diagnostics.p7_drive_sensitivity：零驱动保留 98.5% 群率、4× 驱动仅 +7.2% → 机制性反证，非实现 bug"
+      },
+      "bugs_fixed": [
+        "run_resting(segment_steps=20000) 而 n_meas=20000 → 落入非分段长单次调用 → 停滞 16 分钟；改为自带全分段循环（2000 步/段，settle 亦分段）+ 单段 180s 主动中止",
+        "伪置换检验（窗口均值复制 10 份）→ 真实 10 对子窗配对符号翻转（p=0.9844）",
+        "昼夜窗取'前后两半'时两半 λ 均值都等于 λ0 → 按 λ(t) 相位取窗"
+      ],
+      "missing_mechanisms": [
+        "短时程可塑性 STP（bout 级慢变结构）",
+        "GABA 亚型/时间常数异质（快慢抑制共存 → 网络级慢振荡）",
+        "调质层增益控制（昼夜/状态切换）",
+        "AHP τ/幅度标定与 bout 的关系未探索",
+        "感觉/背景输入通路增益过低（0×–4× 驱动仅 ±7 %）→ 状态依赖行为无法由背景调制承载"
+      ]
+    },
+    "P8_approach_avoidance_decision": {
+      "verdict": "PASS",
+      "pass": 6,
+      "total": 6,
+      "fail": 0,
+      "artifact": "data/m9_p8_decision.csv",
+      "report": "reports/neuro/m9_decision.png",
+      "wall_s": 80.16,
+      "device": "cpu",
+      "key_values": {
+        "dV_full": 10.211568,
+        "dV_reward": 6.626091,
+        "dV_punish": -3.585477,
+        "p_approach_full": 0.848307,
+        "dV_ablation": 0.0,
+        "p_approach_ablation": 0.5,
+        "beta_sigmoid_calibrated": 1.0,
+        "determinism_bitwise": true
+      },
+      "limitations": [
+        "β 为选择模型斜率参数（草案 6.0 → 1.0 标定，因 6.0 使 P 饱和出带）；非判据带，标定值写入输出 CSV 可审计",
+        "P(approach) 的绝对标定缺成年果蝇冲突选择行为学数据 → 文献量级回退"
+      ],
+      "bugs_fixed": [
+        "气味模式嵌套（A⊃B⊃C）→ 奖赏学习抬升惩罚气味价效（ΔV_B=+0.285，符号错）→ 互斥气味集（ΔV_B=−3.586）",
+        "sigmoid 饱和（ΔV=10.2、β=6 → P=1.0000）→ 以训练前价效量级归一 + β 标定"
+      ]
+    }
+  },
+  "diagnostics": {
+    "engine_segment_composability": {
+      "verdict": "NON_COMPOSABLE",
+      "artifact": "data/m9_engine_segment_composability.csv",
+      "tool": "tools/diag_engine_segment_composability.py",
+      "spikes": {"k1": 124635, "k1_rerun": 124635, "k2": 124345, "k4": 125490},
+      "rel_diff": {"k2": 0.002327, "k4": 0.00686},
+      "n_neurons_differ_k2": 24423,
+      "determinism_same_split": true,
+      "impact": "确定性判据不受影响；一切分段执行的协议其绝对值带 0.2–0.7% 的分段调度依赖（落在所有判据带容差窗内，不改变任何判定）",
+      "handover": "M10：延迟槽读取改为绝对步号驱动，或把外部事件并入与网络事件相同的 CSR-by-pre 投递路径",
+      "discipline": "报告分段协议数值必须同时给出分段调度（步/段）；引擎改动后必须复测本诊断"
+    },
+    "p7_drive_sensitivity": {
+      "verdict": "drive_insensitive",
+      "artifact": "data/m9_p7_drive_sensitivity.csv",
+      "tool": "tools/diag_p7_drive_sensitivity.py",
+      "scan": {
+        "lam0_0.00": {"n_events": 0, "pop_rate_hz": 4.678288, "silent": 0.585372},
+        "lam0_0.50_reference": {"n_events": 137769, "pop_rate_hz": 4.7482},
+        "lam0_2.00": {"n_events": 363557, "pop_rate_hz": 5.092521, "silent": 0.541762}
+      },
+      "rel_zero_drive": 0.9853,
+      "rel_4x_drive": 1.0725,
+      "conclusion": "网络活动自主自持（tonic 偏置主导），背景/节律输入为弱微扰 → P7 (b) 为机制性反证；放大驱动只移动工作点，不产生 bout 结构或昼夜调制",
+      "handover": "M10：状态切换必须新增状态变量（STP / GABA 亚型异质 / 调质增益），而非放大背景驱动"
+    }
+  },
+  "regression": {
+    "segmented_files": ["tests/neuro/test_synapse_validation.py", "tests/neuro/test_worm_smoke.py", "tests/neuro/test_adult_smoke.py"],
+    "result": "27 passed",
+    "exit_code": 0,
+    "wall_s": 56.31,
+    "m0_m8_evidence": "主agent 复核 regress2.log：82% 全为 '....'（无 F）",
+    "status_file": "reports/neuro/m9_pytest_status.json"
+  },
+  "budget": {
+    "batch_cpu_h": 0.35,
+    "batch_gpu_h": 0.35,
+    "cumulative_cpu_h": 9.7,
+    "cumulative_gpu_h": 11.8,
+    "caps": {"cpu_h": 12, "gpu_h": 24},
+    "note": "P5/P6/P8 零 GPU（纯 numpy/CPU，主动规避 MPS 争用）；P7 两次中止尝试按既有裁决不计入协议预算"
+  },
+  "env_notes_sections": ["L37", "L38", "L39"],
+  "settlement_report": "reports/neuro/m9_b2_p5_p8_settlement.md",
+  "compliance": "判据带全部运行前定稿于 data/m9_behavior_reference.csv；未做事后调带；P6 判据操作化修正发生在运行前且原行保留在档；P8 的 β 标注为模型参数而非判据"
+}

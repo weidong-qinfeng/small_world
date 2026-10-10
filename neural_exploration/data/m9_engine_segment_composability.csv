@@ -1,0 +1,17 @@
+# M9 引擎诊断：engine.run() 分段可组合性（外部事件在飞；判据带无关）
+section,key,value,note
+protocol,n_steps,4000,诊断窗步数
+protocol,delivery,chunk,"W=min(SLOT_EXTRA,max_delay)"
+protocol,ext_delay_steps,20,外部事件延迟槽
+protocol,n_ext_events,13769,固定事件表（全臂共用）
+measure,spikes_k1,124635,1 次调用
+measure,spikes_k2,124345,2 次调用
+measure,spikes_k4,125490,4 次调用
+measure,rel_diff_k2,0.002327,|k2−k1|/k1
+measure,rel_diff_k4,0.006860,|k4−k1|/k1
+measure,n_neurons_differ_k2,24423,逐神经元计数不同的神经元数
+crit,determinism_same_split,True,A0 vs A1 逐位一致
+crit,composable_k2,False,分段与单次逐位等价
+crit,composable_k4,False,分段与单次逐位等价
+crit,verdict,NON_COMPOSABLE,外部事件在飞时分段调度是否影响结果
+measure,wall_s,32.0,

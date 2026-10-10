@@ -1,0 +1,29 @@
+# M9 P7 机制诊断：群体率 vs 背景驱动强度（诊断臂；判据带未改）
+section,key,value,note
+protocol,T_ms,1000.0,
+protocol,settle_ms,300.0,
+protocol,g_ext,19.230769,EPSP 2mV / 0.104
+protocol,segment_steps,2000,分段调用（< n_meas 才走分段分支）
+reference,lam0_0.50_pop_rate_hz,4.7482,基线臂由 P7 本体测得（data/m9_p7_sleep.csv rhythm0）
+note,purpose,diagnostic,判别 (b) 反证是 机制性 还是 实现 bug：驱动强度扫描
+scan,lam0_0.00_n_events,0,
+scan,lam0_0.00_pop_rate_hz,4.678288,
+scan,lam0_0.00_rate_mean,4.678288,
+scan,lam0_0.00_rate_median,0.000000,
+scan,lam0_0.00_silent,0.585372,
+scan,lam0_0.00_binsum_median,32.000000,
+scan,lam0_0.00_ms_per_step,3.020096,
+derived,lam0_0.00_rel_vs_baseline,0.9853,1.0 = 群体率与驱动无关
+scan,lam0_0.00_wall_s,76.6,
+scan,lam0_2.00_n_events,363557,
+scan,lam0_2.00_pop_rate_hz,5.092521,
+scan,lam0_2.00_rate_mean,5.092521,
+scan,lam0_2.00_rate_median,0.000000,
+scan,lam0_2.00_silent,0.541762,
+scan,lam0_2.00_binsum_median,35.000000,
+scan,lam0_2.00_ms_per_step,5.615688,
+derived,lam0_2.00_rel_vs_baseline,1.0725,1.0 = 群体率与驱动无关
+scan,lam0_2.00_wall_s,220.0,
+derived,rel_zero_drive,0.9853,零背景驱动 / λ0=0.5 基线
+derived,rel_4x_drive,1.0725,4× 驱动 / 基线
+derived,drive_insensitive,True,0×–4× 驱动下群体率变化 <15% → 活动**自主自持**（解释 (i)），非实现 bug
