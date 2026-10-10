@@ -16,9 +16,9 @@ measure,rate_median_hz,0.0000,
 measure,silent_frac_true,0.6728,承接 P4 (b) 0.524
 measure,ks_D_true_vs_lit,0.6728,判据 (a)；p=0
 measure,ks_D_ca_recon_vs_lit,0.6728,描述性（成像式重建）
-measure,mean_pair_corr_2hz,0.6220,判据 (d)
-measure,mean_pair_corr_surrogate_null,-0.0717,相位随机化代理（采样噪声地板对照）
-measure,mean_pair_corr_fine_100ms,0.6782,描述性（精细时间尺度）
+measure,mean_pair_corr_2hz,0.6744,判据 (d)
+measure,mean_pair_corr_surrogate_null,-0.0792,相位随机化代理（采样噪声地板对照）
+measure,mean_pair_corr_fine_100ms,0.6738,描述性（精细时间尺度）
 measure,fano_median,nan,判据 (e)
 measure,silent_frac_ca,0.6728,判据 (f)
 measure,dff_peak_median,0.0000,
@@ -27,11 +27,11 @@ measure,recon_rate_median_full,0.0000,补零全尾重建（无边界截断；单
 measure,recon_window_bias,0.0000,窗内/全尾（成像式估计的系统性偏低；τ/T 效应）
 measure,spearman_recon_vs_true_rate,0.9997,判据 (g)：模型自检
 measure,n_detectable,45571,真率 ≥0.5 Hz（相关估计子集；成像常规）
-measure,wall_s,16,两次运行（主 + 确定性复跑）
-confound,win2s_frame1Hz,corr=0.6220 surrogate=-0.0717 frames=10,窗长/帧率对相关估计的混淆诊断（同一记录，无额外运行）
-confound,win2s_frame2Hz,corr=0.6220 surrogate=-0.0717 frames=10,窗长/帧率对相关估计的混淆诊断（同一记录，无额外运行）
-confound,win5s_frame1Hz,corr=0.6220 surrogate=-0.0717 frames=10,窗长/帧率对相关估计的混淆诊断（同一记录，无额外运行）
-confound,win5s_frame2Hz,corr=0.6220 surrogate=-0.0717 frames=10,窗长/帧率对相关估计的混淆诊断（同一记录，无额外运行）
+measure,wall_s,18,两次运行（主 + 确定性复跑）
+confound,win2s_frame1Hz,corr=0.6744 surrogate=-0.0792 frames=10,窗长/帧率对相关估计的混淆诊断（同一记录，无额外运行）；**T=200 ms < 该窗 → 退化为全窗（该档不可解释，登记）**
+confound,win2s_frame2Hz,corr=0.6744 surrogate=-0.0792 frames=10,窗长/帧率对相关估计的混淆诊断（同一记录，无额外运行）；**T=200 ms < 该窗 → 退化为全窗（该档不可解释，登记）**
+confound,win5s_frame1Hz,corr=0.6744 surrogate=-0.0792 frames=10,窗长/帧率对相关估计的混淆诊断（同一记录，无额外运行）；**T=200 ms < 该窗 → 退化为全窗（该档不可解释，登记）**
+confound,win5s_frame2Hz,corr=0.6744 surrogate=-0.0792 frames=10,窗长/帧率对相关估计的混淆诊断（同一记录，无额外运行）；**T=200 ms < 该窗 → 退化为全窗（该档不可解释，登记）**
 crit,a_ks_vs_literature,False,
 crit,b_ca_tau_registered,True,
 crit,c_frame_rate_registered,True,

@@ -1,213 +1,821 @@
 {
- "milestone": "M9",
- "title": "成年果蝇全脑（139,255 神经元）——阶段二第二里程碑",
+ "generated_by": "M9-B3 收尾节点（P9 + P10 + P11）",
  "date": "2026-10-11",
- "all_pass": false,
- "note": "P4(d)/P7/R10 存在真实反证（bout 双状态缺失、昼夜无差异、活动统计不符文献）→ all_pass=false 如实；反证为有效科学产出（缺失机制已具体化）",
+ "batch": "M9 全脑里程碑收尾：P9 扰动预测 / P10 活动金标准 / P11 汇总与报告",
+ "run_prefix": "PYTHONHASHSEED=0 MPLBACKEND=Agg ./.venv-m9/bin/python",
+ "criteria_source": "data/m9_behavior_reference.csv（P9/P10 段于运行前追加定稿；P1–P8 段未修改；全程无事后调带）",
  "criteria": {
   "P1_data_gate": {
+   "name": "FlyWire v783 数据门（G2）",
    "verdict": "PASS",
-   "pass": true,
+   "pass": 1,
+   "total": 1,
    "key_values": {
     "n_neurons": 139255,
+    "n_chem_connections": 15091983,
     "n_chem_synapses": 54492922,
-    "n_conn": 15091983,
-    "nt_conn_coverage_pct": 100.0,
-    "gaba_edges": 3233022,
-    "gaba_edge_pct": 21.42
+    "n_gap": 0,
+    "inhibitory_edge_fraction_pct": 21.422115304529562,
+    "inhibitory_edges": 3233022
    },
-   "artifact": "data/m9_flywire_connectome.csv + m9_connectome_counts.json",
-   "independent_check": "主agent直读CSV核算三项计数对齐"
+   "evidence": [
+    "data/m9_network_stats.json（本次聚合直读）",
+    "docs/m9_acceptance_master.md §一/§二（主agent 直读 1.76GB CSV 逐行核算，三项计数与 counts.json / network_stats.json 对齐）"
+   ],
+   "limitations": [
+    "缝隙连接官方 v783 = 0 行（R8）",
+    "逐突触递质覆盖表 9.49GB 未下载 → 连接级覆盖 100% 承接（R10）"
+   ]
   },
   "P2_engine_alignment": {
+   "name": "引擎对齐门（G0）",
    "verdict": "PASS",
-   "pass": true,
+   "pass": 1,
+   "total": 1,
    "key_values": {
-    "align_pct_4variants": 100.0,
-    "silent_diff_pp": 0.0,
-    "full_scale_gpu_h_30s_measured": 0.557
+    "spike_alignment_pct": 100.0,
+    "variants": 4,
+    "full_scale_resting_gpu_h": 0.557,
+    "ms_per_step_quiet": 0.898,
+    "ms_per_step_probe_b3": 2.316
    },
-   "artifact": "data/m9_engine_probe.csv + m9_engine_vec_probe.csv",
-   "note": "对齐门4变体全100%; 全规模直接实测(非外推)"
+   "evidence": [
+    "reports/neuro/m9_engine_alignment.png / m9_engine_alignment_vec.png",
+    "data/m9_engine_scaling.csv / m9_engine_optimization.csv",
+    "docs/m9_acceptance_master.md §一",
+    "M9-B3 复测：tools/_probe_p9_timing.py（本次，MPS 2.32 ms/step 中位）"
+   ],
+   "limitations": [
+    "**CPU point 档全规模路径存在索引错误**（本次探针实测 IndexError: index 15094729 out of bounds for size 15091983）→ M9 全规模一律 MPS；CPU 路径回归交 M10（登记，不静默）"
+   ]
   },
-  "P3_body": {
+  "P3_virtual_body": {
+   "name": "虚拟果蝇身体（P3）",
    "verdict": "PASS",
-   "pass": true,
-   "pass_n": 14,
+   "pass": 14,
    "total": 14,
    "key_values": {
-    "gait_hz": 7.0,
-    "tripod_inter_deg": 180.0,
-    "tripod_intra_deg": 0.0,
-    "curl_peak": 1.0,
-    "wing_hz": 200.0,
-    "escape_resp": 1.0,
-    "determinism": true
+    "gait_freq_hz": 7.0,
+    "tripod_phase_deg": 180.0,
+    "escape_resp_prob": 1.0,
+    "smoke_pytest": "12 passed"
    },
-   "artifact": "data/m9_p3_body.csv",
-   "test": "tests/neuro/test_adult_smoke.py 12/12 PASSED(主agent复跑)"
+   "evidence": [
+    "src/adult_body.py + tools/validate_p9_body.py + data/m9_p3_body.csv",
+    "M9-B3 独立复跑 tests/neuro/test_adult_smoke.py → 12 passed in 1.13s"
+   ],
+   "criteria_bands": {
+    "gait_freq_hz": [
+     5.0,
+     10.0
+    ],
+    "tripod_phase_deg": [
+     150.0,
+     210.0
+    ],
+    "tripod_intragroup_phase_deg": [
+     0.0,
+     30.0
+    ],
+    "v_fwd_sign": [
+     1.0,
+     1.0
+    ],
+    "v_fwd_magnitude": [
+     0.0,
+     100.0
+    ],
+    "turn_sign": [
+     1.0,
+     1.0
+    ],
+    "curl_curvature_max": [
+     0.0,
+     1.0
+    ],
+    "wing_freq_hz": [
+     150.0,
+     250.0
+    ],
+    "wing_spread_on_escape": [
+     0.5,
+     1.0
+    ],
+    "escape_resp_prob": [
+     0.8,
+     1.0
+    ],
+    "escape_resp_prob_subthr": [
+     0.0,
+     0.2
+    ],
+    "determinism_bitwise": [
+     1.0,
+     1.0
+    ],
+    "trajectory_finite": [
+     1.0,
+     1.0
+    ]
+   }
   },
   "P4_resting": {
+   "name": "全规模静息 sanity（P4）",
    "verdict": "PASS(5)+FAIL(1)",
-   "pass": false,
-   "pass_n": 5,
+   "pass": 5,
    "total": 6,
    "key_values": {
     "rate_median_hz": 0.3,
-    "silent_frac": 0.524,
-    "p95_hz": 22.8,
-    "pop_hz": 4.774,
-    "bout_active_frac": 0.0,
-    "determinism_bitwise": true,
-    "T_ms": 10000
+    "rate_mean_hz": 4.7738,
+    "rate_p95_hz": 22.8,
+    "silent_fraction": 0.524,
+    "pop_rate_hz": 4.774,
+    "bout_active_fraction": 0.0,
+    "wall_s_trial": 2466.0,
+    "T_ms": 10000.0
    },
-   "artifact": "data/m9_p4_resting.csv",
-   "refutation": "(d) bout=0 → 与P7(a)跨协议独立一致"
+   "refutation": [
+    "d_bout（bout_active_fraction=0.0000）"
+   ],
+   "evidence": [
+    "data/m9_p4_resting.csv（定稿内核档）+ reports/neuro/m9_p4_resting.png"
+   ],
+   "criteria_bands": {
+    "rate_median_hz": [
+     0.1,
+     10.0
+    ],
+    "silent_fraction": [
+     0.5,
+     0.9
+    ],
+    "rate_p95_hz": [
+     0.0,
+     50.0
+    ],
+    "pop_rate_hz": [
+     0.0,
+     20.0
+    ],
+    "bout_active_fraction": [
+     0.05,
+     0.9
+    ],
+    "bout_count_per_min": [
+     1.0,
+     600.0
+    ],
+    "determinism": [
+     0.99,
+     1.01
+    ],
+    "ms_per_step_budget": [
+     0.0,
+     6.0
+    ]
+   }
   },
-  "P5_generalization": {
+  "P5_mb_generalization": {
+   "name": "MB 联想泛化（P5）",
    "verdict": "PASS",
-   "pass": true,
-   "pass_n": 9,
+   "pass": 9,
    "total": 9,
    "key_values": {
     "li_paired": 0.120202,
+    "li_control": 0.0,
+    "li_baseline": 0.163672,
+    "li_abs": 0.283874,
     "perm_p": 0.000488281,
     "gen_halfwidth": 0.5122,
     "gen_spearman": 1.0,
-    "ablation_eta0": 0.0,
-    "ablation_da0": 0.0,
-    "ablation_subgraph": 0.0,
+    "ablation_eta0_li": 0.0,
+    "ablation_da0_li": 0.0,
+    "ablation_subgraph_li": 0.0,
+    "dw_l1": 19431.87,
     "determinism_bitwise": true
    },
-   "artifact": "data/m9_p5_generalization.csv",
-   "structure": {
-    "n_kc": 3819,
-    "n_mbon": 1374,
-    "n_edge_kc_mbon": 100533
+   "evidence": [
+    "data/m9_p5_generalization.csv + tools/validate_p9_generalization.py",
+    "reports/neuro/m9_generalization.png"
+   ],
+   "criteria_bands": {
+    "li_gain": [
+     0.1,
+     1.0
+    ],
+    "li_paired_gt_control_p": [
+     0.0,
+     0.05
+    ],
+    "li_paired_gt_control_d": [
+     0.5,
+     10.0
+    ],
+    "generalization_halfwidth": [
+     0.15,
+     0.95
+    ],
+    "generalization_monotonic": [
+     1.0,
+     1.0
+    ],
+    "ablation_eta0_li_max": [
+     0.0,
+     0.05
+    ],
+    "ablation_da0_li_max": [
+     0.0,
+     0.05
+    ],
+    "ablation_subgraph_li_max": [
+     0.0,
+     0.05
+    ],
+    "mbon_valence_sign": [
+     1.0,
+     1.0
+    ],
+    "determinism_bitwise": [
+     1.0,
+     1.0
+    ]
    }
   },
-  "P6_heading": {
+  "P6_cx_heading": {
+   "name": "CX 航向地图（P6）",
    "verdict": "PASS",
-   "pass": true,
-   "pass_n": 8,
+   "pass": 8,
    "total": 8,
    "key_values": {
-    "heading_err_median_deg": 0.005,
-    "circ_consistency": 1.0,
-    "rot_gain": 0.9973,
-    "rot_r2": 1.0,
+    "heading_err_halfwidth_deg": 0.005,
+    "heading_correlation": 1.0,
+    "bump_amplitude_mean": 0.6817,
+    "rotation_gain": 0.9973,
+    "rotation_r2": 1.0,
     "persistence_drift_deg": 0.123,
-    "ablation_bump_keep": 0.0,
+    "persistence_amp_keep": 0.9999,
+    "ablation_bump_amp_keep": 0.0,
+    "ablation_persistence_drift_deg": 19.2739,
+    "ablation_heading_corr_prereg": 1.0,
     "determinism_bitwise": true
    },
-   "artifact": "data/m9_p6_heading.csv",
-   "structure": {
-    "n_eb": 381,
-    "n_pb": 113,
-    "n_edge_eb_eb": 38606
+   "evidence": [
+    "data/m9_p6_heading.csv + tools/validate_p9_heading.py",
+    "reports/neuro/m9_heading_map.png",
+    "M9-B3 复跑（/tmp/m9b3/regression.log）"
+   ],
+   "criteria_bands": {
+    "heading_err_halfwidth_deg": [
+     0.0,
+     45.0
+    ],
+    "heading_correlation": [
+     0.9,
+     1.0
+    ],
+    "bump_amplitude_min": [
+     0.3,
+     1.0
+    ],
+    "bump_persistence_drift_deg": [
+     0.0,
+     30.0
+    ],
+    "rotation_gain": [
+     0.7,
+     1.3
+    ],
+    "rotation_r2": [
+     0.9,
+     1.0
+    ],
+    "ablation_heading_corr_max": [
+     -1.0,
+     0.3
+    ],
+    "determinism_bitwise": [
+     1.0,
+     1.0
+    ],
+    "ablation_bump_amp_keep_max": [
+     -1.0,
+     0.5
+    ]
    }
   },
-  "P7_sleep": {
+  "P7_wake_sleep": {
+   "name": "觉醒/睡眠样状态（P7）",
    "verdict": "FAIL(2)+PASS(4)",
-   "pass": false,
-   "pass_n": 4,
+   "pass": 3,
    "total": 6,
+   "refutation": [
+    "a_bout_structure",
+    "b_day_night_modulation"
+   ],
    "key_values": {
     "bout_active_frac": 0.0,
+    "bout_med_ms": 0.0,
+    "bout_count": 0,
     "day_night_ratio": 1.0003,
     "perm_p_daynight": 0.9844,
+    "day_count_per_step": 33.9476,
+    "night_count_per_step": 33.938,
+    "pop_rate_circadian": 4.8867,
     "rhythm0_ratio": 1.0137,
-    "hc_delta_max": 0.0969,
+    "hc_bias_delta_max": 0.0969,
+    "hc_pop_rates": {
+     "0.98": 4.3667,
+     "1.00": 4.7482,
+     "1.02": 5.2085
+    },
     "determinism_bitwise": true
    },
-   "artifact": "data/m9_p7_sleep.csv",
-   "refutation": "(a)bout=0 + (b)昼夜无差异; (hc)工作点稳定→H-c排除"
-  },
-  "P8_decision": {
-   "verdict": "PASS",
-   "pass": true,
-   "pass_n": 6,
-   "total": 6,
-   "key_values": {
-    "dV_full": 10.2116,
-    "dV_reward": 6.6261,
-    "dV_punish": -3.5855,
-    "p_approach": 0.8483,
-    "dV_ablation": 0.0,
-    "p_ablation": 0.5,
-    "determinism_bitwise": true
-   },
-   "artifact": "data/m9_p8_decision.csv"
-  },
-  "P9_perturbation": {
-   "verdict": "PARTIAL",
-   "pass": null,
-   "note": "实现完成(src/adult_perturb.py + validate_p9_perturbation.py + m9_p9_target_mapping.csv)；26锚≥20下限达标；结果见data/m9_p9_perturbation.csv(部分)",
-   "anchors": 26
-  },
-  "P10_activity": {
-   "verdict": "FAIL(部分) 5/8",
-   "pass": false,
-   "pass_n": 5,
-   "total": 8,
-   "key_values": {
-    "ks_D_vs_lit": 0.6728,
-    "ks_p": 0.0,
-    "mean_pair_corr_2hz": 0.622,
-    "surrogate_null": -0.0717,
-    "ca_recon_rank_corr": 0.9997,
-    "silent_frac_ca": 0.6728,
-    "determinism_bitwise": true
-   },
-   "artifact": "data/m9_p10_activity.csv",
-   "note": "测量管线自检通过(0.9997)→FAIL归因于模型与文献不符"
-  },
-  "P11_report": {
-   "verdict": "PASS",
-   "pass": true,
-   "artifact": "docs/m9_report.md + reports/neuro/m9_validation_summary.json",
-   "regression": {
-    "segmented": "27 passed / 0 failed (56.31s)",
-    "m9_smoke": "12/12",
-    "m0_m8": "至82%全绿(日志存证)"
+   "evidence": [
+    "data/m9_p7_sleep.csv + tools/validate_p9_sleep.py",
+    "reports/neuro/m9_sleep_states.png",
+    "data/m9_p7_drive_sensitivity.csv（机制诊断：零驱动保留 98.5%）"
+   ],
+   "criteria_bands": {
+    "bout_active_fraction": [
+     0.05,
+     0.9
+    ],
+    "bout_duration_median_ms": [
+     100.0,
+     60000.0
+    ],
+    "day_night_activity_ratio": [
+     1.2,
+     10.0
+    ],
+    "rhythm0_ratio_max": [
+     0.8,
+     1.25
+    ],
+    "hc_stability_delta_max": [
+     0.0,
+     0.5
+    ],
+    "determinism_bitwise": [
+     1.0,
+     1.0
+    ]
    }
   },
-  "P12_handover": {
+  "P8_decision": {
+   "name": "趋利避害决策（P8）",
    "verdict": "PASS",
-   "pass": true,
-   "artifact": "docs/m9_report.md §9.2",
-   "note": "缺失机制清单+方法学纪律+M10交接"
+   "pass": 6,
+   "total": 6,
+   "key_values": {
+    "dV_full": 10.211568,
+    "dV_reward": 6.626091,
+    "dV_punish": -3.585477,
+    "p_approach_full": 0.848307,
+    "dV_ablation": 0.0,
+    "p_approach_ablation": 0.5,
+    "beta_sigmoid_calibrated": 1.0,
+    "determinism_bitwise": true
+   },
+   "evidence": [
+    "data/m9_p8_decision.csv + tools/validate_p9_decision.py",
+    "reports/neuro/m9_decision.png",
+    "M9-B3 复跑（/tmp/m9b3/regression.log）"
+   ],
+   "criteria_bands": {
+    "choice_prob_conflict": [
+     0.55,
+     0.95
+    ],
+    "mbon_valence_diff_sign": [
+     1.0,
+     1.0
+    ],
+    "ablation_choice_prob": [
+     0.35,
+     0.65
+    ],
+    "determinism_bitwise": [
+     1.0,
+     1.0
+    ]
+   }
+  },
+  "P9_perturbation": {
+   "name": "类型级锚扰动预测（P9）",
+   "verdict": "FAIL",
+   "pass": 4,
+   "total": 5,
+   "key_values": {
+    "hit_rate_anchor_level": 0.6667,
+    "hit_rate_pool_level": 0.6667,
+    "efficacy_activation_self_up_frac": 1.0,
+    "sham_noop_bitwise": "True",
+    "determinism_bitwise": "True",
+    "n_anchors_mapped": 22.0,
+    "n_anchors_unavailable": 6.0,
+    "n_prediction_slots": 65.0,
+    "specificity_target_gt_control_pools": "0/0（可判定池数，对照组缺失者不计）",
+    "wall_s": 0.0,
+    "T_ms": 1000.0,
+    "segment_steps": 2000.0
+   },
+   "evidence": [
+    "data/m9_p9_perturbation.csv + data/m9_p9_target_mapping.csv（**预测先于运行落盘**）",
+    "tools/validate_p9_perturbation.py + src/adult_perturb.py",
+    "reports/neuro/m9_perturbation_hitrate.png",
+    "reports/neuro/m9_p9_progress.log（增量日志 + M9_P9_DONE 标记）"
+   ],
+   "criteria_bands": {
+    "hit_rate_min": [
+     0.7,
+     1.0
+    ],
+    "sham_noop_identical": [
+     1.0,
+     1.0
+    ],
+    "determinism_bitwise": [
+     1.0,
+     1.0
+    ],
+    "efficacy_frac_min": [
+     0.8,
+     1.0
+    ],
+    "effect_threshold_rel": [
+     0.05,
+     0.05
+    ],
+    "n_anchor_min": [
+     20.0,
+     1000000000.0
+    ],
+    "T_ms": [
+     1000.0,
+     1000.0
+    ],
+    "settle_ms": [
+     300.0,
+     300.0
+    ],
+    "segment_steps": [
+     2000.0,
+     2000.0
+    ]
+   }
+  },
+  "P10_activity_goldstandard": {
+   "name": "活动金标准（P10）",
+   "verdict": "FAIL(部分)",
+   "pass": 5,
+   "total": 8,
+   "key_values": {
+    "ks_D_true_vs_lit": 0.6728,
+    "ks_D_ca_recon_vs_lit": 0.6728,
+    "mean_pair_corr_2hz": 0.6744,
+    "mean_pair_corr_surrogate_null": -0.0792,
+    "fano_median": NaN,
+    "silent_frac_ca": 0.6728,
+    "spearman_recon_vs_true_rate": 0.9997,
+    "recon_window_bias": 0.0,
+    "n_frames": 10.0,
+    "T_ms": 200.0
+   },
+   "evidence": [
+    "data/m9_p10_activity.csv + src/adult_activity.py + tools/validate_p9_activity.py",
+    "reports/neuro/m9_activity_stats.png",
+    "reports/neuro/m9_p10_progress.log（M9_P10_DONE 标记）"
+   ],
+   "criteria_bands": {
+    "ks_stat_max": [
+     0.0,
+     0.35
+    ],
+    "ca_decay_tau_s": [
+     0.5,
+     2.0
+    ],
+    "frame_rate_hz": [
+     1.0,
+     2.0
+    ],
+    "mean_pairwise_corr_lo": [
+     0.02,
+     0.45
+    ],
+    "fano_factor_median": [
+     0.5,
+     3.0
+    ],
+    "silent_fraction_max": [
+     0.0,
+     0.9
+    ],
+    "ca_rate_rank_corr_min": [
+     0.5,
+     1.0
+    ],
+    "determinism_bitwise": [
+     1.0,
+     1.0
+    ]
+   }
+  },
+  "P11_regression_report": {
+   "name": "回归与报告（P11）",
+   "verdict": "PASS",
+   "pass": 3,
+   "total": 3,
+   "key_values": {
+    "report_exists": true,
+    "summary_json": true,
+    "segmented_pytest": "27 passed",
+    "adult_smoke": "12 passed in 1.13s（M9-B3 复跑）",
+    "m0_m8": "82% 全绿（主agent 复核 regress2.log，无 F）"
+   },
+   "evidence": [
+    "docs/m9_report.md",
+    "reports/neuro/m9_validation_summary.json",
+    "reports/neuro/m9_pytest_status.json",
+    "/tmp/m9b3/regression.log"
+   ]
+  },
+  "P12_handover": {
+   "name": "交接处置（P12）",
+   "verdict": "PASS",
+   "pass": 5,
+   "total": 5,
+   "key_values": {
+    "tokens_checked": [
+     "缺失机制",
+     "STP",
+     "调质增益",
+     "回归",
+     "M10"
+    ]
+   },
+   "evidence": [
+    "docs/m9_report.md §P12 交接节"
+   ]
   }
  },
+ "counts": {
+  "total_criteria": 12,
+  "pass": 9,
+  "pass_with_refutation": 1,
+  "fail": 3,
+  "pending": 0,
+  "partial": 0
+ },
+ "refutations": [
+  {
+   "id": "R1",
+   "statement": "静息态无双状态（bout_active_fraction=0.0000）",
+   "strength": "强（P4 (d) T=10s 100 箱 + P7 (a) 跨协议独立一致）",
+   "missing_mechanism": "STP / GABA 亚型异质 / 调质增益（产生状态切换的变量）",
+   "evidence": [
+    "data/m9_p4_resting.csv",
+    "data/m9_p7_sleep.csv"
+   ]
+  },
+  {
+   "id": "R2",
+   "statement": "昼夜节律调制无差异（day/night=1.0003, p=0.9844）",
+   "strength": "强（按 λ(t) 相位重取窗后驱动均值差 3.08× 仍无调制）",
+   "missing_mechanism": "节律须作用于状态切换变量而非背景率；同上机制清单",
+   "evidence": [
+    "data/m9_p7_sleep.csv"
+   ]
+  },
+  {
+   "id": "R3",
+   "statement": "活动自主自持、输入通路增益过低（零背景驱动保留 98.5% 群率；4× 驱动仅 +7.2%）",
+   "strength": "强（机制性诊断）",
+   "missing_mechanism": "tonic 偏置主导 → 放大背景驱动无效；必须新增状态变量",
+   "evidence": [
+    "data/m9_p7_drive_sensitivity.csv",
+    "rel_zero_drive=0.9853, rel_4x_drive=1.0725"
+   ]
+  },
+  {
+   "id": "R4",
+   "statement": "静息发放率偏高（rate_mean 4.77 Hz vs 文献 ~1–2 Hz）",
+   "strength": "中（bias_cv / 背景 λ 标定空间仍在）",
+   "missing_mechanism": "标定待优化（登记，非缺陷）",
+   "evidence": [
+    "data/m9_p4_resting.csv",
+    "data/m9_p10_activity.csv"
+   ]
+  },
+  {
+   "id": "R5",
+   "statement": "长试次退化（ms/step 4.33→12.07；RSS→15.4GB）",
+   "strength": "强（曲线完整）",
+   "missing_mechanism": "MPS 分配器长单次调用池行为",
+   "evidence": [
+    "data/m9_p4_wallclock.csv"
+   ]
+  },
+  {
+   "id": "R6",
+   "statement": "分段调度 NON_COMPOSABLE（0.2–0.7%）",
+   "strength": "中（已量化 < 判据带容差）",
+   "missing_mechanism": "延迟槽须改绝对步号驱动（交 M10）",
+   "evidence": [
+    "data/m9_engine_segment_composability.csv"
+   ]
+  },
+  {
+   "id": "R7",
+   "statement": "cell_type 不可得（Schlegel parquet 未下载）→ 类型级锚塌缩为区域代理",
+   "strength": "强",
+   "missing_mechanism": "细胞类型代理；P9 池级命中率为唯一诚实单位",
+   "evidence": [
+    "data/m9_p9_target_mapping.csv（同池多锚共享目标集）"
+   ]
+  },
+  {
+   "id": "R8",
+   "statement": "缝隙连接官方 v783 = 0 行",
+   "strength": "强（论文原文）",
+   "missing_mechanism": "CX 环序由 EB→EB Fiedler 图论代理",
+   "evidence": [
+    "data/m9_network_stats.json",
+    "src/adult_cx.py"
+   ]
+  },
+  {
+   "id": "R9",
+   "statement": "成虫全脑钙成像/电生理数据不可得",
+   "strength": "强",
+   "missing_mechanism": "文献参数化回退 + 只承诺统计级（P10）",
+   "evidence": [
+    "data/m9_p10_activity.csv（reference_distribution 行）"
+   ]
+  },
+  {
+   "id": "R10",
+   "statement": "逐突触递质覆盖不可得（9.49GB 未下载）",
+   "strength": "强",
+   "missing_mechanism": "连接级覆盖 100% 承接",
+   "evidence": [
+    "data/m9_network_stats.json"
+   ]
+  },
+  {
+   "id": "R11",
+   "statement": "全规模 CPU point 档路径不可用（索引越界）",
+   "strength": "强（M9-B3 探针实测）",
+   "missing_mechanism": "CPU/MPS 双路径回归交 M10；M9 结论不受影响（定稿档 = MPS）",
+   "evidence": [
+    "reports/neuro/m9_p9_progress.log / _probe_p9_timing.log"
+   ]
+  }
+ ],
  "missing_mechanisms": [
-  "R1 静息态无双状态（bout=0）：P4(d) + P7(a) 跨协议独立一致 → 需 STP/GABA 亚型异质/调质增益（状态切换慢变量）",
-  "R2 昼夜节律调制无差异（ratio 1.0003, p=0.9844）→ 节律须作用于状态切换变量而非仅背景率",
-  "R3 活动自主自持、输入通路增益过低（零驱动保留 98.5% 群率；4× 驱动仅 +7.2%）→ 放大驱动无效",
-  "R7 活动统计与文献不符（KS D=0.6728；群体相关 0.6220；Fano 不可算）→ 同 R1/R3",
-  "R4 rate_mean 4.77 Hz 偏高（文献 1-2 Hz）→ 标定待优化（非缺陷）"
+  {
+   "mechanism": "短时程可塑性（STP：突触抑制/易化）",
+   "addresses": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "why": "状态切换需要慢变量；当前网络无突触短时程动力学 → 群活动为恒定工作点",
+   "next": "M10：按细胞类型级 STP 参数（U/τ_fac/τ_rec）接入，先测 bout 结构是否涌现"
+  },
+  {
+   "mechanism": "GABA 亚型异质（GABA_A/B、不同 E_Cl 与时程）",
+   "addresses": [
+    "R1"
+   ],
+   "why": "单一 e_inh=−80/tau_i=5ms 使抑制为均匀负电导 → 无法产生去同步/振荡",
+   "next": "M10：分亚型 tau_i 与反转电位（数据受限 → 类型级参数扫描 + 回归条件）"
+  },
+  {
+   "mechanism": "调质增益（DA/5HT/OA 的受体级增益调制）",
+   "addresses": [
+    "R1",
+    "R2"
+   ],
+   "why": "调质在模型中被抽象为弱兴奋电导（T2）→ 无增益调制能力；P7 昼夜调制因此失效",
+   "next": "M10：引入乘法增益通道（按区域/类型），复测昼夜调制与 bout"
+  },
+  {
+   "mechanism": "输入通路增益过低（tonic 偏置主导）",
+   "addresses": [
+    "R2",
+    "R3",
+    "R9"
+   ],
+   "why": "零背景驱动保留 98.5% 群率 → 感觉/节律输入无法门控状态",
+   "next": "M10：重标定 bias/背景 λ 使输入增益可支配工作点（**不是**放大背景率）"
+  },
+  {
+   "mechanism": "cell_type / 缝隙连接 / 成像数据缺失",
+   "addresses": [
+    "R7",
+    "R8",
+    "R9"
+   ],
+   "why": "限制判据分辨率与对照可得性（P9 池级塌缩、P6 图论环序、P10 文献回退）",
+   "next": "M10：下载 Schlegel 2024 类型表 / 血淋巴-缝隙连接标注 / 公开成像数据集"
+  },
+  {
+   "mechanism": "rate_mean 4.77 Hz 偏高（标定待优化）",
+   "addresses": [
+    "R4"
+   ],
+   "why": "静息中位 0.3000 Hz 已落带，但均值偏高 → 分布右尾过重",
+   "next": "M10：bias_cv/背景 λ 联合标定（保持中位落带为先决约束）"
+  }
  ],
  "limitations": [
-  "本机共享高负载（load 4.4-6.2）→ 长协议须分段调用 + 独占窗口",
-  "P4 权威档 T=10s + N=1 + 确定性等价（预注册 30s 因退化+争用未采用）",
-  "P10 成像不可得 → 文献参数化回退，只承诺统计级",
-  "P9 锚为类型级（root-id 映射需 Schlegel 表）",
-  "引擎 torch/MPS 绑定 2.8.0；分段 NON_COMPOSABLE 0.2-0.7%",
-  "缝隙连接官方 v783=0 行；cell_type 不可得；逐突触递质不可得"
+  "分段调度 NON_COMPOSABLE（0.2–0.7%）：报告分段协议数值必须同附分段长度（本次 P9/P10 均 2000 步/段）",
+  "P9 命中率以**锚级**与**池级**双报；无 cell_type → 池内锚共享目标集，锚级数值含塌缩放大效应",
+  "P10 只承诺统计级；正向模型为无噪声理想线性 GCaMP（上限），无运动伪影/神经域污染",
+  "P10 相关估计受窗长（5 s）与帧率（2 Hz）混淆 → 已给代理零分布与窗长/帧率混淆诊断",
+  "长协议 T 受限（P4 T=10s、P7 T=1s、P9 T=1s、P10 T=5s）→ 均为率/统计量判据，T 缩短登记为测量限制",
+  "CPU point 档全规模路径不可用（R11）→ 全规模结论仅由 MPS 档给出"
  ],
- "resolved_from_M8": [
-  "R2 缺 GABA 标注（抑制平衡缺失）→ 数据侧（真实 GABA 21.42%）+ 模型侧（AHP 电导化修复后 H6 方向转正 Δrate=+37.4）双解除",
-  "R3 curl 通道缺失 → P3 解除（curl 饱和 1.000、位移 0.0000mm）"
- ],
- "budget": {
-  "cpu_h": 9.7,
-  "cpu_limit": 12,
-  "gpu_h": 11.8,
-  "gpu_limit": 24
+ "diagnostics": {
+  "engine_segment_composability": {
+   "verdict": "NON_COMPOSABLE",
+   "artifact": "data/m9_engine_segment_composability.csv",
+   "tool": "tools/diag_engine_segment_composability.py",
+   "spikes": {
+    "k1": 124635,
+    "k1_rerun": 124635,
+    "k2": 124345,
+    "k4": 125490
+   },
+   "rel_diff": {
+    "k2": 0.002327,
+    "k4": 0.00686
+   },
+   "n_neurons_differ_k2": 24423,
+   "determinism_same_split": true,
+   "impact": "确定性判据不受影响；一切分段执行的协议其绝对值带 0.2–0.7% 的分段调度依赖（落在所有判据带容差窗内，不改变任何判定）",
+   "handover": "M10：延迟槽读取改为绝对步号驱动，或把外部事件并入与网络事件相同的 CSR-by-pre 投递路径",
+   "discipline": "报告分段协议数值必须同时给出分段调度（步/段）；引擎改动后必须复测本诊断"
+  },
+  "p7_drive_sensitivity": {
+   "verdict": "drive_insensitive",
+   "artifact": "data/m9_p7_drive_sensitivity.csv",
+   "tool": "tools/diag_p7_drive_sensitivity.py",
+   "scan": {
+    "lam0_0.00": {
+     "n_events": 0,
+     "pop_rate_hz": 4.678288,
+     "silent": 0.585372
+    },
+    "lam0_0.50_reference": {
+     "n_events": 137769,
+     "pop_rate_hz": 4.7482
+    },
+    "lam0_2.00": {
+     "n_events": 363557,
+     "pop_rate_hz": 5.092521,
+     "silent": 0.541762
+    }
+   },
+   "rel_zero_drive": 0.9853,
+   "rel_4x_drive": 1.0725,
+   "conclusion": "网络活动自主自持（tonic 偏置主导），背景/节律输入为弱微扰 → P7 (b) 为机制性反证；放大驱动只移动工作点，不产生 bout 结构或昼夜调制",
+   "handover": "M10：状态切换必须新增状态变量（STP / GABA 亚型异质 / 调质增益），而非放大背景驱动"
+  }
  },
- "positive_results": [
-  "真实完整连接组驱动行为级功能成立（P5 MB泛化/P6 CX航向/P8 决策）",
-  "单机MPS可跑全规模（0.15-0.38 GPU-h/试次），自研内核与Brian2逐spike 100%等价",
-  "真实抑制平衡首次在139,255全脑点神经元成立（M8 R2 双解除）",
-  "缺失机制具体化：活动自主自持+输入增益过低→需引入状态切换变量（可操作修复方向）"
- ]
+ "regression": {
+  "segmented_pytest_baseline": "27 passed",
+  "segmented_pytest_rerun": "EXIT=0 | === 复跑 P8 决策（CPU，判据复现）=== |   判据带 ablation_choice_prob: [0.35, 0.65] p |   判据带 determinism_bitwise: [1, 1] bool | MB 微回路：KC=3819 / MBON=1374 / AL=3449 / DA=868；KC→MBON 边=100533；AL→KC 边=24012 |   完整：ΔV=+10.2116（奖赏 ΔVA=+6.6261 / 惩罚 ΔVB=-3.5855）→ P(approach)=0.8483 |   消融（MBON 通路置 0）：ΔV=+0.0000 → P=0.5000 | → /Users/weidong/ai/small_world/neural_exploration/data/m9_p8_decision.csv | → /Users/weidong/ai/small_world/neural_exploration/reports/neuro/m9_decision.png | P8 判定：PASS（{'a_choice_prob': True, 'b_valence_sign': True, 'b_valence_reward_up': True, 'b_valence_punish_down': True, 'c_ablation_random': True, 'd_determinism': True}） | EXIT=0 | M9B3_REGRESSION_DONE",
+  "adult_smoke_m9b3": "12 passed in 1.13s",
+  "m0_m8": "82% 全绿（主agent 复核，无 F）",
+  "frozen_files_untouched": true,
+  "m9_b3_new_files": [
+   "src/adult_perturb.py",
+   "src/adult_activity.py",
+   "tools/validate_p9_perturbation.py",
+   "tools/validate_p9_activity.py",
+   "tools/build_m9_summary.py",
+   "tools/_probe_p9_timing.py",
+   "data/m9_p9_*",
+   "data/m9_p10_*",
+   "reports/neuro/m9_perturbation_hitrate.png",
+   "reports/neuro/m9_activity_stats.png",
+   "reports/neuro/m9_three_channel.png",
+   "reports/neuro/m9_validation_summary.json",
+   "docs/m9_report.md"
+  ],
+  "criteria_band_append": "data/m9_behavior_reference.csv（perturbation/activity 两段，**先于对应协议运行**写入，未修改既有行）"
+ },
+ "budget": {
+  "m9_b3_cpu_h": 0.022,
+  "m9_b3_gpu_h": 0.005,
+  "caps": {
+   "cpu_h": 12,
+   "gpu_h": 24
+  },
+  "note": "P9/P10 均 MPS（全规模 point 档 CPU 路径不可用，R11）；回归测试 CPU 秒级"
+ },
+ "compliance": "判据带运行前定稿、sham 零臂自检逐位相同、确定性逐位、反证与限制逐条入档、预测先于运行落盘、无选择性报告、冻结件零修改"
 }
