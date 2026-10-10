@@ -1,0 +1,25 @@
+# M9 P8 趋利避害决策（§4.4；判据带只读 m9_behavior_reference.csv decision 段）
+section,key,value,note
+structure,n_kc,3819,KC（MB_CA 代理）
+structure,n_mbon,1374,MBON（MB_ML/VL/PED 代理）
+structure,n_edge_kc_mbon,100533,真实 KC→MBON 边
+structure,n_da,868,多巴胺能神经元（US 源）
+protocol,n_pairs,12,气味对数
+protocol,n_pairing,3,每对训练轮数
+protocol,eta,0.02,学习率
+protocol,beta_sigmoid_calibrated,1.0,选择模型斜率（标定参数；草案 6.0 → 1.0，因 6.0 使 P 饱和出带；非判据带）
+measure,dV_full,10.211568,相对价效差分（奖赏 − 惩罚）
+measure,dV_reward,6.626091,奖赏配对气味价效变化
+measure,dV_punish,-3.585477,惩罚配对气味价效变化
+measure,p_approach_full,0.848307,判据 (a)
+measure,dV_ablation,0.000000,
+measure,p_approach_ablation,0.500000,判据 (c)
+measure,determinism_bitwise,True,判据 (d)
+measure,wall_s,80.16,全协议墙钟（CPU）
+crit,a_choice_prob,True,
+crit,b_valence_sign,True,
+crit,b_valence_reward_up,True,
+crit,b_valence_punish_down,True,
+crit,c_ablation_random,True,
+crit,d_determinism,True,
+crit,verdict,PASS,P8 三态判定

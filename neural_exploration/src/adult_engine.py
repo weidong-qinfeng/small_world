@@ -504,7 +504,7 @@ class AdultEngine:
             device=self.device)
         self._ext_amp = torch.as_tensor(gmax, device=self.device)
         # 目标槽：与网络事件同延迟（保证 chunk 末批量写入后**才**被读取——见环形槽说明）
-        self._ext_delay = int(delay_steps)
+        self._ext_delay = int(self.max_delay if delay_steps is None else delay_steps)
         self._ext_slot = torch.as_tensor(
             ((steps + self._ext_delay) % self.n_slot) * (2 * self.n),
             device=self.device)

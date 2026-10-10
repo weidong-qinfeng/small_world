@@ -55,3 +55,9 @@ decision,choice_prob_conflict,0.55,0.95,p,0.5,1.0,0.75,清单 §4.4 判据 (a)�
 decision,mbon_valence_diff_sign,1.0,1.0,sign,0.5,1.5,1.0,清单 §4.4 判据 (b)：MBON 价效差分机制归属（Aso 2014 方向——奖赏配对 → 价效↑；惩罚配对 → 价效↓）,操作化：ΔV 的符号（正 = 奖赏气味价效更高）
 decision,ablation_choice_prob,0.35,0.65,p,0.3,0.7,0.5,清单 §4.4 判据 (c)：MBON 通路消融 → 选择随机化（H5）,操作化：MBON 读出权重置 0 后的 P(approach)（应回落到随机 0.5 附近）
 decision,determinism_bitwise,1.0,1.0,bool,1.0,1.0,1.0,清单 §0.7 #3：确定性逐位,操作化：同参数重跑 P(approach) 与 ΔV 逐位一致
+sleep,bout_active_fraction,0.05,0.9,fraction,0.02,0.98,0.4,清单 §4.3 判据 (a)：活动/静息 bout 结构（活动箱占比）；果蝇睡眠文献统计级（bout 结构存在性）；本机无睡眠成像数据集 → **文献量级回退 + 测量限制**（M8 R7 先例）,操作化：100ms 分箱，箱内 spike 数 > 3× 中位箱值记为活动箱，活动箱占比
+sleep,bout_duration_median_ms,100.0,60000.0,ms,50.0,120000.0,2000.0,清单 §4.3 判据 (a)：bout 时长分布统计级（果蝇活动/静息 bout 时长量级）,操作化：连续活动箱段的时长中位（ms）
+sleep,day_night_activity_ratio,1.2,10.0,ratio,1.0,20.0,2.0,清单 §4.3 判据 (b)：**昼夜调制**——昼活动 vs 夜静息比例差显著（配对检验 p<0.05）,操作化：昼窗（背景驱动高）群体发放率 / 夜窗（背景驱动低）群体发放率；时间压缩语义预注册（§0.7 #1）
+sleep,rhythm0_ratio_max,0.8,1.25,ratio,0.6,1.6,1.0,清单 §4.3 判据 (c)：**节律=0 消融** → 昼夜差异消失（H4 机制归属）,"操作化：节律调制幅度置 0 时的""昼/夜""比例（应 ≈1）"
+sleep,hc_stability_delta_max,0.0,0.5,fraction,0.0,0.8,0.1,**H-c 排除前置**（主agent 交办）：bias ±2% 微扰下工作点不得宏观翻转（否则该工作点不适合机制断言，L28 H-c）,"操作化：bias×{0.98,1.02} 相对 bias×1.00 的群体发放率相对变化"
+sleep,determinism_bitwise,1.0,1.0,bool,1.0,1.0,1.0,清单 §0.7 #3：确定性逐位,操作化：同参数重跑 bout 统计与发放率逐位一致
