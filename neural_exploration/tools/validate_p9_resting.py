@@ -184,9 +184,10 @@ def main() -> int:
                  st["ms_per_step"], time.perf_counter() - t0), flush=True)
 
     # ---- 确定性（§3.5.2 判据 (c)：同参数重跑统计级一致）----
-    st_a = c.run_resting(T_ms=T_MS, settle_ms=SETTLE_MS, seed=0, pop_trace=False)
+    _T_DET = min(2000.0, T_MS)   # 确定性窗：统计等价即可（长 T 下勿跑满，避免墙钟爆炸）
+    st_a = c.run_resting(T_ms=_T_DET, settle_ms=SETTLE_MS, seed=0, pop_trace=False)
     ra = c.engine.t_count.detach().cpu().numpy().astype(np.float64).copy()
-    st_b = c.run_resting(T_ms=T_MS, settle_ms=SETTLE_MS, seed=0, pop_trace=False)
+    st_b = c.run_resting(T_ms=_T_DET, settle_ms=SETTLE_MS, seed=0, pop_trace=False)
     rb = c.engine.t_count.detach().cpu().numpy().astype(np.float64).copy()
     det_spearman = float(np.corrcoef(ra, rb)[0, 1]) if ra.std() > 0 and rb.std() > 0 else 0.0
     det_identical = bool(np.array_equal(ra, rb))
@@ -224,7 +225,11 @@ def main() -> int:
         w.writerow(["protocol", "T_ms", T_MS,
                     "测量窗（§3.5.4 最短协议；预注册 30s，见 m9_behavior_reference.csv protocol_change 行）"])
         w.writerow(["protocol", "settle_ms", SETTLE_MS, "settle 窗（丢弃；M5 L37#2）"])
-        w.writerow(["protocol", "n_trials", N_TRIALS, "固定 seed 0/1/2（确定性）"])
+        w.writerow(["protocol", "n_trials", N_TRIALS,
+                    ("固定 seed；**N=1 + 确定性等价论证**（主agent 裁决 2026-10-10）："
+                     "本网络为**逐位确定**（无随机源），历史证据 —— T=2s 三试次统计量完全相同"
+                     "（median 0.0 / mean 0.126545 / silent 0.747363）、T=1s 三试次亦然；"
+                     "故 N=1 与 N=3 统计等价，在共享负载环境下以 N=1 换取可完成性")])
         w.writerow(["protocol", "bout_bin_ms", BIN_MS, "bout 分箱（阈值 3× 中位箱值）"])
         w.writerow(["protocol", "dt_ms", p.dt_ms, "M8 FIDELITY_DT 定稿"])
         w.writerow(["build", "n_neurons", c.n_neurons, "FlyWire v783 全脑（P1）"])

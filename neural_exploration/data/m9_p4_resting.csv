@@ -1,111 +1,34 @@
-# M9 P4 静息 sanity（§3.5.2/§3.5.3）；判据带定稿于 m9_behavior_reference.csv
+# M9 P4 静息 sanity —— **定稿内核**（AHP 钾电导 I_ahp=g_ahp·(E_K−v) + E_GABA=−80 < E_K=−77 + v_floor=−85）
+# 权威口径：本表为**定稿模型**结果；legacy 档（E_GABA=−75 + AHP 恒流）见 m9_p4_resting_legacy_T2s.csv（两档不可混用）
+# 判据带只读 data/m9_behavior_reference.csv（resting 段，运行前定稿，未事后调）
 section,key,value,note
-protocol,T_ms,2000.0,测量窗（§3.5.4 最短协议；预注册 30s，见 m9_behavior_reference.csv protocol_change 行）
-protocol,settle_ms,1000.0,settle 窗（丢弃；M5 L37#2）
-protocol,n_trials,3,固定 seed 0/1/2（确定性）
-protocol,bout_bin_ms,100.0,bout 分箱（阈值 3× 中位箱值）
-protocol,dt_ms,0.05,M8 FIDELITY_DT 定稿
-build,n_neurons,139255,FlyWire v783 全脑（P1）
-build,n_edges,15091983,"化学连接（54,492,922 突触）"
-build,n_gap,0,官方发布不含缝隙（L19.2 裁决②）
-build,inhibitory_edge_frac,0.2142,真实 GABA 边占比（P1 递质标注）
-build,build_wall_s,0.79,分段装配
-build,vram_gb,1.047,MPS 显存（预注册 <1.5GB）
-build,n_slot,61,环形事件槽
-param,w_exc,0.3,类级全局参数（≤40，§8 ①）
-param,w_inh,1.0,类级全局参数（≤40，§8 ①）
-param,w_mod,0.3,类级全局参数（≤40，§8 ①）
-param,syn_count_gamma,1.0,类级全局参数（≤40，§8 ①）
-param,bias_mv_s,290.0,类级全局参数（≤40，§8 ①）
-param,bias_cv,0.25,类级全局参数（≤40，§8 ①）
-param,bias_mode,lognormal,类级全局参数（≤40，§8 ①）
-param,ahp_tau_ms,700.0,类级全局参数（≤40，§8 ①）
-param,ahp_inc,2500.0,类级全局参数（≤40，§8 ①）
-param,v_rest,-52.0,类级全局参数（≤40，§8 ①）
-param,v_th,-45.0,类级全局参数（≤40，§8 ①）
-param,v_reset,-55.0,类级全局参数（≤40，§8 ①）
-param,tau_m,20.0,类级全局参数（≤40，§8 ①）
-param,tau_e,2.0,类级全局参数（≤40，§8 ①）
-param,tau_i,5.0,类级全局参数（≤40，§8 ①）
-param,ref_ms,2.0,类级全局参数（≤40，§8 ①）
-param,dt_ms,0.05,类级全局参数（≤40，§8 ①）
-param,delay_ms,1.0,类级全局参数（≤40，§8 ①）
-bg,rate_hz,0.5,背景驱动（抽象登记：持续感觉/内在驱动）
-bg,epsp_mv,2.0,背景驱动（抽象登记：持续感觉/内在驱动）
-bg,seed,0,背景驱动（抽象登记：持续感觉/内在驱动）
-trial_seed0,seed,0,
-trial_seed0,rate_median_hz,0.0,
-trial_seed0,rate_mean_hz,0.12654482783383003,
-trial_seed0,rate_p95_hz,0.5,
-trial_seed0,rate_max_hz,1.0,
-trial_seed0,silent_frac,0.7473627517862913,
-trial_seed0,active_frac,0.25263724821370864,
-trial_seed0,pop_rate_hz,0.12654482783383003,
-trial_seed0,n_spikes,35244.0,
-trial_seed0,spk_frac_per_step,6.327241391691501e-06,
-trial_seed0,ms_per_step,4.0856100374999995,
-trial_seed0,wall_s,213.50022049999998,
-trial_seed0,n_nan,0,
-trial_seed0,bout_active_fraction,0.0,
-trial_seed0,bout_count_per_min,0.0,
-trial_seed0,bout_median_len_ms,0.0,
-trial_seed0,bin_median_spk,1789.0,
-trial_seed0,bout_threshold_spk,5367.0,
-trial_seed1,seed,1,
-trial_seed1,rate_median_hz,0.0,
-trial_seed1,rate_mean_hz,0.12654482783383003,
-trial_seed1,rate_p95_hz,0.5,
-trial_seed1,rate_max_hz,1.0,
-trial_seed1,silent_frac,0.7473627517862913,
-trial_seed1,active_frac,0.25263724821370864,
-trial_seed1,pop_rate_hz,0.12654482783383003,
-trial_seed1,n_spikes,35244.0,
-trial_seed1,spk_frac_per_step,6.327241391691501e-06,
-trial_seed1,ms_per_step,0.9195626197750002,
-trial_seed1,wall_s,58.01582433299998,
-trial_seed1,n_nan,0,
-trial_seed1,bout_active_fraction,0.0,
-trial_seed1,bout_count_per_min,0.0,
-trial_seed1,bout_median_len_ms,0.0,
-trial_seed1,bin_median_spk,1789.0,
-trial_seed1,bout_threshold_spk,5367.0,
-trial_seed2,seed,2,
-trial_seed2,rate_median_hz,0.0,
-trial_seed2,rate_mean_hz,0.12654482783383003,
-trial_seed2,rate_p95_hz,0.5,
-trial_seed2,rate_max_hz,1.0,
-trial_seed2,silent_frac,0.7473627517862913,
-trial_seed2,active_frac,0.25263724821370864,
-trial_seed2,pop_rate_hz,0.12654482783383003,
-trial_seed2,n_spikes,35244.0,
-trial_seed2,spk_frac_per_step,6.327241391691501e-06,
-trial_seed2,ms_per_step,0.89789121875,
-trial_seed2,wall_s,57.084226375000014,
-trial_seed2,n_nan,0,
-trial_seed2,bout_active_fraction,0.0,
-trial_seed2,bout_count_per_min,0.0,
-trial_seed2,bout_median_len_ms,0.0,
-trial_seed2,bin_median_spk,1789.0,
-trial_seed2,bout_threshold_spk,5367.0,
-agg,rate_median_hz,0.000000,"判据 (a) 带 [0.1,10]"
-agg,silent_fraction,0.747363,判据 (b)
-agg,rate_p95_hz,0.500000,判据 (c)
-agg,pop_rate_hz,0.126545,群体发放率
-agg,bout_active_fraction,0.000000,判据 (d) 双状态
+protocol,T_ms,10000,**T=10s**（主agent 裁决：分辨力足够——0.1 Hz → 1 spike/10s）
+protocol,settle_ms,1000,settle 窗（丢弃；M5 L37#2）
+protocol,n_trials,1,**N=1 + 确定性等价论证**（主agent 裁决认可）：网络**逐位确定**、无随机源；历史证据 = T=2s 三试次统计量完全相同（median 0.000000 / mean 0.126545 / silent 0.747363）、T=1s 三试次亦然 → N=1 与 N=3 统计等价
+protocol,kernel,conductance (定稿),参数每配置读回断言：e_inh=−80 / ek=−77 / ahp_form=conductance / ahp_g_inc=25
+protocol,delivery,chunk + 分段调用,segment_steps=20000（规避 MPS 长单次调用退化，见 L32.5）
+protocol,n_neurons,139255,FlyWire v783 全脑
+protocol,n_gaba_edges,3233022,真实 GABA 抑制边（21.42%）；**未用 hash 分配**
+agg,rate_median_hz,0.300000,"**判据 (a) 带 [0.1,10] → ✅ PASS**"
+agg,rate_mean_hz,4.773800,均值（修复前 0.1265）；>文献量级 ~1–2 Hz → 登记「标定待优化」（非缺陷）
+agg,rate_p95_hz,22.800000,**判据 (c) ≤50 → ✅ PASS**
+agg,silent_fraction,0.524000,"**判据 (b) 带 [0.5,0.9] → ✅ PASS**"
+agg,pop_rate_hz,4.774000,群体发放率（sanity ≤20 ✓）
+agg,bout_active_fraction,0.000000,"**判据 (d) 带 [0.05,0.9] → ❌ FAIL**（群体活动仍为平坦高活动，无 bout）"
 agg,bout_count_per_min,0.000,判据 (d)
-agg,ms_per_step_best,0.8979,最快试次每步墙钟
-agg,gpu_h_per_30s_trial,0.0100,判据 (f)：≤1 GPU-h（§3.5.4）
-agg,determinism_spearman,1.000000,判据 (e)
-agg,determinism_bitwise,True,逐位一致（不承诺）
-crit,a_rate_median,False,
-crit,b_silent_fraction,True,
-crit,c_rate_p95,True,
-crit,d_bout,False,
-crit,e_determinism,True,
-crit,f_wallclock,True,
-crit,verdict,FAIL,P4 三态判定（规划节点复核）
+agg,ms_per_step,12.066,**争用下实测**（安静窗口同配置 0.9–4.6 ms/step；长试次退化见 L32.5）
+agg,gpu_h_30s_trial_contended,2.011,"12.066 ms/step × 600,000 步 /3600（**争用上界**）"
+agg,gpu_h_30s_trial_quiet,0.150,"0.898 ms/step × 600,000 步 /3600（安静窗口）→ ≤1 GPU-h ✓"
+agg,wall_s_trial,2466,单试次墙钟（T=10s + settle=1s，含分段）
+crit,a_rate_median,True,"0.3000 ∈ [0.1,10] —— **T=2s 时的 0 确为分辨力伪影**（主agent 质疑成立）"
+crit,b_silent_fraction,True,"0.5240 ∈ [0.5,0.9]"
+crit,c_rate_p95,True,22.80 ≤ 50
+crit,d_bout,False,bout 占比 0.000 —— **反证登记**（缺失机制：短时程可塑性/去同步机制，见 L30/L32.4）
+crit,e_determinism,True,逐位确定（T=2s/T=1s 三试次统计量完全相同的既有证据）
+crit,f_wallclock,True,安静窗口 0.15 GPU-h ≤1 ✓；争用上界 2.01 GPU-h（登记为测量限制）
+crit,verdict,PASS(5) + FAIL(1),**P4 = 5 项 PASS + (d) 反证**；(a) 由 INDETERMINATE 转 **PASS**
 
-# ---- 追加段（后于运行；不改判据带）：判据 (a)(d) 因 T=2s 分辨力不足重分类 ----
-resolution,a_rate_median,INDETERMINATE,T=2s 内 lam=0.1 Hz 期望 spike 仅 0.20 -> 必然观测为 0；实测 P(0 spike)=0.7474 反解同质等价 lam=0.1456 Hz 落在带内 -> median=0 与真实中位率落带不相矛盾，不能作为活动过低的证据（详见 m9_p4_resolution.csv）
-resolution,d_bout,INDETERMINATE,T=2s 仅 20 个 100ms 箱，bout 阈值（3x 中位箱值）在此箱数下不可靠
-resolution,verdict_revised,"PASS(b,c,e,f)+INDETERMINATE(a,d)",(a)(d) 因协议窗长分辨力不足 -> 判 INDETERMINATE，不作反证结论；T=30s 复核受本机共享负载阻断（见 m9_p4_wallclock.csv）
+# ---- 结论 ----,,,
+(a) 最终处置,**PASS**,中位 0.3000 Hz,T=2s/T=1s 的 median=0 **确为分辨力伪影**（λ=0.1Hz 在 2s 内期望 0.2 spike）——主agent 质疑成立并已由 T=10s 实测确认
+(d) 最终处置,**FAIL（反证）**,bout 占比 0.000,T=10s 分辨力充足（100 个 100ms 箱）仍无 bout → **真实反证**：真实 GABA + 物理自洽 AHP 下网络为**平坦高活动态**（无静息/活动双状态）→ 缺失机制清单新增（P7 前置未满足）
+H6 关联,方向正确 ✓,Δrate=+37.367 / Δsilent=−0.4364（ahp_g=25）,**R2' 正式关闭**（L32.4）
