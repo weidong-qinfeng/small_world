@@ -168,12 +168,16 @@ class AdultCircuit:
         t0 = time.perf_counter()
         gmax = self.gmax_vector() if gmax is None else np.asarray(gmax, dtype=np.float32)
         delay_steps = max(1, int(round(p.delay_ms / p.dt_ms)))
+        # AHP 形式选择：仅传当前形式对应的字段（另一字段会被 set_point_params 守卫拒绝——
+        # 避免"字段存在但作用域不匹配"的静默失效）
+        ahp_kw = ({"ahp_inc": p.ahp_inc} if str(p.ahp_form) == "current"
+                  else {"ahp_g_inc": p.ahp_g_inc})
         self.engine.set_point_params(v_rest=p.v_rest, v_th=p.v_th, v_reset=p.v_reset,
                                      tau_m=p.tau_m, tau_e=p.tau_e, tau_i=p.tau_i,
                                      ref_ms=p.ref_ms, dt_ms=p.dt_ms,
                                      e_inh=p.e_inh, ek=p.ek,
-                                     ahp_tau_ms=p.ahp_tau_ms, ahp_g_inc=p.ahp_g_inc,
-                                     ahp_inc=p.ahp_inc, ahp_form=p.ahp_form)
+                                     ahp_tau_ms=p.ahp_tau_ms, ahp_form=p.ahp_form,
+                                     **ahp_kw)
         n_chunk = 4
         step = int(np.ceil(self.pre.size / n_chunk))
         for k in range(n_chunk):        # 分段装配（M8 分批语义；构建墙钟探针）
@@ -253,8 +257,8 @@ class AdultCircuit:
     # ---------------- 运行 ----------------
     def run_resting(self, T_ms: float = 1000.0, settle_ms: float = 200.0,
                     seed: int = 0, delivery: str = "chunk", pop_trace: bool = False,
-                    v0_seed=None, progress=None, progress_every: int = 100000
-                    ) -> Dict[str, Any]:
+                    v0_seed=None, progress=None, progress_every: int = 100000,
+                    segment_steps: int = 20000) -> Dict[str, Any]:
         """静息协议：settle 窗（丢弃）→ 测量窗统计（§3.5.2）。"""
         if not self._built:
             self.build()
@@ -271,9 +275,26 @@ class AdultCircuit:
         if n_settle > 0:
             self.engine.run(n_settle, delivery=delivery, record="counts")
         self.engine.reset_counts()
-        r = self.engine.run(n_meas, delivery=delivery, record="counts",
-                            pop_trace=pop_trace, progress=progress,
-                            progress_every=progress_every)
+        # **分段调用**（segment_steps>0）：规避 MPS 分配器在长单次 run() 下的池膨胀/墙钟退化
+        # （B2 实测：单次 200k 步 40k 后停滞；分段 20k 步 ×10 内存恒定、速率稳定——见 L32.5）
+        if segment_steps and segment_steps < n_meas:
+            pops, done, t_seg = [], 0, time.perf_counter()
+            while done < n_meas:
+                m = min(int(segment_steps), n_meas - done)
+                rr = self.engine.run(m, delivery=delivery, record="counts",
+                                     pop_trace=pop_trace, progress_every=progress_every)
+                if pop_trace:
+                    pops.append(rr["pop"])
+                done += m
+                if progress is not None:
+                    progress(done, n_meas, time.perf_counter() - t_seg)
+            pop = np.concatenate(pops) if pops else None
+            ms_per_step = (time.perf_counter() - t_seg) / max(n_meas, 1) * 1e3
+            r = {"ms_per_step": ms_per_step, "pop": pop, "delivery": delivery}
+        else:
+            r = self.engine.run(n_meas, delivery=delivery, record="counts",
+                                pop_trace=pop_trace, progress=progress,
+                                progress_every=progress_every)
         wall = time.perf_counter() - t0
         st = self.engine.firing_stats(T_ms)
         st.update({"T_ms": T_ms, "settle_ms": settle_ms, "seed": seed,

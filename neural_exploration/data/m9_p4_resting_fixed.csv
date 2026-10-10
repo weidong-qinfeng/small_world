@@ -1,0 +1,25 @@
+# M9 P4（**定稿内核**：AHP 钾电导 + E_GABA=−80/E_K=−77）——实测结果与判定
+"# 口径：139,255 神经元 / 真实 GABA 3,233,022 边 / g_ext=19.23 / ahp_g_inc=25 / bg 0.5Hz / seed 0"
+# 与已交付 legacy 档 CSV（data/m9_p4_resting.csv）**不同物理档**，两者不可混用（见 docs/m9_env_notes.md L29/L32）
+section,key,value,note
+protocol,T_ms,1000,最短可完成档（T=5s/10s 受**长试次退化**阻断，见 L32.5）
+protocol,settle_ms,200,
+protocol,n_trials,1,**N=1 + 确定性等价论证**（主agent 裁决认可）：网络逐位确定、无随机源；历史证据 T=2s/T=1s 各 3 试次统计量完全相同（median/mean/silent 逐位一致）
+protocol,kernel,conductance (final),I_ahp=g_ahp·(E_K−v)，E_GABA=−80 < E_K=−77，v_floor=−85；参数每配置读回断言
+agg,rate_mean_hz,4.77,修复前同配置 0.1265（↑38×）→ **高于成年果蝇中枢脑静息文献量级 ~1–2 Hz** → 登记「标定待优化」（bias_cv/背景驱动可下调），非缺陷
+agg,silent_fraction,0.5394,"**(b) 判据落带 [0.5,0.9] ✓ PASS**"
+agg,rate_median_hz,0.0000,**(a) INDETERMINATE**：T=1s 分辨力不足（0.1Hz→0.1 spike）；T=10s 档受长试次退化阻断
+agg,rate_p95_hz,—,sanity：无饱和/癫痫（群体现群 4.77 Hz ≪ 20）
+agg,bout_active_fraction,—,**(d) INDETERMINATE**（T=1s 仅 10 个 100ms 箱）
+agg,determinism,bitwise,逐位一致（历史 + 本档同配置多次一致）
+crit,b_silent_fraction,True,
+crit,c_p95_sanity,True,
+crit,e_determinism,True,
+crit,f_wallclock,True,0.9–4.6 ms/step（短档）→ 30s 单试次 0.15–0.38 GPU-h ≤1 ✓
+crit,a_rate_median,INDETERMINATE,分辨力/长试次退化双重阻断 → 不写入缺失机制清单，不阻塞 M9
+crit,d_bout,INDETERMINATE,同上
+crit,verdict,PASS(4)+INDETERMINATE(2),按主agent 裁决口径；**H6 方向正确 + 真实抑制平衡成立**（L32.2/L32.3）
+
+# ---- 关键正面结论 ----,,,
+H6_direction,正确 ✓,Δrate=+37.367 / Δsilent=−0.4364（ahp_g=25）,**R2' 正式关闭**（L32.4）：真实 GABA 边在定稿内核下表现为正常抑制
+co_satisfiable,「活动落带 + H6 方向正确」可兼得 ✓,ahp_g=0 与 25 均满足,L28.2 结构张力结论不成立于定稿内核

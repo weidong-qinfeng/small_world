@@ -1,6 +1,6 @@
 # M9 P4 静息 sanity（§3.5.2/§3.5.3）；判据带定稿于 m9_behavior_reference.csv
 section,key,value,note
-protocol,T_ms,2000.0,测量窗（预注册）
+protocol,T_ms,2000.0,测量窗（§3.5.4 最短协议；预注册 30s，见 m9_behavior_reference.csv protocol_change 行）
 protocol,settle_ms,1000.0,settle 窗（丢弃；M5 L37#2）
 protocol,n_trials,3,固定 seed 0/1/2（确定性）
 protocol,bout_bin_ms,100.0,bout 分箱（阈值 3× 中位箱值）

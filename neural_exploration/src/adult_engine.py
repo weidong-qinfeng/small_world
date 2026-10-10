@@ -558,6 +558,7 @@ class AdultEngine:
             delivery: Optional[str] = None, pop_trace: bool = False,
             chunk_steps: Optional[int] = None, record_from: int = 0,
             progress=None, progress_every: int = 20000,
+            cache_clear_every: int = 0,   # 0 = 关闭（实测 empty_cache 自身阻塞 → 反而恶化）
             keep_state: bool = True) -> Dict[str, Any]:
         """执行 n_steps 步。
 
@@ -735,6 +736,15 @@ class AdultEngine:
                 rec_base += rec_ptr
                 rec_ptr = 0
             step += w
+            # MPS 分配器缓存周期释放：**已实测否决**（默认 0 = 关闭）——`torch.mps.empty_cache()`
+            # 自身同步且昂贵，在长试次中调用反而造成长时间停顿（20k 步后停滞）→ 比池膨胀更糟。
+            # 保留接口供后续节点在别的 MPS 版本上复测；**不作为可用手段**。
+            if cache_clear_every and (step % cache_clear_every) < w:
+                try:
+                    if getattr(torch, "mps", None) is not None and torch.backends.mps.is_available():
+                        torch.mps.empty_cache()
+                except Exception:
+                    pass
             if progress is not None and (step % progress_every < w or step >= n_steps):
                 progress(step, n_steps, time.perf_counter() - t0)
 
