@@ -1,0 +1,21 @@
+# M9 P4 判据 (a)(d) 分辨力分析（T=2s 档；回答 FAIL 是否分辨力伪影）
+# 方法：解析（Poisson 近似）+ T=2s 实测统计；不改判据带，仅重分类判定语义
+metric,value,note
+T_measured_s,2.0,已交付协议窗长
+P0_spike_at_T2s,0.747363,实测：2s 窗内 0 spike 的神经元占比（= 静默比例定义）
+mean_rate_hz,0.126545,实测群体平均发放率
+active_frac,0.252637,2s 内有 >=1 spike 的神经元占比
+active_mean_rate_hz,0.500900,上述子群平均率
+homogeneous_equiv_lambda_hz,0.145617,"由 P0 反解的同质等价率 lam=-ln(P0)/T（落在判据带 [0.1,10] 内）"
+resolvable_lambda_T2s_hz,0.5,T=2s 窗能可靠分辨的最低率量级（需 >=1 spike）
+expected_spikes_T2s_lambda0.1,0.2,lam=0.1 Hz 在 2s 内的期望 spike 数 -> 必然观测为 0
+P_ge3_spikes_at_T30s_lambda0.1,0.5768,lam=0.1 Hz 的神经元在 30s 内 >=3 spike 的概率
+P_ge3_spikes_at_T30s_lambda0.15,0.8264,同上（lam=0.15 Hz）
+criterion_a_reclassified,INDETERMINATE(分辨力不足),"T=2s 下 median=0 与真实中位率 ∈[0.1,10] Hz 不相矛盾 -> 不能作为活动过低的证据"
+criterion_d_reclassified,INDETERMINATE(分辨力不足),T=2s 仅 20 个 100ms bout 箱；阈值 3x 中位箱值在此箱数下不可靠
+criterion_b_status,"PASS(0.7474 ∈ [0.5,0.9])",静默比例为窗口不敏感统计（0 spike 占比）
+criterion_c_status,PASS(p95=0.500 <= 50),
+criterion_e_status,PASS(逐位一致 True),确定性网络
+criterion_f_status,PASS(0.898 ms/step 独占稳态),§3.5.4
+t30_status,NOT_OBTAINED(环境阻断),3 次尝试均 >24 分钟未完成 100k/600k 步；同时段本机有 2 个其他会话 MPS 进程(86-90% CPU)+Chrome(99%) -> 实测 18 ms/step vs 安静窗口 1.98 ms/step（同一代码路径）
+reproduce,M9_P4_T_MS=30000 ... validate_p9_resting,须在空闲机器执行；安静窗口实测 1.98 ms/step -> 30s 单试次约 20 分钟
