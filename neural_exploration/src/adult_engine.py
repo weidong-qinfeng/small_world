@@ -386,10 +386,22 @@ class AdultEngine:
 
     # ---------------- 保真度配置 ----------------
     def set_point_params(self, **kw) -> None:
+        # 静默失效守卫（M9-B2 实测教训）：ahp_inc 仅在 ahp_form="current" 时生效；
+        # 反之 ahp_g_inc 仅在 "conductance" 时生效 → 误设必须**显式报错**，不得静默忽略。
+        form = str(kw.get("ahp_form", getattr(self.point, "ahp_form", "conductance")))
+        if "ahp_inc" in kw and form != "current":
+            raise ValueError("ahp_inc 仅在 ahp_form='current' 时生效；当前 ahp_form=%r "
+                             "→ 请改用 ahp_g_inc（或显式设 ahp_form='current'）" % form)
+        if "ahp_g_inc" in kw and form != "conductance":
+            raise ValueError("ahp_g_inc 仅在 ahp_form='conductance' 时生效；当前 ahp_form=%r"
+                             % form)
         for k, v in kw.items():
             if not hasattr(self.point, k):
                 raise KeyError("未知 point 参数：%s" % k)
-            setattr(self.point, k, float(v))
+            if isinstance(v, str) or isinstance(getattr(self.point, k), str):
+                setattr(self.point, k, str(v))     # 选择型参数（如 ahp_form）
+            else:
+                setattr(self.point, k, float(v))
         if self._built:
             self._build_cores()
 
