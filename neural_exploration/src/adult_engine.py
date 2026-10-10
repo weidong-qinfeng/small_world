@@ -95,8 +95,10 @@ class PointParams:
     dt_ms: float = 0.05        # ms（与 two_comp 档一致，M8 FIDELITY_DT 定稿）
     v_floor: float = -85.0     # mV（**纯数值**保护；低于全部反转电位 → 正常运行不触发）
     ek: float = -77.0          # mV 钾平衡电位（AHP 电导的反转电位）
-    ahp_tau_ms: float = 700.0  # ms AHP 电导衰减时间常数（0 = 关闭）
-    ahp_g_inc: float = 0.0     # 1/s 每 spike 注入的 AHP **电导**增量（物理形式：I_ahp=g_ahp·(E_K−v)）
+    ahp_tau_ms: float = 700.0  # ms AHP 时间常数（0 = 关闭）
+    ahp_g_inc: float = 0.0     # 1/s 每 spike 的 AHP **电导**增量（ahp_form="conductance"）
+    ahp_inc: float = 0.0       # mV/s 每 spike 的 AHP **恒流**增量（ahp_form="current"，legacy 复现用）
+    ahp_form: str = "conductance"   # "conductance"（物理修复档）| "current"（v1 legacy 档）
 
     def as_dict(self) -> Dict[str, float]:
         return {k: float(v) for k, v in self.__dict__.items()}
@@ -126,18 +128,35 @@ def _point_core_factory(p: PointParams):
           else 0.0)
     ahp_g_inc = float(p.ahp_g_inc)
 
-    def core(v, ge, gi, g_ahp, cool, ev_e, ev_i, iext):
-        ge2 = ge + ev_e                       # 步起点交付（事件在步起点生效）
-        gi2 = gi + ev_i
-        ga2 = g_ahp * aa                      # AHP 电导衰减（步起点同步估值）
-        drive = (gl * (vr - v) + ge2 * (ee - v) + gi2 * (ei - v)
-                 + ga2 * (ek - v) + iext)
-        v2 = torch.clamp(v + dt_s * drive, min=vfloor)
-        spk = (v2 >= vth) & (cool <= 0.0)
-        cool2 = torch.where(spk, ref_m1, torch.clamp(cool - 1.0, min=0.0))
-        ga3 = torch.where(spk, ga2 + ahp_g_inc, ga2)
-        v3 = torch.where(cool2 > 0.0, vres, v2)   # 不应期钳位于 v_reset（标准 LIF）
-        return v3, ge2 * ae, gi2 * ai, cool2, ga3, spk
+    legacy = (str(p.ahp_form) == "current")
+    ahp_inc_c = float(p.ahp_inc)
+
+    if legacy:
+        def core(v, ge, gi, a_ahp, cool, ev_e, ev_i, iext):
+            ge2 = ge + ev_e
+            gi2 = gi + ev_i
+            a2 = a_ahp * aa                   # legacy：AHP 为**恒流**(mV/s) 衰减
+            drive = (gl * (vr - v) + ge2 * (ee - v) + gi2 * (ei - v)
+                     - a2 + iext)
+            v2 = torch.clamp(v + dt_s * drive, min=vfloor)
+            spk = (v2 >= vth) & (cool <= 0.0)
+            cool2 = torch.where(spk, ref_m1, torch.clamp(cool - 1.0, min=0.0))
+            a3 = torch.where(spk, a2 + ahp_inc_c, a2)
+            v3 = torch.where(cool2 > 0.0, vres, v2)
+            return v3, ge2 * ae, gi2 * ai, cool2, a3, spk
+    else:
+        def core(v, ge, gi, g_ahp, cool, ev_e, ev_i, iext):
+            ge2 = ge + ev_e                   # 步起点交付（事件在步起点生效）
+            gi2 = gi + ev_i
+            ga2 = g_ahp * aa                  # 物理档：AHP 为**钾电导**(1/s)，反转电位 E_K
+            drive = (gl * (vr - v) + ge2 * (ee - v) + gi2 * (ei - v)
+                     + ga2 * (ek - v) + iext)
+            v2 = torch.clamp(v + dt_s * drive, min=vfloor)
+            spk = (v2 >= vth) & (cool <= 0.0)
+            cool2 = torch.where(spk, ref_m1, torch.clamp(cool - 1.0, min=0.0))
+            ga3 = torch.where(spk, ga2 + ahp_g_inc, ga2)
+            v3 = torch.where(cool2 > 0.0, vres, v2)
+            return v3, ge2 * ae, gi2 * ai, cool2, ga3, spk
 
     return core
 

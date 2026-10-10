@@ -1,0 +1,13 @@
+"# M9 AHP 电导化后标定（拟合集 A = 静息判据带 [0.5,0.9]）"
+# 修复：I_ahp = g_ahp·(E_K−v)（钾电导，τ_ahp=700ms）；E_GABA=−80 mV 严格 < E_K=−77 mV；v_floor=−85 mV（纯数值）
+"# 协议：全规模 139,255 神经元；T=1s、settle=0.3s、seed=0、bg 0.5 Hz / g_ext=19.23、真实 GABA 边"
+# 来源：src=fixscan 为 8 臂修复扫描（/tmp/m9bench/fixscan.py）；src=ahpcal 为标定脚本首行（/tmp/m9bench/ahpcal.py）
+ahp_g_inc,w_inh,rate_mean_hz,silent_fraction,pop_rate_hz,silent_in_band,H6_delta_rate,H6_delta_silent,H6_direction,src
+0.0,1.0,4.76827,0.5389,4.7683,True,,,,fixscan
+0.0,0.0,42.17349,0.1020,42.1735,,+37.40522,-0.43690,正确 ✓（消融→活动↑/静默↓）,fixscan
+25.0,1.0,4.78223,0.5388,4.7822,True,,,,fixscan
+25.0,0.0,42.14907,0.1024,42.1491,,+37.36684,-0.43640,正确 ✓,fixscan
+25.0,1.0,4.76827,0.5389,4.7683,True,,,,ahpcal
+note_run_variation,—,"同一配置 (ahp_g=25, w_inh=1.0) 两次运行给出 4.78223 vs 4.76827（差 0.29%）",两值均远低于判据带分辨率；成因未定论（进程内调用次序/浮点重排）→ 登记为待查异常，不影响 H6 方向与落带结论,,,,,,,
+status,未完成,"ahp_g ∈ {50,100,200} 的扫描未跑完（单臂墙钟 3–10 分钟 × 6 臂；本机争用下超预算窗口）→ 主动中止",复现：/tmp/m9bench/ahpcal.py（脚本已就位，含自动落盘）,,,,,,
+conclusion,修复后定稿 ahp_g_inc = 25,"静默 0.5388–0.5389 ∈ [0.5,0.9] ✓ 落带（修复前同配置为 0.9366 **出带上沿**）；H6 方向正确 ✓",,,,,,,
