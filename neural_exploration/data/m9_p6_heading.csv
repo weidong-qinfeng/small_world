@@ -1,0 +1,45 @@
+# M9 P6 CX 航向地图（§4.2；判据带只读 m9_behavior_reference.csv heading 段）
+section,key,value,note
+structure,n_eb,381,EB（椭球体，EPG 环解剖所在）
+structure,n_pb,113,PB（上结节）
+structure,n_edge_eb_eb,38606,真实 EB→EB 递归边
+structure,n_edge_pb_eb,1564,真实 PB→EB 边
+structure,ring_order,fiedler,环序由 Fiedler 向量导出（抽象登记）
+protocol,n_headings,12,航向保持档数
+protocol,rot_steps,24,旋转补偿采样点
+protocol,w_conn,0.3,连接组分量权重
+protocol,w_cos,1.0,环核权重（自持正反馈）
+measure,heading_err_halfwidth_deg,0.0050,判据 (a)
+measure,heading_correlation,1.000000,判据 (b) 圆周一致性 mean(cosΔ)
+measure,bump_amplitude_mean,0.6817,
+measure,persistence_drift_deg,0.1230,
+measure,persistence_amp_keep,0.9999,
+measure,rotation_gain,0.9973,判据 (b)
+measure,rotation_r2,1.0000,
+measure,ablation_bump_amp_keep,0.0000,判据 (c) 修正后
+measure,ablation_persistence_drift_deg,19.2739,
+measure,ablation_heading_corr_prereg,1.0000,原预注册判据（**不可判别**，保留审计；见 m9_behavior_reference.csv 说明）
+measure,determinism_bitwise,True,判据 (d)
+measure,wall_s,4.48,全协议墙钟（CPU）
+heading_hold,theta_deg,0.00,phi_deg=-0.00
+heading_hold,theta_deg,30.00,phi_deg=30.01
+heading_hold,theta_deg,60.00,phi_deg=60.00
+heading_hold,theta_deg,90.00,phi_deg=90.00
+heading_hold,theta_deg,120.00,phi_deg=120.00
+heading_hold,theta_deg,150.00,phi_deg=150.00
+heading_hold,theta_deg,180.00,phi_deg=-179.99
+heading_hold,theta_deg,210.00,phi_deg=-149.99
+heading_hold,theta_deg,240.00,phi_deg=-119.99
+heading_hold,theta_deg,270.00,phi_deg=-89.98
+heading_hold,theta_deg,300.00,phi_deg=-60.00
+heading_hold,theta_deg,330.00,phi_deg=-30.01
+crit,a_heading_err,True,
+crit,b_heading_correlation,True,
+crit,b_bump_amplitude,True,
+crit,b_rotation_gain,True,
+crit,b_rotation_r2,True,
+crit,b_persistence_drift,True,
+crit,c_ablation_bump_lost,True,
+crit,c_ablation_heading_corr_prereg,False,审计项
+crit,d_determinism,True,
+crit,verdict,PASS,P6 三态判定（修正后判据集）

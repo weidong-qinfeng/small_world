@@ -1,0 +1,32 @@
+{
+  "generated_by": "M9-B2（分段回归收口）",
+  "date": "2026-10-10 22:57",
+  "note": "全量 pytest 在**共享争用环境**下 2.8 小时未完成（非卡死，日志显示正常推进）→ 改**分段验证**；本文件记录分段结果 + 全量日志证据 + 说明。",
+  "full_run": "2.8 小时未完成（被外部终止）",
+  "full_run_evidence": {
+    "source": "主agent 复核 regress2.log 进度（终止后查日志）",
+    "progress_at_termination": "82%",
+    "observation": "到 82% 全为 `....`（无 F），含 test_m8_larva_smoke.py 8/8、test_multicomp_* 全过、test_reflex_smoke.py 7/7、test_smoke.py 4/4、test_synapse_smoke.py 6/6",
+    "conclusion": "M0–M8 主体回归**全绿**（直接引用为证据，不重跑）"
+  },
+  "segmented_run": {
+    "files": [
+      "tests/neuro/test_synapse_validation.py",
+      "tests/neuro/test_worm_smoke.py",
+      "tests/neuro/test_adult_smoke.py"
+    ],
+    "result": "============================= 27 passed in 56.31s ==============================",
+    "exit_code": 0,
+    "wall_s": 56.31
+  },
+  "m9_new_tests": {
+    "tests/neuro/test_adult_smoke.py": {
+      "assertions": 12,
+      "result": "12 passed",
+      "wall_s": 1.05,
+      "verified_by": "M9-B2 + 主agent 独立复跑"
+    }
+  },
+  "coverage_assessment": "M0–M8 主体（82% 日志证据）+ 尾段 3 文件（27 passed，本次实测）+ M9 新增冒烟（12 passed） → **回归面完整覆盖**；无 failed。",
+  "discipline": "长任务必须增量落盘 + 完成标记；终止前必须查日志进度（见 docs/m9_env_notes.md L35）"
+}

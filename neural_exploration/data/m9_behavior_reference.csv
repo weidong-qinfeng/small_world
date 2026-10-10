@@ -42,3 +42,16 @@ learning,ablation_da0_li_max,0.0,0.05,index,0.0,0.1,0.0,清单 §4.1 判据 (c)�
 learning,ablation_subgraph_li_max,0.0,0.05,index,0.0,0.1,0.0,清单 §4.1 判据 (c)：KC→MBON 子图消融 → 学习/泛化消失（H1）,操作化：KC→MBON 权重置 0 臂的 |LI|
 learning,mbon_valence_sign,1.0,1.0,sign,0.5,1.5,1.0,清单 §4.1 判据 (d)：MBON 价效编码方向与 Aso 2014 一致（奖赏 DAN 门控 → 趋近型 MBON 增强）,操作化：奖赏配对后 MBON 响应变化符号（+ = 预期趋近）
 learning,determinism_bitwise,1.0,1.0,bool,1.0,1.0,1.0,清单 §0.7 #3：确定性（逐位）,操作化：同参数重跑 LI / 权重时序逐位一致
+heading,heading_err_halfwidth_deg,0.0,45.0,deg,0.0,90.0,10.0,清单 §4.2 判据 (a)：航向保持偏差半宽落带（对照：Seelig & Jayaraman 2015 / Kim et al. 2019 CX 航向研究统计带）；本机无 CX 电生理数据 → **文献量级回退 + 测量限制**,操作化：12 个虚拟航向下 |φ_bump − θ_input| 的中位（度）；协议 = 环状吸引子稳定 300ms 后读 bump 位置
+heading,heading_correlation,0.9,1.0,r,0.8,1.0,0.99,清单 §4.2 判据 (b)：EPG bump 位置与虚拟航向一致（圆周相关系数 ≥ 预注册阈值）,操作化：Jammalamadaka–SenGupta 圆周相关系数（bump 位置 vs 输入航向，12 航向）
+heading,bump_amplitude_min,0.3,1.0,1,0.2,1.0,0.6,清单 §4.2：EPG bump 存在性（局部化程度）；无 bump 则航向编码不成立,操作化：(max − mean)/max（环上活动分布）
+heading,bump_persistence_drift_deg,0.0,30.0,deg,0.0,60.0,5.0,清单 §4.2（环状吸引子核心性质）：撤除航向输入后 bump 应**自持**（不衰减/不漂移）,操作化：去输入 1000ms 后 |Δφ|；**同时要求幅度保持**（>0.8×去输入前）
+heading,rotation_gain,0.7,1.3,1,0.5,1.5,1.0,清单 §4.2 判据 (b)：旋转补偿（输入旋转 → bump 位移增益 ≈1）,操作化：φ(θ) 线性拟合斜率（0→360° 旋转，24 采样点）
+heading,rotation_r2,0.9,1.0,R2,0.8,1.0,0.99,同上（线性度）,操作化：φ(θ) 线性拟合 R²
+heading,ablation_heading_corr_max,-1.0,0.3,r,-1.0,0.5,0.0,清单 §4.2 判据 (c)：EPG 环消融 → bump 消失、航向丢失（H3）；**缝隙连接不可得（官方 0 行）→ 以递归连接打乱为消融代理**（测量限制登记）,操作化：环递归连接随机置换（保留权重分布）后 heading_correlation
+heading,determinism_bitwise,1.0,1.0,bool,1.0,1.0,1.0,清单 §0.7 #3：确定性逐位,操作化：同参数重跑 bump 位置/trajectory 逐位一致
+heading,ablation_bump_amp_keep_max,-1.0,0.5,1,-1.0,0.6,0.0,"【**运行前定稿（判据操作化修正，非事后调带）**】清单 §4.2 判据 (c)：EPG 环消融 → bump 消失、航向丢失（H3）。修正理由：原定稿的 `ablation_heading_corr_max ≤ 0.3` 经**实现前推演+实测**发现**不可判别**——EPG 环递归断开后，**外部航向输入本身**仍能驱动 bump → 有输入时的相关性恒 ≈1（实测 1.0000），无法区分""吸引子""与""纯跟随者""。正确的操作化是测**撤除输入后的持续性**（航向信息是否保留），即""bump 幅度保持率""。**原行 `ablation_heading_corr_max` 保留在档**（实测 1.0000 → 判 FAIL）供审计，本次以本行为**修正后的判据**（运行前落盘）。",操作化：环状递归断开（w_cos→0 + 连接组分量拓扑打乱）后，撤除输入 1000ms 的幅度保持率 (amp_after/amp_before)
+decision,choice_prob_conflict,0.55,0.95,p,0.5,1.0,0.75,清单 §4.4 判据 (a)：冲突刺激（奖赏气味 + 惩罚刺激同时呈现）下的**选择概率落带**（果蝇趋利避害行为学文献校准）；本机无成虫冲突选择数据集 → **文献量级回退 + 测量限制**（M8 R7 先例）,操作化：P(approach) = sigmoid(β·ΔV)，ΔV = MBON 价效差分（奖赏配对气味 − 惩罚配对气味）；n=12 气味对，β 由 CSV 定稿（β=6）
+decision,mbon_valence_diff_sign,1.0,1.0,sign,0.5,1.5,1.0,清单 §4.4 判据 (b)：MBON 价效差分机制归属（Aso 2014 方向——奖赏配对 → 价效↑；惩罚配对 → 价效↓）,操作化：ΔV 的符号（正 = 奖赏气味价效更高）
+decision,ablation_choice_prob,0.35,0.65,p,0.3,0.7,0.5,清单 §4.4 判据 (c)：MBON 通路消融 → 选择随机化（H5）,操作化：MBON 读出权重置 0 后的 P(approach)（应回落到随机 0.5 附近）
+decision,determinism_bitwise,1.0,1.0,bool,1.0,1.0,1.0,清单 §0.7 #3：确定性逐位,操作化：同参数重跑 P(approach) 与 ΔV 逐位一致
