@@ -1,0 +1,231 @@
+{
+ "generated_by": "tools/diag_m11_density_reference.py",
+ "started_at": "2026-10-12T00:03:13",
+ "reference": {
+  "name": "M10 修正内核（LarvalZFEngine，src/larval_zf_engine.py）",
+  "arms": "同网络/同事件表/同 seed；机制全关 + REF_FROZEN 档的 M11 = off_state"
+ },
+ "protocol": {
+  "n": 400,
+  "indegree": 20,
+  "T_steps": 4000,
+  "T_table": 20000,
+  "event_seed": 11,
+  "delay_bins_single": [
+   40
+  ],
+  "delay_bins_three": [
+   40,
+   60,
+   80
+  ],
+  "note": "静默定义：逐神经元率 < 0.5 Hz（与 M10 P5 判据同定义）"
+ },
+ "points": [
+  {
+   "density": "low",
+   "target_hz": 0.5,
+   "bias_scale": 0.8145,
+   "reference_side": {
+    "m10_single_bin": {
+     "pop_hz": 1.275,
+     "silent_frac": 0.8325,
+     "spk": 102
+    },
+    "m10_single_bin_no_ext": {
+     "pop_hz": 0.85,
+     "silent_frac": 0.9025
+    },
+    "m10_three_bins": {
+     "pop_hz": 0.7374999999999999,
+     "silent_frac": 0.9425,
+     "spk": 59
+    }
+   },
+   "m11_side": {
+    "single_bin": {
+     "pop_hz": 1.275,
+     "silent_frac": 0.8325,
+     "spk": 102
+    },
+    "three_bins": {
+     "pop_hz": 1.5875,
+     "silent_frac": 0.7975,
+     "spk": 127
+    }
+   },
+   "valid_arm": {
+    "name": "M11(off_frozen, 单延迟档) vs M10(单延迟档)",
+    "silent_diff_pp": 0.0,
+    "rate_diff_pct": 0.0,
+    "ks": {
+     "D": 0.0,
+     "p": 1.0,
+     "na": 400,
+     "nb": 400
+    },
+    "bit_identical_spk": true
+   },
+   "invalid_arm": {
+    "name": "M11(off_frozen, 三延迟档) vs M10(三延迟档；参照侧丢弃全部外部事件)",
+    "silent_diff_pp": 14.500000000000002,
+    "ks": {
+     "D": 0.14500000000000002,
+     "p": 0.00038222052951982047,
+     "na": 400,
+     "nb": 400
+    },
+    "m10_three_bin_ignores_ext": true
+   },
+   "external_drive_share": {
+    "rate_with_ext_hz": 1.275,
+    "rate_without_ext_hz": 0.85,
+    "share": 0.3333333333333333,
+    "silent_with": 0.8325,
+    "silent_without": 0.9025
+   }
+  },
+  {
+   "density": "mid",
+   "target_hz": 2.0,
+   "bias_scale": 0.9155,
+   "reference_side": {
+    "m10_single_bin": {
+     "pop_hz": 6.05,
+     "silent_frac": 0.385,
+     "spk": 484
+    },
+    "m10_single_bin_no_ext": {
+     "pop_hz": 5.5874999999999995,
+     "silent_frac": 0.435
+    },
+    "m10_three_bins": {
+     "pop_hz": 5.9125000000000005,
+     "silent_frac": 0.405,
+     "spk": 473
+    }
+   },
+   "m11_side": {
+    "single_bin": {
+     "pop_hz": 6.05,
+     "silent_frac": 0.385,
+     "spk": 484
+    },
+    "three_bins": {
+     "pop_hz": 6.0874999999999995,
+     "silent_frac": 0.3875,
+     "spk": 487
+    }
+   },
+   "valid_arm": {
+    "name": "M11(off_frozen, 单延迟档) vs M10(单延迟档)",
+    "silent_diff_pp": 0.0,
+    "rate_diff_pct": 0.0,
+    "ks": {
+     "D": 0.0,
+     "p": 1.0,
+     "na": 400,
+     "nb": 400
+    },
+    "bit_identical_spk": true
+   },
+   "invalid_arm": {
+    "name": "M11(off_frozen, 三延迟档) vs M10(三延迟档；参照侧丢弃全部外部事件)",
+    "silent_diff_pp": 1.7500000000000016,
+    "ks": {
+     "D": 0.017500000000000016,
+     "p": 0.9999999742956676,
+     "na": 400,
+     "nb": 400
+    },
+    "m10_three_bin_ignores_ext": true
+   },
+   "external_drive_share": {
+    "rate_with_ext_hz": 6.05,
+    "rate_without_ext_hz": 5.5874999999999995,
+    "share": 0.0764462809917356,
+    "silent_with": 0.385,
+    "silent_without": 0.435
+   }
+  },
+  {
+   "density": "high",
+   "target_hz": 17.413,
+   "bias_scale": 4.0938,
+   "reference_side": {
+    "m10_single_bin": {
+     "pop_hz": 51.8625,
+     "silent_frac": 0.11,
+     "spk": 4149
+    },
+    "m10_single_bin_no_ext": {
+     "pop_hz": 51.425,
+     "silent_frac": 0.115
+    },
+    "m10_three_bins": {
+     "pop_hz": 51.762499999999996,
+     "silent_frac": 0.085,
+     "spk": 4141
+    }
+   },
+   "m11_side": {
+    "single_bin": {
+     "pop_hz": 51.8625,
+     "silent_frac": 0.11,
+     "spk": 4149
+    },
+    "three_bins": {
+     "pop_hz": 52.2625,
+     "silent_frac": 0.0825,
+     "spk": 4181
+    }
+   },
+   "valid_arm": {
+    "name": "M11(off_frozen, 单延迟档) vs M10(单延迟档)",
+    "silent_diff_pp": 0.0,
+    "rate_diff_pct": 0.0,
+    "ks": {
+     "D": 0.0,
+     "p": 1.0,
+     "na": 400,
+     "nb": 400
+    },
+    "bit_identical_spk": true
+   },
+   "invalid_arm": {
+    "name": "M11(off_frozen, 三延迟档) vs M10(三延迟档；参照侧丢弃全部外部事件)",
+    "silent_diff_pp": 0.2500000000000002,
+    "ks": {
+     "D": 0.017500000000000016,
+     "p": 0.9999999742956676,
+     "na": 400,
+     "nb": 400
+    },
+    "m10_three_bin_ignores_ext": true
+   },
+   "external_drive_share": {
+    "rate_with_ext_hz": 51.8625,
+    "rate_without_ext_hz": 51.425,
+    "share": 0.008435767654856593,
+    "silent_with": 0.11,
+    "silent_without": 0.115
+   }
+  }
+ ],
+ "elapsed_s": 1791734599.9,
+ "conclusion": {
+  "valid_arm_all_pass": true,
+  "invalid_arm_silent_diff_pp": [
+   14.500000000000002,
+   1.7500000000000016,
+   0.2500000000000002
+  ],
+  "external_drive_share_by_density": [
+   0.3333333333333333,
+   0.0764462809917356,
+   0.008435767654856593
+  ],
+  "diagnosis": "低密度档的 14 pp 差异**不是**静默定义口径问题、也不是阈值 0.5 Hz 附近的计数离散，更不是 V_th 附近的动力学差异：它来自**参照臂选错** —— 参照侧（M10）在三延迟档下**丢弃全部外部事件**（E-M10-2），而低密度档的发放几乎全部由外部驱动贡献（外部驱动占比随密度单调下降）⇒ 差异幅度随密度单调下降，与实测 14.0/3.0/0.25 pp 同序。改用**单延迟档**参照（冻结件外部事件语义良定义的唯一配置）后，三档全部 **0.000 pp / KS p=1.000**（且脉冲总数逐位相同）⇒ (b)/(g) 实质为 **invalid（参照无效）**，修正参照后判 **pass**；网络静默比是否与**数据**一致属 G1/P5 标定判据，不在 G0 内。",
+  "discipline": "与 E-M9-3 同一条纪律：对齐判据必须在**目标工况密度**下复测 —— 且**参照侧自身必须在该工况下语义良定义**（本条是本轮新加的限定）"
+ }
+}

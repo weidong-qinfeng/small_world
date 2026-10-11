@@ -698,10 +698,16 @@ def main(argv=None) -> int:
                 w.writerow([b["label"], b["bin_frames"], "%.6f" % b["dt_bin_s"], b["n_frames_binned"],
                             b["n_frames_smoothed"], m, v, u, nt])
 
-    for p in (OUT_JSON, OUT_CSV):
-        raw = open(p, "rb").read()
-        payload["artifacts_sha256_file_bytes"][os.path.basename(p)] = hashlib.sha256(raw).hexdigest()
+    # ⚠️ 自指纪律：**不把 JSON 自身哈希写进 JSON**——写入后文件必然再变，
+    #    写进去的值只能是"上一个版本"的哈希，会误导核对者。JSON 自身哈希只打印到 stdout/日志。
+    raw_csv = open(OUT_CSV, "rb").read()
+    payload["artifacts_sha256_file_bytes"] = {os.path.basename(OUT_CSV): hashlib.sha256(raw_csv).hexdigest()}
+    payload["self_hash_note"] = ("JSON 自身哈希不写在 JSON 内（自指）；以 stdout/日志与本项目 hash_report.py "
+                                 "（基准 file_bytes）的实测值为准")
     json.dump(payload, open(OUT_JSON, "w"), ensure_ascii=False, indent=2)
+    _raw_json = open(OUT_JSON, "rb").read()
+    print("     %s  sha256(file_bytes)=%s" % (os.path.basename(OUT_JSON),
+                                              hashlib.sha256(_raw_json).hexdigest()[:16]))
     print("\n[OK] 落盘 %s / %s" % (os.path.basename(OUT_JSON), os.path.basename(OUT_CSV)))
     for k, v in payload["artifacts_sha256_file_bytes"].items():
         print("     %s  sha256(file_bytes)=%s" % (k, v[:16]))

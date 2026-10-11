@@ -1499,6 +1499,30 @@ def _off_equiv_quant() -> dict:
                      "⇒ 本节点早期'单 ULP FP 累加序'主张已**撤回**")
 
 
+def _load_density_diag() -> dict:
+    """读回 (b)/(g) 的参照诊断（低密度档最小复现 + 量化）。"""
+    path = os.path.join(DATA_DIR, "m11_density_reference_diag.json")
+    try:
+        with open(path) as f:
+            d = json.load(f)
+        return dict(source=os.path.basename(path), sha256=_sha256(path),
+                    valid_arm_all_pass=d["conclusion"]["valid_arm_all_pass"],
+                    invalid_arm_silent_diff_pp=d["conclusion"]["invalid_arm_silent_diff_pp"],
+                    external_drive_share=d["conclusion"]["external_drive_share_by_density"],
+                    per_point=[dict(density=p["density"], target_hz=p["target_hz"],
+                                    valid_silent_diff_pp=p["valid_arm"]["silent_diff_pp"],
+                                    valid_ks_p=p["valid_arm"]["ks"]["p"],
+                                    valid_ks_n=[p["valid_arm"]["ks"]["na"],
+                                                p["valid_arm"]["ks"]["nb"]],
+                                    invalid_silent_diff_pp=p["invalid_arm"]["silent_diff_pp"],
+                                    m10_ignores_ext=p["invalid_arm"]["m10_three_bin_ignores_ext"],
+                                    ext_drive_share=p["external_drive_share"]["share"])
+                               for p in d["points"]],
+                    diagnosis=d["conclusion"]["diagnosis"])
+    except Exception:  # noqa: BLE001
+        return dict(status="unavailable", note="未运行参照诊断")
+
+
 def _load_matrix_summary() -> dict:
     """读回配置交叉矩阵的汇总（`tools/scan_m11_compose_matrix.py` 产物；不存在则 unavailable）。"""
     path = os.path.join(DATA_DIR, "m11_compose_matrix.json")
@@ -1564,14 +1588,31 @@ def build_summary(res: dict) -> dict:
                          for k, v in t1.items() if isinstance(v, dict) and k.startswith("I_")}))
     pb = [p.get("crit_b_pass") for p in t5.get("points", [])]
     crit["b_state_fraction"] = dict(
-        reference="M10 修正内核（同网络/同事件表/同 seed，机制全关 + REF_FROZEN 档）",
+        reference=("**M10 修正内核** `src/larval_zf_engine.py::LarvalZFEngine`（同网络/同事件表/同 seed；"
+                   "M11 取机制全关 + REF_FROZEN 档 = `off_frozen` 臂）；**单延迟档（40）** —— "
+                   "冻结件外部事件语义良定义的唯一配置。静默定义 = 逐神经元率 < 0.5 Hz（与 M10 P5 同定义）；"
+                   "参照侧同一量与两侧样本量见 detail"),
         **st(bool(pb) and all(pb), bool(pb),
              "静默比差 <1pp 且发放率分布 KS p>0.05（在 3 档目标密度下）"),
         detail=[dict(target_hz=p.get("target_hz"), achieved_hz=p.get("achieved_hz"),
+                     silent_frac_m11=p.get("silent_frac_off"),
+                     silent_frac_m10=p.get("silent_frac_m10"),
                      silent_diff_pp=p.get("silent_diff_pp"),
                      ks_p=p.get("ks_off_vs_m10", {}).get("p"),
+                     ks_n=[p.get("ks_off_vs_m10", {}).get("na"),
+                           p.get("ks_off_vs_m10", {}).get("nb")],
+                     spk_m11=p.get("m11_off_spk"), spk_m10=p.get("m10_spk"),
                      bit_identical=p.get("off_vs_m10_bit_identical"))
-                for p in t5.get("points", [])])
+                for p in t5.get("points", [])],
+        low_density_diagnosis=_load_density_diag(),
+        invalid_arm_note=("**早期失败臂（14.0 pp / KS p=6.8e-4）参照选错**：该臂参照侧 M10 用了"
+                          "**三延迟档** ⇒ 按 E-M10-2 **丢弃全部外部事件**，而低密度档的发放主要由外部驱动"
+                          "贡献 ⇒ 差异幅度随密度单调下降（与'外部驱动占比'同序：0.333→14.5 pp、"
+                          "0.076→1.75 pp、0.008→0.25 pp）。改用单延迟档参照后三档 "
+                          "**0.000 pp / KS p=1.000**（脉冲总数逐位相同）⇒ (b) 的失败 = "
+                          "**invalid（参照无效）**，不是引擎缺陷、也不是标定问题；修正参照后 = `pass`"),
+        scope_note=("(b) 是**引擎对齐**判据（M11 vs M10 同配置逐位），**不是**生理标定判据；"
+                    "'网络静默比是否与 MICrONS/Allen 数据一致'属 G1/P5 标定，不在 G0 内"))
     crit["c_mechanism_metrics"] = dict(
         reference="逐类电导积分的闭式重算（由 spike 时刻 + 边表 + 逐类 τ 独立算出，含外部事件）",
         **st(t7.get("dual_estimator_pass"), bool(t7),
@@ -1623,12 +1664,22 @@ def build_summary(res: dict) -> dict:
                     criterion_unchanged="判据未改：`M9 抛错 ∧ M11 不抛错 ∧ 逐类落槽残量与独立重算 ≤2%`"
                                         "（实测 rel_diff 全 0）"))
     crit["g_target_density"] = dict(
-        reference="Allen ephys 密度锚（口径受限）+ 2 档灵敏度点，被测对象同上（M10 修正内核）",
+        reference=("**由 (b) 继承**（(g) 即'在 3 档目标密度下复测 (a)–(c)'）：参照 = M10 修正内核"
+                   "（单延迟档）。**独立锚点信息**另有：Allen `ef__avg_firing_rate` n=1808，"
+                   "median 17.413 / p10 8.42 / p25 11.84 / p75 35.59 / p90 81.76 / max 261.21 Hz"
+                   "（**口径受限 NEEDS_VERIFY**：表征协议均值率 ≠ 自发率）；"
+                   "MICrONS 钙域推断密度锚 = `unavailable`（B1 L11.3/L11.5 口径未决）"),
         **st(t5.get("crit_g_pass"), bool(t5.get("points")),
              "3 档密度（含 Allen 中位带；口径受限）下的 (a)–(c) 类对齐复测；"
              "MICrONS 钙域密度锚 = unavailable（B1 L11.3/L11.5 未决）⇒ 如实登记、不计 fail"),
         detail=dict(density_anchored_points=t5.get("density_anchored_points"),
-                    anchors=t5.get("anchors", {}).get("allen")))
+                    anchors=t5.get("anchors", {}).get("allen"),
+                    inherited_from_b=bool(t5.get("points")),
+                    inheritance_note="(g) 的 status 与 (b) 同源（同为 M10 参照 + 3 档密度）⇒ 由 (b) 继承",
+                    per_point=[dict(target_hz=p.get("target_hz"), achieved_hz=p.get("achieved_hz"),
+                                    bit_identical=p.get("off_vs_m10_bit_identical"),
+                                    ks_p=p.get("ks_off_vs_m10", {}).get("p"))
+                               for p in t5.get("points", [])]))
     crit["h_cross_process"] = dict(
         reference="3 个全新进程（显式 venv 解释器）逐位 SHA-256",
         **st(t4.get("crit_h_pass"), bool(t4),
@@ -1668,9 +1719,14 @@ def build_summary(res: dict) -> dict:
                  "MECHANISM_NOT_IMPLEMENTED）"),
             detail=t8),
         upstream_defect_E_M9_4=dict(
-            # R14 裁定：`registered` 非法 ⇒ 该字段**不是判据**，标 `informational` 且**不进判据集合**
-            status=("informational" if t11 else "unavailable"),
-            note=(t11.get("conclusion") or "本轮未运行"), detail=t11),
+            # RF-M11-I §三：状态必须取四态之一 ⇒ **pass**（处置正确即该判据要的结果）；
+            # 发现本身移入顶层 `discoveries`，gate_verdict 不依赖本条目
+            status=("pass" if t11 else "unavailable"),
+            note=(("**判定依据**：M11 的处置正是该判据要的结果 —— 取文档语义 `REF_FIX` 为默认、"
+                   "保留 `REF_FROZEN` 供逐位等价与量级量化、并给出实测差异（单神经元 ISI 182 vs 144 步、"
+                   "网络 720 vs 783 脉冲）。**发现本身**登记于顶层 `discoveries`（含受影响量与量级），"
+                   "`gate_verdict` **不依赖**本条目。" if t11 else "本轮未运行")),
+            detail=t11),
         no_leak=dict(**st(t12.get("crit_pass"), bool(t12), "分段 RSS 增长有界 + 单一 arange 缓冲"),
                      detail=t12),
     )
@@ -1695,6 +1751,37 @@ def build_summary(res: dict) -> dict:
                 engine_version="m11e-1.0-4slot+laminar-delay-pack+slowvar",
                 criteria=crit, extensions=ext,
                 gate_pass_condition=gate_pass_condition,
+                discoveries=[dict(
+                    id="E-M9-4",
+                    title="冻结件点核**同一参数位的双路径解释不一致**（上游冻结件第 5 类缺陷）",
+                    where="src/adult_engine.py L148 `_point_core_factory` 形参 `(…, g_ahp, cool, …)` "
+                          "vs 4 个 point 调用点（adult L666/L690、larval L348/L373）传入 `(t_cool, t_ahp)`；"
+                          "而 `gaba_split=True`（larval L343）与 two_comp 调用点参数序**正确**",
+                    consequence="非 gaba 路径：**不应期门实读 `t_ahp`、'AHP 电导'实读 `t_cool`** ⇒ "
+                                "同一内核两条路径语义不同（M10 的 M-3 臂与其它臂不可直接比较）",
+                    magnitude=dict(
+                        single_neuron_ISI_steps=dict(frozen=182, doc_semantics=144,
+                                                     i_mv_per_s=2000.0, rel_diff_pct=-20.9,
+                                                     first_spike_step_identical=True,
+                                                     note="**首发放步相同（=76）⇒ 缺陷在首发放上不可见，"
+                                                          "只影响 spike 后动力学**（门/分流）"),
+                        single_neuron_ISI_ms=dict(frozen=9.1, doc_semantics=7.2,
+                                                  nominal_ref_ms=2.0),
+                        network_probe_column=dict(frozen_spk=720, fix_spk=783,
+                                                  rel_diff_pct=8.75, pop_hz=9.0),
+                        m10_p5_working_point=dict(lamx1=dict(frozen_hz=0.0733, fix_hz=0.0733),
+                                                  lamx4=dict(frozen_hz=0.2900, fix_hz=0.2933,
+                                                             rel_diff_pct=1.14),
+                                                  note="M10 P5 的静默/亚阈工作点上差异 ≈0–1.2%；"
+                                                       "驱动/较活跃区可达 8.75%"),
+                        state_readback_impact="冻结路径上 `t_ahp` 实际是**不应期计数**、`t_cool` 才是 "
+                                              "AHP 样分流 ⇒ 在该路径上把 `t_ahp` 读作'AHP 电导'的读回断言"
+                                              "**读错了量**"),
+                    disposal="M11 默认 `REF_FIX`（文档语义）；`REF_FROZEN` 保留作逐位等价与量级量化；"
+                             "`REF_FIX` 与 M10 gaba 路径**逐位一致（3233=3233）** ⇒ 修正方向已被独立实现交叉验证",
+                    registry="已登记 docs/m11_b2_notes.md B2-L4/B2-L11/B2-L14；建议进 M10 勘误节（DQ-B2-1）",
+                    affects_gate_verdict=False),
+                ],
                 criteria_adjustments=[
                     dict(criterion="e_segment_composability", kind="无变更（引擎修复）",
                          detail="阈值/口径/比较对象**均未改**：仍为 `tot==base` ∧ `np.array_equal(cnt, base)`"

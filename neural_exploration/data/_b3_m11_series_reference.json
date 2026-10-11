@@ -984,11 +984,11 @@
     "TAU_MIN_FRAMES": 300,
     "MIN_FRAMES_BIC": 500
   },
-  "wallclock_s": 949.1429250240326,
-  "cpu_s": 23.769513,
+  "wallclock_s": 22.53109097480774,
+  "cpu_s": 22.547846,
   "determinism": "gzip 确定性 + HMM seed=0 + 无随机采样 ⇒ 可复跑逐位一致",
   "artifacts_sha256_file_bytes": {
-    "_b3_m11_series_reference.json": "340af5def3213220f04c0438ed4759dc1f852aeb9c25f18a58165f8552f65cd5",
     "_b3_m11_series_reference.csv": "bb485950cc58265f3935b1dbc80bc346fa1d5cc21471650a7ec0b57ef85ce71a"
-  }
+  },
+  "self_hash_note": "JSON 自身哈希不写在 JSON 内（自指）；以 stdout/日志与本项目 hash_report.py （基准 file_bytes）的实测值为准"
 }
