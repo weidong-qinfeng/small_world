@@ -1,0 +1,43 @@
+# M10 数据源可达性实测（2026-10-11，本机曲线；method: curl -m 12..60 / python urllib）
+source,url,category,http_code,measured_detail,status
+fish1-release.storage.googleapis.com,https://fish1-release.storage.googleapis.com/index.html,connectome,200,"200, 6.6 KB, 公开匿名可读；bucket 可 list（189 objects / 3.54 GB）",OK
+fish1-release GCS,https://storage.googleapis.com/fish1-release/paper_data/TEN_analysis.zip,connectome,200,3.49 MB / 1.7 s ≈ 2.1 MB/s,OK
+fish1-release GCS(vast),https://storage.googleapis.com/fish1-release/paper_data/vast/OC_left.vsseg,connectome,200,range GET 20 MB / 5.0 s ≈ 3.97 MB/s,OK
+CAVE materialize (Fish1),https://global.brain-wire-test.org/materialize/api/v2/datastack/fish1_full/version,connectome,404,nginx 404（多路径变体均 404）,BLOCKED_API
+CAVE info (Fish1),https://global.brain-wire-test.org/info/api/v2/datastacks,connectome,302,302 → /sticky_auth 登录（交互式 token；无头不可得）,BLOCKED_AUTH
+CAVE local (skeleton),https://pcgv3local.brain-wire-test.org/,connectome,404,nginx 404,BLOCKED_API
+zapbench-release GCS,https://storage.googleapis.com/zapbench-release/volumes/20240930/traces/zarr.json,imaging,200,"275 B, 0.47 s；zarr3 shape (7879, 71721) chunk (512,512)",OK
+zapbench traces chunks,https://storage.googleapis.com/zapbench-release/volumes/20240930/traces/c/{t}/{f},imaging,206,256 chunk × 1 MB 用时 94.7 s（6 线程）≈ 2.8 MB/s；NaN=0,OK
+zenodo.org API,https://zenodo.org/api/records/1009488,imaging,200,首测 SSL self-signed（DNS 解析 182.16.62.14）后恢复 200 → 间歇性 DNS/证书问题,OK_INTERMITTENT
+zenodo.org file,https://zenodo.org/api/records/19066472/files/WBSC.zip/content,imaging,206,**单流 56 KB/s**；4 并发无改善（≈11 KB/s 聚合）；35.6 MB 文件 1 h 未完成,OK_VERY_SLOW
+arXiv (export),https://export.arxiv.org/pdf/2503.02618,literature,200,13.2 MB / 数秒（ZAPBench 论文全文，含采集参数）,OK
+Europe PMC REST,https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12259123/fullTextXML,literature,200,162 KB（Fish1 论文全文，含 Data availability）,OK
+biorxiv.org,https://www.biorxiv.org/content/10.1101/2025.06.12.659365v1,literature,429,首测 TCP 超时（ERR 28），复测 429（限流而非封锁）,PARTIAL
+science.org,https://www.science.org,literature,403,403（M9 同现象）,BLOCKED
+cell.com,https://www.cell.com,literature,0,TCP 超时（云 WAF）,BLOCKED
+journals.biologists.com,https://journals.biologists.com,literature,403,403,BLOCKED
+research.google,https://research.google/pubs/,literature,0,TCP 超时,BLOCKED
+nature.com,https://www.nature.com/articles/s41592-022-01621-0,literature,200,OK,OK
+elifesciences.org,https://elifesciences.org/articles/57443,literature,200,OK,OK
+github.com / api / codeload,https://api.github.com/repos/VCG/cave-scripts,code,200,api 200；codeload tarball 5.8 MB OK；README.md OK,OK
+raw.githubusercontent.com,https://raw.githubusercontent.com/VCG/cave-scripts/master/README.md,code,0,连接被重置（Recv failure）→ 走 api.github.com contents(base64) 替代,BLOCKED
+huggingface.co,https://huggingface.co,code,0,连接失败（直连不可达）,BLOCKED
+neuprint.janelia.org,https://neuprint.janelia.org,crosscheck,200,200（未取凭据）,OK
+janelia.org,https://www.janelia.org,crosscheck,0,SSL self-signed（curl 60）,PARTIAL
+fishatlas.neuro.mpg.de,https://fishatlas.neuro.mpg.de/,atlas,0,SSL 证书链不可验证（curl 60）,PARTIAL
+zebrafishatlas.zib.de,https://zebrafishatlas.zib.de/,atlas,200,200,OK
+mapzebrain.org,https://mapzebrain.org/home,atlas,200,200,OK
+fishexplorer.zib.de,https://fishexplorer.zib.de,atlas,200,200,OK
+zebrafishem.org,https://zebrafishem.org,atlas,0,DNS 无 A 记录（域名不可解析）,BLOCKED_DNS
+engertlab Z-Brain,https://engertlab.fas.harvard.edu/Z-Brain/,atlas,0,TCP 超时,BLOCKED
+Z-Brain 镜像(Zenodo),https://zenodo.org/api/records/7130703,atlas,200,Reference brains for registration to ZBB（19 nii.gz，4.5 GB）——Z-Brain 配准图谱经 Zenodo 可得,OK_VERY_SLOW
+www.nichd.nih.gov,https://www.nichd.nih.gov/,atlas,200,200（Brain Browser 介绍页）,OK
+figshare,https://api.figshare.com/v2/articles,imaging,403,403,BLOCKED
+gin.g-node.org,https://gin.g-node.org,imaging,403,403,BLOCKED
+openneuro.org,https://openneuro.org,imaging,200,200,OK
+osf.io,https://osf.io,imaging,200,200,OK
+datadryad.org,https://datadryad.org,imaging,200,200,OK
+data.mendeley.com,https://data.mendeley.com,imaging,200,200,OK
+idr.openmicroscopy.org,https://idr.openmicroscopy.org,imaging,200,200,OK
+zebrahub.org,https://www.zebrahub.org,imaging,0,301 → squarespace（无数据）,BLOCKED
+cloud.google.com / google.com,https://www.google.com,net,0,TCP 超时（普通 web 受限）,BLOCKED

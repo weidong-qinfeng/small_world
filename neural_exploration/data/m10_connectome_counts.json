@@ -1,0 +1,111 @@
+{
+ "generated_by": "tools/build_m10_connectome.py",
+ "completeness_level": "partial",
+ "completeness_reason": "全脑逐突触表（CAVE synapses_axde_label，~30M 行）需交互式 CAVE token（无头不可得）；可得者为官方公开包内的 (a) lores↔agglo roster (b) CAVE somas 导出 30,346 行 (c) TEN/DMV 电路逐神经元 partner 列表 + 逐突触尺寸表 ⇒ 按 §1.1.3 判 partial",
+ "authority": {
+  "n_soma": ">180,000 (发布原文)",
+  "n_synapses": "~30 million (发布原文)",
+  "n_molecularly_annotated": ">40,000 (发布原文)",
+  "age": "7 dpf",
+  "scope": "brain + anterior spinal cord",
+  "source": "Petkova et al. 2025 bioRxiv 2025.06.10.658982 (PMC12259123); fish1-release GCS 官方发布页"
+ },
+ "band": {
+  "roster_min": 180000,
+  "roster_tol": 0.05,
+  "synapse_anchor_tol": 0.1,
+  "min_edge_pairs": 5000
+ },
+ "parse": {
+  "n_roster": 180782,
+  "n_roster_unique_lore": 187052,
+  "n_soma_table": 30346,
+  "soma_table_in_roster": 30346,
+  "cell_type_counts": {
+   "exc": 2763,
+   "inh": 2384,
+   "na": 25199
+  },
+  "n_chem_pairs_released": 14008,
+  "n_chem_pairs_in_roster": 13813,
+  "n_chem_synapses_in_roster": 23987,
+  "n_chem_pairs_released_all": 14008,
+  "n_chem_synapses_released_all": 24302,
+  "n_synapse_size_rows": 83323,
+  "n_synapse_rows_raw": 83426,
+  "n_missing_partner_ids": 103,
+  "n_synapse_size_pairs": 69029,
+  "self_chem_pairs": 0,
+  "gap_rows": 0,
+  "edge_nodes": 7989,
+  "typed_edge_nodes": 2801,
+  "typed_edge_node_coverage_pct": 35.06,
+  "n_edges_pre_type_known": 3874,
+  "n_edges_inhibitory_pre": 263,
+  "n_roster_rows": 187052,
+  "cell_type_coverage_of_roster_pct": 2.847
+ },
+ "cross_checks": {
+  "ten_vs_synapse_sizes": {
+   "ten_pairs": 14008,
+   "size_pairs": 69029,
+   "size_synapses": 83323,
+   "note": "TEN partner 列表（*_with_soma 列，仅含有 soma 的伙伴）vs synapse_sizes.csv（逐突触尺寸表，不要求伙伴有 soma）→ 两套口径分别记录（M5 L7）"
+  },
+  "thirdparty_derived": {
+   "file": "/Users/weidong/ai/small_world/neural_exploration/data/m10_raw/fish1_release/thirdparty_fish1released_connectivity.json",
+   "n_edges": 13813,
+   "n_analysed_lore": 1088,
+   "note": "第三方派生产物（jamieswrld/zebrafishconnectome，README 声明由公开包派生）；仅作独立交叉核对，不作为权威来源"
+  }
+ },
+ "diagnostics": [
+  {
+   "name": "全脑突触计数锚（~30M）",
+   "in_band": false,
+   "detail": "CAVE token 门控 → 全脑突触表不可得，锚**未验证**（不是“未命中”，是“未测”）；请求三态裁决（见 adjudication_requests）"
+  },
+  {
+   "name": "缝隙连接",
+   "in_band": false,
+   "detail": "官方公开包与 CAVE 表清单均无缝隙连接表（CAVE 表名为 synapses_axde/axax 等，无 gap junction 表）→ gap 行 0 + 测量限制（M9 R8 语义沿用）"
+  },
+  {
+   "name": "区域分配",
+   "in_band": false,
+   "detail": "官方未发布逐神经元区域分配（第三方文档亦确认 not exported）；由坐标推区域 = 臆造 → 不生成 region 列（M8 B1a 纪律）"
+  },
+  {
+   "name": "递质/调质类型",
+   "in_band": false,
+   "detail": "Fish1 仅发布 vglut2a+(exc)/gad1b+(inh) 遗传标注二元身份，无 GABA_A/B 亚型、无 DA/5HT 逐神经元标注 → M10 P6 的 M-3 级（GABA 亚型）**只能走类级文献先验 + 测量限制登记**（M10 §1.1.2 允许：覆盖率如实记录，不臆造受体作用域）"
+  },
+  {
+   "name": "cell_type 覆盖率",
+   "in_band": true,
+   "detail": "roster 180782 中 typed(exc+inh) 5147 （2.85%）；边节点覆盖 2801/7989 (35.1%)——如实记录，可 <100%"
+  }
+ ],
+ "adjudication_requests": [
+  {
+   "id": "RF-1",
+   "question": "是否提供 CAVE token（浏览器交互）以取得全脑逐突触表（synapses_axde_label，~30M 行）？",
+   "impact": "取得 → P1 完整度可升自 partial 至 full（全脑逐突触 + 逐突触 tag 兴奋/抑制）",
+   "fallback": "不提供 → P1 判 partial：判据带按子图重新定稿（§1.1.3），报告标结构证据级别=partial"
+  },
+  {
+   "id": "RF-2",
+   "question": "P6 的 GABA 亚型异质（M-3）在无亚型标注下是否接受「类级文献先验 + 测量限制登记」实现？",
+   "impact": "接受 → M-3 可按 τ_A∈[5,20]ms / τ_B∈[80,400]ms 类级扫描；不接受 → M-3 不可启动，机制阶梯缺一级",
+   "fallback": "按 §1.5「递质/调质标注缺」行：类级文献先验注入 + 标注测量限制（不臆造逐突触）"
+  }
+ ],
+ "outputs": {
+  "csv": "/Users/weidong/ai/small_world/neural_exploration/data/m10_zf_connectome.csv",
+  "csv_sha256": "726685e3fafbc2184605286d4dfa2db11d14102519f7429d245c094b6a074e37",
+  "npz": "/Users/weidong/ai/small_world/neural_exploration/data/m10_zf_network.npz",
+  "npz_sha256": "44d0b8098e04d9c7e1f6f168d284317e58a8ddd1ae80df26bf9e16db482fb95e",
+  "npz_bytes": 564558
+ },
+ "elapsed_s": 0.57
+}
