@@ -868,5 +868,42 @@
    "invalid",
    "unavailable"
   ]
+ },
+ "RF17_finalization": {
+  "E_M9_1_exact_numbers": {
+   "B_patched_hz": 3.5225377903845465,
+   "silent_frac": 0.7622,
+   "n_spikes": 490531,
+   "bug_trigger": {
+    "frac_steps_ge2_spikes": 1.0,
+    "mean_spikes_per_step": 24.53,
+    "p99": 38
+   },
+   "cross_impl_agreement_pct": 1.7,
+   "group_rate_change_pct": -24.7,
+   "wording": "删除“影响有限”的定性淡化，改为确切数字（群率 −24.7%、静默 0.585→0.762、两实现一致 1.7%）"
+  },
+  "four_state_relabel": {
+   "M-4_D1_T15s": "invalid（自持比 0.2431 ❌ 门 1 失败 + λ×4=8.65 Hz 远离校准工作点）",
+   "M-5_D1_T15s": "invalid（自持比 0.1423 ❌）"
+  },
+  "P6_verdict_text": "见判决表头部（照抄定稿）",
+  "dose_response_6pt": {
+   "status": "已完成（T=2 s 修正档，全 6 臂）",
+   "arms": {
+    "0x": 0.0265,
+    "0.5x": 0.123,
+    "1x": 0.2715,
+    "2x": 0.697,
+    "4x": 1.8275,
+    "8x": 4.554
+   },
+   "selfsustain": 0.0976,
+   "elasticity_4x": 5.7311,
+   "T15s_rerun": "partial（4/6 臂：0x 0.0000 / 0.5x 0.0900 / 1x 0.2417 / 2x 0.6003；λ×16 臂墙钟 799 s）",
+   "wall_note": "**并发期间墙钟 30× 膨胀**（ms/step 仍 0.087 ⇒ 300k 步应 26 s，实测 799 s）⇒ 再次确认“并发墙钟不得用于预算判定”"
+  },
+  "device_note": "validate_p10_resting / mechanism_ladder 的 --device 默认 **cpu**（非 MPS）⇒ 本节点启动的是 CPU 作业（OMP=1），如实说明",
+  "M7_status": "暂缓；如需开跑须提交一页可证伪假设与 M-6 失败模式的差异说明，由主agent 裁决"
  }
 }

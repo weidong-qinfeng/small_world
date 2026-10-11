@@ -1,0 +1,523 @@
+{
+ "meta": {
+  "generated_by": "tools/build_m10_imaging_dwell_reference.py",
+  "raw": "data/m10_raw/zapbench_traces_8192.f32.npy",
+  "shape": [
+   7879,
+   8192
+  ],
+  "frame_rate_hz": 1.0943055555555556,
+  "dt_s": 0.9138215509582434,
+  "nan": 0,
+  "event_rate_median_hz": 0.007916666666666667,
+  "pop_count_mean": 64.29216905698692,
+  "pop_count_fano": 98.17740007428729,
+  "seed": 0,
+  "restarts": 5,
+  "condition_names": [
+   "gain",
+   "dots",
+   "flash",
+   "taxis",
+   "turning",
+   "position",
+   "open loop",
+   "rotation",
+   "dark"
+  ],
+  "condition_offsets": [
+   0,
+   649,
+   2422,
+   3078,
+   3735,
+   5047,
+   5638,
+   6623,
+   7279,
+   7879
+  ],
+  "n_neurons_in_file": 8192,
+  "n_neurons_full_dataset": 71721,
+  "subset_is_contiguous_column_block": true,
+  "subset_note": "fetch_m10_imaging.py 按 chunk 顺序取 c0=0 起的前 8192 列 ⇒ 本子集是原数组**前 8192 列（连续列块，非全脑随机抽样）**，占 71721 神经元的 11.4%；这使「全脑 71721 神经元口径的 dwell」不可得（F 项只覆盖子集内部的再抽样）",
+  "provenance": "data/m10_raw/zapbench_provenance.json（单次记录 prefix=volumes/20240930/traces → 无按鱼/按重复分组信息）",
+  "reference_values": {
+   "dwell_median_s": 26.500824977789062,
+   "transition_rate_hz": 0.019583333333333335,
+   "occupancy_low": 0.6719126792740195,
+   "occupancy_high": 0.32808732072598046
+  },
+  "stages": [
+   "G"
+  ],
+  "note": "Q 法 = 该序列 50% 分位二值化（validate_p10_slow_variable._hmm_states 同口径）；H 法 = 高斯 HMM（build_m10_imaging_reference.gaussian_hmm_2state，seed=0, n_iter=60）",
+  "elapsed_s": 4.3,
+  "not_run": {
+   "per_fish_or_repeat_groups": "not_available：provenance 只有单次记录前缀 volumes/20240930/traces，无按鱼/按重复标签（已用条件分段 + 段内前后半替代）",
+   "interleaved_null_segments": "not_applicable：ZAPBench 9 条件为连续时间块（偏移单调递增），无条件交错段 → 无法用交错段做漂移对照",
+   "full_71721_neurons": "not_run：本机只落盘子集 8192 列（原始 71721 列未下载，zenodo 吞吐限制见 provenance）"
+  },
+  "command": "PYTHONHASHSEED=0 OMP_NUM_THREADS=1 MPLBACKEND=Agg ./.venv-m10/bin/python -m neural_exploration.tools.build_m10_imaging_dwell_reference --stages G --merge",
+  "timestamp": "2026-10-11T17:05:07",
+  "scope": "stage G only"
+ },
+ "G": {
+  "self_check": {
+   "same_input_series_bitwise_identical": true,
+   "sha256_ser_ref": "f3ef1afbb9ee140609811fd199193e5538b13784b9085d9cf9206bcc1b6a6c5d",
+   "sha256_raw_ref": "069316d94f21ba8ca24d62f25e6fa61a2df5b378686ef4ba93e34eb6d6ff8372",
+   "quad": {
+    "n": 7879,
+    "mean": 1.7314913728384215e-16,
+    "std": 0.9999999999999856,
+    "sum_abs": 5078.283469981612
+   },
+   "series_def": "pop = 3·MAD 事件率群体计数（8192 神经元）；raw = 5 帧(numpy convolve mode='same'，零填充)滑动平均；ser = zscore(raw) —— 与 A/E 项的 Q/H 输入完全同一数组",
+   "tau_path_raw": {
+    "phi": 0.9757213292919886,
+    "tau_s": 37.18008016781617,
+    "phi_bias_corrected": 0.9762197636095259,
+    "tau_s_bias_corrected": 37.96903050880165
+   },
+   "tau_path_zscore": {
+    "phi": 0.975721329291989,
+    "tau_s": 37.18008016781669,
+    "phi_bias_corrected": 0.9762197636095262,
+    "tau_s_bias_corrected": 37.969030508802184
+   },
+   "tau_relative_diff": 1.3950916586615104e-14,
+   "consistent": true,
+   "note": "AR(1) 对线性重标度不变 ⇒ 原始/ z 分数两路径的 φ 与 τ 必须相同；不一致即为估计器口径事故（对照主 agent 发现的 pop_rate_hz vs pop_trace_mean_hz 13–15% 事故）"
+  },
+  "tau_window_check": {
+   "full_record": {
+    "n": 7879,
+    "phi": 0.975721329291989,
+    "tau_s": 37.18008016781669
+   },
+   "first80pct": {
+    "n": 6303,
+    "phi": 0.9786444109709881,
+    "tau_s": 42.33218972215647
+   },
+   "note": "C 项 AR(1)（42.33 s）是**前 80% 段**拟合值（为与 HMM 同一切分）；全记录拟合给出另一个值。**τ 基准取全记录值**，并把该窗口依赖作为一项口径不确定度登记"
+  },
+  "residual_whiteness": {
+   "ar1_smoothed": {
+    "n": 7878,
+    "lag10": {
+     "Q": 3332.209733296022,
+     "df": 10,
+     "p": 0.0,
+     "acf1": 0.38705261880670333,
+     "reject_5pct": true
+    },
+    "lag20": {
+     "Q": 3450.8803917577843,
+     "df": 20,
+     "p": 0.0,
+     "acf1": 0.38705261880670333,
+     "reject_5pct": true
+    },
+    "lag40": {
+     "Q": 3683.5485056165276,
+     "df": 40,
+     "p": 0.0,
+     "acf1": 0.38705261880670333,
+     "reject_5pct": true
+    }
+   },
+   "ar1_unsmoothed": {
+    "n": 7878,
+    "lag10": {
+     "Q": 997.6705401283727,
+     "df": 10,
+     "p": 5.938840219292633e-208,
+     "acf1": -0.20669900611101574,
+     "reject_5pct": true
+    },
+    "lag20": {
+     "Q": 1490.819810634958,
+     "df": 20,
+     "p": 3.712385928918852e-304,
+     "acf1": -0.20669900611101574,
+     "reject_5pct": true
+    },
+    "lag40": {
+     "Q": 1903.583994150546,
+     "df": 40,
+     "p": 0.0,
+     "acf1": -0.20669900611101574,
+     "reject_5pct": true
+    }
+   },
+   "ar4_smoothed": {
+    "n": 7875,
+    "lag10": {
+     "Q": 1978.090585159448,
+     "df": 10,
+     "p": 0.0,
+     "acf1": 0.0018844586944867115,
+     "reject_5pct": true
+    },
+    "lag20": {
+     "Q": 2198.435422271857,
+     "df": 20,
+     "p": 0.0,
+     "acf1": 0.0018844586944867115,
+     "reject_5pct": true
+    },
+    "lag40": {
+     "Q": 2418.176347658951,
+     "df": 40,
+     "p": 0.0,
+     "acf1": 0.0018844586944867115,
+     "reject_5pct": true
+    }
+   },
+   "ar1_lag1_resid_autocorr_smoothed": 0.38705261880670333,
+   "ar1_lag1_resid_autocorr_unsmoothed": -0.20669900611101574,
+   "note": "残差非白噪 ⇒ 「单一慢时间尺度」不足；5 帧箱car 平滑本身会引入 MA(4) 结构（故并列未平滑口径）"
+  },
+  "tau_full_record_s": 37.18008016781669,
+  "tau_full_record_bias_corrected_s": 37.969030508802184,
+  "conditions": [
+   {
+    "name": "gain",
+    "n_frames": 649,
+    "duration_s": 593.0701865719,
+    "phi": 0.9782998899026132,
+    "tau_s": 41.652797095394334,
+    "tau_s_bias_corrected": 57.98124809891833,
+    "test_loglik_per_frame": 0.7057188589962955,
+    "n_test": 130,
+    "tau_equal_len_591": 41.39339275073594,
+    "tau_half_first": 39.433235452630804,
+    "tau_half_second": 26.584036753192084
+   },
+   {
+    "name": "dots",
+    "n_frames": 1773,
+    "duration_s": 1620.2056098489654,
+    "phi": 0.9450271320264592,
+    "tau_s": 16.16192134950268,
+    "tau_s_bias_corrected": 16.842965351097565,
+    "test_loglik_per_frame": -0.1860589343777457,
+    "n_test": 355,
+    "tau_equal_len_591": 14.930418676974279,
+    "tau_half_first": 15.185074533387075,
+    "tau_half_second": 17.05399564572129
+   },
+   {
+    "name": "flash",
+    "n_frames": 656,
+    "duration_s": 599.4669374286076,
+    "phi": 0.9643747377690133,
+    "tau_s": 25.19126929546628,
+    "tau_s_bias_corrected": 30.31891518485694,
+    "test_loglik_per_frame": 0.2758639586100289,
+    "n_test": 132,
+    "tau_equal_len_591": 24.847775958324004,
+    "tau_half_first": 22.694659648734376,
+    "tau_half_second": 11.897175081194131
+   },
+   {
+    "name": "taxis",
+    "n_frames": 657,
+    "duration_s": 600.3807589795659,
+    "phi": 0.9304811782389822,
+    "tau_s": 12.682554353175977,
+    "tau_s_bias_corrected": 13.872983515375408,
+    "test_loglik_per_frame": -7.417590015629859,
+    "n_test": 132,
+    "tau_equal_len_591": 12.083059408584113,
+    "tau_half_first": 12.946214140539611,
+    "tau_half_second": 12.596548101774555
+   },
+   {
+    "name": "turning",
+    "n_frames": 1312,
+    "duration_s": 1198.9338748572152,
+    "phi": 0.9740498490199282,
+    "tau_s": 34.75558543435392,
+    "tau_s_bias_corrected": 39.34068376312546,
+    "test_loglik_per_frame": 0.08929581289479566,
+    "n_test": 263,
+    "tau_equal_len_591": 35.472754101023064,
+    "tau_half_first": 37.060332223295234,
+    "tau_half_second": 28.267873922783615
+   },
+   {
+    "name": "position",
+    "n_frames": 591,
+    "duration_s": 540.0685366163218,
+    "phi": 0.9371367023056142,
+    "tau_s": 14.074792063151277,
+    "tau_s_bias_corrected": 15.73709571002454,
+    "test_loglik_per_frame": -0.25645281761245003,
+    "n_test": 119,
+    "tau_equal_len_591": 14.074792063151277,
+    "tau_half_first": 18.88848742203005,
+    "tau_half_second": 10.546894752492209
+   },
+   {
+    "name": "open loop",
+    "n_frames": 985,
+    "duration_s": 900.1142276938697,
+    "phi": 0.9818577404573137,
+    "tau_s": 49.9114710720921,
+    "tau_s_bias_corrected": 64.18424270206891,
+    "test_loglik_per_frame": 0.22244637972130174,
+    "n_test": 197,
+    "tau_equal_len_591": 60.125935065790294,
+    "tau_half_first": 60.53260305172656,
+    "tau_half_second": 13.019873401625805
+   },
+   {
+    "name": "rotation",
+    "n_frames": 656,
+    "duration_s": 599.4669374286076,
+    "phi": 0.9634232006041742,
+    "tau_s": 24.523890658435796,
+    "tau_s_bias_corrected": 29.358846380622104,
+    "test_loglik_per_frame": 0.21445699584809202,
+    "n_test": 132,
+    "tau_equal_len_591": 24.9235977064295,
+    "tau_half_first": 23.063726638757096,
+    "tau_half_second": 24.148386476868478
+   },
+   {
+    "name": "dark",
+    "n_frames": 600,
+    "duration_s": 548.292930574946,
+    "phi": 0.9468524777806491,
+    "tau_s": 16.73298809231743,
+    "tau_s_bias_corrected": 19.087853242444464,
+    "test_loglik_per_frame": 0.3826093430531056,
+    "n_test": 120,
+    "tau_equal_len_591": 16.677207767866914,
+    "tau_half_first": 16.0046441086865,
+    "tau_half_second": 6.215039095059795
+   }
+  ],
+  "dispersion": {
+   "tau_cross_condition": {
+    "n": 9,
+    "median": 24.523890658435796,
+    "q1": 16.16192134950268,
+    "q3": 34.75558543435392,
+    "iqr": 18.593664084851238,
+    "iqr_over_median": 0.7581857358532683,
+    "min": 12.682554353175977,
+    "max": 49.9114710720921,
+    "max_over_min": 3.9354431041403912
+   },
+   "tau_cross_condition_bias_corrected": {
+    "n": 9,
+    "median": 29.358846380622104,
+    "q1": 16.842965351097565,
+    "q3": 39.34068376312546,
+    "iqr": 22.497718412027897,
+    "iqr_over_median": 0.7663011727489811,
+    "min": 13.872983515375408,
+    "max": 64.18424270206891,
+    "max_over_min": 4.626563754720361
+   },
+   "tau_cross_condition_equal_len": {
+    "n": 9,
+    "median": 24.847775958324004,
+    "q1": 14.930418676974279,
+    "q3": 35.472754101023064,
+    "iqr": 20.542335424048787,
+    "iqr_over_median": 0.8267273279710615,
+    "min": 12.083059408584113,
+    "max": 60.125935065790294,
+    "max_over_min": 4.976052259006134
+   },
+   "tau_half_split": {
+    "n": 18,
+    "median": 17.97124153387567,
+    "q1": 12.96462895581116,
+    "q3": 25.97512418411118,
+    "iqr": 13.010495228300021,
+    "iqr_over_median": 0.7239619590986702,
+    "min": 6.215039095059795,
+    "max": 60.53260305172656,
+    "max_over_min": 9.739697872510998
+   },
+   "phi_cross_condition": {
+    "n": 9,
+    "median": 0.9634232006041742,
+    "q1": 0.9450271320264592,
+    "q3": 0.9740498490199282,
+    "iqr": 0.029022716993469033,
+    "iqr_over_median": 0.030124577626186023,
+    "min": 0.9304811782389822,
+    "max": 0.9818577404573137,
+    "max_over_min": 1.0552150472463786
+   }
+  },
+  "subsample": [
+   {
+    "n_neurons": 8192,
+    "seed": 0,
+    "phi": 0.975721329291989,
+    "tau_s": 37.18008016781669,
+    "tau_s_bias_corrected": 37.969030508802184
+   },
+   {
+    "n_neurons": 4096,
+    "seed": 0,
+    "phi": 0.9752474774987624,
+    "tau_s": 36.459500754382226,
+    "tau_s_bias_corrected": 37.21795034776064
+   },
+   {
+    "n_neurons": 4096,
+    "seed": 1,
+    "phi": 0.9755106795152562,
+    "tau_s": 36.856305538917425,
+    "tau_s_bias_corrected": 37.631475177740064
+   },
+   {
+    "n_neurons": 4096,
+    "seed": 2,
+    "phi": 0.9755559907718204,
+    "tau_s": 36.92547916390402,
+    "tau_s_bias_corrected": 37.70358260164535
+   },
+   {
+    "n_neurons": 2048,
+    "seed": 0,
+    "phi": 0.9747870021360223,
+    "tau_s": 35.78521030655073,
+    "tau_s_bias_corrected": 36.51567409547765
+   },
+   {
+    "n_neurons": 2048,
+    "seed": 1,
+    "phi": 0.9734819936366504,
+    "tau_s": 34.001459358474406,
+    "tau_s_bias_corrected": 34.660475668111445
+   },
+   {
+    "n_neurons": 2048,
+    "seed": 2,
+    "phi": 0.9737307790273023,
+    "tau_s": 34.32783977952515,
+    "tau_s_bias_corrected": 34.99964898933805
+   },
+   {
+    "n_neurons": 1024,
+    "seed": 0,
+    "phi": 0.9728727927378396,
+    "tau_s": 33.227527498178176,
+    "tau_s_bias_corrected": 33.856709371548035
+   },
+   {
+    "n_neurons": 1024,
+    "seed": 1,
+    "phi": 0.9719903579333089,
+    "tau_s": 32.16617497472332,
+    "tau_s_bias_corrected": 32.755586758025075
+   },
+   {
+    "n_neurons": 1024,
+    "seed": 2,
+    "phi": 0.9728922253595048,
+    "tau_s": 33.25167772381531,
+    "tau_s_bias_corrected": 33.88177992578903
+   }
+  ],
+  "subsample_summary": {
+   "8192": {
+    "mean": 37.18008016781669,
+    "sd": 0.0,
+    "n": 1,
+    "min": 37.18008016781669,
+    "max": 37.18008016781669
+   },
+   "4096": {
+    "mean": 36.74709515240122,
+    "sd": 0.2514540731970335,
+    "n": 3,
+    "min": 36.459500754382226,
+    "max": 36.92547916390402
+   },
+   "2048": {
+    "mean": 34.70483648151676,
+    "sd": 0.9497561509014886,
+    "n": 3,
+    "min": 34.001459358474406,
+    "max": 35.78521030655073
+   },
+   "1024": {
+    "mean": 32.88179339890561,
+    "sd": 0.6198613595969927,
+    "n": 3,
+    "min": 32.16617497472332,
+    "max": 33.25167772381531
+   }
+  },
+  "subsample_drift": {
+   "8192": 1.0,
+   "4096": 0.9883543818770391,
+   "2048": 0.9334255419803392,
+   "1024": 0.8843927514542664
+  },
+  "criterion_comparison": {
+   "model_side_window_s": [
+    8.0,
+    80.0
+   ],
+   "model_side_window_source": "tools/validate_p10_slow_variable.py: SAME_ORDER_WINDOW=(8.0,80.0)（该文件由其他节点在建，本工具只读观测）",
+   "tau_condition_coverage_in_window": 1.0,
+   "tau_half_split_coverage_in_window": 0.9444444444444444,
+   "dwell_dispersion_max_over_min": 6.904761904761904,
+   "dwell_dispersion_source": "既有 m10_imaging_dwell_reference.json 的 E 项（本次未重算，只读引用）",
+   "tau_dispersion_max_over_min": 3.9354431041403912,
+   "tau_vs_dwell_ratio": 0.5699607254272291,
+   "note": "容差宽度对比：τ 的跨条件极差 vs dwell 的跨条件极差（比值 <1 ⇒ τ 判据更锐利）"
+  },
+  "tolerance_recommendation": {
+   "recommended_multiplier": 3.9354431041403912,
+   "recommended_window_s": [
+    9.447495284254106,
+    146.3200901078211
+   ],
+   "basis": "τ 基准 = 全记录 AR(1) τ 37.180 s；容差倍数 = 9 条件 τ 的 max/min"
+  },
+  "model_window_pm3x_check": {
+   "criterion": "模型侧现行 C 条：|log10(model_x / imaging_x)| ≤ log10(3) ⇒ ±3× 比值窗",
+   "Q_dwell": {
+    "reference_s": 6.853661632186825,
+    "n": 9,
+    "ratio_min": 0.6,
+    "ratio_max": 2.4,
+    "coverage": 1.0,
+    "margin_min": 0.46497352071792725,
+    "saturated": false
+   },
+   "tau": {
+    "reference_s": 37.18008016781669,
+    "n": 9,
+    "ratio_min": 0.34111153865004507,
+    "ratio_max": 1.3424250525230383,
+    "coverage": 1.0,
+    "margin_min": 0.26804517124147054,
+    "saturated": false
+   },
+   "tau_half_split": {
+    "reference_s": 37.18008016781669,
+    "n": 18,
+    "ratio_min": 0.16716045438868019,
+    "ratio_max": 1.6280923219774002,
+    "coverage": 0.8333333333333334,
+    "margin_min": 0.4436587682763819,
+    "saturated": false
+   },
+   "note": "coverage=成像侧自身条件值落进 ±3× 窗的比例；margin=最不利条件下距窗边界的相对余量（→1 表示窗已被参照自身的离散度吃满）"
+  }
+ }
+}

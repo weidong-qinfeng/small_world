@@ -1,0 +1,94 @@
+# M10-B4 追加任务 G：ZAPBench 成像侧慢时间尺度 τ 参考（AR(1) 口径）—— 由 tools/build_m10_imaging_dwell_reference.py --stages G 生成
+key,value,unit,method,scope,source,note
+g_cond_gain_tau,41.652797095394334,s,AR(1),条件段 gain(649帧),本工具 G 项,φ=0.978300 n=649
+g_cond_gain_tau_bias_corrected,57.98124809891833,s,AR(1),条件段 gain(649帧),本工具 G 项,φ̂+(1+3φ̂)/n 一阶偏置修正（诊断列）
+g_cond_gain_ll_per_frame,0.7057188589962955,nats/frame,AR(1),条件段 gain 留出后20%,本工具 G 项,段内 80/20 切分
+g_cond_gain_tau_equal_len,41.39339275073594,s,AR(1),条件段 gain 前591帧,本工具 G 项,等长控制（最短段长）
+g_cond_dots_tau,16.16192134950268,s,AR(1),条件段 dots(1773帧),本工具 G 项,φ=0.945027 n=1773
+g_cond_dots_tau_bias_corrected,16.842965351097565,s,AR(1),条件段 dots(1773帧),本工具 G 项,φ̂+(1+3φ̂)/n 一阶偏置修正（诊断列）
+g_cond_dots_ll_per_frame,-0.1860589343777457,nats/frame,AR(1),条件段 dots 留出后20%,本工具 G 项,段内 80/20 切分
+g_cond_dots_tau_equal_len,14.930418676974279,s,AR(1),条件段 dots 前591帧,本工具 G 项,等长控制（最短段长）
+g_cond_flash_tau,25.19126929546628,s,AR(1),条件段 flash(656帧),本工具 G 项,φ=0.964375 n=656
+g_cond_flash_tau_bias_corrected,30.31891518485694,s,AR(1),条件段 flash(656帧),本工具 G 项,φ̂+(1+3φ̂)/n 一阶偏置修正（诊断列）
+g_cond_flash_ll_per_frame,0.2758639586100289,nats/frame,AR(1),条件段 flash 留出后20%,本工具 G 项,段内 80/20 切分
+g_cond_flash_tau_equal_len,24.847775958324004,s,AR(1),条件段 flash 前591帧,本工具 G 项,等长控制（最短段长）
+g_cond_taxis_tau,12.682554353175977,s,AR(1),条件段 taxis(657帧),本工具 G 项,φ=0.930481 n=657
+g_cond_taxis_tau_bias_corrected,13.872983515375408,s,AR(1),条件段 taxis(657帧),本工具 G 项,φ̂+(1+3φ̂)/n 一阶偏置修正（诊断列）
+g_cond_taxis_ll_per_frame,-7.417590015629859,nats/frame,AR(1),条件段 taxis 留出后20%,本工具 G 项,段内 80/20 切分
+g_cond_taxis_tau_equal_len,12.083059408584113,s,AR(1),条件段 taxis 前591帧,本工具 G 项,等长控制（最短段长）
+g_cond_turning_tau,34.75558543435392,s,AR(1),条件段 turning(1312帧),本工具 G 项,φ=0.974050 n=1312
+g_cond_turning_tau_bias_corrected,39.34068376312546,s,AR(1),条件段 turning(1312帧),本工具 G 项,φ̂+(1+3φ̂)/n 一阶偏置修正（诊断列）
+g_cond_turning_ll_per_frame,0.08929581289479566,nats/frame,AR(1),条件段 turning 留出后20%,本工具 G 项,段内 80/20 切分
+g_cond_turning_tau_equal_len,35.472754101023064,s,AR(1),条件段 turning 前591帧,本工具 G 项,等长控制（最短段长）
+g_cond_position_tau,14.074792063151277,s,AR(1),条件段 position(591帧),本工具 G 项,φ=0.937137 n=591
+g_cond_position_tau_bias_corrected,15.73709571002454,s,AR(1),条件段 position(591帧),本工具 G 项,φ̂+(1+3φ̂)/n 一阶偏置修正（诊断列）
+g_cond_position_ll_per_frame,-0.25645281761245003,nats/frame,AR(1),条件段 position 留出后20%,本工具 G 项,段内 80/20 切分
+g_cond_position_tau_equal_len,14.074792063151277,s,AR(1),条件段 position 前591帧,本工具 G 项,等长控制（最短段长）
+g_cond_open loop_tau,49.9114710720921,s,AR(1),条件段 open loop(985帧),本工具 G 项,φ=0.981858 n=985
+g_cond_open loop_tau_bias_corrected,64.18424270206891,s,AR(1),条件段 open loop(985帧),本工具 G 项,φ̂+(1+3φ̂)/n 一阶偏置修正（诊断列）
+g_cond_open loop_ll_per_frame,0.22244637972130174,nats/frame,AR(1),条件段 open loop 留出后20%,本工具 G 项,段内 80/20 切分
+g_cond_open loop_tau_equal_len,60.125935065790294,s,AR(1),条件段 open loop 前591帧,本工具 G 项,等长控制（最短段长）
+g_cond_rotation_tau,24.523890658435796,s,AR(1),条件段 rotation(656帧),本工具 G 项,φ=0.963423 n=656
+g_cond_rotation_tau_bias_corrected,29.358846380622104,s,AR(1),条件段 rotation(656帧),本工具 G 项,φ̂+(1+3φ̂)/n 一阶偏置修正（诊断列）
+g_cond_rotation_ll_per_frame,0.21445699584809202,nats/frame,AR(1),条件段 rotation 留出后20%,本工具 G 项,段内 80/20 切分
+g_cond_rotation_tau_equal_len,24.9235977064295,s,AR(1),条件段 rotation 前591帧,本工具 G 项,等长控制（最短段长）
+g_cond_dark_tau,16.73298809231743,s,AR(1),条件段 dark(600帧),本工具 G 项,φ=0.946852 n=600
+g_cond_dark_tau_bias_corrected,19.087853242444464,s,AR(1),条件段 dark(600帧),本工具 G 项,φ̂+(1+3φ̂)/n 一阶偏置修正（诊断列）
+g_cond_dark_ll_per_frame,0.3826093430531056,nats/frame,AR(1),条件段 dark 留出后20%,本工具 G 项,段内 80/20 切分
+g_cond_dark_tau_equal_len,16.677207767866914,s,AR(1),条件段 dark 前591帧,本工具 G 项,等长控制（最短段长）
+g_disp_tau_cross_condition_median,24.523890658435796,,tau_cross_condition,9 条件,本工具 G 项,跨条件中位
+g_disp_tau_cross_condition_iqr_rel,0.7581857358532683,x,tau_cross_condition,9 条件,本工具 G 项,
+g_disp_tau_cross_condition_max_over_min,3.9354431041403912,x,tau_cross_condition,9 条件,本工具 G 项,
+g_disp_tau_cross_condition_bias_corrected_median,29.358846380622104,,tau_cross_condition_bias_corrected,9 条件,本工具 G 项,跨条件中位
+g_disp_tau_cross_condition_bias_corrected_iqr_rel,0.7663011727489811,x,tau_cross_condition_bias_corrected,9 条件,本工具 G 项,
+g_disp_tau_cross_condition_bias_corrected_max_over_min,4.626563754720361,x,tau_cross_condition_bias_corrected,9 条件,本工具 G 项,
+g_disp_tau_cross_condition_equal_len_median,24.847775958324004,,tau_cross_condition_equal_len,9 条件,本工具 G 项,跨条件中位
+g_disp_tau_cross_condition_equal_len_iqr_rel,0.8267273279710615,x,tau_cross_condition_equal_len,9 条件,本工具 G 项,
+g_disp_tau_cross_condition_equal_len_max_over_min,4.976052259006134,x,tau_cross_condition_equal_len,9 条件,本工具 G 项,
+g_disp_tau_half_split_median,17.97124153387567,,tau_half_split,9 条件,本工具 G 项,跨条件中位
+g_disp_tau_half_split_iqr_rel,0.7239619590986702,x,tau_half_split,9 条件,本工具 G 项,
+g_disp_tau_half_split_max_over_min,9.739697872510998,x,tau_half_split,9 条件,本工具 G 项,
+g_disp_phi_cross_condition_median,0.9634232006041742,,phi_cross_condition,9 条件,本工具 G 项,跨条件中位
+g_disp_phi_cross_condition_iqr_rel,0.030124577626186023,x,phi_cross_condition,9 条件,本工具 G 项,
+g_disp_phi_cross_condition_max_over_min,1.0552150472463786,x,phi_cross_condition,9 条件,本工具 G 项,
+g_sub_N8192_0_tau,37.18008016781669,s,AR(1),N=8192 seed=0,本工具 G 项,φ=0.975721
+g_sub_N4096_0_tau,36.459500754382226,s,AR(1),N=4096 seed=0,本工具 G 项,φ=0.975247
+g_sub_N4096_1_tau,36.856305538917425,s,AR(1),N=4096 seed=1,本工具 G 项,φ=0.975511
+g_sub_N4096_2_tau,36.92547916390402,s,AR(1),N=4096 seed=2,本工具 G 项,φ=0.975556
+g_sub_N2048_0_tau,35.78521030655073,s,AR(1),N=2048 seed=0,本工具 G 项,φ=0.974787
+g_sub_N2048_1_tau,34.001459358474406,s,AR(1),N=2048 seed=1,本工具 G 项,φ=0.973482
+g_sub_N2048_2_tau,34.32783977952515,s,AR(1),N=2048 seed=2,本工具 G 项,φ=0.973731
+g_sub_N1024_0_tau,33.227527498178176,s,AR(1),N=1024 seed=0,本工具 G 项,φ=0.972873
+g_sub_N1024_1_tau,32.16617497472332,s,AR(1),N=1024 seed=1,本工具 G 项,φ=0.971990
+g_sub_N1024_2_tau,33.25167772381531,s,AR(1),N=1024 seed=2,本工具 G 项,φ=0.972892
+g_sub_N8192_tau_mean,37.18008016781669,s,AR(1),N=8192,本工具 G 项,sd=0.000 n=1
+g_sub_N8192_drift_vs_N8192,1.0,x,AR(1),N=8192/8192,本工具 G 项,子采样漂移倍数
+g_sub_N4096_tau_mean,36.74709515240122,s,AR(1),N=4096,本工具 G 项,sd=0.251 n=3
+g_sub_N4096_drift_vs_N8192,0.9883543818770391,x,AR(1),N=4096/8192,本工具 G 项,子采样漂移倍数
+g_sub_N2048_tau_mean,34.70483648151676,s,AR(1),N=2048,本工具 G 项,sd=0.950 n=3
+g_sub_N2048_drift_vs_N8192,0.9334255419803392,x,AR(1),N=2048/8192,本工具 G 项,子采样漂移倍数
+g_sub_N1024_tau_mean,32.88179339890561,s,AR(1),N=1024,本工具 G 项,sd=0.620 n=3
+g_sub_N1024_drift_vs_N8192,0.8843927514542664,x,AR(1),N=1024/8192,本工具 G 项,子采样漂移倍数
+g_pm3x_Q_dwell_coverage,1.0,frac,±3× 比值窗,成像侧 Q_dwell,本工具 G 项,"比值范围=[0.600,2.400]"
+g_pm3x_Q_dwell_ratio_min,0.6,x,±3× 比值窗,成像侧 Q_dwell,本工具 G 项,最小比值（1/3 = 窗下界）
+g_pm3x_Q_dwell_ratio_max,2.4,x,±3× 比值窗,成像侧 Q_dwell,本工具 G 项,最大比值（3 = 窗上界）
+g_pm3x_tau_coverage,1.0,frac,±3× 比值窗,成像侧 tau,本工具 G 项,"比值范围=[0.341,1.342]"
+g_pm3x_tau_ratio_min,0.34111153865004507,x,±3× 比值窗,成像侧 tau,本工具 G 项,最小比值（1/3 = 窗下界）
+g_pm3x_tau_ratio_max,1.3424250525230383,x,±3× 比值窗,成像侧 tau,本工具 G 项,最大比值（3 = 窗上界）
+g_pm3x_tau_half_split_coverage,0.8333333333333334,frac,±3× 比值窗,成像侧 tau_half_split,本工具 G 项,"比值范围=[0.167,1.628]"
+g_pm3x_tau_half_split_ratio_min,0.16716045438868019,x,±3× 比值窗,成像侧 tau_half_split,本工具 G 项,最小比值（1/3 = 窗下界）
+g_pm3x_tau_half_split_ratio_max,1.6280923219774002,x,±3× 比值窗,成像侧 tau_half_split,本工具 G 项,最大比值（3 = 窗上界）
+g_self_check_consistent,1.0,bool,AR(1),全记录,本工具 G 项,原始/z 两路径 τ 相对差=1.40e-14；输入序列逐位同一=True
+g_input_series_sha256,f3ef1afbb9ee140609811fd199193e5538b13784b9085d9cf9206bcc1b6a6c5d,hex,AR(1),全记录,本工具 G 项,与 Q/H 法同一输入序列（z 分数）
+g_lb_ar1_smoothed_lag10_p,0.0,p,AR(1) 残差白噪,AR(1) 平滑/lag10,本工具 G 项,Ljung-Box Q=3332.2 df=10（拒绝白噪）
+g_lb_ar1_smoothed_lag20_p,0.0,p,AR(1) 残差白噪,AR(1) 平滑/lag20,本工具 G 项,Ljung-Box Q=3450.9 df=20（拒绝白噪）
+g_lb_ar1_smoothed_lag40_p,0.0,p,AR(1) 残差白噪,AR(1) 平滑/lag40,本工具 G 项,Ljung-Box Q=3683.5 df=40（拒绝白噪）
+g_lb_ar1_unsmoothed_lag10_p,5.938840219292633e-208,p,AR(1) 残差白噪,AR(1) 未平滑/lag10,本工具 G 项,Ljung-Box Q=997.7 df=10（拒绝白噪）
+g_lb_ar1_unsmoothed_lag20_p,3.712385928918852e-304,p,AR(1) 残差白噪,AR(1) 未平滑/lag20,本工具 G 项,Ljung-Box Q=1490.8 df=20（拒绝白噪）
+g_lb_ar1_unsmoothed_lag40_p,0.0,p,AR(1) 残差白噪,AR(1) 未平滑/lag40,本工具 G 项,Ljung-Box Q=1903.6 df=40（拒绝白噪）
+g_lb_ar4_smoothed_lag10_p,0.0,p,AR(1) 残差白噪,AR(4) 平滑/lag10,本工具 G 项,Ljung-Box Q=1978.1 df=10（拒绝白噪）
+g_lb_ar4_smoothed_lag20_p,0.0,p,AR(1) 残差白噪,AR(4) 平滑/lag20,本工具 G 项,Ljung-Box Q=2198.4 df=20（拒绝白噪）
+g_lb_ar4_smoothed_lag40_p,0.0,p,AR(1) 残差白噪,AR(4) 平滑/lag40,本工具 G 项,Ljung-Box Q=2418.2 df=40（拒绝白噪）
+g_tau_full_record,37.18008016781669,s,AR(1),全记录(7879帧),本工具 G 项,与 C 项 AR(1) 同一估计值
+g_tau_recommended_tolerance_multiplier,3.9354431041403912,x,AR(1),全记录 + 9 条件,本工具 G 项,τ 判据容差倍数（跨条件 max/min）
+g_model_side_window_tau_coverage,1.0,frac,AR(1),"模型侧窗 [8,80] s × 9 条件",本工具 G 项（只读观测模型侧现窗）,τ 落窗比例（模型侧现判据的实测覆盖率）
