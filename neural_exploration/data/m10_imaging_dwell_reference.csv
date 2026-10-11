@@ -1382,3 +1382,48 @@ g_model_side_window_tau_coverage,1.0,frac,AR(1),"模型侧窗 [8,80] s × 9 条�
 rec_C_AR1_tau_s_note,口径更正：42.33218972215647 s 是**前 80% 段（CV 训练切分 n=6303）**拟合值，**已废弃、不作 τ 基准**；τ 基准 = **全记录** 37.18008016781669 s（见 G.tau_full_record_s），两者相对差 13.9%，登记为窗口口径不确定度（报告 §11.1③）,,AR(1),更正注释（前 80% 段 vs 全记录）,本节点 2026-10-11 口径更正（B4 文件所有者自查；只新增行，原行/原名一律保留）,value 为说明文字（非数值）；对应既有键 C_AR1_τ_s 的 42.33 s，其值保留不变
 rec_C_AR1_tau_full_record_s,37.18008016781669,s,AR(1),全记录(7879帧),本节点 2026-10-11 口径更正（B4 文件所有者自查；只新增行，原行/原名一律保留）,τ 基准；与 g_tau_full_record 同值（新增行，未改名）
 c_AR1_tau_first80pct_deprecated,42.33218972215647,s,AR(1),前 80% 段(6303帧),本节点 2026-10-11 口径更正（B4 文件所有者自查；只新增行，原行/原名一律保留）,**已废弃、不作基准**；原键 c_AR1* 未改名
+h_unsmoothed_rho1,0.7614271414879055,,AR(1),未平滑,本工具 H 项,
+h_unsmoothed_rho2,0.6948222490755929,,AR(1),未平滑,本工具 H 项,
+h_unsmoothed_phi_intrinsic,0.9125262434404953,,AR(1)+白噪声,未平滑,本工具 H 项,ρ2/ρ1：帧级噪声压低后的修正估计
+h_unsmoothed_tau_intrinsic_s,9.982927509069192,s,AR(1)+白噪声,未平滑,本工具 H 项,修正后的内在 τ（仍不加平滑）
+h_diff_sd_over_poisson,4.7582074194484445,x,计数统计,未平滑,本工具 H 项,观测一阶差分 sd / 独立 Poisson 期望
+h_smooth1_phi,0.7614793085496189,,AR(1),smooth_frames=1,本工具 H 项,z=104.3 p=0.00e+00
+h_smooth1_tau_s,3.353568601574696,s,AR(1),smooth_frames=1,本工具 H 项,= 平滑窗 4.57 s 的 0.7×
+h_smooth1_ll_per_frame,-1.4410224866520083,nats/frame,AR(1),smooth_frames=1,本工具 H 项,段内 80/20 留出
+h_smooth1_lb_lag10_Q,997.6705401283732,,AR(1) 残差白噪,smooth_frames=1,本工具 H 项,p=5.94e-208
+h_smooth5_phi,0.975721329291989,,AR(1),smooth_frames=5,本工具 H 项,z=395.4 p=0.00e+00
+h_smooth5_tau_s,37.18008016781669,s,AR(1),smooth_frames=5,本工具 H 项,= 平滑窗 4.57 s 的 8.1×
+h_smooth5_ll_per_frame,-0.17585051261040013,nats/frame,AR(1),smooth_frames=5,本工具 H 项,段内 80/20 留出
+h_smooth5_lb_lag10_Q,3332.209733296022,,AR(1) 残差白噪,smooth_frames=5,本工具 H 项,p=0
+h_tau_ratio_5frame_over_1frame,11.086721217021914,x,AR(1),5帧/未平滑,本工具 H 项,平滑对 τ 的放大倍数
+h_same_input_series_as_A_C,1.0,bool,AR(1),5 帧档,本工具 H 项,sha256(ser_h5)=f3ef1afbb9ee1406
+h_cond_disp_phi_unsmoothed_median,0.6847450094584763,,AR(1),9 条件,本工具 H 项,"范围=[0.4737, 0.8343] 负值=0"
+h_cond_disp_phi_smooth5_median,0.9634232006041742,,AR(1),9 条件,本工具 H 项,"范围=[0.9305, 0.9819] 负值=0"
+h_cond_disp_tau_unsmoothed_s_median,2.412992911495987,,AR(1),9 条件,本工具 H 项,"范围=[1.2231, 5.0431] 负值=0"
+h_cond_gain_phi_unsmoothed,0.8342672573523191,,AR(1),条件段 gain,本工具 H 项,供 M11 S 门目标带
+h_cond_gain_tau_unsmoothed_s,5.043124226523736,s,AR(1),条件段 gain,本工具 H 项,
+h_cond_gain_phi_smooth5,0.9782998899026132,,AR(1),条件段 gain,本工具 H 项,
+h_cond_dots_phi_unsmoothed,0.587289639686449,,AR(1),条件段 dots,本工具 H 项,供 M11 S 门目标带
+h_cond_dots_tau_unsmoothed_s,1.7169442956246164,s,AR(1),条件段 dots,本工具 H 项,
+h_cond_dots_phi_smooth5,0.9450271320264592,,AR(1),条件段 dots,本工具 H 项,
+h_cond_flash_phi_unsmoothed,0.7515813289036417,,AR(1),条件段 flash,本工具 H 项,供 M11 S 门目标带
+h_cond_flash_tau_unsmoothed_s,3.199925832651052,s,AR(1),条件段 flash,本工具 H 项,
+h_cond_flash_phi_smooth5,0.9643747377690133,,AR(1),条件段 flash,本工具 H 项,
+h_cond_taxis_phi_unsmoothed,0.5471519094437887,,AR(1),条件段 taxis,本工具 H 项,供 M11 S 门目标带
+h_cond_taxis_tau_unsmoothed_s,1.5153862451535227,s,AR(1),条件段 taxis,本工具 H 项,
+h_cond_taxis_phi_smooth5,0.9304811782389822,,AR(1),条件段 taxis,本工具 H 项,
+h_cond_turning_phi_unsmoothed,0.7319753008443656,,AR(1),条件段 turning,本工具 H 项,供 M11 S 门目标带
+h_cond_turning_tau_unsmoothed_s,2.9288353640414884,s,AR(1),条件段 turning,本工具 H 项,
+h_cond_turning_phi_smooth5,0.9740498490199282,,AR(1),条件段 turning,本工具 H 项,
+h_cond_position_phi_unsmoothed,0.527105648151811,,AR(1),条件段 position,本工具 H 项,供 M11 S 门目标带
+h_cond_position_tau_unsmoothed_s,1.4270562093362524,s,AR(1),条件段 position,本工具 H 项,
+h_cond_position_phi_smooth5,0.9371367023056142,,AR(1),条件段 position,本工具 H 项,
+h_cond_open loop_phi_unsmoothed,0.8110508638797002,,AR(1),条件段 open loop,本工具 H 项,供 M11 S 门目标带
+h_cond_open loop_tau_unsmoothed_s,4.3634890385951,s,AR(1),条件段 open loop,本工具 H 项,
+h_cond_open loop_phi_smooth5,0.9818577404573137,,AR(1),条件段 open loop,本工具 H 项,
+h_cond_rotation_phi_unsmoothed,0.6847450094584763,,AR(1),条件段 rotation,本工具 H 项,供 M11 S 门目标带
+h_cond_rotation_tau_unsmoothed_s,2.412992911495987,s,AR(1),条件段 rotation,本工具 H 项,
+h_cond_rotation_phi_smooth5,0.9634232006041742,,AR(1),条件段 rotation,本工具 H 项,
+h_cond_dark_phi_unsmoothed,0.4737111503029234,,AR(1),条件段 dark,本工具 H 项,供 M11 S 门目标带
+h_cond_dark_tau_unsmoothed_s,1.2230640976634504,s,AR(1),条件段 dark,本工具 H 项,
+h_cond_dark_phi_smooth5,0.9468524777806491,,AR(1),条件段 dark,本工具 H 项,

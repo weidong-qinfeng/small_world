@@ -93,6 +93,26 @@
     "seed": 0,
     "restarts": 5,
     "timestamp": "2026-10-11T19:36:18"
+   },
+   {
+    "stages": [
+     "H"
+    ],
+    "elapsed_s": 3.2,
+    "command": "PYTHONHASHSEED=0 OMP_NUM_THREADS=1 MPLBACKEND=Agg ./.venv-m10/bin/python -m neural_exploration.tools.build_m10_imaging_dwell_reference --stages H --merge",
+    "seed": 0,
+    "restarts": 5,
+    "timestamp": "2026-10-11T20:21:49"
+   },
+   {
+    "stages": [
+     "H"
+    ],
+    "elapsed_s": 3.4,
+    "command": "PYTHONHASHSEED=0 OMP_NUM_THREADS=1 MPLBACKEND=Agg ./.venv-m10/bin/python -m neural_exploration.tools.build_m10_imaging_dwell_reference --stages H --merge",
+    "seed": 0,
+    "restarts": 5,
+    "timestamp": "2026-10-11T20:22:32"
    }
   ]
  },
@@ -12804,6 +12824,230 @@
     "saturated": false
    },
    "note": "coverage=成像侧自身条件值落进 ±3× 窗的比例；margin=最不利条件下距窗边界的相对余量（→1 表示窗已被参照自身的离散度吃满）"
+  }
+ },
+ "H": {
+  "smooth_window_s": 4.569107754791217,
+  "same_input_series_as_A_C": true,
+  "sha256_ser_h5": "f3ef1afbb9ee140609811fd199193e5538b13784b9085d9cf9206bcc1b6a6c5d",
+  "sha256_ser_h1": "37df9e164a43ba78851a0e2ef42ca72461789d65333872483eb0d2c93bbfbdf6",
+  "variants": [
+   {
+    "smooth_frames": 1,
+    "series_def": "未平滑（群体事件计数，无滑动平均）",
+    "n": 7879,
+    "phi": 0.7614793085496189,
+    "tau_s": 3.353568601574696,
+    "phi_bias_corrected": 0.7618961682939581,
+    "tau_s_bias_corrected": 3.360317596931473,
+    "phi_vs_raw_rel_diff": 1.457981867872137e-16,
+    "phi_se": 0.007302410663890301,
+    "phi_z": 104.2777986062957,
+    "phi_p_two_sided": 0.0,
+    "test_loglik_per_frame": -1.4410224866520083,
+    "tau_over_smooth_window": 0.7339657503279731,
+    "ljung_box": {
+     "n": 7878,
+     "lag10": {
+      "Q": 997.6705401283732,
+      "df": 10,
+      "p": 5.938840219291277e-208,
+      "acf1": -0.2066990061110156,
+      "reject_5pct": true
+     },
+     "lag20": {
+      "Q": 1490.819810634959,
+      "df": 20,
+      "p": 3.712385928917162e-304,
+      "acf1": -0.2066990061110156,
+      "reject_5pct": true
+     },
+     "lag40": {
+      "Q": 1903.5839941505476,
+      "df": 40,
+      "p": 0.0,
+      "acf1": -0.2066990061110156,
+      "reject_5pct": true
+     }
+    },
+    "resid_lag1": -0.2066990061110156,
+    "sigma": 0.6358627540401304
+   },
+   {
+    "smooth_frames": 5,
+    "series_def": "5 帧滑动平均（= A/C 项口径）",
+    "n": 7879,
+    "phi": 0.975721329291989,
+    "tau_s": 37.18008016781669,
+    "phi_bias_corrected": 0.9762197636095262,
+    "tau_s_bias_corrected": 37.969030508802184,
+    "phi_vs_raw_rel_diff": 3.4135454190514596e-16,
+    "phi_se": 0.0024674010565139716,
+    "phi_z": 395.4449669688159,
+    "phi_p_two_sided": 0.0,
+    "test_loglik_per_frame": -0.17585051261040013,
+    "tau_over_smooth_window": 8.137273656728548,
+    "ljung_box": {
+     "n": 7878,
+     "lag10": {
+      "Q": 3332.209733296022,
+      "df": 10,
+      "p": 0.0,
+      "acf1": 0.38705261880670333,
+      "reject_5pct": true
+     },
+     "lag20": {
+      "Q": 3450.8803917577843,
+      "df": 20,
+      "p": 0.0,
+      "acf1": 0.38705261880670333,
+      "reject_5pct": true
+     },
+     "lag40": {
+      "Q": 3683.5485056165276,
+      "df": 40,
+      "p": 0.0,
+      "acf1": 0.38705261880670333,
+      "reject_5pct": true
+     }
+    },
+    "resid_lag1": 0.38705261880670333,
+    "sigma": 0.21069655912414711
+   }
+  ],
+  "note": "两侧**同一输入序列**（平滑档与 A/C 项逐位同一，脚本内断言）；AR(1) 对线性重标度不变，故各档 φ 在 原始/z 两路径下必须相同（并列相对差）",
+  "noise_decomposition": {
+   "series": "未平滑 z 分数群体计数（smooth_frames=1）",
+   "rho1": 0.7614271414879055,
+   "rho2": 0.6948222490755929,
+   "phi_intrinsic_estimate": 0.9125262434404953,
+   "tau_intrinsic_estimate_s": 9.982927509069192,
+   "signal_variance_fraction": 1.1984419699793296,
+   "phi_ar1_fit": 0.7614793085496189,
+   "sd_first_difference_observed": 53.955709369220926,
+   "sd_first_difference_poisson_ref": 11.339503433306675,
+   "excess_over_poisson": 4.7582074194484445,
+   "note": "φ_intrinsic = ρ2/ρ1 是「帧级独立噪声压低 AR(1) φ」的标准一阶修正（仍不加平滑）；excess = 观测一阶差分 sd / 若同一计数为独立 Poisson 的期望 sd（>1 ⇒ 帧间变化主要来自共享群体波动而非计数噪声）"
+  },
+  "tau_ratio_5frame_over_1frame": 11.086721217021914,
+  "smoothing_independent_slow_structure": {
+   "phi_unsmoothed": 0.7614793085496189,
+   "phi_z": 104.2777986062957,
+   "phi_p": 0.0,
+   "tau_unsmoothed_s": 3.353568601574696,
+   "tau_over_smooth_window": 0.7339657503279731,
+   "tau_unsmoothed_noise_corrected_s": 9.982927509069192,
+   "case": "(b) 存在内在正自相关但尺度**小于平滑窗**：26.5/37.2 s 量级的「慢」不能宣称独立于平滑",
+   "verdict": "**(b) 存在内在正自相关但尺度**小于平滑窗**：26.5/37.2 s 量级的「慢」不能宣称独立于平滑**：未平滑 φ=0.7615（z=104.3，p=0.00e+00）、τ=3.35 s = 平滑窗 4.57 s 的 0.73×（噪声压低修正后 τ=9.98 s）；5 帧平滑把 τ 放大 11.09×（→37.18 s） ⇒ 成像侧的「慢」**显著依赖 5 帧平滑**，不能作为 26.5/37.18 s 量级慢状态的独立证据；按预注册纪律**立即上报**（但注意：未平滑 φ 显著 >0 ⇒ 仍有真实（较快）的群体慢涨落，与模型侧 λ×1 的 φ<0 并非同病）"
+  },
+  "conditions": [
+   {
+    "name": "gain",
+    "n_frames": 649,
+    "phi_unsmoothed": 0.8342672573523191,
+    "tau_unsmoothed_s": 5.043124226523736,
+    "phi_smooth5": 0.9782998899026132,
+    "tau_smooth5_s": 41.652797095394334
+   },
+   {
+    "name": "dots",
+    "n_frames": 1773,
+    "phi_unsmoothed": 0.587289639686449,
+    "tau_unsmoothed_s": 1.7169442956246164,
+    "phi_smooth5": 0.9450271320264592,
+    "tau_smooth5_s": 16.16192134950268
+   },
+   {
+    "name": "flash",
+    "n_frames": 656,
+    "phi_unsmoothed": 0.7515813289036417,
+    "tau_unsmoothed_s": 3.199925832651052,
+    "phi_smooth5": 0.9643747377690133,
+    "tau_smooth5_s": 25.19126929546628
+   },
+   {
+    "name": "taxis",
+    "n_frames": 657,
+    "phi_unsmoothed": 0.5471519094437887,
+    "tau_unsmoothed_s": 1.5153862451535227,
+    "phi_smooth5": 0.9304811782389822,
+    "tau_smooth5_s": 12.682554353175977
+   },
+   {
+    "name": "turning",
+    "n_frames": 1312,
+    "phi_unsmoothed": 0.7319753008443656,
+    "tau_unsmoothed_s": 2.9288353640414884,
+    "phi_smooth5": 0.9740498490199282,
+    "tau_smooth5_s": 34.75558543435392
+   },
+   {
+    "name": "position",
+    "n_frames": 591,
+    "phi_unsmoothed": 0.527105648151811,
+    "tau_unsmoothed_s": 1.4270562093362524,
+    "phi_smooth5": 0.9371367023056142,
+    "tau_smooth5_s": 14.074792063151277
+   },
+   {
+    "name": "open loop",
+    "n_frames": 985,
+    "phi_unsmoothed": 0.8110508638797002,
+    "tau_unsmoothed_s": 4.3634890385951,
+    "phi_smooth5": 0.9818577404573137,
+    "tau_smooth5_s": 49.9114710720921
+   },
+   {
+    "name": "rotation",
+    "n_frames": 656,
+    "phi_unsmoothed": 0.6847450094584763,
+    "tau_unsmoothed_s": 2.412992911495987,
+    "phi_smooth5": 0.9634232006041742,
+    "tau_smooth5_s": 24.523890658435796
+   },
+   {
+    "name": "dark",
+    "n_frames": 600,
+    "phi_unsmoothed": 0.4737111503029234,
+    "tau_unsmoothed_s": 1.2230640976634504,
+    "phi_smooth5": 0.9468524777806491,
+    "tau_smooth5_s": 16.73298809231743
+   }
+  ],
+  "condition_dispersion": {
+   "phi_unsmoothed": {
+    "n": 9,
+    "median": 0.6847450094584763,
+    "q1": 0.5471519094437887,
+    "q3": 0.7515813289036417,
+    "iqr": 0.20442941945985305,
+    "min": 0.4737111503029234,
+    "max": 0.8342672573523191,
+    "max_over_median": 1.2183619388655216,
+    "n_negative": 0
+   },
+   "phi_smooth5": {
+    "n": 9,
+    "median": 0.9634232006041742,
+    "q1": 0.9450271320264592,
+    "q3": 0.9740498490199282,
+    "iqr": 0.029022716993469033,
+    "min": 0.9304811782389822,
+    "max": 0.9818577404573137,
+    "max_over_median": 1.019134415531595,
+    "n_negative": 0
+   },
+   "tau_unsmoothed_s": {
+    "n": 9,
+    "median": 2.412992911495987,
+    "q1": 1.5153862451535227,
+    "q3": 3.199925832651052,
+    "iqr": 1.6845395874975293,
+    "min": 1.2230640976634504,
+    "max": 5.043124226523736,
+    "max_over_median": 2.0899871700813004,
+    "n_negative": 0
+   }
   }
  }
 }

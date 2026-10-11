@@ -99,6 +99,19 @@ def frame_series(pop_counts_steps: np.ndarray, dt_ms: float):
     return frames, z
 
 
+def _ar1_phi_both(z_smoothed, frames_raw):
+    """并列报"平滑后/未平滑"两种口径的 φ（RF-24(3) 要求）。"""
+    def _phi(x):
+        x = np.asarray(x, float)
+        if x.size < 20:
+            return None
+        x = (x - x.mean()) / (x.std() + 1e-12)
+        x0, x1 = x[:-1], x[1:]
+        d = float(x0 @ x0)
+        return float((x0 @ x1) / d) if d > 0 else None
+    return _phi(z_smoothed), (_phi(frames_raw) if frames_raw is not None else None)
+
+
 def ar1_fit(z: np.ndarray, dt_s: float, folds: int = 4, lb_lags: int = 10):
     """AR(1)：x_t = φ x_{t-1} + ε → φ、τ = −dt/ln φ、**留出 ll/帧**、**残差白噪检验（Ljung-Box）**。"""
     x = np.asarray(z, float)
@@ -192,14 +205,33 @@ def hmm_kstate(x: np.ndarray, K: int, n_iter: int = 60, seed: int = 0):
 
 
 def analyse(pop_counts_steps: np.ndarray, dt_ms: float, slow_trace=None, slow_dt_s=None,
-            label: str = "model"):
+            label: str = "model", n_neurons: int = 250):
     """把逐步群体脉冲数聚合到 **1 帧 = 0.9138 s** 箱，再做 H 法（同实现）+ Q 法（并列）。"""
     b = max(1, int(round(FRAME_S / (dt_ms * 1e-3))))
     nb = pop_counts_steps.size // b
     frames = pop_counts_steps[: nb * b].reshape(nb, b).sum(axis=1).astype(float)
     z = (frames - frames.mean()) / (frames.std() + 1e-12)
-    out = dict(label=label, n_frames=int(nb), frame_s=FRAME_S,
-               pop_rate_hz=float(frames.mean() / FRAME_S),
+    # **RF-24(1) 口径修正**：`frames` 是**每帧全群脉冲数** ⇒ 逐神经元率必须 **/n_neurons**
+    # （首版漏除 ⇒ 报 9.61 Hz，实测应为 0.224 Hz，差 43× 的第四例同族事故）。
+    rate_trace = float(frames.mean() / FRAME_S / max(1, n_neurons))
+    # **A3 硬断言（RF-24 要求）**：trace 级与帧级两个独立估计器必须一致（≤2%）
+    _sum = float(frames.sum())
+    _dur = nb * FRAME_S
+    rate_trace_check = _sum / _dur / max(1, n_neurons)
+    rel = abs(rate_trace - rate_trace_check) / max(rate_trace, 1e-12)
+    assert rel <= 0.02, (f"**A3 双估计器硬断言失败**：pop_rate(均值法)={rate_trace:.6f} vs "
+                         f"(总量法)={rate_trace_check:.6f} 相对差 {rel:.4f} > 0.02")
+    # **RF-25(1)(2)**：双字段显式标注语义 + 断言（"双估计器必须一致"的又一次落地）
+    pop_pop = float(rate_trace * n_neurons)
+    _dev = abs(rate_trace * n_neurons - pop_pop) / max(pop_pop, 1e-12)
+    assert _dev <= 1e-6, f"pop_rate 双字段一致性断言失败：相对偏差 {_dev}"
+    out = dict(label=label, n_frames=int(nb), frame_s=FRAME_S, n_neurons=int(n_neurons),
+               pop_rate_neuron_hz=rate_trace,          # ← **逐神经元**语义（与成像侧可比）
+               pop_rate_population_hz=pop_pop,         # ← **群体总率**（= 逐神经元 × n）
+               pop_rate_hz=rate_trace,                 # 兼容旧字段（**逐神经元**语义）
+               pop_rate_hz_total_method=rate_trace_check,
+               pop_rate_estimator_rel_diff=rel,
+               pop_rate_field_assertion_rel_diff=_dev, total_spikes=int(_sum),
                fano=float(frames.var() / max(frames.mean(), 1e-12)))
     # --- H 法（同实现：2 状态高斯 HMM，seed=0 n_iter=60）---
     h2 = hmm_kstate(z, 2, n_iter=60, seed=0)
@@ -230,6 +262,12 @@ def analyse(pop_counts_steps: np.ndarray, dt_ms: float, slow_trace=None, slow_dt
     # ================== **RF-14 主判据**：AR(1) 连续慢时间尺度 ==================
     _, _z = frame_series(pop_counts_steps, dt_ms)
     out["AR1"] = ar1_fit(_z, FRAME_S, folds=4, lb_lags=10)
+    # **RF-24(2)**：无论成败，AR1 子字典必须完整落盘（M9 B3 同族：判据失败必须给出原因）
+    out["AR1"].setdefault("status", "invalid")
+    out["AR1"]["n_frames"] = int(nb)
+    out["AR1"]["pipeline"] = ("0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)"
+                              f"（平滑后 n={max(0, nb - (SMOOTH_FRAMES - 1))} 帧；未平滑 n={nb} 帧）")
+    out["AR1"]["phi_smoothed"], out["AR1"]["phi_unsmoothed"] = _ar1_phi_both(_z, frames if nb else None)
     out["AR1"]["reference_tau_imaging_s"] = TAU_IMAGING_AR1_S
     out["AR1"]["tau_window_s"] = list(TAU_WINDOW_S)
     out["AR1"]["reference_source"] = TAU_REF_SOURCE
@@ -241,6 +279,14 @@ def analyse(pop_counts_steps: np.ndarray, dt_ms: float, slow_trace=None, slow_dt
                                   "⇒ '单一慢时间尺度'仅为一阶近似，τ 只作**粗粒度**指标")
     out["AR1"]["min_frames_for_tau"] = TAU_MIN_FRAMES
     out["AR1"]["n_frames"] = int(nb)
+    # **RF-25(3)**：dwell 触分辨率地板（≤1.5 帧）时该量无分辨力 ⇒ 显式登记（不得当"×N 倍差距"引用）
+    _dwq = ((out.get("Q_method", {}) or {}).get("dwell", {}) or {}).get("low", {}) or {}
+    _dwh = ((out.get("H_K2", {}) or {}).get("dwell", {}) or {}).get("low", {}) or {}
+    out["dwell_resolution_floor"] = dict(
+        frame_s=FRAME_S, q_median_s=_dwq.get("median_s"), h_median_s=_dwh.get("median_s"),
+        at_floor=bool((_dwq.get("median_s") or 0) <= FRAME_S * 1.5),
+        note="dwell 中位 ≤1.5 帧 ⇒ **触分辨率地板、无分辨力**：只能作为'未产生慢状态'的**旁证**，"
+             "**不得**作为'×N 倍差距'引用（时间尺度应以 AR(1) τ 与转换率为准）")
     if nb < TAU_MIN_FRAMES:
         out["AR1"]["tau_criterion_status"] = "unavailable（n_frames<%d ⇒ 短记录禁用 τ 判据）" % TAU_MIN_FRAMES
     elif out["AR1"].get("status") != "measured":

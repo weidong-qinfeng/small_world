@@ -1,6 +1,6 @@
 {
  "generated_by": "tools/validate_p11_data_gate.py",
- "generated_at": "2026-10-11T12:03:46Z",
+ "generated_at": "2026-10-11T12:04:35Z",
  "gate": "G2 (P1/P2 数据门)",
  "assertions": [
   {
@@ -116,7 +116,7 @@
   {
    "assertion": "P1.6 M11 产出路径全部落在 m11 命名空间（冻结件零修改）",
    "ok": true,
-   "detail": "越界=[] (n_items=224)"
+   "detail": "越界=[] (n_items=225)"
   },
   {
    "assertion": "P2.7a functional_series 采集参数读回（帧率/时长/平面/体素/FOV）",
@@ -156,7 +156,7 @@
   {
    "assertion": "P2.10 未取项显式登记 unavailable + 原因（未测 ≠ 未命中）",
    "ok": true,
-   "detail": "n_unavailable=5"
+   "detail": "n_unavailable=6"
   },
   {
    "assertion": "DET 复跑 verdict 一致（确定性）",
@@ -166,6 +166,7 @@
  ],
  "failures": [],
  "unavailable": [
+  "**细胞数 / 突触数（MICrONS）= 未测**（`unavailable`，**不得写 0、不得算负结果**）：权威逐细胞表 `node_data_v1.pkl`（294.6 MB）与逐对突触表 `edge_data_v1.pkl`（201.5 MB）本轮未取（DQ-4）；论文档锚（literature）= '>200,000 cells / 0.5 billion synapses'（Nature 2025）；Allen 侧可得锚 = Cell Types 1,920 标本（measured）",
   "MICrONS 逐细胞 ΔF/F 与 ROI 轨迹：仅存在于 v8 DataJoint MySQL 数据库（103.8 GB docker tar 或 116.2 GB SQL dump）→ 本轮未取（超预算）⇒ unavailable（非 0、非未命中）",
   "MICrONS 全 144 field 的扫描级 fps/nframes/nfields：在数据库 Scan 表内 → 本轮 unavailable；框架内时间口径由 field_summaries（无时间轴）+ functional_series（仅 2 field，6.3001 Hz）给出",
   "Allen synphys 桶对象级读取：403 AccessDenied（桶存在、不可 list）→ NEEDS_VERIFY",

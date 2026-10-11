@@ -4,7 +4,7 @@
 > **判定器**：`tools/validate_p11_data_gate.py` → `reports/neuro/m11_data_gate_summary.json`
 > **依据**：`docs/生物仿真M11实施清单.md` §1/§7 P1–P2/§10.1 + `docs/m11_list_review_master.md`（RF-M11-1..6）
 > **环境/口径/冲突登记**：`docs/m11_env_notes.md`（L1–L23，本文所有数字的出处）
-> **日期**：2026-10-11（08:09–10:55 UTC）；**墙钟**：**≈2.8 h**（含 2 次全量可达性探测重跑：首轮 18.9 min + 末轮 33.9 min）
+> **日期**：2026-10-11（08:09–12:15 UTC）；**墙钟**：**≈4.0 h**（含 2 次全量可达性探测重跑 18.9 + 33.9 min、子集 23 min、NWB 停滞等待 ~50 min）
 > **解释器**：`./.venv-m11/bin/python`（3.9.6；h5py 3.14.0 / numpy 2.0.2 / pypdf 6.20.0 —— **新增依赖，已登记**）
 > **线程纪律**：全程 `OMP_NUM_THREADS=1 MKL_NUM_THREADS=1`；**零 GPU/MPS 作业**；**下载总量 ≈0.21 GB**（较单次 2 GB / 总计 6 GB 上限留有余量）
 
@@ -44,7 +44,7 @@
 | MICrONS 原始扫描帧维 | **measured（Range 头）** | BigTIFF `{"shape":[320000,440,248]}`、strip 218,240 B/帧 | 同上 |
 | MICrONS 功能有界子集 | **measured** | **200/200 对象、136,348,754 B（136.3 MB）、2,000 帧**；**chunk = 20 B 头 + gzip**，解压 raw = **800,000 B**（= 10 帧 × 200 × 200 × 2 B）逐片精确匹配 | `m11_functional_subset_manifest.csv` / `_verify.json` |
 | 结构-功能**同源**证据 | **measured** | 同一 minnie65 体积内的 EM/seg 与 144 个双光子 field；`functional_coregistration` 前缀可达（2 键） | 同上 |
-| Allen Cell Types 元数据 | **measured（全取）** | **1,920/1,920 行**；54 字段（11 个 `ef__*`）；`ef__avg_firing_rate` n=1920 | `m11_allen_celltypes_metadata.csv` |
+| Allen Cell Types 元数据 | **measured（全取）** | **1,920/1,920 行**；54 字段（11 个 `ef__*`）；`ef__avg_firing_rate` n=**1,808**（中位 17.44 Hz） | `m11_allen_celltypes_metadata.csv` |
 | Allen per-cell NWB | **measured（对象级 + 头）** | HEAD 200 / **91,560,414 B** / `486940961_ephys.nwb`；Range 0-99 → 206；**44.7 MB 可见前缀 + 稀疏文件头解析**：`nwb_version = NWB-1.0.5`、`file_create_date = 2018-02-28`、根组 11 键、`Sweep_10` = `CurrentClampSeries`（"Voltage recorded from cell during current-clamp recording"） | `m11_allen_sources.json` |
 | Allen BO Neuropixels 目录 | **measured** | **569 对象 / 853.7 GB**（未截断）；单体对象 2,062,950,784 B（LFP NWB，200） | 同上 |
 | 文献先验（§1.3 + §4.1 C-1..C-8） | **literature 31 / literature_unverified 6** | 清单 12 个 PMID **全部题录核对通过**；C-5/C-6/C-8 **由 unverified 升级** | `m11_literature_priors.csv` |
@@ -132,7 +132,7 @@ $PY neural_exploration/tools/validate_p11_data_gate.py --determinism-check
 | Allen（元数据 5 页 + NWB HEAD/Range/头 + BO 目录） | **≈4 min** | NWB 全量作业另计（44.7 MB 后停滞 → 停） |
 | 文献 provenance（37 行 × 2–3 次查询） | **≈2 min**（网络波动时更久） | Europe PMC |
 | 清单 + 计数锚 + 判定器 | **≈3 min** | SHA-256 覆盖 136 MB 子集 |
-| **合计** | **≈2.8 h 墙钟**（含等待/文档；净计算 ≈0.5–0.8 CPU-h，单线程） | **GPU = 0**；下载 ≈0.21 GB |
+| **合计** | **≈4.0 h 墙钟**（含等待/文档/NWB 停滞等待；净计算 ≈0.5–0.8 CPU-h，单线程） | **GPU = 0**；下载 ≈0.21 GB |
 
 ---
 
@@ -150,6 +150,17 @@ $PY neural_exploration/tools/validate_p11_data_gate.py --determinism-check
 | 报告 | `reports/neuro/m11_data_gate_summary.json` / `docs/m11_data_gate_report.md` / `docs/m11_env_notes.md`（L1–L23） | 3 个 |
 | 清单改写（唯一例外） | `docs/生物仿真M11实施清单.md` §0.7 #2（L220–L222 → **L220–L227**，RF-M11-1；文件 1226 → **1232** 行） | 9+/3−（已由主 agent 提交 `b0996c1`，故当前 `git diff` 为空属正常） |
 
+## §6b ★ P2 增强通道（本轮新发现，**待裁决**）：MICrONS 功能连接组学发布
+
+探测 F17 时发现 `functional_connectomics/node_and_edge_properties/v1/` 内含
+**同源结构-功能逐细胞表**（readme 已落盘）：
+`node_data_v1.pkl`（294.6 MB：EM 坐标 + `layer`/`brain_area` + **in vivo `osi_iv`/`pref_ori`/`in_vivo_mean_resp`** + CvT 数字孪生量）与
+`edge_data_v1.pkl`（201.5 MB：逐对 **`n_synapses`/`synapse_size`** + `pre/post_layer` + **`in_vivo_sig_corr_iv`** +
+`population ∈ {Connected, ADP, Same region}` ⇒ **自带距离匹配/同区负对照**）。
+出处：Ding et al. 2025, **DOI 10.1038/s41586-025-08840-3**（readme 原文）。
+⇒ 若批准下载（≈496 MB，DQ-4），P2 的 C1/C2 参考量可**同源同口径**直接算出，P2 可从 `partial_pass` 推向全过。
+**本节点因 ">30 min 先汇报" 纪律未启动该下载。**
+
 ## §7 结论与下一步建议
 
 1. **G2 判定 = pass（附 §3 限制）**：51 清单源 + 17 补测源逐行实测；结构与功能**同源**路径落盘；
@@ -157,4 +168,5 @@ $PY neural_exploration/tools/validate_p11_data_gate.py --determinism-check
 2. **P2 尚不足以"定稿 dwell 带"**：需先核 `int16/uint16` 与 **10× 分辨率口径差**（§3.1）；
    核对后即可用"2 field × 6.3001 Hz × 40,000 帧（105.8 min）"做劈半可达性自检（RF-M11-2）。
 3. **未启动**（遵守门链）：G0 引擎门、G1 生理门、S 机制门、P7–P14 —— 且 RF-M11-2..6 未落盘。
-4. **交主 agent 的三个决策**：DQ-1（DB 取数 vs 场级重建）/ DQ-2（NWB 全量托管作业）/ DQ-3（19 条冲突项落清单）。
+4. **交主 agent 的四个决策**：DQ-1（DB 取数 vs 场级重建）/ DQ-2（NWB 全量续传托管作业）/
+   DQ-3（19 条冲突项落清单）/ **DQ-4（是否下载功能连接组学两个 pkl ≈496 MB —— 决定 P2 能否全过）**。

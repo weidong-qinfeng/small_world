@@ -1,0 +1,308 @@
+{
+ "tau_ref": 37.18,
+ "window": [
+  9.4,
+  146.3
+ ],
+ "rows": [
+  {
+   "level": "M-1",
+   "lam": 0.0,
+   "n_frames": 131,
+   "pop_rate_neuron_hz": 0.03846,
+   "pop_rate_population_hz": 9.615,
+   "dev": 0.0,
+   "ar1_status": "invalid",
+   "phi": -0.0956456762448207,
+   "tau_s": null,
+   "lb_p": null,
+   "dwell_floor": true,
+   "H_trans": 0.46779,
+   "occ_low": 0.214
+  },
+  {
+   "level": "M-1",
+   "lam": 1.0,
+   "n_frames": 131,
+   "pop_rate_neuron_hz": 0.22778,
+   "pop_rate_population_hz": 56.945,
+   "dev": 0.0,
+   "ar1_status": "measured",
+   "phi": 0.5610506535082688,
+   "tau_s": 1.5812,
+   "lb_p": 7.771561172376096e-16,
+   "dwell_floor": true,
+   "H_trans": 0.78522,
+   "occ_low": 0.634
+  },
+  {
+   "level": "M-1",
+   "lam": 4.0,
+   "n_frames": 131,
+   "pop_rate_neuron_hz": 2.22088,
+   "pop_rate_population_hz": 555.219,
+   "dev": 0.0,
+   "ar1_status": "measured",
+   "phi": 0.6137205405051155,
+   "tau_s": 1.8718,
+   "lb_p": 0.0,
+   "dwell_floor": true,
+   "H_trans": 0.81864,
+   "occ_low": 0.603
+  },
+  {
+   "level": "M-4",
+   "lam": 0.0,
+   "n_frames": 131,
+   "pop_rate_neuron_hz": 0.03846,
+   "pop_rate_population_hz": 9.615,
+   "dev": 0.0,
+   "ar1_status": "invalid",
+   "phi": -0.0956456762448207,
+   "tau_s": null,
+   "lb_p": null,
+   "dwell_floor": true,
+   "H_trans": 0.46779,
+   "occ_low": 0.214
+  },
+  {
+   "level": "M-4",
+   "lam": 1.0,
+   "n_frames": 131,
+   "pop_rate_neuron_hz": 0.1396,
+   "pop_rate_population_hz": 34.901,
+   "dev": 0.0,
+   "ar1_status": "measured",
+   "phi": 0.6733526763773755,
+   "tau_s": 2.3106,
+   "lb_p": 4.440892098500626e-16,
+   "dwell_floor": true,
+   "H_trans": 0.72675,
+   "occ_low": 0.611
+  },
+  {
+   "level": "M-4",
+   "lam": 4.0,
+   "n_frames": 131,
+   "pop_rate_neuron_hz": 13.67548,
+   "pop_rate_population_hz": 3418.869,
+   "dev": 0.0,
+   "ar1_status": "measured",
+   "phi": 0.8899068002231206,
+   "tau_s": 7.8347,
+   "lb_p": 1.2100255508684654e-07,
+   "dwell_floor": true,
+   "H_trans": 0.00835,
+   "occ_low": 0.252
+  },
+  {
+   "level": "M-6",
+   "lam": 0.0,
+   "n_frames": 131,
+   "pop_rate_neuron_hz": 0.03916,
+   "pop_rate_population_hz": 9.79,
+   "dev": 0.0,
+   "ar1_status": "measured",
+   "phi": 0.7427193484761722,
+   "tau_s": 3.0723,
+   "lb_p": 0.00033462706547804366,
+   "dwell_floor": true,
+   "H_trans": 0.0,
+   "occ_low": 1.0
+  },
+  {
+   "level": "M-6",
+   "lam": 1.0,
+   "n_frames": 131,
+   "pop_rate_neuron_hz": 0.22798,
+   "pop_rate_population_hz": 56.995,
+   "dev": 0.0,
+   "ar1_status": "measured",
+   "phi": 0.6613528237255011,
+   "tau_s": 2.2102,
+   "lb_p": 7.771561172376096e-16,
+   "dwell_floor": true,
+   "H_trans": 0.67663,
+   "occ_low": 0.687
+  },
+  {
+   "level": "M-6",
+   "lam": 4.0,
+   "n_frames": 131,
+   "pop_rate_neuron_hz": 2.12555,
+   "pop_rate_population_hz": 531.387,
+   "dev": 0.0,
+   "ar1_status": "measured",
+   "phi": 0.6059859564090971,
+   "tau_s": 1.8244,
+   "lb_p": 0.0,
+   "dwell_floor": true,
+   "H_trans": 0.00835,
+   "occ_low": 0.038
+  },
+  {
+   "level": "M0",
+   "lam": 0.0,
+   "n_frames": 131,
+   "pop_rate_neuron_hz": 0.03846,
+   "pop_rate_population_hz": 9.615,
+   "dev": 0.0,
+   "ar1_status": "invalid",
+   "phi": -0.0956456762448207,
+   "tau_s": null,
+   "lb_p": null,
+   "dwell_floor": true,
+   "H_trans": 0.46779,
+   "occ_low": 0.214
+  },
+  {
+   "level": "M0",
+   "lam": 1.0,
+   "n_frames": 131,
+   "pop_rate_neuron_hz": 0.22381,
+   "pop_rate_population_hz": 55.951,
+   "dev": 0.0,
+   "ar1_status": "measured",
+   "phi": 0.6085391379051724,
+   "tau_s": 1.8398,
+   "lb_p": 1.9984014443252818e-15,
+   "dwell_floor": true,
+   "H_trans": 0.83534,
+   "occ_low": 0.511
+  },
+  {
+   "level": "M0",
+   "lam": 4.0,
+   "n_frames": 131,
+   "pop_rate_neuron_hz": 1.67954,
+   "pop_rate_population_hz": 419.885,
+   "dev": 0.0,
+   "ar1_status": "measured",
+   "phi": 0.6098297142844549,
+   "tau_s": 1.8477,
+   "lb_p": 3.2743681099844935e-09,
+   "dwell_floor": true,
+   "H_trans": 0.68498,
+   "occ_low": 0.344
+  }
+ ],
+ "RF25_final": {
+  "pop_rate_scope": "**43× 已精确定位 = ×250（神经元数）**：M0 55.9513÷250=0.2238 ✓（与主agent 逐项吻合）；现输出 `pop_rate_neuron_hz`（逐神经元，与成像可比）+ `pop_rate_population_hz`（群体总率），并加断言 |n×neuron − population|/population ≤1e-6（实测 dev=0）",
+  "primary_criterion_table": {
+   "AR1_tau": {
+    "model_lam1_s": [
+     1.581,
+     2.311
+    ],
+    "imaging_s": 37.18,
+    "window_s": [
+     9.4,
+     146.3
+    ],
+    "gap": "低于窗下界 4.1–5.9×（差 16–24 倍）",
+    "verdict": "❌"
+   },
+   "H_transition_hz": {
+    "model_lam1": [
+     0.677,
+     0.835
+    ],
+    "imaging": 0.0196,
+    "gap": "快 35–43×",
+    "verdict": "❌"
+   },
+   "H_dwell_low_median_s": {
+    "model_lam1": 0.914,
+    "imaging_Q": 6.854,
+    "imaging_H": 26.501,
+    "limitation": "**触分辨率地板（=1 帧）⇒ 本协议下无分辨力**，只能作为\"未产生慢状态\"的旁证，**不得**作为\"×343 倍差距\"引用",
+    "verdict": "旁证"
+   },
+   "occupancy_low": {
+    "model": [
+     0.511,
+     0.687
+    ],
+    "imaging": 0.672,
+    "verdict": "同量级 ✅"
+   },
+   "residual_whiten": {
+    "model": false,
+    "imaging": false,
+    "note": "两侧一致 ⇒ τ 仅粗粒度指标"
+   }
+  },
+  "P6": "not passed（❌ 反证）；主判据与次级口径方向一致"
+ },
+ "RF26_final": {
+  "sha256_basis_clarification": {
+   "this_node": "哈希 **.npy 文件本身**（含 128 字节 npy 头）⇒ `6b794438e487bddc`",
+   "mainagent": "哈希 **arr.tobytes() 载荷** ⇒ `6294245cc83d148e`",
+   "verdict": "**两者结论一致**（M0/M-1/M-4 的 λ×0 轨迹逐位相同）；差异纯属 hash 基准不同（同类\"双口径\"小事故，已写明）"
+  },
+  "lambda0_invalid_annotation": {
+   "label": "invalid（该臂对本阶梯无判别力）—— **不是\"机制无效\"，也不是\"数据坏\"**",
+   "M-4_reason": "λ×0 外部事件为空，调质增益**只乘在 ext_amp 上**（A10 作用域缺陷，码级确认）⇒ **必然逐位相同**",
+   "M-1_reason": "λ×0 下全网络 1,154 spike / 2.4M 步（每步 0.0005）⇒ 递归传递可忽略 ⇒ **递归权重被缩放这一事实在阈值穿越分辨率上不可测**（**工况**而非缺陷）",
+   "reverse_validation": "λ×1 臂三条互不相同（M0 6710 / M-1 6830 / M-4 4189，与本节点逐位一致）⇒ 机制在 λ×1 是活的（M-4 群率降 38%）",
+   "toolchain_confirmed": "4 个托管作业为四条不同命令、各一 level，逐进程 ps 抓取无重复（主agent 已核对）"
+  },
+  "A11_primary_criterion_closed_loop": {
+   "AR1_tau": {
+    "M0": 1.839817067,
+    "M-1": 1.581167127,
+    "M-4": 2.310640766,
+    "M-6": 2.210150756,
+    "mainagent_independent": {
+     "M0": 1.84,
+     "M-1": 1.581,
+     "M-4": 2.311,
+     "M-6": 2.21
+    },
+    "agreement": "两独立实现第 6 位一致 ⇒ 该列可采信"
+   },
+   "imaging_tau_s": 37.18,
+   "window_s": [
+    9.4,
+    146.3
+   ],
+   "verdict": "全部级别 ❌（低窗下界 4.1–5.9×）"
+  },
+  "lambda4_column": "已补列（四臂齐，source=this_node，见 m10_p6_judgement_table.csv 的 “λ×4.0 (RF-25 补列)” 4 行）"
+ },
+ "RF27_final": {
+  "lambda4_cross_check": {
+   "M0": {
+    "this_node": 1.8477,
+    "mainagent": 1.848,
+    "agree": true
+   },
+   "M-1": {
+    "this_node": 1.8718,
+    "mainagent": 1.872,
+    "agree": true
+   },
+   "M-4": {
+    "this_node": 7.8347,
+    "mainagent": 7.835,
+    "agree": true
+   },
+   "M-6": {
+    "this_node": 1.8244
+   },
+   "verdict": "λ×4 列三位小数一致 ⇒ 可采信"
+  },
+  "conclusion_1_tau_drive_insensitive": "基线 τ 几乎与驱动无关（λ×1 1.840 → λ×4 1.848；M-1 1.581 → 1.872）⇒ **4× 驱动不改变慢时间尺度** ⇒ 缺口不是\"驱动不足\"能修的（对 P6 反证的**强化**）",
+  "conclusion_2_M4_lambda4_retraction": {
+   "status": "**撤回「方向性发现」表述**（L48.2 / §4.6(d) 作废）",
+   "reason": "M-4 λ×4 = **13.68 Hz vs 基线同条件 1.68 Hz（8×）⇒ 饱和工况**；τ=7.835 s 来自 **A10 作用域缺陷**",
+   "new_label": "MECHANISM_NOT_IMPLEMENTED(scope) + 工况不可比",
+   "forbidden": "**绝不可**表述为\"调质把 τ 拉近了成像量级\"（假阳性）"
+  },
+  "conclusion_3_A8_full_scan": {
+   "scope": "g_exc∈{1,3,6,10} × bias∈{150,250}，40 s/程，8/8",
+   "result": "全部无滞回（bias=250 四行 |滞回|≤0.028；bias=150 四行为近静默底噪）",
+   "implication": "校准及邻近参数区域内无可检出双稳基质 ⇒ 归因限定有完整支撑"
+  }
+ }
+}

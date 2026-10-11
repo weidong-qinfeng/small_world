@@ -1,0 +1,233 @@
+{
+ "tau_ref": 37.18,
+ "window": [
+  9.4,
+  146.3
+ ],
+ "rows": [
+  {
+   "level": "M-1",
+   "lam": 0.0,
+   "n_frames": 131,
+   "pop_rate_hz": 0.03846,
+   "rel_diff": 0.0,
+   "total_spikes": 1151,
+   "ar1_status": "invalid",
+   "ar1_reason": "φ=-0.0956456762448207 不在 (0,1)",
+   "phi_smoothed": -0.09564567624482047,
+   "phi_unsmoothed": -0.2744894170070554,
+   "phi_used": -0.0956456762448207,
+   "tau_s": null,
+   "lb_p": null,
+   "pipeline": "0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)（平滑后 n=127 帧；未平滑 n=131 帧）"
+  },
+  {
+   "level": "M-1",
+   "lam": 1.0,
+   "n_frames": 131,
+   "pop_rate_hz": 0.22778,
+   "rel_diff": 0.0,
+   "total_spikes": 6817,
+   "ar1_status": "measured",
+   "ar1_reason": null,
+   "phi_smoothed": 0.561050653508269,
+   "phi_unsmoothed": -0.41086860286094623,
+   "phi_used": 0.5610506535082688,
+   "tau_s": 1.5812,
+   "lb_p": 7.771561172376096e-16,
+   "pipeline": "0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)（平滑后 n=127 帧；未平滑 n=131 帧）"
+  },
+  {
+   "level": "M-1",
+   "lam": 4.0,
+   "n_frames": 131,
+   "pop_rate_hz": 2.22088,
+   "rel_diff": 1.9996113031912361e-16,
+   "total_spikes": 66466,
+   "ar1_status": "measured",
+   "ar1_reason": null,
+   "phi_smoothed": 0.6137205405051152,
+   "phi_unsmoothed": -0.28006261517436537,
+   "phi_used": 0.6137205405051155,
+   "tau_s": 1.8718,
+   "lb_p": 0.0,
+   "pipeline": "0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)（平滑后 n=127 帧；未平滑 n=131 帧）"
+  },
+  {
+   "level": "M-4",
+   "lam": 0.0,
+   "n_frames": 131,
+   "pop_rate_hz": 0.03846,
+   "rel_diff": 0.0,
+   "total_spikes": 1151,
+   "ar1_status": "invalid",
+   "ar1_reason": "φ=-0.0956456762448207 不在 (0,1)",
+   "phi_smoothed": -0.09564567624482047,
+   "phi_unsmoothed": -0.2744894170070554,
+   "phi_used": -0.0956456762448207,
+   "tau_s": null,
+   "lb_p": null,
+   "pipeline": "0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)（平滑后 n=127 帧；未平滑 n=131 帧）"
+  },
+  {
+   "level": "M-4",
+   "lam": 1.0,
+   "n_frames": 131,
+   "pop_rate_hz": 0.1396,
+   "rel_diff": 0.0,
+   "total_spikes": 4178,
+   "ar1_status": "measured",
+   "ar1_reason": null,
+   "phi_smoothed": 0.673352676377375,
+   "phi_unsmoothed": -0.1437868024525906,
+   "phi_used": 0.6733526763773755,
+   "tau_s": 2.3106,
+   "lb_p": 4.440892098500626e-16,
+   "pipeline": "0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)（平滑后 n=127 帧；未平滑 n=131 帧）"
+  },
+  {
+   "level": "M-4",
+   "lam": 4.0,
+   "n_frames": 131,
+   "pop_rate_hz": 13.67548,
+   "rel_diff": 0.0,
+   "total_spikes": 409277,
+   "ar1_status": "measured",
+   "ar1_reason": null,
+   "phi_smoothed": 0.8899068002231207,
+   "phi_unsmoothed": 0.9037720528478366,
+   "phi_used": 0.8899068002231206,
+   "tau_s": 7.8347,
+   "lb_p": 1.2100255508684654e-07,
+   "pipeline": "0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)（平滑后 n=127 帧；未平滑 n=131 帧）"
+  },
+  {
+   "level": "M-6",
+   "lam": 0.0,
+   "n_frames": 131,
+   "pop_rate_hz": 0.03916,
+   "rel_diff": 1.7718931964311632e-16,
+   "total_spikes": 1172,
+   "ar1_status": "measured",
+   "ar1_reason": null,
+   "phi_smoothed": 0.7427193484761723,
+   "phi_unsmoothed": -0.05690706411282881,
+   "phi_used": 0.7427193484761722,
+   "tau_s": 3.0723,
+   "lb_p": 0.00033462706547804366,
+   "pipeline": "0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)（平滑后 n=127 帧；未平滑 n=131 帧）"
+  },
+  {
+   "level": "M-6",
+   "lam": 1.0,
+   "n_frames": 131,
+   "pop_rate_hz": 0.22798,
+   "rel_diff": 0.0,
+   "total_spikes": 6823,
+   "ar1_status": "measured",
+   "ar1_reason": null,
+   "phi_smoothed": 0.6613528237255012,
+   "phi_unsmoothed": -0.31196584343547956,
+   "phi_used": 0.6613528237255011,
+   "tau_s": 2.2102,
+   "lb_p": 7.771561172376096e-16,
+   "pipeline": "0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)（平滑后 n=127 帧；未平滑 n=131 帧）"
+  },
+  {
+   "level": "M-6",
+   "lam": 4.0,
+   "n_frames": 131,
+   "pop_rate_hz": 2.12555,
+   "rel_diff": 0.0,
+   "total_spikes": 63613,
+   "ar1_status": "measured",
+   "ar1_reason": null,
+   "phi_smoothed": 0.6059859564090977,
+   "phi_unsmoothed": 0.5808058123193762,
+   "phi_used": 0.6059859564090971,
+   "tau_s": 1.8244,
+   "lb_p": 0.0,
+   "pipeline": "0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)（平滑后 n=127 帧；未平滑 n=131 帧）"
+  },
+  {
+   "level": "M0",
+   "lam": 0.0,
+   "n_frames": 131,
+   "pop_rate_hz": 0.03846,
+   "rel_diff": 0.0,
+   "total_spikes": 1151,
+   "ar1_status": "invalid",
+   "ar1_reason": "φ=-0.0956456762448207 不在 (0,1)",
+   "phi_smoothed": -0.09564567624482047,
+   "phi_unsmoothed": -0.2744894170070554,
+   "phi_used": -0.0956456762448207,
+   "tau_s": null,
+   "lb_p": null,
+   "pipeline": "0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)（平滑后 n=127 帧；未平滑 n=131 帧）"
+  },
+  {
+   "level": "M0",
+   "lam": 1.0,
+   "n_frames": 131,
+   "pop_rate_hz": 0.22381,
+   "rel_diff": 0.0,
+   "total_spikes": 6698,
+   "ar1_status": "measured",
+   "ar1_reason": null,
+   "phi_smoothed": 0.6085391379051726,
+   "phi_unsmoothed": -0.3401938265656713,
+   "phi_used": 0.6085391379051724,
+   "tau_s": 1.8398,
+   "lb_p": 1.9984014443252818e-15,
+   "pipeline": "0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)（平滑后 n=127 帧；未平滑 n=131 帧）"
+  },
+  {
+   "level": "M0",
+   "lam": 4.0,
+   "n_frames": 131,
+   "pop_rate_hz": 1.67954,
+   "rel_diff": 0.0,
+   "total_spikes": 50265,
+   "ar1_status": "measured",
+   "ar1_reason": null,
+   "phi_smoothed": 0.6098297142844548,
+   "phi_unsmoothed": -0.25707694736261505,
+   "phi_used": 0.6098297142844549,
+   "tau_s": 1.8477,
+   "lb_p": 3.2743681099844935e-09,
+   "pipeline": "0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)（平滑后 n=127 帧；未平滑 n=131 帧）"
+  }
+ ],
+ "cross_check_lam1": {
+  "M-1": {
+   "this_node_tau_s": 1.5812,
+   "mainagent_independent_tau_s": 1.581,
+   "abs_diff_s": 0.00019999999999997797
+  },
+  "M-4": {
+   "this_node_tau_s": 2.3106,
+   "mainagent_independent_tau_s": 2.311,
+   "abs_diff_s": 0.00039999999999995595
+  },
+  "M-6": {
+   "this_node_tau_s": 2.2102,
+   "mainagent_independent_tau_s": 2.21,
+   "abs_diff_s": 0.00019999999999997797
+  },
+  "M0": {
+   "this_node_tau_s": 1.8398,
+   "mainagent_independent_tau_s": 1.84,
+   "abs_diff_s": 0.00019999999999997797
+  }
+ },
+ "RF24_resolution": {
+  "issue1_pop_rate": "**口径 bug 已修**：首版漏除神经元数（frames 是每帧全群脉冲数）⇒ 报 9.6148 Hz，应为 0.2237 Hz（差 43×，第四例同族）；现 `pop_rate_hz=frames.mean()/FRAME_S/n_neurons`，并**内置 A3 硬断言**（均值法 vs 总量法 ≤2%，实测 rel_diff=0.0）",
+  "issue2_AR1_None": "**非数据属性而是分支丢失原因**：现 AR1 子字典**始终**含 status/reason/phi/n_frames/pipeline；λ×0 臂状态为 `invalid`，原因 explicit：**φ_smoothed=−0.0956（零驱动近静默序列呈交替性）**",
+  "issue3_tau_discrepancy": "**臂别错配**：本节点 RF-18 文件算的是 **λ×0**（M-6 τ=3.072 s），您独立算的是 **λ×1**（M-6 τ=2.210 s）⇒ **λ×1 上两者完全一致**（M0 1.8398/1.840、M-1 1.5812/1.581、M-4 2.3106/2.311、M-6 2.2102/2.210，差 ≤0.0004 s）",
+  "smoothing_sensitivity": {
+   "finding": "**5 帧平滑是 τ 存在的必要条件**：λ×1 臂未平滑 φ = −0.41/−0.14/−0.31/−0.34（全负 ⇒ 无慢过程），平滑后 φ=0.56–0.67；**唯一例外 M-4 λ×4**：未平滑 φ=0.904、平滑 φ=0.890 ⇒ 其慢结构**对平滑稳健**（强化 L48.2 的方向性发现）",
+   "note": "B4 管线含 5 帧平滑 ⇒ 与成像侧同口径；但该敏感性必须随 τ 结论携带（属口径依赖）"
+  },
+  "P6_primary_criterion_closed_loop": "**主判据（AR(1) τ）**：模型 **1.58–2.31 s** vs 成像 **37.180 s**（窗 [9.4,146.3] s）⇒ **全部级别 ❌**；残差非白噪（Ljung-Box p≈0）⇒ τ 仅作粗粒度指标；次级口径（同法 dwell ×343、转换率 ×~3000）方向一致。"
+ }
+}

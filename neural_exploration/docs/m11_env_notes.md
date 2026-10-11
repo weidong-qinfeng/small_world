@@ -7,7 +7,7 @@
 > **解释器**：`./.venv-m11/bin/python`（3.9.6，本轮新建：h5py 3.14.0 / numpy 2.0.2 / pypdf 6.20.0；
 > **未触碰** `.venv-m9`/`.venv-m10`/`.venv-neuro`/`.venv-db` 已有包 —— 见 L17）
 > **运行前缀**：`cd /Users/weidong/ai/small_world && PYTHONHASHSEED=0 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1`
-> **墙钟**：本轮 G2 实测 **≈2.8 h 墙钟**（含 2 次全量可达性探测重跑 + 136 MB 有界子集 + Allen NWB 部分下载作业）
+> **墙钟**：本轮 G2 实测 **≈4.0 h 墙钟**（08:09→12:15 UTC；含 2 次全量可达性探测重跑 + 136 MB 有界子集 + Allen NWB 部分下载与停滞等待）
 > **机器负载**：本机 10 核上另有并行长作业（`uptime` 负载 6–8）；本节点**全程限线程、零 GPU/MPS 作业**。
 
 ---
@@ -242,7 +242,7 @@ BigTIFF 头解析（`data/m11_raw/microns/functional/tif_head_17797_4_10_v1.bin`
 |---|---|---|
 | Cell Types API（小鼠 `ApiCellTypesSpecimenDetail`） | HTTP 200；**`total_rows = 1920`**；54 字段，其中 **11 个 `ef__*` 电生理特征** | **REACHABLE** |
 | 元数据表落盘 | **1,920 / 1,920 行**（分页 5 × 400，`start_row`/`num_rows` 各占一个方括号；3.29 MB） | **measured（全取）** |
-| `ef__avg_firing_rate` 分布（表内自算） | n=1920，min/median/max 见 `data/m11_data_counts.json` | `measured`（**P8 类型级带的输入**） |
+| `ef__avg_firing_rate` 分布（表内自算） | **n=1,808**（1920 行中 112 行该字段缺失 ⇒ 不补 0），median **17.44 Hz**、min 1.99 / max 261.2（全值见 `data/m11_data_counts.json`） | `measured`（**P8 类型级带的输入**） |
 | per-cell NWB `well_known_file_download/664222041` | HEAD 200：**content-length = 91,560,414**，`filename="486940961_ephys.nwb"`；`Range:0-99` → **206** | **REACHABLE（object-level）** |
 | NWB 头解析 | **44.7 MB 可见前缀** + **稀疏文件技巧**（`truncate` 到声明长度使 HDF5 超级块校验通过）→ **HDF5/NWB 打开成功**；状态 **`partial`**（`visititems` 越过前缀区即止：`free block size is zero`）。**实测读回**：`nwb_version = b'NWB-1.0.5'`（**NWB 1.x，非 2.x**）、`file_create_date = b'Wed Feb 28 16:57:03 2018'`、根组含 `acquisition / analysis / epochs / general / processing / stimulus`、`acquisition/timeseries/**Sweep_10**` 的属性为 `ancestry=[TimeSeries, PatchClampSeries, CurrentClampSeries]`、`help="Voltage recorded from cell during current-clamp recording"` ⇒ **per-cell 电流钳记录结构真实可读** | `measured(部分)` |
 | BO Neuropixels NWB（`allen-brain-observatory` S3） | 有界列举 **569 个对象 / 853.7 GB**（未截断）；对象级 HEAD：`…/probe_810755797_lfp.nwb` → **200 / 2,062,950,784 B** | **REACHABLE（对象级）** |
@@ -411,7 +411,7 @@ RF-M11-2 要求：M11 定稿 dwell 带前必须做"目标数据劈半 + 同协�
 | §1 数据门 CPU | ≤40 CPU-h | **≈0.5–0.8 CPU-h**（纯网络 I/O + SHA；全部单线程 `OMP_NUM_THREADS=1`） |
 | GPU | 0 | **0**（未起任何 GPU/MPS 作业——纪律遵守） |
 | 下载量（**新增**） | 单次 ≤2 GB、总计 ≤6 GB | **≈0.21 GB**：功能子集 **136.3 MB** + NWB **44.7 MB** + NWB 8 MB 前缀 + 元数据/文献/探测 **≤20 MB** |
-| 墙钟 | 6–12 天（人日） | **≈2.8 h**（08:09→10:55 UTC）：探测首轮 18.9 min + 重跑 33.9 min + 结构/功能/子集 ≈29 min + Allen ≈4 min + 文献/清单/判定 ≈6 min |
+| 墙钟 | 6–12 天（人日） | **≈4.0 h**（08:09→12:15 UTC）：探测首轮 18.9 min + 重跑 33.9 min + 结构/功能/子集 ≈29 min + Allen ≈4 min + 文献/清单/判定 ≈10 min + **NWB 停滞等待 ≈50 min** |
 | 并发纪律 | 禁止并行大作业 | **两次主动串行化**：① 暂停 NWB 让子集完成（L9.3c）；② NWB 停滞 48 min 未增长 ⇒ **停掉并改为交付"前缀 + header 解析"**（L21#4） |
 
 ---
@@ -463,10 +463,44 @@ RF-M11-2 要求：M11 定稿 dwell 带前必须做"目标数据劈半 + 同协�
 
 ---
 
-## L23 — 交主 agent 的三个决策请求
+## L23 — ★ 新发现：MICrONS **功能连接组学发布**（结构-功能同源**逐细胞/逐对**表）
+
+探测 **F17** 时发现 `functional_connectomics/node_and_edge_properties/v1/` 是一个**小而关键的发布**：
+
+| 对象 | 字节 | 本轮处置 |
+|---|---|---|
+| `readme_v1.md` | **5,594** | **已落盘**（`data/m11_raw/microns/functional_connectomics_readme_v1.md`） |
+| `node_data_v1.pkl` | **294,635,032（294.6 MB）** | **未取** —— 交主 agent 裁决（DQ-4） |
+| `edge_data_v1.pkl` | **201,511,086（201.5 MB）** | **未取** —— 同上 |
+
+**readme 原文给出的 schema（逐列可核）**：
+- `node_data`（**逐神经元一行**）：`nucleus_id / animal_id / scan_session / scan_idx / unit_id`、
+  **EM 坐标** `nucleus_x,y,z`(nm)、`hva`（V1 vs HVA）、`brain_area`（HVA 细分 RL/AL/LM）、**`layer`（皮层分层）**、
+  **功能量**：`pref_ori`、`pref_dir`、**`osi_iv` / `gosi_iv`（in vivo 取向选择性）**、`in_vivo_mean_resp`、
+  `mei`（最大兴奋图）、`mask`、`readout_cvt` / `position_stim_cvt` / `sta_mu_comb`（CvT 数字孪生）、
+  `cc_*_cvt`（孪生模型性能）。
+- `edge_data`（**逐神经元对一行**）：`pre/post_nucleus_id`、`population`（`Connected` / `ADP` / `Same region`
+  —— **即"真连接 / 距离匹配对照 / 同区对照"**）、**`n_synapses`（突触数）**、`synapse_size`（裂隙体积）、
+  `dend_len`、`pre/post_hva`、`pre/post_layer`、`proj_hva(_layer)`、
+  **`in_vivo_sig_corr_iv`（in vivo 信号相关）**、`in_silico_sig_corr_cvt`、`delta_ori_iv`、…。
+- 出处（readme 原文）：**Ding et al. 2025, DOI 10.1038/s41586-025-08840-3**，
+  "Functional connectomics reveals general wiring rule in mouse visual cortex"，代码 `cajal/microns-funconn-2025`。
+
+⇒ **对 M11 的直接影响（重要）**：
+1. 这是**唯一实测找到的"同源结构-功能逐细胞表"**（EM 坐标 + 分层 + 区属 + in vivo 调谐/反应 + 逐突触对数），
+   直接服务 **H4（结构-功能映射）**、**P7（OSI/调谐分布同口径）**、**P8（层/区差异）**、**P14（群体相关）**，
+   并且 `population` 列**自带"距离匹配"与"同区"对照**——正是 M11 需要的**负对照**材料。
+2. 体积 **≈496 MB（两表）**，在"单次 ≤2 GB / 总计 ≤6 GB"内；但按项目纪律（>30 min 需先汇报），
+   本节点**未启动**该下载 ⇒ 登记 **DQ-4**（见 L24）。
+3. 该发布**不在清单 §1.6 的 51 源内**（清单 §1.7 只泛泛提到"conn 属性衍生表"）⇒ 建议补入清单 §1.6/§1.7。
+
+---
+
+## L24 — 交主 agent 的四个决策请求
 
 | # | 请求 | 影响 | 建议 |
 |---|---|---|---|
 | **DQ-1** | 是否允许"**不取 v8 DataJoint DB**"，改走**场级重建**（144 ROI 掩膜 + 2 field 钙电影）？ | 决定 P2 的 `measured` 范围与 P7/P14 的逐细胞口径 | **建议允许**（DB 取数需 20–30 天，等于停工） |
 | **DQ-2** | 是否由主 agent 起**托管后台作业**继续 NWB 全量（91.5 MB，约 40–50 min）并做完整头解析？ | 决定 Allen per-cell 通道的证据级别（partial → full） | **建议：让现有作业跑完**（已续传，零额外成本） |
 | **DQ-3** | L19 的 19 条冲突项是否按"新增行 + 保留原行"逐条落入清单 §1.6/§1.1？ | 判据带定稿纪律（运行前定稿） | **建议逐条落入**，并给 `m11_microns_protocol.json` 加"待核口径"指针（L11.3/L11.5） |
+| **DQ-4** | 是否为 **L23 的两个 pkl**（node 294.6 MB / edge 201.5 MB，合计 ≈496 MB）起**托管下载作业**？ | 决定 P2 能否**同源同口径**算出 C1（调谐/OSI）与 C2（群体相关），并把 P2 从 `partial_pass` 推向全过；亦直接影响 P7/P8/P14 的对照材料 | **建议批准**（在预算内；按 200–350 KB/s 估 ≈25–45 min，建议**分段 + 断点续传 + 增量日志**；本节点因 >30 min 纪律**未自启**） |

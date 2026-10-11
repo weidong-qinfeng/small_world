@@ -569,7 +569,7 @@ def main() -> int:
     ap.add_argument("--out-json", default=OUT_JSON)
     ap.add_argument("--out-fig", default=OUT_FIG)
     ap.add_argument("--stages", default="A,B,C,D,E,F",
-                    help="要跑的分析项（逗号分隔）：A/B/C/D/E/F/G（G=AR(1) τ 容差研究）")
+                    help="要跑的分析项（逗号分隔）：A/B/C/D/E/F/G/H（G=τ 容差研究；H=平滑依赖度 未平滑 vs 5 帧）")
     ap.add_argument("--out-tau-csv", default=OUT_TAU_CSV,
                     help="G 项专用小表（τ 参考；仅 stages 含 G 时写出）")
     ap.add_argument("--out-tau-json", default=OUT_TAU_JSON)
@@ -1390,6 +1390,180 @@ def main() -> int:
             "模型侧窗 [8,80] s × 9 条件", "本工具 G 项（只读观测模型侧现窗）",
             "τ 落窗比例（模型侧现判据的实测覆盖率）")
 
+    # ================= H：平滑依赖度（未平滑 vs 5 帧平滑 的 AR(1) φ/τ；与 A/C 同一序列） =========
+    if "H" in stages:
+        log("[H] 平滑依赖度：同一群体序列的 未平滑(smooth_frames=1) vs 5 帧平滑 的 AR(1) φ/τ/LB ...")
+        raw_h1 = bin_sum(pop, 1)                                  # 未平滑：群体事件计数（无滑动平均）
+        raw_h5 = smooth_same(raw_h1, SMOOTH_BINS_REF)             # 5 帧滑动平均（= A/C 项用的 raw_ref）
+        ser_h1, ser_h5 = zscore(raw_h1), zscore(raw_h5)
+        same_as_ref = bool(np.array_equal(ser_h5, ser_ref))
+        win_s = SMOOTH_BINS_REF * DT_S                            # 平滑窗等效时长 ≈ 4.569 s
+
+        def _variant(nm, frames, ser, raw):
+            f = ar_fit(ser, 1)
+            fr = ar_fit(raw, 1)                                   # 原始（未 z）路径：φ 必须相同
+            k = int(0.8 * ser.size)
+            ll = ar_predictive_ll(ser[:k], ser[k:], 1)
+            se = math.sqrt(max(1e-18, (1.0 - f["phi"] ** 2) / f["n"]))
+            z = f["phi"] / se
+            return dict(smooth_frames=int(frames), series_def=nm, n=int(f["n"]),
+                        phi=f["phi"], tau_s=f["tau_s"],
+                        phi_bias_corrected=f["phi_bias_corrected"],
+                        tau_s_bias_corrected=f["tau_s_bias_corrected"],
+                        phi_vs_raw_rel_diff=(float(abs(f["phi"] - fr["phi"]) / abs(f["phi"]))
+                                             if f["phi"] else None),
+                        phi_se=float(se), phi_z=float(z),
+                        phi_p_two_sided=float(math.erfc(abs(z) / math.sqrt(2.0))),
+                        test_loglik_per_frame=float(ll["test_loglik_per_frame"]),
+                        tau_over_smooth_window=(float(f["tau_s"] / win_s) if f["tau_s"] else None),
+                        ljung_box=f["ljung_box"], resid_lag1=f["lag1_resid_autocorr"],
+                        sigma=float(f["sigma"]))
+        H = dict(smooth_window_s=float(win_s), same_input_series_as_A_C=same_as_ref,
+                 sha256_ser_h5=hashlib.sha256(ser_h5.tobytes()).hexdigest(),
+                 sha256_ser_h1=hashlib.sha256(ser_h1.tobytes()).hexdigest(),
+                 variants=[_variant("未平滑（群体事件计数，无滑动平均）", 1, ser_h1, raw_h1),
+                           _variant("5 帧滑动平均（= A/C 项口径）", SMOOTH_BINS_REF, ser_h5, raw_h5)],
+                 note="两侧**同一输入序列**（平滑档与 A/C 项逐位同一，脚本内断言）；AR(1) 对线性重标度不变，"
+                      "故各档 φ 在 原始/z 两路径下必须相同（并列相对差）")
+        v1, v5 = H["variants"]
+        # 关键诊断：未平滑 φ 是否被**帧级独立噪声**压低？AR(1)+白噪声 的标准识别：
+        #   x_t = s_t + e_t（s 为 AR(1)）⇒ ρ1 = φ·V_s/V_x、ρ2 = φ²·V_s/V_x
+        #   ⇒ φ_intrinsic = ρ2/ρ1（被压低前的一阶修正估计）、信号方差占比 = ρ2/ρ1²
+        def _rho(series, k):
+            y = np.asarray(series, float) - float(np.mean(series))
+            return float(np.sum(y[k:] * y[:-k]) / np.sum(y * y))
+        r1u, r2u = _rho(ser_h1, 1), _rho(ser_h1, 2)
+        phi_int = (r2u / r1u) if r1u else None
+        sig_frac = (r2u / (r1u ** 2)) if r1u else None
+        cnt = bin_sum(pop, 1)
+        sd_diff_obs = float(np.std(np.diff(cnt)))
+        sd_diff_poisson = float(math.sqrt(2.0 * float(cnt.mean())))
+        H["noise_decomposition"] = dict(
+            series="未平滑 z 分数群体计数（smooth_frames=1）",
+            rho1=r1u, rho2=r2u,
+            phi_intrinsic_estimate=(float(phi_int) if phi_int else None),
+            tau_intrinsic_estimate_s=(float(-DT_S / math.log(phi_int))
+                                      if phi_int and 0 < phi_int < 1 else None),
+            signal_variance_fraction=(float(sig_frac) if sig_frac else None),
+            phi_ar1_fit=v1["phi"],
+            sd_first_difference_observed=sd_diff_obs,
+            sd_first_difference_poisson_ref=sd_diff_poisson,
+            excess_over_poisson=float(sd_diff_obs / sd_diff_poisson),
+            note="φ_intrinsic = ρ2/ρ1 是「帧级独立噪声压低 AR(1) φ」的标准一阶修正（仍不加平滑）；"
+                 "excess = 观测一阶差分 sd / 若同一计数为独立 Poisson 的期望 sd"
+                 "（>1 ⇒ 帧间变化主要来自共享群体波动而非计数噪声）")
+        if phi_int:
+            log(f"[H] 噪声分解（未平滑）：ρ1={r1u:.4f} ρ2={r2u:.4f} ⇒ φ_内在估计={phi_int:.4f} "
+                f"τ_内在={H['noise_decomposition']['tau_intrinsic_estimate_s']:.3f} s "
+                f"（对比 AR(1) 直接拟合 φ={v1['phi']:.4f} / τ={v1['tau_s']:.3f} s）；"
+                f"信号方差占比={sig_frac:.3f}")
+        log(f"[H] 计数噪声对照：一阶差分 sd 观测={sd_diff_obs:.2f} vs 独立 Poisson 期望={sd_diff_poisson:.2f}"
+            f"（{sd_diff_obs / sd_diff_poisson:.2f}×）⇒ 帧间变化以共享波动为主")
+        add("h_unsmoothed_rho1", r1u, "", "AR(1)", "未平滑", "本工具 H 项", "")
+        add("h_unsmoothed_rho2", r2u, "", "AR(1)", "未平滑", "本工具 H 项", "")
+        add("h_unsmoothed_phi_intrinsic", H["noise_decomposition"]["phi_intrinsic_estimate"], "",
+            "AR(1)+白噪声", "未平滑", "本工具 H 项", "ρ2/ρ1：帧级噪声压低后的修正估计")
+        add("h_unsmoothed_tau_intrinsic_s", H["noise_decomposition"]["tau_intrinsic_estimate_s"],
+            "s", "AR(1)+白噪声", "未平滑", "本工具 H 项", "修正后的内在 τ（仍不加平滑）")
+        add("h_diff_sd_over_poisson", H["noise_decomposition"]["excess_over_poisson"], "x",
+            "计数统计", "未平滑", "本工具 H 项", "观测一阶差分 sd / 独立 Poisson 期望")
+        H["tau_ratio_5frame_over_1frame"] = (float(v5["tau_s"] / v1["tau_s"])
+                                            if v1["tau_s"] else None)
+        H["smoothing_independent_slow_structure"] = dict(
+            phi_unsmoothed=v1["phi"], phi_z=v1["phi_z"], phi_p=v1["phi_p_two_sided"],
+            tau_unsmoothed_s=v1["tau_s"], tau_over_smooth_window=v1["tau_over_smooth_window"],
+            tau_unsmoothed_noise_corrected_s=H["noise_decomposition"]["tau_intrinsic_estimate_s"],
+            case=("(a) 独立于平滑的慢结构成立"
+                  if (v1["phi"] > 0 and v1["phi_p_two_sided"] < 0.01
+                      and (v1["tau_over_smooth_window"] or 0) > 2.0)
+                  else "(b) 存在内在正自相关但尺度**小于平滑窗**：26.5/37.2 s 量级的「慢」不能宣称独立于平滑"
+                  if (v1["phi"] > 0 and v1["phi_p_two_sided"] < 0.01)
+                  else "(c) 与模型侧 λ×1 同病：未平滑无正自相关"),
+            verdict=None)
+        _v = H["smoothing_independent_slow_structure"]
+        _v["verdict"] = (
+            f"**{_v['case']}**：未平滑 φ={v1['phi']:.4f}（z={v1['phi_z']:.1f}，p={v1['phi_p_two_sided']:.2e}）、"
+            f"τ={v1['tau_s']:.2f} s = 平滑窗 {win_s:.2f} s 的 {v1['tau_over_smooth_window']:.2f}×"
+            f"（噪声压低修正后 τ={H['noise_decomposition']['tau_intrinsic_estimate_s']:.2f} s）；"
+            f"5 帧平滑把 τ 放大 {H['tau_ratio_5frame_over_1frame']:.2f}×（→{v5['tau_s']:.2f} s）" + (
+                " ⇒ 成像侧存在**不依赖 5 帧平滑**的慢结构（与模型侧 λ×1 臂未平滑 φ<0 形成对照）"
+                if _v["case"].startswith("(a)") else
+                " ⇒ 成像侧的「慢」**显著依赖 5 帧平滑**，不能作为 26.5/37.18 s 量级慢状态的独立证据；"
+                "按预注册纪律**立即上报**（但注意：未平滑 φ 显著 >0 ⇒ 仍有真实（较快）的群体慢涨落，"
+                "与模型侧 λ×1 的 φ<0 并非同病）"
+                if _v["case"].startswith("(b)") else
+                " ⇒ 成像侧未平滑无正自相关，与模型侧 λ×1 同病，**必须立即上报并修正结论表述**"))
+        for v in (v1, v5):
+            log(f"[H] 平滑={v['smooth_frames']} 帧: φ={v['phi']:.5f}（偏置修正 {v['phi_bias_corrected']:.5f}，"
+                f"z={v['phi_z']:.1f}，p={v['phi_p_two_sided']:.2e}）τ={v['tau_s']:.3f} s "
+                f"（= 平滑窗 {win_s:.2f} s 的 {v['tau_over_smooth_window']:.1f}×）"
+                f"留出ll/帧={v['test_loglik_per_frame']:.4f} "
+                f"LB lag10 Q={v['ljung_box']['lag10']['Q']:.1f} 残差lag1={v['resid_lag1']:.4f} "
+                f"φ(原始/z 相对差)={v['phi_vs_raw_rel_diff']:.2e}")
+            add(f"h_smooth{v['smooth_frames']}_phi", v["phi"], "", "AR(1)",
+                f"smooth_frames={v['smooth_frames']}", "本工具 H 项",
+                f"z={v['phi_z']:.1f} p={v['phi_p_two_sided']:.2e}")
+            add(f"h_smooth{v['smooth_frames']}_tau_s", v["tau_s"], "s", "AR(1)",
+                f"smooth_frames={v['smooth_frames']}", "本工具 H 项",
+                f"= 平滑窗 {win_s:.2f} s 的 {v['tau_over_smooth_window']:.1f}×")
+            add(f"h_smooth{v['smooth_frames']}_ll_per_frame", v["test_loglik_per_frame"],
+                "nats/frame", "AR(1)", f"smooth_frames={v['smooth_frames']}", "本工具 H 项",
+                "段内 80/20 留出")
+            add(f"h_smooth{v['smooth_frames']}_lb_lag10_Q", v["ljung_box"]["lag10"]["Q"], "",
+                "AR(1) 残差白噪", f"smooth_frames={v['smooth_frames']}", "本工具 H 项",
+                f"p={v['ljung_box']['lag10']['p']:.3g}")
+        log(f"[H] 平滑档与 A/C 项输入序列逐位同一 = {same_as_ref}；"
+            f"τ 比值（5 帧/未平滑）= {H['tau_ratio_5frame_over_1frame']:.3f}×")
+        log(f"[H] 结论：{H['smoothing_independent_slow_structure']['verdict']}")
+        add("h_tau_ratio_5frame_over_1frame", H["tau_ratio_5frame_over_1frame"], "x", "AR(1)",
+            "5帧/未平滑", "本工具 H 项", "平滑对 τ 的放大倍数")
+        add("h_same_input_series_as_A_C", 1.0 if same_as_ref else 0.0, "bool", "AR(1)", "5 帧档",
+            "本工具 H 项", f"sha256(ser_h5)={H['sha256_ser_h5'][:16]}")
+
+        offs_h = list(ZAP["condition_offsets"])
+        names_h = list(ZAP["condition_names"])
+        H["conditions"] = []
+        for i, nm in enumerate(names_h):
+            a, b = offs_h[i], offs_h[i + 1]
+            sub_raw = pop[a:b]
+            f1 = ar_fit(zscore(bin_sum(sub_raw, 1)), 1)
+            f5 = ar_fit(zscore(smooth_same(bin_sum(sub_raw, 1), SMOOTH_BINS_REF)), 1)
+            H["conditions"].append(dict(name=nm, n_frames=int(b - a),
+                                        phi_unsmoothed=f1["phi"], tau_unsmoothed_s=f1["tau_s"],
+                                        phi_smooth5=f5["phi"], tau_smooth5_s=f5["tau_s"]))
+            log(f"[H2] {nm:10s} T={b - a:4d} | 未平滑 φ={f1['phi']:+.4f} τ={f1['tau_s']} | "
+                f"5 帧 φ={f5['phi']:.4f} τ={f5['tau_s']:.2f} s")
+
+        def _disp_h(vals):
+            v = np.asarray([x for x in vals if x is not None and np.isfinite(x)], float)
+            q1, q3 = float(np.quantile(v, 0.25)), float(np.quantile(v, 0.75))
+            return dict(n=int(v.size), median=float(np.median(v)), q1=q1, q3=q3, iqr=q3 - q1,
+                        min=float(v.min()), max=float(v.max()),
+                        max_over_median=float(v.max() / abs(np.median(v))) if np.median(v) else None,
+                        n_negative=int((v < 0).sum()))
+        H["condition_dispersion"] = dict(
+            phi_unsmoothed=_disp_h([r["phi_unsmoothed"] for r in H["conditions"]]),
+            phi_smooth5=_disp_h([r["phi_smooth5"] for r in H["conditions"]]),
+            tau_unsmoothed_s=_disp_h([r["tau_unsmoothed_s"] for r in H["conditions"]]))
+        cd = H["condition_dispersion"]
+        log(f"[H2] 未平滑 φ: 中位={cd['phi_unsmoothed']['median']:.4f} "
+            f"IQR=[{cd['phi_unsmoothed']['q1']:.4f}, {cd['phi_unsmoothed']['q3']:.4f}] "
+            f"范围=[{cd['phi_unsmoothed']['min']:.4f}, {cd['phi_unsmoothed']['max']:.4f}] "
+            f"负值条件数={cd['phi_unsmoothed']['n_negative']}/9 | "
+            f"5 帧 φ: 中位={cd['phi_smooth5']['median']:.4f} "
+            f"范围=[{cd['phi_smooth5']['min']:.4f}, {cd['phi_smooth5']['max']:.4f}]")
+        for nm_, v in cd.items():
+            add(f"h_cond_disp_{nm_}_median", v["median"], "", "AR(1)", "9 条件", "本工具 H 项",
+                f"范围=[{v['min']:.4f}, {v['max']:.4f}] 负值={v['n_negative']}")
+        for r in H["conditions"]:
+            add(f"h_cond_{r['name']}_phi_unsmoothed", r["phi_unsmoothed"], "", "AR(1)",
+                f"条件段 {r['name']}", "本工具 H 项", "供 M11 S 门目标带")
+            add(f"h_cond_{r['name']}_tau_unsmoothed_s", r["tau_unsmoothed_s"], "s", "AR(1)",
+                f"条件段 {r['name']}", "本工具 H 项", "")
+            add(f"h_cond_{r['name']}_phi_smooth5", r["phi_smooth5"], "", "AR(1)",
+                f"条件段 {r['name']}", "本工具 H 项", "")
+        results["H"] = H
+
     # ---------- §8 可操作建议（数字全部由上面结果推出） ----------
     rec: dict = {}
     try:
@@ -1586,7 +1760,9 @@ def make_figure(res: dict, path: str) -> None:
             break
     matplotlib.rcParams["axes.unicode_minus"] = False
 
-    fig, ax = plt.subplots(2, 4, figsize=(25, 10))
+    fig, ax = plt.subplots(3, 4, figsize=(25, 14))
+    for _c in (1, 2, 3):
+        ax[2, _c].axis("off")
     # (1) B 箱宽曲线
     if "B" in res:
         for vname, ls in (("nosm", "-o"), ("sm46", "--s")):
@@ -1700,6 +1876,26 @@ def make_figure(res: dict, path: str) -> None:
                            f"τ 容差 {tvd.get('tau_dispersion_max_over_min', float('nan')):.2f}× vs "
                            f"dwell 容差 {tvd.get('dwell_dispersion_max_over_min') or float('nan'):.2f}×")
         ax[1, 3].legend(fontsize=7); ax[1, 3].grid(alpha=.3)
+    # (9) H：平滑依赖度（未平滑 vs 5 帧平滑；9 条件 φ 并列）
+    if "H" in res and res["H"].get("conditions"):
+        h = res["H"]
+        nms = [r["name"] for r in h["conditions"]]
+        x = np.arange(len(nms))
+        ax[2, 0].bar(x - 0.2, [r["phi_unsmoothed"] for r in h["conditions"]], 0.4,
+                     color="tab:orange", label="未平滑 φ")
+        ax[2, 0].bar(x + 0.2, [r["phi_smooth5"] for r in h["conditions"]], 0.4,
+                     color="tab:blue", label="5 帧平滑 φ")
+        v1 = h["variants"][0]
+        ax[2, 0].axhline(0, color="k", lw=0.8)
+        ax[2, 0].axhline(v1["phi"], color="tab:orange", ls=":", lw=1,
+                         label=f"全记录未平滑 φ={v1['phi']:.3f}")
+        ax[2, 0].set_xticks(x); ax[2, 0].set_xticklabels(nms, rotation=45, ha="right")
+        ax[2, 0].set_ylabel("AR(1) φ")
+        ax[2, 0].set_title(
+            f"H 平滑依赖度：{h['smoothing_independent_slow_structure']['case']}\n"
+            f"未平滑 τ={h['variants'][0]['tau_s']:.2f}s → 5 帧 τ={h['variants'][1]['tau_s']:.2f}s"
+            f"（×{h['tau_ratio_5frame_over_1frame']:.1f}，平滑窗 {h['smooth_window_s']:.1f}s）")
+        ax[2, 0].legend(fontsize=7); ax[2, 0].grid(alpha=.3)
     fig.suptitle("M10-B4 ZAPBench 成像侧 dwell/τ 基准同口径复核（8192×7879, 1.0943 Hz）")
     fig.tight_layout()
     os.makedirs(os.path.dirname(path), exist_ok=True)

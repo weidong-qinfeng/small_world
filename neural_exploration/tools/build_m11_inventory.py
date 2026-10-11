@@ -349,6 +349,10 @@ def main():
             impact="可得后 P2 的 C1（调谐/OSI 分布）与 C2（群体相关/有效维度）可**同源同口径**计算，"
                    "并直接服务 H4（结构-功能映射）与 P8（层/区/类差异）"),
         unavailable_register=[
+            "**细胞数 / 突触数（MICrONS）= 未测**（`unavailable`，**不得写 0、不得算负结果**）："
+            "权威逐细胞表 `node_data_v1.pkl`（294.6 MB）与逐对突触表 `edge_data_v1.pkl`（201.5 MB）本轮未取（DQ-4）；"
+            "论文档锚（literature）= '>200,000 cells / 0.5 billion synapses'（Nature 2025）；"
+            "Allen 侧可得锚 = Cell Types 1,920 标本（measured）",
             "MICrONS 逐细胞 ΔF/F 与 ROI 轨迹：仅存在于 v8 DataJoint MySQL 数据库"
             "（103.8 GB docker tar 或 116.2 GB SQL dump）→ 本轮未取（超预算）⇒ unavailable（非 0、非未命中）",
             "MICrONS 全 144 field 的扫描级 fps/nframes/nfields：在数据库 Scan 表内 → 本轮 unavailable；"
