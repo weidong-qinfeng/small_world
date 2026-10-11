@@ -1,6 +1,6 @@
 {
  "generated_by": "tools/validate_p11_data_gate.py",
- "generated_at": "2026-10-11T15:10:58Z",
+ "generated_at": "2026-10-11T15:11:25Z",
  "gate": "G2 (P1/P2 数据门)",
  "assertions": [
   {
@@ -277,6 +277,11 @@
    "assertion": "P1.10c P2 判定草案已落盘（待确认、未定稿）",
    "ok": true,
    "detail": "命中 §6d"
+  },
+  {
+   "assertion": "DET 复跑 verdict 一致（确定性）",
+   "ok": true,
+   "detail": "[{\"source_id\": \"2\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"3\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F7\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F8\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F9\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}]"
   }
  ],
  "failures": [],
@@ -298,5 +303,41 @@
   "n_assertions": 19,
   "n_failed": 0
  },
- "G2_gate": "pass"
+ "G2_gate": "pass",
+ "determinism_check": {
+  "note": "复跑固定子集（#2/#3/F7/F8/F9），比对 verdict 是否一致",
+  "comparisons": [
+   {
+    "source_id": "2",
+    "first": "REACHABLE",
+    "rerun": "REACHABLE",
+    "same": true
+   },
+   {
+    "source_id": "3",
+    "first": "REACHABLE",
+    "rerun": "REACHABLE",
+    "same": true
+   },
+   {
+    "source_id": "F7",
+    "first": "REACHABLE",
+    "rerun": "REACHABLE",
+    "same": true
+   },
+   {
+    "source_id": "F8",
+    "first": "REACHABLE",
+    "rerun": "REACHABLE",
+    "same": true
+   },
+   {
+    "source_id": "F9",
+    "first": "REACHABLE",
+    "rerun": "REACHABLE",
+    "same": true
+   }
+  ],
+  "all_same": true
+ }
 }

@@ -1,6 +1,50 @@
 {
  "generated_by": "tools/build_m11_allen_activity.py",
- "generated_at": "2026-10-11T14:35:06Z",
+ "generated_at": "2026-10-11T15:11:13Z",
+ "dq2_local_nwb_parse": {
+  "local_files": {
+   "sparse_staging_bytes": 91560414,
+   "real_prefix_bytes": 44695552,
+   "note": "**稀疏表观 91,560,414 B，真实数据仅前 44695552 B**（其余为洞/0）"
+  },
+  "readable": {
+   "nwb_version": "b'NWB-1.0.5'",
+   "root_keys": [
+    "acquisition",
+    "analysis",
+    "epochs",
+    "file_create_date",
+    "general",
+    "identifier",
+    "nwb_version",
+    "processing",
+    "session_description",
+    "session_start_time",
+    "stimulus"
+   ],
+   "file_create_date": "array([b'Wed Feb 28 16:57:03 2018'], dtype=object)",
+   "first_sweep": {
+    "name": "acquisition/timeseries/Sweep_10",
+    "attrs": {
+     "ancestry": "[b'TimeSeries' b'PatchClampSeries' b'CurrentClampSeries']",
+     "comments": "",
+     "description": "",
+     "help": "Voltage recorded from cell during current-clamp recording",
+     "missing_fields": "[b'capacitance_compensation' b'gain']",
+     "neurodata_type": "TimeSeries",
+     "source": ""
+    }
+   }
+  },
+  "not_readable": {
+   "general_extracellular_ephys": "`Unable to get group info (bad symbol table node signature)` ⇒ 落在前缀之外的洞",
+   "acquisition_sampling_rate": "`timeseries.keys() → Unable to get group info` ⇒ 未取",
+   "units_spike_times": "`/units` 与 `/processing` 均在洞内 ⇒ 未取",
+   "session_subject": "`/general` 不可达 ⇒ 未取"
+  },
+  "verdict": "`unavailable`（**本地字节不足**，非未测；网络 1.6–16 KB/s 与 DANDI 7.2 KB/s ⇒ 不续取）",
+  "substitute": "**采样率与 units/traces 结构改由自描述表读回**：probes.csv（完整）⇒ spike 30,000.3 Hz / LFP 2,500.03 Hz；units.csv 27 列 schema（firing_rate/snr/isi_violations/quality/…）"
+ },
  "units_count_derived": {
   "evidence": "**derived（外推，不是 measured）**",
   "method": "行数 ≈ 前缀行数 × (全量字节 / 前缀字节)；假设行均长在文件内近似constant",
@@ -222,7 +266,7 @@
    "range": null,
    "expected_bytes": 1879,
    "use": "数据集清单（BASEDIR/sessions/probes/channels/units/session_data）",
-   "retrieved_at": "2026-10-11T14:35:06Z",
+   "retrieved_at": "2026-10-11T15:11:13Z",
    "bytes": 1879,
    "sha256": "f704d2f9127bcde83942815dd5ed6ebe757a1742f4745b45264bb5a323a4c62d",
    "verdict": "COMPLETE",
@@ -234,7 +278,7 @@
    "range": null,
    "expected_bytes": 7849,
    "use": "session 级元数据（type/specimen/age/sex/genotype/has_nwb）",
-   "retrieved_at": "2026-10-11T14:35:06Z",
+   "retrieved_at": "2026-10-11T15:11:13Z",
    "bytes": 7849,
    "sha256": "cdd12b8becac84d284f222718a2a94f4155893fb9f26f1a9c725f541acc738f8",
    "verdict": "COMPLETE",
@@ -246,7 +290,7 @@
    "range": null,
    "expected_bytes": 26954,
    "use": "**采样率读回**：sampling_rate / lfp_sampling_rate / has_lfp_data",
-   "retrieved_at": "2026-10-11T14:35:06Z",
+   "retrieved_at": "2026-10-11T15:11:13Z",
    "bytes": 26954,
    "sha256": "f555ce63317d5b6a83bfafd9f7e6a7b7393c0d7416952bafae0fe67412bfb6bf",
    "verdict": "COMPLETE",
@@ -258,7 +302,7 @@
    "range": "0-1048575",
    "expected_bytes": 1048576,
    "use": "逐 unit 质量表（全量 51,439,189 B **未取** ⇒ 仅前缀 schema/样本）",
-   "retrieved_at": "2026-10-11T14:35:06Z",
+   "retrieved_at": "2026-10-11T15:11:13Z",
    "bytes": 1048576,
    "sha256": "5b09eecda9bb76c7a8dc297528e3e1757fccea0914499c087be1fc78ed7f820d",
    "verdict": "RANGE_BOUNDED",
@@ -271,7 +315,7 @@
    "range": "0-1048575",
    "expected_bytes": 1048576,
    "use": "逐 channel 表（全量 6,613,329 B 未取 ⇒ 仅前缀）",
-   "retrieved_at": "2026-10-11T14:35:06Z",
+   "retrieved_at": "2026-10-11T15:11:13Z",
    "bytes": 1048576,
    "sha256": "297b5e1b2dd8698080c4f42ea6a379ccd4aef8c6d8fa07a2779b8710b935ae74",
    "verdict": "RANGE_BOUNDED",
@@ -284,7 +328,7 @@
    "range": "0-8388607",
    "expected_bytes": 8388608,
    "use": "LFP NWB(HDF5) 前缀 ⇒ 试读电极/单元结构（全量 2,062,950,784 B **>2 GB 上限**；**该前缀已按 >30 min 纪律主动停止**，采样率改由自描述 probes.csv 读回）",
-   "retrieved_at": "2026-10-11T14:35:06Z",
+   "retrieved_at": "2026-10-11T15:11:13Z",
    "bytes": 2314240,
    "sha256": "64082331ebb97604e228a2d39d2bdb5a6950c4931870269b07f7b673256f8215",
    "verdict": "INCOMPLETE",

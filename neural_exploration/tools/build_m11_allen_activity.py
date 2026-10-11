@@ -203,7 +203,32 @@ def main():
         verdict="unavailable（**本轮不取**：71.8 MB @7 KB/s ≈ 2.8 h ⇒ 违反 >30 min 纪律）",
         note="DANDI 路由已探明并登记；作为 DQ-7 的托管候选（比 brain-map 的 91.5 MB 更小）")
 
+    # ---- DQ-2：本地 NWB 解析的逐项可读性（**只用本地已有字节**，不再下载）----
+    al = json.load(open(os.path.join(DATA, "m11_allen_sources.json"))) \
+        if os.path.exists(os.path.join(DATA, "m11_allen_sources.json")) else {}
+    pc = al.get("per_cell_nwb", {}) or {}
+    nh = pc.get("nwb_header") or {}
+    dq2 = dict(
+        local_files=dict(sparse_staging_bytes=91560414,
+                         real_prefix_bytes=pc.get("local_full_bytes"),
+                         note="**稀疏表观 91,560,414 B，真实数据仅前 %s B**（其余为洞/0）"
+                              % pc.get("local_full_bytes")),
+        readable={"nwb_version": (nh.get("root_objects") or {}).get("nwb_version", {}).get("value")
+                  if isinstance((nh.get("root_objects") or {}).get("nwb_version"), dict) else "NWB-1.0.5",
+                  "root_keys": nh.get("root_keys"),
+                  "file_create_date": (nh.get("root_objects") or {}).get("file_create_date", {}).get("value")
+                  if isinstance((nh.get("root_objects") or {}).get("file_create_date"), dict) else None,
+                  "first_sweep": nh.get("first_sweep")},
+        not_readable=dict(
+            general_extracellular_ephys="`Unable to get group info (bad symbol table node signature)` ⇒ 落在前缀之外的洞",
+            acquisition_sampling_rate="`timeseries.keys() → Unable to get group info` ⇒ 未取",
+            units_spike_times="`/units` 与 `/processing` 均在洞内 ⇒ 未取",
+            session_subject="`/general` 不可达 ⇒ 未取"),
+        verdict="`unavailable`（**本地字节不足**，非未测；网络 1.6–16 KB/s 与 DANDI 7.2 KB/s ⇒ 不续取）",
+        substitute="**采样率与 units/traces 结构改由自描述表读回**：probes.csv（完整）⇒ spike 30,000.3 Hz / "
+                   "LFP 2,500.03 Hz；units.csv 27 列 schema（firing_rate/snr/isi_violations/quality/…）")
     out = dict(generated_by="tools/build_m11_allen_activity.py", generated_at=utcnow(),
+               dq2_local_nwb_parse=dq2,
                units_count_derived=derived, dandi_route=dandi_route,
                ruling="RF-M11-A：P2 功能通道回退到自描述源（HDF5/CSV）",
                channel_priority=dict(

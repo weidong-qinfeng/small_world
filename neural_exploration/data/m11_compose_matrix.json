@@ -1,0 +1,2474 @@
+{
+ "generated_by": "tools/scan_m11_compose_matrix.py",
+ "started_at": "2026-10-11T23:10:49",
+ "protocol": {
+  "n": 200,
+  "indegree": 8,
+  "T": 3000,
+  "steps_per_generation": "T",
+  "k_list": [
+   1,
+   2,
+   5,
+   10
+  ],
+  "densities_hz_per_neuron": [
+   0.5,
+   2.0,
+   8.0
+  ],
+  "delay_sets": {
+   "one_bin": [
+    40
+   ],
+   "three_bins": [
+    40,
+    60,
+    80
+   ]
+  },
+  "e1b": {
+   "off": 2,
+   "on": 4
+  },
+  "event_seed": 11,
+  "net_seed": 0,
+  "delivery": "step",
+  "count_rule": "取**最终 t_count**（协议累计），不得把各段返回值相加"
+ },
+ "grid": [
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": true,
+   "k": 1,
+   "total": 57,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": true,
+   "k": 2,
+   "total": 57,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": true,
+   "k": 5,
+   "total": 57,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": true,
+   "k": 10,
+   "total": 57,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": false,
+   "k": 1,
+   "total": 57,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 7,
+    "1": 6,
+    "2": 3,
+    "3": 6
+   },
+   "diff_by_type": {
+    "0": 16,
+    "1": 2,
+    "2": 1,
+    "3": 3
+   }
+  },
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": false,
+   "k": 2,
+   "total": 57,
+   "n_neurons_diff": 2,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 7,
+    "1": 6,
+    "2": 3,
+    "3": 6
+   },
+   "diff_by_type": {
+    "0": 16,
+    "1": 2,
+    "2": 1,
+    "3": 3
+   }
+  },
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": false,
+   "k": 5,
+   "total": 53,
+   "n_neurons_diff": 7,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 7,
+    "1": 6,
+    "2": 3,
+    "3": 6
+   },
+   "diff_by_type": {
+    "0": 16,
+    "1": 2,
+    "2": 1,
+    "3": 3
+   }
+  },
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": false,
+   "k": 10,
+   "total": 72,
+   "n_neurons_diff": 22,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 7,
+    "1": 6,
+    "2": 3,
+    "3": 6
+   },
+   "diff_by_type": {
+    "0": 16,
+    "1": 2,
+    "2": 1,
+    "3": 3
+   }
+  },
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": true,
+   "k": 1,
+   "total": 53,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": true,
+   "k": 2,
+   "total": 53,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": true,
+   "k": 5,
+   "total": 53,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": true,
+   "k": 10,
+   "total": 53,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": false,
+   "k": 1,
+   "total": 53,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 8,
+    "1": 5,
+    "2": 5,
+    "3": 6
+   },
+   "diff_by_type": {
+    "0": 18,
+    "1": 2,
+    "2": 1,
+    "3": 3
+   }
+  },
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": false,
+   "k": 2,
+   "total": 53,
+   "n_neurons_diff": 2,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 8,
+    "1": 5,
+    "2": 5,
+    "3": 6
+   },
+   "diff_by_type": {
+    "0": 18,
+    "1": 2,
+    "2": 1,
+    "3": 3
+   }
+  },
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": false,
+   "k": 5,
+   "total": 49,
+   "n_neurons_diff": 7,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 8,
+    "1": 5,
+    "2": 5,
+    "3": 6
+   },
+   "diff_by_type": {
+    "0": 18,
+    "1": 2,
+    "2": 1,
+    "3": 3
+   }
+  },
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": false,
+   "k": 10,
+   "total": 64,
+   "n_neurons_diff": 24,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 8,
+    "1": 5,
+    "2": 5,
+    "3": 6
+   },
+   "diff_by_type": {
+    "0": 18,
+    "1": 2,
+    "2": 1,
+    "3": 3
+   }
+  },
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": true,
+   "k": 1,
+   "total": 57,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": true,
+   "k": 2,
+   "total": 57,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": true,
+   "k": 5,
+   "total": 57,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": true,
+   "k": 10,
+   "total": 57,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": false,
+   "k": 1,
+   "total": 57,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 9,
+    "1": 6,
+    "2": 8,
+    "3": 8
+   },
+   "diff_by_type": {
+    "0": 24,
+    "1": 1,
+    "2": 2,
+    "3": 4
+   }
+  },
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": false,
+   "k": 2,
+   "total": 57,
+   "n_neurons_diff": 2,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 9,
+    "1": 6,
+    "2": 8,
+    "3": 8
+   },
+   "diff_by_type": {
+    "0": 24,
+    "1": 1,
+    "2": 2,
+    "3": 4
+   }
+  },
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": false,
+   "k": 5,
+   "total": 54,
+   "n_neurons_diff": 12,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 9,
+    "1": 6,
+    "2": 8,
+    "3": 8
+   },
+   "diff_by_type": {
+    "0": 24,
+    "1": 1,
+    "2": 2,
+    "3": 4
+   }
+  },
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": false,
+   "k": 10,
+   "total": 72,
+   "n_neurons_diff": 31,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 9,
+    "1": 6,
+    "2": 8,
+    "3": 8
+   },
+   "diff_by_type": {
+    "0": 24,
+    "1": 1,
+    "2": 2,
+    "3": 4
+   }
+  },
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": true,
+   "k": 1,
+   "total": 53,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": true,
+   "k": 2,
+   "total": 53,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": true,
+   "k": 5,
+   "total": 53,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": true,
+   "k": 10,
+   "total": 53,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": false,
+   "k": 1,
+   "total": 53,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 11,
+    "1": 5,
+    "2": 9,
+    "3": 9
+   },
+   "diff_by_type": {
+    "0": 27,
+    "1": 1,
+    "2": 2,
+    "3": 4
+   }
+  },
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": false,
+   "k": 2,
+   "total": 53,
+   "n_neurons_diff": 2,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 11,
+    "1": 5,
+    "2": 9,
+    "3": 9
+   },
+   "diff_by_type": {
+    "0": 27,
+    "1": 1,
+    "2": 2,
+    "3": 4
+   }
+  },
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": false,
+   "k": 5,
+   "total": 50,
+   "n_neurons_diff": 12,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 11,
+    "1": 5,
+    "2": 9,
+    "3": 9
+   },
+   "diff_by_type": {
+    "0": 27,
+    "1": 1,
+    "2": 2,
+    "3": 4
+   }
+  },
+  {
+   "density": "low",
+   "density_hz": 0.5,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": false,
+   "k": 10,
+   "total": 62,
+   "n_neurons_diff": 34,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 11,
+    "1": 5,
+    "2": 9,
+    "3": 9
+   },
+   "diff_by_type": {
+    "0": 27,
+    "1": 1,
+    "2": 2,
+    "3": 4
+   }
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": true,
+   "k": 1,
+   "total": 71,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": true,
+   "k": 2,
+   "total": 71,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": true,
+   "k": 5,
+   "total": 71,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": true,
+   "k": 10,
+   "total": 71,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": false,
+   "k": 1,
+   "total": 71,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 7,
+    "1": 6,
+    "2": 6,
+    "3": 7
+   },
+   "diff_by_type": {
+    "0": 21,
+    "1": 2,
+    "2": 0,
+    "3": 3
+   }
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": false,
+   "k": 2,
+   "total": 68,
+   "n_neurons_diff": 13,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 7,
+    "1": 6,
+    "2": 6,
+    "3": 7
+   },
+   "diff_by_type": {
+    "0": 21,
+    "1": 2,
+    "2": 0,
+    "3": 3
+   }
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": false,
+   "k": 5,
+   "total": 65,
+   "n_neurons_diff": 24,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 7,
+    "1": 6,
+    "2": 6,
+    "3": 7
+   },
+   "diff_by_type": {
+    "0": 21,
+    "1": 2,
+    "2": 0,
+    "3": 3
+   }
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": false,
+   "k": 10,
+   "total": 69,
+   "n_neurons_diff": 26,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 7,
+    "1": 6,
+    "2": 6,
+    "3": 7
+   },
+   "diff_by_type": {
+    "0": 21,
+    "1": 2,
+    "2": 0,
+    "3": 3
+   }
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": true,
+   "k": 1,
+   "total": 64,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": true,
+   "k": 2,
+   "total": 64,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": true,
+   "k": 5,
+   "total": 64,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": true,
+   "k": 10,
+   "total": 64,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": false,
+   "k": 1,
+   "total": 64,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 7,
+    "1": 4,
+    "2": 5,
+    "3": 6
+   },
+   "diff_by_type": {
+    "0": 17,
+    "1": 2,
+    "2": 0,
+    "3": 3
+   }
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": false,
+   "k": 2,
+   "total": 69,
+   "n_neurons_diff": 11,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 7,
+    "1": 4,
+    "2": 5,
+    "3": 6
+   },
+   "diff_by_type": {
+    "0": 17,
+    "1": 2,
+    "2": 0,
+    "3": 3
+   }
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": false,
+   "k": 5,
+   "total": 62,
+   "n_neurons_diff": 20,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 7,
+    "1": 4,
+    "2": 5,
+    "3": 6
+   },
+   "diff_by_type": {
+    "0": 17,
+    "1": 2,
+    "2": 0,
+    "3": 3
+   }
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": false,
+   "k": 10,
+   "total": 64,
+   "n_neurons_diff": 22,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 7,
+    "1": 4,
+    "2": 5,
+    "3": 6
+   },
+   "diff_by_type": {
+    "0": 17,
+    "1": 2,
+    "2": 0,
+    "3": 3
+   }
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": true,
+   "k": 1,
+   "total": 71,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": true,
+   "k": 2,
+   "total": 71,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": true,
+   "k": 5,
+   "total": 71,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": true,
+   "k": 10,
+   "total": 71,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": false,
+   "k": 1,
+   "total": 71,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 7,
+    "1": 6,
+    "2": 4,
+    "3": 5
+   },
+   "diff_by_type": {
+    "0": 17,
+    "1": 3,
+    "2": 0,
+    "3": 2
+   }
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": false,
+   "k": 2,
+   "total": 69,
+   "n_neurons_diff": 14,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 7,
+    "1": 6,
+    "2": 4,
+    "3": 5
+   },
+   "diff_by_type": {
+    "0": 17,
+    "1": 3,
+    "2": 0,
+    "3": 2
+   }
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": false,
+   "k": 5,
+   "total": 66,
+   "n_neurons_diff": 24,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 7,
+    "1": 6,
+    "2": 4,
+    "3": 5
+   },
+   "diff_by_type": {
+    "0": 17,
+    "1": 3,
+    "2": 0,
+    "3": 2
+   }
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": false,
+   "k": 10,
+   "total": 61,
+   "n_neurons_diff": 22,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 7,
+    "1": 6,
+    "2": 4,
+    "3": 5
+   },
+   "diff_by_type": {
+    "0": 17,
+    "1": 3,
+    "2": 0,
+    "3": 2
+   }
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": true,
+   "k": 1,
+   "total": 64,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": true,
+   "k": 2,
+   "total": 64,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": true,
+   "k": 5,
+   "total": 64,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": true,
+   "k": 10,
+   "total": 64,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": false,
+   "k": 1,
+   "total": 64,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 7,
+    "1": 5,
+    "2": 3,
+    "3": 6
+   },
+   "diff_by_type": {
+    "0": 16,
+    "1": 3,
+    "2": 0,
+    "3": 2
+   }
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": false,
+   "k": 2,
+   "total": 69,
+   "n_neurons_diff": 11,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 7,
+    "1": 5,
+    "2": 3,
+    "3": 6
+   },
+   "diff_by_type": {
+    "0": 16,
+    "1": 3,
+    "2": 0,
+    "3": 2
+   }
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": false,
+   "k": 5,
+   "total": 62,
+   "n_neurons_diff": 21,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 7,
+    "1": 5,
+    "2": 3,
+    "3": 6
+   },
+   "diff_by_type": {
+    "0": 16,
+    "1": 3,
+    "2": 0,
+    "3": 2
+   }
+  },
+  {
+   "density": "mid",
+   "density_hz": 2.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": false,
+   "k": 10,
+   "total": 59,
+   "n_neurons_diff": 21,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 7,
+    "1": 5,
+    "2": 3,
+    "3": 6
+   },
+   "diff_by_type": {
+    "0": 16,
+    "1": 3,
+    "2": 0,
+    "3": 2
+   }
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": true,
+   "k": 1,
+   "total": 105,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": true,
+   "k": 2,
+   "total": 105,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": true,
+   "k": 5,
+   "total": 105,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": true,
+   "k": 10,
+   "total": 105,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": false,
+   "k": 1,
+   "total": 105,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 20,
+    "1": 12,
+    "2": 19,
+    "3": 14
+   },
+   "diff_by_type": {
+    "0": 50,
+    "1": 7,
+    "2": 4,
+    "3": 4
+   }
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": false,
+   "k": 2,
+   "total": 108,
+   "n_neurons_diff": 28,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 20,
+    "1": 12,
+    "2": 19,
+    "3": 14
+   },
+   "diff_by_type": {
+    "0": 50,
+    "1": 7,
+    "2": 4,
+    "3": 4
+   }
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": false,
+   "k": 5,
+   "total": 153,
+   "n_neurons_diff": 70,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 20,
+    "1": 12,
+    "2": 19,
+    "3": 14
+   },
+   "diff_by_type": {
+    "0": 50,
+    "1": 7,
+    "2": 4,
+    "3": 4
+   }
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": false,
+   "k": 10,
+   "total": 163,
+   "n_neurons_diff": 65,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 20,
+    "1": 12,
+    "2": 19,
+    "3": 14
+   },
+   "diff_by_type": {
+    "0": 50,
+    "1": 7,
+    "2": 4,
+    "3": 4
+   }
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": true,
+   "k": 1,
+   "total": 95,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": true,
+   "k": 2,
+   "total": 95,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": true,
+   "k": 5,
+   "total": 95,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": true,
+   "k": 10,
+   "total": 95,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": false,
+   "k": 1,
+   "total": 95,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 20,
+    "1": 13,
+    "2": 20,
+    "3": 14
+   },
+   "diff_by_type": {
+    "0": 55,
+    "1": 7,
+    "2": 2,
+    "3": 3
+   }
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": false,
+   "k": 2,
+   "total": 96,
+   "n_neurons_diff": 27,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 20,
+    "1": 13,
+    "2": 20,
+    "3": 14
+   },
+   "diff_by_type": {
+    "0": 55,
+    "1": 7,
+    "2": 2,
+    "3": 3
+   }
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": false,
+   "k": 5,
+   "total": 127,
+   "n_neurons_diff": 59,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 20,
+    "1": 13,
+    "2": 20,
+    "3": 14
+   },
+   "diff_by_type": {
+    "0": 55,
+    "1": 7,
+    "2": 2,
+    "3": 3
+   }
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "one_bin",
+   "delay_bins": [
+    40
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": false,
+   "k": 10,
+   "total": 135,
+   "n_neurons_diff": 67,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 20,
+    "1": 13,
+    "2": 20,
+    "3": 14
+   },
+   "diff_by_type": {
+    "0": 55,
+    "1": 7,
+    "2": 2,
+    "3": 3
+   }
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": true,
+   "k": 1,
+   "total": 106,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": true,
+   "k": 2,
+   "total": 106,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": true,
+   "k": 5,
+   "total": 106,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": true,
+   "k": 10,
+   "total": 106,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": false,
+   "k": 1,
+   "total": 106,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 21,
+    "1": 12,
+    "2": 18,
+    "3": 13
+   },
+   "diff_by_type": {
+    "0": 48,
+    "1": 7,
+    "2": 4,
+    "3": 5
+   }
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": false,
+   "k": 2,
+   "total": 110,
+   "n_neurons_diff": 33,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 21,
+    "1": 12,
+    "2": 18,
+    "3": 13
+   },
+   "diff_by_type": {
+    "0": 48,
+    "1": 7,
+    "2": 4,
+    "3": 5
+   }
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": false,
+   "k": 5,
+   "total": 139,
+   "n_neurons_diff": 61,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 21,
+    "1": 12,
+    "2": 18,
+    "3": 13
+   },
+   "diff_by_type": {
+    "0": 48,
+    "1": 7,
+    "2": 4,
+    "3": 5
+   }
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "off",
+   "n_ch": 2,
+   "ext_abs_index": false,
+   "k": 10,
+   "total": 153,
+   "n_neurons_diff": 64,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 21,
+    "1": 12,
+    "2": 18,
+    "3": 13
+   },
+   "diff_by_type": {
+    "0": 48,
+    "1": 7,
+    "2": 4,
+    "3": 5
+   }
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": true,
+   "k": 1,
+   "total": 94,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": true,
+   "k": 2,
+   "total": 94,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": true,
+   "k": 5,
+   "total": 94,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": true,
+   "k": 10,
+   "total": 94,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": true,
+   "diff_by_layer": null,
+   "diff_by_type": null
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": false,
+   "k": 1,
+   "total": 94,
+   "n_neurons_diff": 0,
+   "bit_identical": true,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 22,
+    "1": 13,
+    "2": 17,
+    "3": 14
+   },
+   "diff_by_type": {
+    "0": 52,
+    "1": 7,
+    "2": 2,
+    "3": 5
+   }
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": false,
+   "k": 2,
+   "total": 89,
+   "n_neurons_diff": 26,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 22,
+    "1": 13,
+    "2": 17,
+    "3": 14
+   },
+   "diff_by_type": {
+    "0": 52,
+    "1": 7,
+    "2": 2,
+    "3": 5
+   }
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": false,
+   "k": 5,
+   "total": 114,
+   "n_neurons_diff": 57,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 22,
+    "1": 13,
+    "2": 17,
+    "3": 14
+   },
+   "diff_by_type": {
+    "0": 52,
+    "1": 7,
+    "2": 2,
+    "3": 5
+   }
+  },
+  {
+   "density": "high",
+   "density_hz": 8.0,
+   "delay": "three_bins",
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "e1b": "on",
+   "n_ch": 4,
+   "ext_abs_index": false,
+   "k": 10,
+   "total": 132,
+   "n_neurons_diff": 66,
+   "bit_identical": false,
+   "cell_pass_all": false,
+   "diff_by_layer": {
+    "0": 22,
+    "1": 13,
+    "2": 17,
+    "3": 14
+   },
+   "diff_by_type": {
+    "0": 52,
+    "1": 7,
+    "2": 2,
+    "3": 5
+   }
+  }
+ ],
+ "mr_f": {
+  "input": {
+   "n_neurons": 4,
+   "n_ch": 2,
+   "edges": "pre=[0], post=[1], gmax=[10.0], delay=[40], syn_class=[2]"
+  },
+  "raised": true,
+  "error": "ValueError: E1b 关闭态但存在 syn_class>1 的边 ⇒ 拒绝（会静默丢类）",
+  "raising_line": "File \"/Users/weidong/ai/small_world/neural_exploration/src/mouse_cortex_engine.py\", line 450, in _finalize_no_ring",
+  "top_frame": "  File \"/Users/weidong/ai/small_world/neural_exploration/src/mouse_cortex_engine.py\", line 450, in _finalize_no_ring",
+  "is_kernel_defect": false,
+  "interpretation": "被**配置级守卫**在 finalize 阶段拒绝（四态纪律：该臂 = `invalid`，既非 pass 亦非 fail）；这是 M10 L21 静默失效的对应防护"
+ },
+ "mr_e_index": {
+  "fix_ext1": {
+   "pass_all": true,
+   "per_k": {
+    "1": [
+     31,
+     0
+    ],
+    "2": [
+     31,
+     0
+    ],
+    "5": [
+     31,
+     0
+    ],
+    "10": [
+     31,
+     0
+    ]
+   }
+  },
+  "fix_ext0": {
+   "pass_all": true,
+   "per_k": {
+    "1": [
+     26,
+     0
+    ],
+    "2": [
+     26,
+     0
+    ],
+    "5": [
+     26,
+     0
+    ],
+    "10": [
+     26,
+     0
+    ]
+   }
+  },
+  "frozen_behavior_ext1": {
+   "pass_all": false,
+   "per_k": {
+    "1": [
+     31,
+     0
+    ],
+    "2": [
+     32,
+     5
+    ],
+    "5": [
+     32,
+     8
+    ],
+    "10": [
+     29,
+     6
+    ]
+   }
+  },
+  "frozen_behavior_ext0": {
+   "pass_all": true,
+   "per_k": {
+    "1": [
+     26,
+     0
+    ],
+    "2": [
+     26,
+     0
+    ],
+    "5": [
+     26,
+     0
+    ],
+    "10": [
+     26,
+     0
+    ]
+   }
+  }
+ },
+ "summary": {
+  "all_fixed_pass": true,
+  "fail_by_axis": {
+   "ext_abs_index_False": true,
+   "ext_abs_index_True_n_fail": 0,
+   "n_fail_cells(k>1)": 36,
+   "n_total_cells(k>1)": 72,
+   "failing_densities": [
+    "high",
+    "low",
+    "mid"
+   ],
+   "failing_delays": [
+    "one_bin",
+    "three_bins"
+   ],
+   "failing_e1b": [
+    "off",
+    "on"
+   ],
+   "failing_ks": [
+    2,
+    5,
+    10
+   ]
+  },
+  "condition": "失败条件 = `delivery='step'` ∧ 外部事件表非空 ∧ `k>1` ∧ `ext_abs_index=False`（冻结档行为）⇒ **由该单一轴决定**，与活动密度/延迟档数/E1b 无关",
+  "note": "修正档（`ext_abs_index=True`，M11 默认）下**全矩阵逐位一致**；故 (e) 不是'配置相关的可组合性失败'，而是**冻结件外部事件索引缺陷**的确定性表现，已在 M11 内核中修正并固化为回归断言"
+ },
+ "elapsed_s": 24.6
+}

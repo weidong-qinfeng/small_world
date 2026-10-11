@@ -1478,6 +1478,17 @@ def make_plot(res: dict, path: str) -> str:
     return "ok"
 
 
+def _load_matrix_summary() -> dict:
+    """读回配置交叉矩阵的汇总（`tools/scan_m11_compose_matrix.py` 产物；不存在则 unavailable）。"""
+    path = os.path.join(DATA_DIR, "m11_compose_matrix.json")
+    try:
+        with open(path) as f:
+            d = json.load(f)
+        return dict(source=os.path.basename(path), sha256=_sha256(path), **d["summary"])
+    except Exception:  # noqa: BLE001
+        return dict(status="unavailable", note="未运行配置交叉矩阵（--which cpu 不自动跑它）")
+
+
 def _sha256(path: str) -> str:
     try:
         with open(path, "rb") as f:
@@ -1557,7 +1568,9 @@ def build_summary(res: dict) -> dict:
         **st(t3.get("crit_e_pass"), bool(t3),
              "k=1/2/5 总脉冲与逐神经元计数逐位相同（step/chunk 两口径）；反例臂必现差异"),
         detail=dict(step=t3.get("step"), chunk=t3.get("chunk"),
-                    control_falsifiable=t3.get("control_falsifiable")))
+                    control_falsifiable=t3.get("control_falsifiable"),
+                    compose_matrix=_load_matrix_summary(),
+                    k_list=[1, 2, 3, 5, 10]))
     crit["f_synchronous_firing"] = dict(
         reference="M9 冻结内核（判别对照：同步发放必抛 IndexError）+ 逐类落槽的独立期望",
         **st(t2.get("crit_f_pass"), bool(t2),

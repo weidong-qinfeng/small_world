@@ -936,6 +936,23 @@ class MouseCortexEngine(LarvalZFEngine):
         tot = r.abs().sum(dim=(0, 2)).detach().cpu().numpy()
         return {SUB_NAMES[c]: float(tot[c]) for c in range(int(self.n_ch))}
 
+    def assert_composable_for_segmentation(self, delivery: str = "step") -> Dict[str, Any]:
+        """**分段适用域守卫**（RF-M11-G 第 2 条：把"配置相关"变成可判定条件 + 加守卫）。
+
+        实测判定（`tools/scan_m11_compose_matrix.py`，24 配置 × k∈{1,2,5,10} = 96 格）：
+        失败**只**由 `ext_abs_index=False`（冻结件外部事件索引）决定，与活动密度 / 延迟档数 / E1b 无关；
+        且需同时满足 `delivery="step"` ∧ 外部事件表非空 ∧ `k>1`。
+        ⇒ 冻结档在 step 模式下**不可分段**（事件会被重放）；判据一律用默认 `ext_abs_index=True`。
+        """
+        if str(delivery) == "step" and not self.ext_abs_index and getattr(self, "_ext_active", False):
+            raise RuntimeError(
+                "分段适用域守卫：`ext_abs_index=False`（冻结件外部事件按局部步号索引）在 step 模式下"
+                "会**重放**前段事件 ⇒ 分段不可组合。判据请用默认 `ext_abs_index=True`；"
+                "确需复刻缺陷档请显式绕过本守卫并在产物中标注。")
+        return dict(ok=True, delivery=str(delivery), ext_abs_index=bool(self.ext_abs_index),
+                    ext_active=bool(getattr(self, "_ext_active", False)),
+                    rule="step ∧ 外部事件表非空 ∧ k>1 ⇒ 必须 ext_abs_index=True")
+
     def assert_slot_encoding(self, expected_class_counts: Dict[str, int],
                              tol: int = 0) -> Dict[str, Any]:
         """**编码路径前置断言**（清单 §0.3 #15 / A7 硬条款）：逐类槽内边数 == 该类预期边数。

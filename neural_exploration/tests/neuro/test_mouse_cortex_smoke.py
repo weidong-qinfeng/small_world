@@ -300,3 +300,49 @@ def test_step_segment_composability_k_scan(delivery):
         assert tot == base[0] and np.array_equal(cnt, base[1]), (
             "(e) 回归失败：delivery=%s k=%d 总脉冲 %d vs k=1 %d、逐神经元计数差异 %d 个"
             % (delivery, k, tot, base[0], int((cnt != base[1]).sum())))
+
+
+def test_compose_matrix_and_domain_guard():
+    """RF-M11-G：合成矩阵（密度×延迟档×E1b×k）全过 + **分段适用域守卫**必须拦冻结档。
+
+    矩阵结论（`tools/scan_m11_compose_matrix.py`，96 格）：失败**只**由 `ext_abs_index=False` 决定
+    （step ∧ 外部事件非空 ∧ k>1），与密度/延迟档数/E1b 无关 ⇒ 冻结档在 step 下不可分段。
+    """
+    net3 = _net(delay_bins=(40, 60, 80))
+    net1 = _net(delay_bins=(40,))
+    st, ne, gg = _events(T=1500)
+    for delay_bins, n_ in (((40,), net1), ((40, 60, 80), net3)):
+        for e1b in (4, 2):
+            base = None
+            for k in (1, 2, 5, 10):
+                e = MouseCortexEngine(N, device="cpu", use_compile=False, verbose=False)
+                if e1b == 4:
+                    e.configure_subtypes(True)
+                e.configure_layers(n_["layer_of"], delay_bins=delay_bins)
+                cls = (n_["syn_class"] if e1b == 4
+                       else np.where(n_["syn_class"] > 0, 1, 0).astype(np.int8))
+                nb = dict(n_, syn_class=cls, inhibitory=(cls > 0))
+                attach_to_engine(e, nb)
+                e.set_external_events(st, ne, gg, n_steps=1500)
+                e.assert_composable_for_segmentation("step")          # 守卫：默认档必须放行
+                e.reset(seed=1)
+                e.reset_counts()
+                for ln in [1500 // k + (1 if i < 1500 % k else 0) for i in range(k)]:
+                    e.run(ln, delivery="step", record="counts")
+                cnt = e.t_count.detach().cpu().numpy().astype(np.int64)
+                if base is None:
+                    base = cnt
+                assert np.array_equal(cnt, base), (
+                    "(e) 矩阵格失败：delay_bins=%s E1b=%s k=%d 差异神经元=%d"
+                    % (delay_bins, e1b, k, int((cnt != base).sum())))
+    # 守卫：冻结档 + step + 外部事件 ⇒ 必须拒绝
+    e = MouseCortexEngine(N, device="cpu", use_compile=False, verbose=False,
+                          ext_abs_index=False)
+    e_frozen = e
+    e_frozen.configure_subtypes(True)
+    e_frozen.configure_layers(net1["layer_of"], delay_bins=(40,))
+    attach_to_engine(e_frozen, net1)
+    e_frozen.set_external_events(st, ne, gg, n_steps=1500)
+    with pytest.raises(RuntimeError):                                  # 冻结档 step 不可分段
+        e_frozen.assert_composable_for_segmentation("step")
+    e_frozen.assert_composable_for_segmentation("chunk")               # chunk 路径不受影响

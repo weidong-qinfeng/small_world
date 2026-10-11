@@ -242,7 +242,22 @@ $PY neural_exploration/tools/validate_p11_data_gate.py --determinism-check
 | **功能（逐细胞）** | **`unavailable`**：ΔF/F/ROI 轨迹仅存于 v8 DataJoint DB | 见 §3.0 F-1 |
 | **活动金标准（P14 口径）** | 现实可为：**"2 个 field 的钙域统计 + 144 个 field 的元数据/掩膜 + Allen BO 电生理带（30 kHz/2.5 kHz + units schema）"**；**不**声称全脑/全 FOV 统计 | 上述三者合并 |
 
-**M12 交接缺口（草案）**：① v8 DataJoint DB 未取（逐细胞口径）；② `units.csv` 全量未取（精确 units 计数）；③ 142/144 field 无体素序列；④ NWB 头读回的电极表/采样率（若需与 NWB 逐字对齐）。
+### M12 交接缺口清单（**必含主 agent 指定的两条**）
+
+| # | 缺口 | 判定词 | 交接动作 |
+|---|---|---|---|
+| **G-1** | **MICrONS 功能侧不可用**（按主 agent **RF-M11-A/RF-M11-B 裁定**：体素序列登记 `format_unverified`，**禁止**用于速率/dwell/τ/相关统计；DQ-1 亦裁定 v8 DataJoint DB 不下载） | **`unavailable` / `format_unverified`**（永久性数据限制，非未测、非未命中） | M12 若需同源活动通道，须先取得**官方自描述规范**或 v8 DB 工具链；届时重评 |
+| **G-2** | **四类参考量口径**（率分布 / 群体相关 / 状态结构 / dwell）——**口径层已核实**：时间 6.300006 Hz（帧间隔 0.15873 s）、空间 2.5 µm/px（处理后）且与 summaries 620×1100 µm **实像素同格（位移 0,0）**；raw 与处理层级相差 **10×**（R-27） | 口径 = **`measured`**；参考量本身 = **未重建** | 重建时**必须**写明取哪一层口径并做跨对象 FOV 交叉核对（纪律已固化 `P2.11f/g`） |
+| G-3 | v8 DataJoint DB 未取 ⇒ 逐细胞 ΔF/F / ROI 轨迹 / 扫描级 fps / 瞳孔-跑道同步量 | `unavailable` | 需 20–30 天量级带宽 ⇒ 需外部条件变化 |
+| G-4 | `units.csv` 51.4 MB / `channels.csv` 6.6 MB 全量未取（精确 units 计数仅有 `derived` 外推 ≈136,720） | `unavailable`（DQ-6） | 托管取数后替换为 `measured` 计数 |
+| G-5 | Allen per-cell NWB 头：`/general/extracellular_ephys`、`/acquisition` 采样率、`/units` spike times **不可读**（本地仅 44,695,552 B 真实前缀，其余为稀疏洞；网络 1.6–16 KB/s、DANDI 7.2 KB/s） | `unavailable` | 已由自描述表替代（30 kHz / 2.5 kHz + units schema）；如需 NWB 逐字对齐再续传 |
+| G-6 | 体素序列覆盖度：14 4 field 中仅 **2** 个有 `functional_series` | `partial` | 若需全 FOV 统计须回到 v8 DB |
+
+> **合规声明（RF-M11-B §五.3）**：本轮**未**用 MICrONS 体素序列计算任何速率/dwell/τ/活动相关统计量。
+> `m11_grid_alignment.json` 中的相关仅用于**空间同格性几何判定**（判据是"峰值因子=2.5、位移 0,0"，
+> 不含任何活性统计）；若主 agent 认为该几何用途亦在禁令内，可依裁撤除该节（并记得同格性判定将退回元数据声明）。
+> **本节点保留反证证据**（大端解码，`tools/demo_m11_microns_decode.py` 一条命令可复核 + B3b 独立复现），
+> 并**建议**改判 `decoded(big-endian int16)`；**在裁定变更前，一切产出按 `format_unverified` 执行。**
 
 ## §7 结论与下一步建议
 
