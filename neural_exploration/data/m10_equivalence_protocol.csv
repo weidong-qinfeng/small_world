@@ -1,0 +1,12 @@
+# M10 P7 等价检验协议（主agent 裁决 3 落实；**协议运行前定稿**，不事后调）
+item,statistic,decision_rule,pre_registered_bound,rationale,note
+p7_metric1_rate_distribution,Kolmogorov–Smirnov D,equivalence: D < d_eq_max,0.20,清单 §6.2 ① 'D<带'；d_eq 取**成像分裂半自检**给出的可达裕度上界内,模型侧与成像侧**必须同管线反演**（§6.1 正向模型 + 帧化到同一帧率）；低采样衰减已量化（见 m10_sampling_attenuation.csv）→ 比较只能用**同口径反演值**
+p7_metric1b_rate_median_tost,Welch TOST on per-neuron rate,equivalence: |Δ|<margin,0.05,主agent 裁决 3(1)：等价检验而非数值接近,margin 单位 Hz；双侧 p<0.05 判等价；CI95 并列报告
+p7_metric2_corr_tost,Welch TOST on mean pairwise r,equivalence: |Δ|<margin,0.05,同上,同帧率同窗长；代理零分布地板必须同管线计算
+p7_metric3_state_occupancy,TOST on state occupancy,equivalence: |Δ|<margin,0.10,清单 §6.2 ③（占用差 ≤20 pp 的等价形式）,模型与数据用**同一 HMM 同一参数**
+p7_metric4_decode,准确率 > 置换上界 且 ≥ 下限,superiority (非等价检验),见 m10_imaging_reference.csv,裁决 3：④ 为信息量指标，用优越性检验,**注意**：ZAPBench 上 ④ 参考未建立（条件块↔慢漂移混淆）→ 当前判 unavailable
+p7_dual_operationalization,窗内重建 / 全尾重建,双口径并列（强制）,—,M9 L42 教训：窗内系统性偏低（τ/T 效应）,不得只报有利口径
+p7_surrogate_floor,相位随机化代理零分布,同管线计算（禁止引用 M9 数值）,—,裁决 3(3),成像侧实测地板 = 0.000134（m10_imaging_stats.json ②）
+p7_evidence_level,L1/L2/L3 标注,L1=measured（本次实测）,measured,裁决 3(3),ZAPBench 为 L1；报告中必须标注
+p7_idealization,无噪声/无运动伪影/无神经域污染,理想上限制声明,—,M9 L42,数值不可与文献成像直接等价比较；仅承诺统计级
+p7_cell_identity,逐神经元对应,**不声称**（仅区域级）,—,§0.7 #4 + 数据门事实（Fish1 与 ZAPBench 不同动物）,第三方数据源文档亦确认 'no cell-level correspondence'
