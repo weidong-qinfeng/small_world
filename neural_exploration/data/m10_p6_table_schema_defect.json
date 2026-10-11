@@ -179,6 +179,17 @@
         "③ git HEAD=abc3fc3 内该表旧版（RF-27 期），可用 `git show abc3fc3:neural_exploration/data/m10_p6_judgement_table.csv` 复核前缀行；",
         "④ 复现方法：normalize 脚本的 repair() 分支即为缺陷的机器可读定义，任何人可对任意列数输入断言其行为。"
       ]
+    },
+    "D9": {
+      "name": "用 csv 模块回写**注释行**导致逗号截断（自查拦下）",
+      "detail": "表头注释行本身含逗号（如『窗 = [9.4, 146.3] s（±3.94×）』），而本节点用 csv.reader 读回后按 `r[0] + '\\n'` 重写 ⇒ **注释行被截断在第一个逗号处**（21 条注释中受影响者可被截短）；数据区未受影响，故列数/行数断言全过、缺陷不会自报。",
+      "aggravating_second_bug": "第一版修复校验用 `r[0]`（CSV 第一字段）与 HEADER 常量比对 ⇒ 即使文件已修好也会因逗号分裂而**假报不一致**（即『用错读取路径去校验』）。",
+      "fix": [
+        "表头注释一律由 `normalize_m10_p6_table.py::HEADER` 常量经 `write_table()` 权威重写（该函数为**唯一写盘入口**）",
+        "校验改为按**原始文本行**逐字符比对（不经过 csv 解析），并断言注释条数 == len(HEADER)"
+      ],
+      "verify_result": "21 条注释逐字符一致；数据区 32 列 / 32 行 / 不一致 0 行",
+      "lesson": "**注释行不是 CSV 字段**：结构化格式里的自由文本不得用结构化解析器读写；且**校验必须使用与写入同构的读取路径**，否则会产生假阳性（本次）或漏报（若未做逐字符比对）。"
     }
   },
   "bootstrap_side_note": {
@@ -235,5 +246,30 @@
       "finding": "同一提交把 `data/m10_p6_judgement_table_pre_schema_fix.csv`（14,657 字节）入库，而其内容经剖析为 **27 列 / 32 行 = 规范化后 v2**，与文件名『pre_schema_fix』**语义相反**（该快照已被第二次幂等运行覆盖）。",
       "current_state": "该文件已从工作树删除（git status ' D'）⇒ 建议提交此删除；若保留于历史，任何按名理解的下游读者都会被误导，须以本文件声明为准。"
     }
-  ]
+  ],
+  "hash_basis_ruling_RF31": {
+    "ruling": "hash 差异 = **hash 基准差异**（file_bytes vs payload），不是重复作业覆盖；两口径均已核对、结论一致",
+    "independent_recheck": {
+      "tool": "tools/hash_report.py（三口径并列；可 --explain 反查哈希归属）",
+      "result": {
+        "6b794438e487bddc": "file_bytes 基准 ⇒ poptrace_{M0,M-1,M-4}_lamx0.0_n250.npy",
+        "6294245cc83d148e": "payload 基准 ⇒ 同上三个文件",
+        "M-6_lamx0.0": "file_bytes=8d51b1462a72b561 / payload=c160ec8567e685b3（两基准下都与 M0 组不同）"
+      },
+      "semantic": "M0/M-1/M-4 λ×0 载荷逐位相同 + 总脉冲均 1154 ⇒ 三者在两基准下同时等价"
+    },
+    "discipline": "跨节点 sha256 必须标注基准（file_bytes/payload/semantic）；未标基准者不得用于两端一致性判断",
+    "enforcement": [
+      "normalize_m10_p6_table.py::label_hashes()（表内 sha16 列强制标注、幂等）",
+      "tools/hash_report.py（跨节点传值前直接复制三口径）",
+      "docs/m10_env_notes.md L52（纪律入档）"
+    ],
+    "suspect_wording_removed": [
+      "docs/m10_stage3_report.md §11.1",
+      "docs/m10_env_notes.md L51.1 表下注释",
+      "data/m10_p6_judgement_table_RF21.json /RF23_rescope/positive_control/hash_note",
+      "reports/neuro/m10_stage23_summary.json（两处 hash_note）"
+    ],
+    "residual_check": "全库 grep『重复作业覆盖』仅剩 5 处**否定式**表述（『不是重复作业覆盖』），无肯定式残留"
+  }
 }

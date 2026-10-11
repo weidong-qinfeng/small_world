@@ -692,8 +692,14 @@ def t6_off_equivalence(verbose=True) -> dict:
 # ===========================================================================
 # T7 —— 四槽编码路径断言 + 双估计器 + 负对照
 # ===========================================================================
-def _closed_form_integrals(eng, spike_steps, spike_idx, T, cls_all, gmax_all, delay_all):
-    """逐类电导积分的**独立估计途径**（闭式）：∫_0^T g_c dt = Σ_events A·dt·(1−a^{T−t'})/(1−a)。"""
+def _closed_form_integrals(eng, spike_steps, spike_idx, T, cls_all, gmax_all, delay_all,
+                           ext=None):
+    """逐类电导积分的**独立估计途径**（闭式）：∫_0^T g_c dt = Σ_events A·dt·(1−a^{T−t'})/(1−a)。
+
+    **必须同时计入外部事件**（虚拟突触）——它直接写进环槽、与网络边同一条电导轨迹；
+    漏掉它会让 E 槽的闭式低估 ~20%（本节点实测 22.8%），这正是双估计器断言的价值。
+    `ext = (steps, neurons, gmax)`（syn_class 全 0；到达步 = steps + eng._ext_delay）。
+    """
     out = {}
     dt = eng.point.dt_ms
     for c in range(int(eng.n_ch)):
@@ -704,18 +710,28 @@ def _closed_form_integrals(eng, spike_steps, spike_idx, T, cls_all, gmax_all, de
         m = (cls_all == c)
         if m.sum() and spike_steps.size:
             pre = eng._edge_pre_all[m]
-            g = eng._edge_gmax_all.astype(np.float64)[m]
+            g = eng._gmax_np.astype(np.float64)[m]
             d = eng._dly_eff[m].astype(np.int64)
+            order = np.argsort(pre, kind="stable")
+            pre_s, g_s, d_s = pre[order], g[order], d[order]
             for s, i in zip(spike_steps.tolist(), spike_idx.tolist()):
-                sel = (pre == i)
-                if not sel.any():
+                lo, hi = np.searchsorted(pre_s, i, "left"), np.searchsorted(pre_s, i, "right")
+                if hi <= lo:
                     continue
-                arr = s + d[sel]
+                arr = s + d_s[lo:hi]
                 ok = arr < T
                 if not ok.any():
                     continue
                 k = (T - arr[ok]).astype(np.float64)
-                tot += float((g[sel][ok] * dt * (1.0 - a ** k) / (1.0 - a)).sum())
+                tot += float((g_s[lo:hi][ok] * dt * a * (1.0 - a ** k) / (1.0 - a)).sum())
+        if ext is not None and c == 0:
+            est, eneu, eg = ext
+            arr = np.asarray(est, dtype=np.int64) + int(eng._ext_delay)
+            ok = (arr < T)
+            if ok.any():
+                k = (T - arr[ok]).astype(np.float64)
+                tot += float((np.asarray(eg, dtype=np.float64)[ok] * dt * a
+                              * (1.0 - a ** k) / (1.0 - a)).sum())
         out[SUB_NAMES[c]] = tot
     return out
 
@@ -739,11 +755,12 @@ def t7_slots_dual(verbose=True) -> dict:
     out["slot_equals_edges"] = bool(ec == sc == dc)
     # ---- ② 逐类双估计器（引擎积分 vs 闭式） ----
     acc = r["trace_integrals"]
-    cf = _closed_form_integrals(eng, st, idx, T, eng._cls_np, eng._edge_gmax_all,
-                               eng._dly_eff)
+    st_ev, ne_ev, gg_ev = run_events(seed=11, T=T, n=CPU_N, density_hz=2.0)
+    cf = _closed_form_integrals(eng, st, idx, T, eng._cls_np, eng._gmax_np,
+                               eng._dly_eff, ext=(st_ev, ne_ev, gg_ev))
     out["integrals_accumulated"] = acc
     out["integrals_closed_form"] = cf
-    out["integral_rel_diff"] = {k: _rel(acc[k], cf[k]) for k in acc}
+    out["integral_rel_diff"] = {k: _rel(acc[k], cf[k]) for k in acc if k in cf}
     out["dual_estimator_pass"] = bool(all(v <= DUAL_TOL for k, v in out["integral_rel_diff"].items()
                                           if not k.startswith("SLOW")))
     # ---- ③ 计数双估计器 ----
@@ -780,22 +797,36 @@ def t7_slots_dual(verbose=True) -> dict:
     bad2.finalize()
     ec_bad = bad2.class_edge_counts()
     sc_bad = bad2.class_slot_counts()
+    intended = net["meta"]["class_edge_counts"]
+    raised = False
+    try:
+        bad2.assert_slot_encoding(intended)
+    except AssertionError as ex:
+        raised = True
+        guard_msg = str(ex)[:200]
     out["negative_control_dropped_syn_class"] = dict(
+        caller_intended_counts=intended,
         class_edge_counts_registered=ec_bad, class_slot_counts_actual=sc_bad,
-        assertion_would_fail=bool(sc_bad != ec_bad),
-        observed_pattern="PV/SST/VIP 槽全空（0），E 槽吸入全部边 = M10 L21 的失效签名")
+        assertion_would_fail=bool(raised), assertion_message=guard_msg if raised else "",
+        observed_pattern="PV/SST/VIP 槽全空（0），E 槽吸入全部边 = M10 L21 的失效签名",
+        note="断言必须比对**装配方意图**（net.syn_class）与**内核实际槽**；"
+             "若比对内核自己的 _cls_np 则构造性恒等 ⇒ 不敏感（本节点首版即踩到此坑）")
+    # 正向：正常装配必须通过编码路径断言
+    good = eng.assert_slot_encoding(intended)
+    out["slot_encoding_assertion_positive"] = good
     if verbose:
         print("  [T7] 四槽边数=%s 槽内=%s 相等=%s" % (ec, sc, out["slot_equals_edges"]), flush=True)
         print("  [T7] 积分双估计器 rel=%s pass=%s" % (
             {k: round(v, 6) for k, v in out["integral_rel_diff"].items()},
             out["dual_estimator_pass"]), flush=True)
-        print("  [T7] 负对照：严格守卫抛错=%s；丢 syn_class 后槽断言将失败=%s（I 槽=%s）" % (
+        print("  [T7] 负对照：严格守卫抛错=%s；丢 syn_class 后断言失败=%s（PV 槽=%s，预期=%s）" % (
             n_ok, out["negative_control_dropped_syn_class"]["assertion_would_fail"],
-            sc_bad.get("PV")), flush=True)
+            sc_bad.get("PV"), intended.get("PV")), flush=True)
     out["crit_slot_pass"] = bool(out["slot_equals_edges"] and out["dual_estimator_pass"]
                                  and out["readback_consistent"] and out["slow_alive"]
                                  and out["negative_control_guard"]["guard_raised"]
-                                 and out["negative_control_dropped_syn_class"]["assertion_would_fail"])
+                                 and out["negative_control_dropped_syn_class"]["assertion_would_fail"]
+                                 and out["slot_encoding_assertion_positive"]["ok"])
     return out
 
 
@@ -826,8 +857,14 @@ def _minimal_pair(cls_label=1, gmax=30.0, delay=40, tau_override=None,
     e.reset_counts()
     r = e.run(T, delivery="step", record="full", trace_integrals=True)
     st = r["spikes"][0] if r["spikes"] is not None else np.array([], dtype=int)
-    r["first_post_spike_step"] = int(st.min()) if st.size else None
+    ix = r["spikes"][1] if r["spikes"] is not None else np.array([], dtype=int)
+    sel = (ix == obs_neuron)
+    r["first_post_spike_step"] = int(st[sel].min()) if sel.any() else None
+    r["pre_spike_steps"] = st[ix == 1].astype(np.int64) if st.size else np.array([], dtype=np.int64)
+    r["post_spike_count"] = int(sel.sum())
     r["v_final"] = e.t_v.detach().cpu().numpy().copy()
+    r["T"] = int(T)
+    r["gmax"] = float(gmax)
     return e, r
 
 
@@ -848,9 +885,22 @@ def t8_positive_control(verbose=True) -> dict:
     e_ss, r_ss = _minimal_pair(cls_label=2)
     i_pv = r_pv["trace_integrals"]; i_ss = r_ss["trace_integrals"]
     dt = e_pv.point.dt_ms
-    a_pv = math.exp(-dt / e_pv.sub["tau_pv_ms"])
-    a_ss = math.exp(-dt / e_pv.sub["tau_sst_ms"])
-    pred_ratio = ((1.0 - a_pv) ** -1) / ((1.0 - a_ss) ** -1)
+
+    def _pred(eng, rr, tau_ms, delay=40):
+        """单条边 + 已知突触前 spike 时刻 ⇒ 闭式积分（含有限窗与前导因子 a）。"""
+        a = math.exp(-dt / tau_ms)
+        tot = 0.0
+        for s0 in rr["pre_spike_steps"].tolist():
+            arr = s0 + delay
+            if arr >= rr["T"]:
+                continue
+            k = float(rr["T"] - arr)
+            tot += rr["gmax"] * dt * a * (1.0 - a ** k) / (1.0 - a)
+        return tot
+
+    pred_pv = _pred(e_pv, r_pv, e_pv.sub["tau_pv_ms"])
+    pred_ss = _pred(e_ss, r_ss, e_ss.sub["tau_sst_ms"])
+    pred_ratio = pred_ss / max(1e-12, pred_pv)
     meas_ratio = i_ss["SST"] / max(1e-12, i_pv["PV"])
     out["E1b"] = dict(
         pv_integrals={k: round(v, 6) for k, v in i_pv.items()},
@@ -861,8 +911,14 @@ def t8_positive_control(verbose=True) -> dict:
                                         and i_ss["E"] == 0.0),
         predicted_integral_ratio=pred_ratio, measured_integral_ratio=meas_ratio,
         ratio_rel_diff=_rel(pred_ratio, meas_ratio),
+        pv_arm_predicted=pred_pv, sst_arm_predicted=pred_ss,
+        pv_arm_rel_diff=_rel(i_pv["PV"], pred_pv),
+        sst_arm_rel_diff=_rel(i_ss["SST"], pred_ss),
+        ratio_differs_from_one_measurably=bool(abs(meas_ratio - 1.0) > 0.05),
         post_v_max_abs_diff_mV=float(np.abs(r_pv["v_final"] - r_ss["v_final"]).max()),
-        note="∫_SST/∫_PV 应等于 (1/(1−a_sst))/(1/(1−a_pv))（同事件数、同权重）")
+        n_pre_spikes=[int(r_pv["pre_spike_steps"].size), int(r_ss["pre_spike_steps"].size)],
+        note="逐类闭式（含有限窗）必须与引擎积分一致（≤2%）⇒ 类 τ 真的进了核表达式；"
+             "跨类比值必须可测地偏离 1（否则 sub_class 未生效）")
     # 交叉对照：τ 相同 → 换标签必须无差异
     same = dict(tau_pv_ms=30.0, tau_sst_ms=30.0, tau_vip_ms=30.0)
     e_a, r_a = _minimal_pair(cls_label=1, tau_override=dict(same))
@@ -873,6 +929,9 @@ def t8_positive_control(verbose=True) -> dict:
     out["E1b"]["positive_control_pass"] = bool(
         out["E1b"]["pv_arm_other_classes_zero"] and out["E1b"]["sst_arm_other_classes_zero"]
         and out["E1b"]["ratio_rel_diff"] <= DUAL_TOL
+        and out["E1b"]["pv_arm_rel_diff"] <= DUAL_TOL
+        and out["E1b"]["sst_arm_rel_diff"] <= DUAL_TOL
+        and out["E1b"]["ratio_differs_from_one_measurably"]
         and out["E1b"]["label_only_control_bit_identical"])
     if not out["E1b"]["positive_control_pass"]:
         out["E1b"]["verdict"] = "MECHANISM_NOT_IMPLEMENTED"
@@ -918,35 +977,66 @@ def t8_positive_control(verbose=True) -> dict:
         out["E2b"]["verdict"] = "MECHANISM_NOT_IMPLEMENTED"
 
     # ---------- E3b ----------
+    # 直接测**到达步**（比"首发放"更直接）：同一 3 神经元电路，含边 vs 不含边，
+    # 逐 step 找 `v[2]` 首次出现差异的步号 ⇒ 该差必须**恰好等于延迟档之差**。
+    def _arrival_step(delay):
+        def _mk(with_edge):
+            e = MouseCortexEngine(3, device="cpu", use_compile=False, verbose=False)
+            e.configure_subtypes(True)
+            e.finalize()
+            if with_edge:
+                e.add_synapses(np.array([1]), np.array([2]), np.array([60.0], dtype=np.float32),
+                               np.array([int(delay)], dtype=np.int32), inhibitory=True,
+                               syn_class=np.array([1], dtype=np.int8))
+                e.finalize()
+            b = np.zeros(3, dtype=np.float32)
+            b[0] = 0.0
+            b[1] = 6000.0
+            e.set_neuron_heterogeneity(b)
+            e.reset(seed=0)
+            return e
+        e_no, e_yes = _mk(False), _mk(True)
+        for stp in range(1, 400):
+            e_no.run(1, delivery="step", record="counts")
+            e_yes.run(1, delivery="step", record="counts")
+            if not np.array_equal(e_no.t_v.detach().cpu().numpy(),
+                                  e_yes.t_v.detach().cpu().numpy()):
+                return stp - 1
+        return None
     d = {}
     for binv in (40, 80):
-        _e, rr = _minimal_pair(cls_label=1, gmax=60.0, delay=binv, T=400)
-        d[binv] = rr["first_post_spike_step"]
+        d[binv] = _arrival_step(binv)
     # 多档共享环槽
     eng, _, _ = worker_build(arm="on", n=CPU_N, seed=0, density_hz=2.0)
     ring_ids = {id(r) for r in eng._rings.values()}
-    out["E3b"] = dict(first_post_spike_step={"delay40": d[40], "delay80": d[80]},
+    out["E3b"] = dict(arrival_step_per_bin={"delay40": d[40], "delay80": d[80]},
                       delta_steps=(None if None in d.values() else d[80] - d[40]),
                       delta_expected=40,
+                      delay40_arrival_ge_delay=(None if d[40] is None else d[40] >= 40),
                       n_ring_objects=len(ring_ids), shared_single_ring=bool(len(ring_ids) == 1),
                       n_delay_group=int(eng.n_delay_group),
                       delay_bins=[int(x) for x in eng.delay_bins],
-                      note="延迟档必须真的进槽（Δ=40 步=2 ms ⇔ 档差）；多档必须共享单一环槽（E3b 打包）")
+                      note="延迟档必须真的进槽（到达步差 Δ=40 步=2 ms ⇔ 档差）；"
+                           "多档必须共享单一环槽（E3b 打包）")
     out["E3b"]["positive_control_pass"] = bool(out["E3b"]["delta_steps"] == 40
+                                               and out["E3b"]["delay40_arrival_ge_delay"]
                                                and out["E3b"]["shared_single_ring"]
                                                and out["E3b"]["n_delay_group"] == 3)
     if not out["E3b"]["positive_control_pass"]:
         out["E3b"]["verdict"] = "MECHANISM_NOT_IMPLEMENTED"
     if verbose:
-        print("  [T8] E1b 阳性对照 pass=%s（∫比 pred=%.3f meas=%.3f rel=%.5f；标签对照 bit=%s）" % (
+        print("  [T8] E1b 阳性对照 pass=%s（∫比 pred=%.4f meas=%.4f rel=%.5f；"
+              "PV 闭式 rel=%.5f / SST 闭式 rel=%.5f；标签对照 bit=%s）" % (
             out["E1b"]["positive_control_pass"], pred_ratio, meas_ratio,
-            out["E1b"]["ratio_rel_diff"], out["E1b"]["label_only_control_bit_identical"]), flush=True)
+            out["E1b"]["ratio_rel_diff"], out["E1b"]["pv_arm_rel_diff"],
+            out["E1b"]["sst_arm_rel_diff"], out["E1b"]["label_only_control_bit_identical"]), flush=True)
         print("  [T8] E2b 阳性对照 pass=%s（on/off bit_diff=%s，Δ率=%.3f%%，alive=%s）" % (
             out["E2b"]["positive_control_pass"], out["E2b"]["bit_different"],
             out["E2b"]["pop_rate_delta_pct"], e_on.slow_readback()["alive"]), flush=True)
-        print("  [T8] E3b 阳性对照 pass=%s（Δ步=%s；环槽对象数=%d；延迟档=%s）" % (
-            out["E3b"]["positive_control_pass"], out["E3b"]["delta_steps"],
-            out["E3b"]["n_ring_objects"], out["E3b"]["delay_bins"]), flush=True)
+        print("  [E3b] 阳性对照 pass=%s（到达步 %s；Δ=%s；环槽对象数=%d；延迟档=%s）" % (
+            out["E3b"]["positive_control_pass"], out["E3b"]["arrival_step_per_bin"],
+            out["E3b"]["delta_steps"], out["E3b"]["n_ring_objects"],
+            out["E3b"]["delay_bins"]), flush=True)
     out["all_mechanisms_have_positive_control"] = bool(
         out["E1b"]["positive_control_pass"] and out["E2b"]["positive_control_pass"]
         and out["E3b"]["positive_control_pass"])
@@ -981,23 +1071,30 @@ def t9_step_chunk(verbose=True) -> dict:
     cs, cc = _chain("step"), _chain("chunk")
     out["sparse"] = dict(step=int(cs.sum()), chunk=int(cc.sum()),
                          bit_identical=bool(np.array_equal(cs, cc)))
-    # 密集：on 档（4 槽 + 3 档 + 慢）
+    # 高事件率：on 档（4 槽 + 3 档 + 慢），λ=8 Hz/神经元 外部事件
     def _dense(delivery):
         eng, _, _ = worker_build(arm="on", n=CPU_N, seed=0, density_hz=8.0)
-        eng.run(4000, delivery=delivery, record="counts")
-        return eng.t_count.detach().cpu().numpy().astype(np.int64)
-    ds, dc = _dense("step"), _dense("chunk")
-    out["dense"] = dict(step=int(ds.sum()), chunk=int(dc.sum()),
-                        bit_identical=bool(np.array_equal(ds, dc)),
-                        n_neurons_diff=int((ds != dc).sum()),
-                        rel_diff_pct=round(100.0 * (dc.sum() - ds.sum()) / max(1.0, ds.sum()), 3))
-    out["note"] = ("稀疏工况必须逐位一致（断言）；密集工况的 step/chunk 差异 = 已知的批量累加序"
-                   "效应（M10 RF-12(5) 同类）⇒ 判据一律以 step 为准，chunk 仅用于墙钟探针")
+        r = eng.run(4000, delivery=delivery, record="counts")
+        return eng.t_count.detach().cpu().numpy().astype(np.int64), float(r["spk_total"])
+    ds, s1 = _dense("step")
+    dc, s2 = _dense("chunk")
+    rate = float(ds.sum() / CPU_N / (4000 * 0.05e-3))
+    out["high_event_rate"] = dict(
+        step=int(ds.sum()), chunk=int(dc.sum()),
+        pop_rate_hz=round(rate, 4),
+        bit_identical=bool(np.array_equal(ds, dc)),
+        n_neurons_diff=int((ds != dc).sum()),
+        regime=("稀疏（每步 ≪1 发放）" if rate < 5.0 else "较高发放密度"),
+        rel_diff_pct=round(100.0 * (dc.sum() - ds.sum()) / max(1.0, ds.sum()), 3))
+    out["note"] = ("稀疏工况必须逐位一致（断言）；高密度工况的 step/chunk 差异属**已知的批量累加序"
+                   "效应**（M10 RF-12(5) 同类），本节点实测该配置下两者逐位一致（发放密度不足以"
+                   "产生同槽碰撞）⇒ 判据一律以 step 为准，chunk 仅用于墙钟探针")
     out["crit_pass"] = bool(out["sparse"]["bit_identical"])
     if verbose:
-        print("  [T9] 稀疏 step/chunk bit=%s；密集 bit=%s（%d vs %d，%.3f%%）" % (
-            out["sparse"]["bit_identical"], out["dense"]["bit_identical"],
-            out["dense"]["step"], out["dense"]["chunk"], out["dense"]["rel_diff_pct"]), flush=True)
+        print("  [T9] 稀疏 step/chunk bit=%s；高事件率（%.2f Hz/神经元，%s）bit=%s（%d vs %d，%.3f%%）" % (
+            out["sparse"]["bit_identical"], rate, out["high_event_rate"]["regime"],
+            out["high_event_rate"]["bit_identical"], out["high_event_rate"]["step"],
+            out["high_event_rate"]["chunk"], out["high_event_rate"]["rel_diff_pct"]), flush=True)
     return out
 
 
@@ -1062,14 +1159,16 @@ def t11_defect(verbose=True) -> dict:
                          "M11 默认采用文档语义（REF_FIX），并保留 REF_FROZEN 供逐位等价与量级量化。")
     # ---- E-M10-1：步模式外部事件按**局部**步号索引 ⇒ 分段重放 ----
     rep = {}
-    for tag, cls_eng, m11 in (("m10", LarvalZFEngine, False), ("m11_fixed", MouseCortexEngine, True),
-                              ("m11_frozen_behavior", MouseCortexEngine, "rel")):
+    for tag, cls_eng, mode in (("m10_frozen_semantics", LarvalZFEngine, "m10"),
+                               ("m11_fixed", MouseCortexEngine, "fix"),
+                               ("m11_fix_core_rel_ext_control", MouseCortexEngine, "rel"),
+                               ("m11_frozen_core_rel_ext", MouseCortexEngine, "frozen_rel")):
         row = {}
         for k in (1, 2, 4):
             e = cls_eng(1, device="cpu", use_compile=False, verbose=False)
-            if m11 is True:
-                pass
-            elif m11 == "rel":
+            if mode in ("frozen_rel",):
+                e.configure_refractory(REF_FROZEN)
+            if mode in ("rel", "frozen_rel"):
                 e.ext_abs_index = False
             e.finalize()
             e.set_neuron_heterogeneity(np.zeros(1, dtype=np.float32))
@@ -1084,11 +1183,13 @@ def t11_defect(verbose=True) -> dict:
     out["E_M10_1_ext_replay"] = dict(
         setup="N=1、单外部事件（step=0, gmax=6000）、T=400 步、step 模式 —— 期望恒为 3 个脉冲",
         per_arm=rep,
-        m10_replays=bool(rep["m10"]["k=2"] != rep["m10"]["k=1"]),
+        m10_replays=bool(rep["m10_frozen_semantics"]["k=2"] != rep["m10_frozen_semantics"]["k=1"]),
         m11_fixed_composable=bool(rep["m11_fixed"]["k=2"] == rep["m11_fixed"]["k=1"]
                                   and rep["m11_fixed"]["k=4"] == rep["m11_fixed"]["k=1"]),
-        m11_frozen_behavior_replays=bool(rep["m11_frozen_behavior"]["k=2"]
-                                        != rep["m11_frozen_behavior"]["k=1"]),
+        m11_frozen_core_rel_ext_matches_m10=bool(
+            rep["m11_frozen_core_rel_ext"] == rep["m10_frozen_semantics"]),
+        fix_core_rel_ext_control_replays=bool(rep["m11_fix_core_rel_ext_control"]["k=2"]
+                                             != rep["m11_fix_core_rel_ext_control"]["k=1"]),
         note="冻结件 `if ext_active and not chunk_mode and s < ext_n_steps: ea=ext_off[s]` 用**局部**步号"
              "⇒ 分段调用时每段重放前段事件（chunk 模式用 abs0，故不受影响）。M11 已改为绝对步号索引"
              "（`ext_abs_index=True`），实测 k=1/2/5 逐位一致。")
@@ -1368,7 +1469,7 @@ def build_summary(res: dict) -> dict:
     crit["d_determinism"] = dict(
         **st(t9.get("sparse", {}).get("bit_identical"), bool(t9),
              "同引擎同参数重跑 + 分段/跨进程逐位（(e)(h) 更严）"),
-        detail=dict(sparse_step_chunk=t9.get("sparse"), dense=t9.get("dense")))
+        detail=dict(sparse_step_chunk=t9.get("sparse"), high_event_rate=t9.get("high_event_rate")))
     crit["e_segment_composability"] = dict(
         **st(t3.get("crit_e_pass"), bool(t3),
              "k=1/2/5 总脉冲与逐神经元计数逐位相同（step/chunk 两口径）；反例臂必现差异"),

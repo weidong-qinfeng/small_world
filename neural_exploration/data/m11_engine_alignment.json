@@ -315,6 +315,334 @@
   },
   "off_equiv_pass": true
  },
- "started_at": "2026-10-11T21:48:14",
- "which": "merged:t6"
+ "t7": {
+  "class_edge_counts": {
+   "E": 6208,
+   "PV": 525,
+   "SST": 508,
+   "VIP": 559
+  },
+  "class_slot_counts": {
+   "E": 6208,
+   "PV": 525,
+   "SST": 508,
+   "VIP": 559
+  },
+  "class_edge_counts_bincount": {
+   "E": 6208,
+   "PV": 525,
+   "SST": 508,
+   "VIP": 559
+  },
+  "slot_equals_edges": true,
+  "integrals_accumulated": {
+   "E": 127289.75623982694,
+   "PV": 175429.97009993758,
+   "SST": 807490.8347575585,
+   "VIP": 183255.2967515043,
+   "SLOW": 775096.7810095549
+  },
+  "integrals_closed_form": {
+   "E": 127289.77555932116,
+   "PV": 175430.6416364876,
+   "SST": 807485.8556420981,
+   "VIP": 183255.77901312735
+  },
+  "integral_rel_diff": {
+   "E": 1.5177569558035527e-07,
+   "PV": 3.8279319037355876e-06,
+   "SST": 6.16615724426416e-06,
+   "VIP": 2.6316311859263947e-06
+  },
+  "dual_estimator_pass": true,
+  "count_dual": {
+   "spk_total": 244.0,
+   "counts_sum": 244.0,
+   "rel_diff_count_vs_total": 0.0,
+   "wall_s": 1.8005375829999997,
+   "wall_from_ms_per_step_s": 1.8005375829999999
+  },
+  "core_readback": {
+   "core_key": "nc4_slow1_semantic_fix",
+   "n_ch": 4,
+   "slow_on": true,
+   "refractory_form": "semantic_fix",
+   "frozen_arg_order_bug": false,
+   "tau_e_ms": 2.0,
+   "tau_pv_ms": 8.0,
+   "tau_sst_ms": 64.0,
+   "tau_vip_ms": 32.0,
+   "e_pv": -80.0,
+   "e_sst": -80.0,
+   "e_vip": -80.0,
+   "tau_slow_ms": 1000.0,
+   "e_slow": -77.0,
+   "uses_syn_class": true,
+   "ring_width_n": 1600
+  },
+  "readback_consistent": true,
+  "slow_readback": {
+   "implemented": true,
+   "n": 400,
+   "mean": 1.7218387240171433,
+   "std": 2.1151042171206176,
+   "min": 0.0,
+   "max": 15.180248260498047,
+   "dynamic_range": 15.180248260498047,
+   "n_nonzero": 206,
+   "frac_nonzero": 0.515,
+   "trace_n": 10,
+   "trace_std": 0.1726346920173564,
+   "trace_range": 0.5978283882141113,
+   "alive": true,
+   "inc_per_spike": 6.0,
+   "tau_slow_ms": 1000.0
+  },
+  "slow_alive": true,
+  "negative_control_guard": {
+   "guard_raised": true,
+   "message": "编码路径前置守卫（M10 L21）：传了 inhibitory 但未传 syn_class ⇒ 抑制边会写进兴奋槽（M10 曾因此使抑制从未生效）。请显式传 syn_class=inhibitory.astype(np.int8)"
+  },
+  "negative_control_dropped_syn_class": {
+   "caller_intended_counts": {
+    "E": 6208,
+    "PV": 525,
+    "SST": 508,
+    "VIP": 559
+   },
+   "class_edge_counts_registered": {
+    "E": 7800,
+    "PV": 0,
+    "SST": 0,
+    "VIP": 0
+   },
+   "class_slot_counts_actual": {
+    "E": 7800,
+    "PV": 0,
+    "SST": 0,
+    "VIP": 0
+   },
+   "assertion_would_fail": true,
+   "assertion_message": "四类槽编码路径断言失败（{类: (槽内实际, 预期)}）：{'E': (7800, 6208), 'PV': (0, 525), 'SST': (0, 508), 'VIP': (0, 559)} ⇒ 抑制/亚型边未按类落槽，该实验判 invalid（M10 L21 同类静默失效）",
+   "observed_pattern": "PV/SST/VIP 槽全空（0），E 槽吸入全部边 = M10 L21 的失效签名",
+   "note": "断言必须比对**装配方意图**（net.syn_class）与**内核实际槽**；若比对内核自己的 _cls_np 则构造性恒等 ⇒ 不敏感（本节点首版即踩到此坑）"
+  },
+  "slot_encoding_assertion_positive": {
+   "ok": true,
+   "class_slot_counts": {
+    "E": 6208,
+    "PV": 525,
+    "SST": 508,
+    "VIP": 559
+   },
+   "expected": {
+    "E": 6208,
+    "PV": 525,
+    "SST": 508,
+    "VIP": 559
+   }
+  },
+  "crit_slot_pass": true
+ },
+ "t8": {
+  "E1b": {
+   "pv_integrals": {
+    "E": 0.0,
+    "PV": 758.69016,
+    "SST": 0.0,
+    "VIP": 0.0
+   },
+   "sst_integrals": {
+    "E": 0.0,
+    "PV": 0.0,
+    "SST": 1310.524621,
+    "VIP": 0.0
+   },
+   "pv_arm_other_classes_zero": true,
+   "sst_arm_other_classes_zero": true,
+   "predicted_integral_ratio": 1.7273471947414971,
+   "measured_integral_ratio": 1.7273515450428718,
+   "ratio_rel_diff": 2.5184806110682634e-06,
+   "pv_arm_predicted": 758.6916640933027,
+   "sst_arm_predicted": 1310.5239176453247,
+   "pv_arm_rel_diff": 1.98199545458467e-06,
+   "sst_arm_rel_diff": 5.364862198084191e-07,
+   "ratio_differs_from_one_measurably": true,
+   "post_v_max_abs_diff_mV": 5.184368133544922,
+   "n_pre_spikes": [
+    6,
+    6
+   ],
+   "note": "逐类闭式（含有限窗）必须与引擎积分一致（≤2%）⇒ 类 τ 真的进了核表达式；跨类比值必须可测地偏离 1（否则 sub_class 未生效）",
+   "label_only_control_bit_identical": true,
+   "positive_control_pass": true
+  },
+  "E2b": {
+   "slow_on_spk": 189,
+   "slow_off_spk": 574,
+   "bit_different": true,
+   "pop_rate_delta_pct": -67.073,
+   "readback": {
+    "implemented": true,
+    "n": 400,
+    "mean": 2.034904409646988,
+    "std": 2.396942068689057,
+    "min": 0.0,
+    "max": 12.801170349121094,
+    "dynamic_range": 12.801170349121094,
+    "n_nonzero": 178,
+    "frac_nonzero": 0.445,
+    "trace_n": 4,
+    "trace_std": 0.1750459872667875,
+    "trace_range": 0.4707508087158203,
+    "alive": true,
+    "inc_per_spike": 6.0,
+    "tau_slow_ms": 1000.0
+   },
+   "inc_zero_rejected": "rejected",
+   "note": "慢变量必须使逐神经元计数**逐位不同**；否则 = 机制未生效（M10 D1 同类）",
+   "positive_control_pass": true
+  },
+  "E3b": {
+   "arrival_step_per_bin": {
+    "delay40": 64,
+    "delay80": 104
+   },
+   "delta_steps": 40,
+   "delta_expected": 40,
+   "delay40_arrival_ge_delay": true,
+   "n_ring_objects": 1,
+   "shared_single_ring": true,
+   "n_delay_group": 3,
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "note": "延迟档必须真的进槽（到达步差 Δ=40 步=2 ms ⇔ 档差）；多档必须共享单一环槽（E3b 打包）",
+   "positive_control_pass": true
+  },
+  "all_mechanisms_have_positive_control": true
+ },
+ "t9": {
+  "sparse": {
+   "step": 78,
+   "chunk": 78,
+   "bit_identical": true
+  },
+  "high_event_rate": {
+   "step": 188,
+   "chunk": 188,
+   "pop_rate_hz": 2.35,
+   "bit_identical": true,
+   "n_neurons_diff": 0,
+   "regime": "稀疏（每步 ≪1 发放）",
+   "rel_diff_pct": 0.0
+  },
+  "note": "稀疏工况必须逐位一致（断言）；高密度工况的 step/chunk 差异属**已知的批量累加序效应**（M10 RF-12(5) 同类），本节点实测该配置下两者逐位一致（发放密度不足以产生同槽碰撞）⇒ 判据一律以 step 为准，chunk 仅用于墙钟探针",
+  "crit_pass": true
+ },
+ "t12": {
+  "rows": [
+   {
+    "seg": 0,
+    "rss_mb": 190.3,
+    "ar_buf_numel": 4096
+   },
+   {
+    "seg": 1,
+    "rss_mb": 190.53,
+    "ar_buf_numel": 4096
+   },
+   {
+    "seg": 2,
+    "rss_mb": 190.72,
+    "ar_buf_numel": 4096
+   },
+   {
+    "seg": 3,
+    "rss_mb": 190.91,
+    "ar_buf_numel": 4096
+   },
+   {
+    "seg": 4,
+    "rss_mb": 191.09,
+    "ar_buf_numel": 4096
+   }
+  ],
+  "rss_growth_mb": 0.789999999999992,
+  "ar_buf_numel_last": 4096,
+  "crit_pass": true,
+  "note": "禁以动态规模为缓存键（M9 真 bug）；`_ar_buf` 必须保持**单一**增长缓冲"
+ },
+ "t11": {
+  "single_neuron_ISI": {
+   "m9_adult": {
+    "first": 76,
+    "n": 4,
+    "isi_steps": 182
+   },
+   "m10": {
+    "first": 76,
+    "n": 4,
+    "isi_steps": 182
+   },
+   "m11_frozen": {
+    "first": 76,
+    "n": 4,
+    "isi_steps": 182
+   },
+   "m11_fix": {
+    "first": 76,
+    "n": 6,
+    "isi_steps": 144
+   }
+  },
+  "documented_semantics_isi_steps": 144,
+  "frozen_semantics_isi_steps": 182,
+  "network": {
+   "frozen": {
+    "spk": 720,
+    "pop_hz": 9.0
+   },
+   "fix": {
+    "spk": 783,
+    "pop_hz": 9.7875
+   }
+  },
+  "network_rel_diff_pct": 8.75,
+  "conclusion": "冻结件点核（非 gaba 路径）的不应期门实读 `t_ahp`、AHP 电导实读 `t_cool`；M10 的 `gaba_split=True` 路径参数序正确 ⇒ **同一内核两条路径语义不同**。M11 默认采用文档语义（REF_FIX），并保留 REF_FROZEN 供逐位等价与量级量化。",
+  "E_M10_1_ext_replay": {
+   "setup": "N=1、单外部事件（step=0, gmax=6000）、T=400 步、step 模式 —— 期望恒为 3 个脉冲",
+   "per_arm": {
+    "m10_frozen_semantics": {
+     "k=1": 3,
+     "k=2": 6,
+     "k=4": 8
+    },
+    "m11_fixed": {
+     "k=1": 4,
+     "k=2": 4,
+     "k=4": 4
+    },
+    "m11_fix_core_rel_ext_control": {
+     "k=1": 4,
+     "k=2": 8,
+     "k=4": 10
+    },
+    "m11_frozen_core_rel_ext": {
+     "k=1": 3,
+     "k=2": 6,
+     "k=4": 8
+    }
+   },
+   "m10_replays": true,
+   "m11_fixed_composable": true,
+   "m11_frozen_core_rel_ext_matches_m10": true,
+   "fix_core_rel_ext_control_replays": true,
+   "note": "冻结件 `if ext_active and not chunk_mode and s < ext_n_steps: ea=ext_off[s]` 用**局部**步号⇒ 分段调用时每段重放前段事件（chunk 模式用 abs0，故不受影响）。M11 已改为绝对步号索引（`ext_abs_index=True`），实测 k=1/2/5 逐位一致。"
+  }
+ },
+ "started_at": "2026-10-11T21:51:12",
+ "which": "merged:t11"
 }

@@ -977,7 +977,7 @@
       "M0_M-1_M-4_lam0": "逐位相同（sha16 6b794438e487bddc / sum 1154）⇒ 对 M-4 即作用域未生效",
       "M-6_lam0": "不同（sum 1175, 差 2329 步）",
       "M-1_lam0_explanation": "稀疏工况（1154 spike/2.4M 步）可解释 ⇒ 不构成 STP 缺陷证据",
-      "hash_note": "主agent 报 6294245cc83d148e vs 本节点 6b794438e487bddc ⇒ 结论一致，前缀差异已并列"
+      "hash_note": "hash 差异已定案（RF-31）=**hash 基准差异**：`file_bytes`（含 128 B npy 头）⇒ 6b794438e487bddc（本节点）；`payload`（arr.tobytes()）⇒ 6294245cc83d148e（主agent）；**两口径均已核对、结论一致**（M0/M-1/M-4 逐位相同、sum 均 1154）；纪律：跨节点 sha256 必须标注基准。"
     },
     "dose_response_retraction": "6 点曲线的“调质机制”解释作废（测的是输入侧缩放）",
     "M11_handoff": "增益必须作用于状态变量（含抑制权重与阈值）；仅缩放输入幅度即等于未实施（M11 C-7 三联动）",
@@ -1317,5 +1317,19 @@
     "gap": "距门限 4–9 个标准误",
     "conclusion": "缺口不是'调参不足'而是'结构缺失'（缺回路级慢变量）；与 M11 §4.1 上移候选集 C-4/C-5/C-6/C-7 一致",
     "warning": "M-6 λ×4 的 τ 与其突触级 τ_rec=26 s 无关 ⇒ 突触级慢常数不自动传播成回路级慢尺度"
+  },
+  "RF31_hash_basis_ruling": {
+    "ruling": "hash 差异 = hash 基准差异（file_bytes vs payload），**不是重复作业覆盖**；两口径均已核对、结论一致",
+    "bases": {
+      "file_bytes": "文件原始字节（含 128 B npy 头）→ 6b794438e487bddc",
+      "payload": "arr.tobytes() 数组载荷 → 6294245cc83d148e",
+      "semantic": "逐位相同 + sum 相同 → M0/M-1/M-4 三者成立、sum=1154"
+    },
+    "discipline": "跨节点传递的 sha256 必须标注基准（file_bytes/payload/semantic）；未标基准者不得用于两端一致性判断",
+    "enforcement": [
+      "tools/normalize_m10_p6_table.py::label_hashes()（表内 sha16 列强制标注，幂等）",
+      "tools/hash_report.py（三口径并列打印，供跨节点传值前复制）"
+    ],
+    "family": "『双口径』家族第 5 例（根因同 L40 律①：同一名字装不同的量）"
   }
 }

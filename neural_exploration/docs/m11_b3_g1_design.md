@@ -19,7 +19,7 @@
 | 4 | `docs/m11_b3_g1_design.md`（本文） | 判据表、协议、标定杠杆顺序、统计方案、张力识别、时长依赖处置、失败/反证路径 |
 | 5 | `docs/m11_b3_notes.md` | 环境/口径/冲突登记（L1 起）+ **跨节点 sha256（标注基准）** |
 | 6 | `data/m11_b3_managed_jobs.json` | 需主agent 托管的作业（确切命令行 + 产物路径 + 估计墙钟） |
-| 7 | `data/m11_p5_smoke_*`（14 件） | 冒烟测试夹具与输出（S1–S6；M10 冻结件只读 + **SYNTHETIC** 计数夹具，文件内已标注） |
+| 7 | `data/m11_p5_smoke_*`（**28 件**：5 协议 + 7 SYNTHETIC 计数 + 4 截断阶梯 + 12 输出） | 冒烟测试夹具与输出（S1–S6；M10 冻结件只读 + **SYNTHETIC** 计数夹具，文件内已标注） |
 
 **未做（边界）**：不启动任何仿真/长作业；不碰 `src/mouse_cortex_*`（B2）、`data/m11_data_*` / `tools/fetch_m11_*` / `tools/build_m11_*`（B1）与 M0–M10 全部冻结件；不写判据带（工具只读带）。
 
@@ -41,9 +41,9 @@
 `(a)` 的**实测**带、`(b)` 的钙域/电生理域两个带、`(e)` 的实测量、`(g)` 的墙钟上限。
 ⇒ **当前状态下 (b) 与 (g) 必判 `unavailable`；G1 因此必然不能判 `pass`**（这是本工作包的**诚实结论**，不是缺陷）。
 
-### §2.1 跨制备 / 跨口径代理（明确登记 + 量化后果）
+### §2.1 跨制备 / 跨口径代理 与 越界警示（明确登记 + 量化后果）
 
-| 代理行 | 制备 | 量化后果（`wrong_usage_consequence`） |
+| 代理行 / 警示行 | 制备 | 量化后果（`wrong_usage_consequence`） |
 |---|---|---|
 | `proxy_allen_celltypes_avg_firing_rate_median_all/visp` | Allen Cell Types **in vitro 电流钳**（非在体、非自发） | 中位 **17.41 / 17.63 Hz** vs 本门文献带 0.5–2.0 Hz ⇒ **高 8.7–34.8×**；且其 `frac<0.5 Hz = 0.0000` ⇒ 静默带被压到 ≈[0,0.02]，**必然与 (a) 冲突**（M10 A4 标定权衡的正体） |
 | `proxy_sanchezvives2000_ferret_slice` | **雪貂皮层切片 in vitro**，0.1–0.5 Hz | 清单 §1.5 C3 把它当「小鼠皮层 in vivo dwell 0.3–3 s」= **物种/制备/数值三重误引**（冲突 L5） |
@@ -51,7 +51,7 @@
 | `proxy_sanzeni2020_isn` / `proxy_wehr2003_balanced_inhibition` / `proxy_monier2008_ei_diversity` | 小鼠 V1 清醒/轻麻醉（ISN）· **大鼠听皮层**在体 · 麻醉猫 V1 | 仅支撑 E/I 的**方向与量级**（抑制不弱于兴奋、E/I 同量级、个体多样 ⇒ 带不得窄）；**不能**支撑任何数值端点 |
 | `silent_frac_ca_active_per_wave_pct` / `unresponsive_neurons_pct_all_areas` | 小鼠 V1 2p（**每次自发波**招募口径）· Allen 2p（**对刺激可靠响应**口径） | 都不是「T 窗内零计数比例」；直接搬用 ⇒ 静默带口径错（12% 活跃被读成静默 0.12；23% 未响应被读成静默 0.23） |
 | `rate_median_hz_m10_fish_band` / `silent_frac_m10_fish_band` | 斑马鱼幼鱼（M10） | RF-M11-1 禁移植；若移植，M10 的「中位率 0.000 Hz + 静默 0.920」会被判成 (b) 通过 |
-| `microns_same_source_tau_band_ref`（8.003–9.015 s） | MICrONS **同源** 2 field × 2,000 帧 @6.300006 Hz（measured） | **归属 S 门（P6）/RF-M11-2**；在 P5/G1 内引用它判任何子判据 ⇒ **越界**；且 Q 法低态 dwell 1.11–1.27 s vs H 法 3.17–6.67 s（**2.6–6×**）⇒ 口径差必须并列 |
+| ⚠️ **越界警示**：`microns_same_source_tau_band_ref`（8.003–9.015 s） | MICrONS **同源** 2 field × 2,000 帧 @6.300006 Hz（**measured**，非代理） | **归属 S 门（P6）/RF-M11-2**；在 P5/G1 内引用它判任何子判据 ⇒ **越界**；且 Q 法低态 dwell 1.11–1.27 s vs H 法 3.17–6.67 s（**2.6–6×**）⇒ 口径差必须并列 |
 
 ### §2.2 R9 / R10 / R11 到位后的更正（跨节点并发，如实登记）
 

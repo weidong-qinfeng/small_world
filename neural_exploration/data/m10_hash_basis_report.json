@@ -1,0 +1,118 @@
+{
+  "basis_vocab": [
+    "file_bytes",
+    "payload",
+    "semantic"
+  ],
+  "discipline": "跨节点 sha256 必须标注基准",
+  "rows": [
+    {
+      "path": "/Users/weidong/ai/small_world/neural_exploration/data/m10_p6_poptraces/poptrace_M-1_lamx0.0_n250.npy",
+      "n_bytes": 9600128,
+      "file_bytes": "6b794438e487bddc750af9c4c6a0873f3e87f44b662ef7413014a9c4f2b21690",
+      "payload": "6294245cc83d148eeaa72d8ec934adbfb3359e63f6fe3c3c60f2c29bb86d5fdd",
+      "semantic": "bitwise-identical+sum-equal (shape=(2400000,) dtype=float32)",
+      "n_elements": 2400000,
+      "sum": 1154.0
+    },
+    {
+      "path": "/Users/weidong/ai/small_world/neural_exploration/data/m10_p6_poptraces/poptrace_M-1_lamx1.0_n250.npy",
+      "n_bytes": 9600128,
+      "file_bytes": "14db616b6b79c0bbb14d999ef5b8816c21483181a70e67242099835381c78404",
+      "payload": "385326cd18080f8849f8849556e8c63864d65717244a06eb16bfcd6155dd94c0",
+      "semantic": "bitwise-identical+sum-equal (shape=(2400000,) dtype=float32)",
+      "n_elements": 2400000,
+      "sum": 6830.0
+    },
+    {
+      "path": "/Users/weidong/ai/small_world/neural_exploration/data/m10_p6_poptraces/poptrace_M-1_lamx4.0_n250.npy",
+      "n_bytes": 9600128,
+      "file_bytes": "423963b11933e3eef9599bf2c9a4fef11bacb72dcff0c0c08c84926742260d18",
+      "payload": "97e156f7fb3c2189faec3e75f36b90ff7679b679d5e1d24cff603b98df4074d5",
+      "semantic": "bitwise-identical+sum-equal (shape=(2400000,) dtype=float32)",
+      "n_elements": 2400000,
+      "sum": 66628.0
+    },
+    {
+      "path": "/Users/weidong/ai/small_world/neural_exploration/data/m10_p6_poptraces/poptrace_M-4_lamx0.0_n250.npy",
+      "n_bytes": 9600128,
+      "file_bytes": "6b794438e487bddc750af9c4c6a0873f3e87f44b662ef7413014a9c4f2b21690",
+      "payload": "6294245cc83d148eeaa72d8ec934adbfb3359e63f6fe3c3c60f2c29bb86d5fdd",
+      "semantic": "bitwise-identical+sum-equal (shape=(2400000,) dtype=float32)",
+      "n_elements": 2400000,
+      "sum": 1154.0
+    },
+    {
+      "path": "/Users/weidong/ai/small_world/neural_exploration/data/m10_p6_poptraces/poptrace_M-4_lamx1.0_n250.npy",
+      "n_bytes": 9600128,
+      "file_bytes": "8e06149d9fe41a4f084d734bb352dd5f29633210d6d75c0917e5dd2e5cd14722",
+      "payload": "480534e29f588e93c7ec20370f42320240e5fd1f20297150b06ace5968094bb5",
+      "semantic": "bitwise-identical+sum-equal (shape=(2400000,) dtype=float32)",
+      "n_elements": 2400000,
+      "sum": 4189.0
+    },
+    {
+      "path": "/Users/weidong/ai/small_world/neural_exploration/data/m10_p6_poptraces/poptrace_M-4_lamx4.0_n250.npy",
+      "n_bytes": 9600128,
+      "file_bytes": "ac89884852e594e0d1dd33d8490746046d88c7f879e4c856346f1b4efdab21bd",
+      "payload": "5cd8b66dc75914cce4491ba0e97fb6f0c6559131c433ab7637162edefeb89d59",
+      "semantic": "bitwise-identical+sum-equal (shape=(2400000,) dtype=float32)",
+      "n_elements": 2400000,
+      "sum": 410348.0
+    },
+    {
+      "path": "/Users/weidong/ai/small_world/neural_exploration/data/m10_p6_poptraces/poptrace_M-6_lamx0.0_n250.npy",
+      "n_bytes": 9600128,
+      "file_bytes": "8d51b1462a72b561d0c57208b8c83900725d6086985f53b3b669180eeb2be673",
+      "payload": "c160ec8567e685b3a01311cbf58b87652a35905df51686a397fdb1cf87c59c97",
+      "semantic": "bitwise-identical+sum-equal (shape=(2400000,) dtype=float32)",
+      "n_elements": 2400000,
+      "sum": 1175.0
+    },
+    {
+      "path": "/Users/weidong/ai/small_world/neural_exploration/data/m10_p6_poptraces/poptrace_M-6_lamx1.0_n250.npy",
+      "n_bytes": 9600128,
+      "file_bytes": "472a6e16831a1a39906ca28f783876f8531a2dd37bd786570a0e7244d6cab0ad",
+      "payload": "fadd122a80488dba275f17e67d8956b12e2de8f03a01decabdc75d4642970f9e",
+      "semantic": "bitwise-identical+sum-equal (shape=(2400000,) dtype=float32)",
+      "n_elements": 2400000,
+      "sum": 6835.0
+    },
+    {
+      "path": "/Users/weidong/ai/small_world/neural_exploration/data/m10_p6_poptraces/poptrace_M-6_lamx4.0_n250.npy",
+      "n_bytes": 9600128,
+      "file_bytes": "57ac2442fd34d4d9d795f3e2ab4030eaa5a56a3b1114567df3ae5db1ee0ca449",
+      "payload": "f6edb77579dc316e9228d0b3e3e233fdd62ecade06b4375917489f687872cca5",
+      "semantic": "bitwise-identical+sum-equal (shape=(2400000,) dtype=float32)",
+      "n_elements": 2400000,
+      "sum": 63769.0
+    },
+    {
+      "path": "/Users/weidong/ai/small_world/neural_exploration/data/m10_p6_poptraces/poptrace_M0_lamx0.0_n250.npy",
+      "n_bytes": 9600128,
+      "file_bytes": "6b794438e487bddc750af9c4c6a0873f3e87f44b662ef7413014a9c4f2b21690",
+      "payload": "6294245cc83d148eeaa72d8ec934adbfb3359e63f6fe3c3c60f2c29bb86d5fdd",
+      "semantic": "bitwise-identical+sum-equal (shape=(2400000,) dtype=float32)",
+      "n_elements": 2400000,
+      "sum": 1154.0
+    },
+    {
+      "path": "/Users/weidong/ai/small_world/neural_exploration/data/m10_p6_poptraces/poptrace_M0_lamx1.0_n250.npy",
+      "n_bytes": 9600128,
+      "file_bytes": "a853d8296d784cd922704a4afcc0942430b7b03b844c3c8f2d08bf4793f575b9",
+      "payload": "f0851ec2827bbd8da95053e5188d642139b902dfe71ca52b8d4840bd145710c0",
+      "semantic": "bitwise-identical+sum-equal (shape=(2400000,) dtype=float32)",
+      "n_elements": 2400000,
+      "sum": 6710.0
+    },
+    {
+      "path": "/Users/weidong/ai/small_world/neural_exploration/data/m10_p6_poptraces/poptrace_M0_lamx4.0_n250.npy",
+      "n_bytes": 9600128,
+      "file_bytes": "e1fbb4beb1936b02ff1bc1ae03f4069a7e86d7a0ebe967b66c98650a67fb6e12",
+      "payload": "a28a26fb6c7424c0af4d6596934846f8818fbdf01cb29f31fcb123520b480a12",
+      "semantic": "bitwise-identical+sum-equal (shape=(2400000,) dtype=float32)",
+      "n_elements": 2400000,
+      "sum": 50389.0
+    }
+  ]
+}

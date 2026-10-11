@@ -240,8 +240,10 @@ p90_over_med / ks_exp_p / internal_consistency / bic_K2_K3 / gate3_state_structu
    ⇒ 对 **M-4**：λ×0 无外部事件 ⇒ 增益无处可乘 ⇒ **逐位相同是作用域缺陷的必然结果**；
    ⇒ 对 **M-1**（STP）：λ×0 下仅 1154 spike/2.4M 步（每步均值 0.0005）⇒ 递归不可测 ⇒ **可由稀疏工况解释，
    **不构成 STP 缺陷证据**（两者如实区分）。
-   > 主agent 报 hash `6294245cc83d148e`、本节点盘面为 `6b794438e487bddc` ⇒ **结论一致**；
-   > 前缀差异疑为重复作业覆盖或 hash 口径不同，已并列登记。
+   > **hash 差异已定案（RF-31）= `hash 基准差异`，不是重复作业覆盖**：
+   > `file_bytes`（含 **128 字节 npy 头**的文件字节）⇒ `6b794438e487bddc`（本节点）；
+   > `payload`（`arr.tobytes()` 数组载荷）⇒ `6294245cc83d148e`（主agent）。
+   > **两口径均已核对、结论一致**（M0/M-1/M-4 逐位相同、sum 均为 1154）。
 
 ### 11.2 处置
 - **M-4 / M-5（D1 修正版）改判为 `MECHANISM_NOT_IMPLEMENTED(scope)`**（非 partial、非 invalid）；

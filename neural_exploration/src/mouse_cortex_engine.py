@@ -936,6 +936,23 @@ class MouseCortexEngine(LarvalZFEngine):
         tot = r.abs().sum(dim=(0, 2)).detach().cpu().numpy()
         return {SUB_NAMES[c]: float(tot[c]) for c in range(int(self.n_ch))}
 
+    def assert_slot_encoding(self, expected_class_counts: Dict[str, int],
+                             tol: int = 0) -> Dict[str, Any]:
+        """**编码路径前置断言**（清单 §0.3 #15 / A7 硬条款）：逐类槽内边数 == 该类预期边数。
+
+        `expected_class_counts` 必须来自**装配方**（调用者意图），而不是内核自己的 `_cls_np`
+        —— 否则 M10 L21 的静默失效（syn_class 未传 ⇒ 全部落入兴奋槽）无法被发现。
+        """
+        actual = self.class_slot_counts()
+        bad = {k: (int(v), int(expected_class_counts.get(k, 0)))
+               for k, v in actual.items() if abs(int(v) - int(expected_class_counts.get(k, 0))) > tol}
+        if bad:
+            raise AssertionError(
+                "四类槽编码路径断言失败（{类: (槽内实际, 预期)}）：%r ⇒ 抑制/亚型边未按类落槽，"
+                "该实验判 invalid（M10 L21 同类静默失效）" % bad)
+        return dict(ok=True, class_slot_counts=actual,
+                    expected={k: int(v) for k, v in expected_class_counts.items()})
+
     def trace_integrals(self, dt_ms: Optional[float] = None) -> Dict[str, Any]:
         """**逐类电导积分** ∫g_c(t)dt（动态，引擎侧独立估计器）。"""
         dt = float(self.point.dt_ms if dt_ms is None else dt_ms)

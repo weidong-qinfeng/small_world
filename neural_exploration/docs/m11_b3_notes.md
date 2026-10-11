@@ -104,9 +104,20 @@
 
 ## L10 — 冻结件零修改核查
 
-- 本节点**只新建**：`data/m11_p5_targets.{csv,json}`、`data/m11_p5_smoke_*`（协议/夹具/输出，14 件）、`data/m11_b3_managed_jobs.json`、`tools/validate_p11_resting.py`、`docs/m11_b3_{g1_design,notes}.md`。
+- 本节点**只新建**：`data/m11_p5_targets.{csv,json}`、`data/m11_p5_smoke_*`（协议/夹具/输出，**28 件**）、`data/m11_b3_managed_jobs.json`、`tools/validate_p11_resting.py`、`docs/m11_b3_{g1_design,notes}.md`。
 - **未改**：`src/mouse_cortex_*`（B2）、`data/m11_data_*` / `tools/fetch_m11_*` / `tools/build_m11_*`（B1）、`docs/m11_acceptance_master.md` / `docs/m11_data_gate_report.md` / `docs/m11_env_notes.md` / `docs/m11_list_review_master.md`（主agent）、以及全部 M0–M10 冻结件（只读消费：`m10_p6_poptraces/*.npy`、`m10_p5_gate1_ci.json`、`m10_calibration_targets.csv`、`src/larval_zf_circuit.py`）。
-- ⚠️ `git status` 另有 **9 个非本节点的改动**（`src/mouse_cortex_engine.py`、`m11_engine_alignment.*`、`scan_m11_engine.py`、`normalize_m10_p6_table.py`、`m10_p6_judgement_table.csv`、`m10_stage3_report.md`、`demo_m11_microns_decode.py` 等）⇒ **B2/主agent 正在并发编辑**，与本工作包无关，勿归因于本节点。
+- ⚠️ 另有**非本节点**的改动正在并发发生（B2/主agent）。以 **mtime 交叉证明**（本节点写入窗口 21:45:23–21:48:17）：
+
+| 文件 | mtime | 归属 |
+|---|---|---|
+| `data/m11_p5_targets.csv` / `.json` | 21:46:56 / 21:47:09 | **本节点** |
+| `tools/validate_p11_resting.py` | 21:45:23 | **本节点** |
+| `docs/m11_b3_g1_design.md` / `m11_b3_notes.md` / `data/m11_b3_managed_jobs.json` | 21:47:24 / 21:48:01 / 21:48:17 | **本节点** |
+| `src/mouse_cortex_engine.py` | 21:46:01 | **B2**（非本节点） |
+| `tools/scan_m11_engine.py` / `data/m11_engine_alignment.json` | 21:48:12 / 21:48:21 | **B2**（非本节点） |
+| `data/m10_p6_judgement_table.csv`、`tools/normalize_m10_p6_table.py`、`reports/neuro/m11_g0_engine_summary.json` | 同窗 | **B2/主agent**（非本节点） |
+
+⇒ 请**勿**把上述并发改动归因于本工作包；本节点全程未向这些路径发起任何写操作。
 
 ## L11 — 🔴 跨节点并发事件：我的首版表述按 R2 写、R9 到达后更正
 

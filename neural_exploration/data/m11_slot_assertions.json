@@ -1,0 +1,129 @@
+{
+ "class_edge_counts": {
+  "E": 6208,
+  "PV": 525,
+  "SST": 508,
+  "VIP": 559
+ },
+ "class_slot_counts": {
+  "E": 6208,
+  "PV": 525,
+  "SST": 508,
+  "VIP": 559
+ },
+ "class_edge_counts_bincount": {
+  "E": 6208,
+  "PV": 525,
+  "SST": 508,
+  "VIP": 559
+ },
+ "slot_equals_edges": true,
+ "integrals_accumulated": {
+  "E": 127289.75623982694,
+  "PV": 175429.97009993758,
+  "SST": 807490.8347575585,
+  "VIP": 183255.2967515043,
+  "SLOW": 775096.7810095549
+ },
+ "integrals_closed_form": {
+  "E": 127289.77555932116,
+  "PV": 175430.6416364876,
+  "SST": 807485.8556420981,
+  "VIP": 183255.77901312735
+ },
+ "integral_rel_diff": {
+  "E": 1.5177569558035527e-07,
+  "PV": 3.8279319037355876e-06,
+  "SST": 6.16615724426416e-06,
+  "VIP": 2.6316311859263947e-06
+ },
+ "dual_estimator_pass": true,
+ "count_dual": {
+  "spk_total": 244.0,
+  "counts_sum": 244.0,
+  "rel_diff_count_vs_total": 0.0,
+  "wall_s": 1.8005375829999997,
+  "wall_from_ms_per_step_s": 1.8005375829999999
+ },
+ "core_readback": {
+  "core_key": "nc4_slow1_semantic_fix",
+  "n_ch": 4,
+  "slow_on": true,
+  "refractory_form": "semantic_fix",
+  "frozen_arg_order_bug": false,
+  "tau_e_ms": 2.0,
+  "tau_pv_ms": 8.0,
+  "tau_sst_ms": 64.0,
+  "tau_vip_ms": 32.0,
+  "e_pv": -80.0,
+  "e_sst": -80.0,
+  "e_vip": -80.0,
+  "tau_slow_ms": 1000.0,
+  "e_slow": -77.0,
+  "uses_syn_class": true,
+  "ring_width_n": 1600
+ },
+ "readback_consistent": true,
+ "slow_readback": {
+  "implemented": true,
+  "n": 400,
+  "mean": 1.7218387240171433,
+  "std": 2.1151042171206176,
+  "min": 0.0,
+  "max": 15.180248260498047,
+  "dynamic_range": 15.180248260498047,
+  "n_nonzero": 206,
+  "frac_nonzero": 0.515,
+  "trace_n": 10,
+  "trace_std": 0.1726346920173564,
+  "trace_range": 0.5978283882141113,
+  "alive": true,
+  "inc_per_spike": 6.0,
+  "tau_slow_ms": 1000.0
+ },
+ "slow_alive": true,
+ "negative_control_guard": {
+  "guard_raised": true,
+  "message": "编码路径前置守卫（M10 L21）：传了 inhibitory 但未传 syn_class ⇒ 抑制边会写进兴奋槽（M10 曾因此使抑制从未生效）。请显式传 syn_class=inhibitory.astype(np.int8)"
+ },
+ "negative_control_dropped_syn_class": {
+  "caller_intended_counts": {
+   "E": 6208,
+   "PV": 525,
+   "SST": 508,
+   "VIP": 559
+  },
+  "class_edge_counts_registered": {
+   "E": 7800,
+   "PV": 0,
+   "SST": 0,
+   "VIP": 0
+  },
+  "class_slot_counts_actual": {
+   "E": 7800,
+   "PV": 0,
+   "SST": 0,
+   "VIP": 0
+  },
+  "assertion_would_fail": true,
+  "assertion_message": "四类槽编码路径断言失败（{类: (槽内实际, 预期)}）：{'E': (7800, 6208), 'PV': (0, 525), 'SST': (0, 508), 'VIP': (0, 559)} ⇒ 抑制/亚型边未按类落槽，该实验判 invalid（M10 L21 同类静默失效）",
+  "observed_pattern": "PV/SST/VIP 槽全空（0），E 槽吸入全部边 = M10 L21 的失效签名",
+  "note": "断言必须比对**装配方意图**（net.syn_class）与**内核实际槽**；若比对内核自己的 _cls_np 则构造性恒等 ⇒ 不敏感（本节点首版即踩到此坑）"
+ },
+ "slot_encoding_assertion_positive": {
+  "ok": true,
+  "class_slot_counts": {
+   "E": 6208,
+   "PV": 525,
+   "SST": 508,
+   "VIP": 559
+  },
+  "expected": {
+   "E": 6208,
+   "PV": 525,
+   "SST": 508,
+   "VIP": 559
+  }
+ },
+ "crit_slot_pass": true
+}
