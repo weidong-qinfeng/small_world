@@ -1,6 +1,6 @@
 {
  "generated_by": "tools/validate_p11_data_gate.py",
- "generated_at": "2026-10-11T15:11:25Z",
+ "generated_at": "2026-10-11T15:28:13Z",
  "gate": "G2 (P1/P2 数据门)",
  "assertions": [
   {
@@ -279,9 +279,14 @@
    "detail": "命中 §6d"
   },
   {
-   "assertion": "DET 复跑 verdict 一致（确定性）",
+   "assertion": "P1.11 中位数双估计器一致（显式两中位均值 vs statistics.median，rel_diff ≤1e-6）",
    "ok": true,
-   "detail": "[{\"source_id\": \"2\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"3\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F7\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F8\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F9\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}]"
+   "detail": "median=17.413 / median_alt=17.413 / rel_diff=0.0（旧实现缺陷值 17.4379 已修）"
+  },
+  {
+   "assertion": "P1.11b 报告与计数锚的 firing_rate 统计一致（n/min/median/max 与独立复算一致）",
+   "ok": true,
+   "detail": "n=1808 min=1.984915 median=17.413 max=261.210274（主 agent 独立值：1808/1.985/17.4130/261.210）"
   }
  ],
  "failures": [],
@@ -295,7 +300,7 @@
  ],
  "P1": {
   "verdict": "pass",
-  "n_assertions": 36,
+  "n_assertions": 38,
   "n_failed": 0
  },
  "P2": {
@@ -303,41 +308,5 @@
   "n_assertions": 19,
   "n_failed": 0
  },
- "G2_gate": "pass",
- "determinism_check": {
-  "note": "复跑固定子集（#2/#3/F7/F8/F9），比对 verdict 是否一致",
-  "comparisons": [
-   {
-    "source_id": "2",
-    "first": "REACHABLE",
-    "rerun": "REACHABLE",
-    "same": true
-   },
-   {
-    "source_id": "3",
-    "first": "REACHABLE",
-    "rerun": "REACHABLE",
-    "same": true
-   },
-   {
-    "source_id": "F7",
-    "first": "REACHABLE",
-    "rerun": "REACHABLE",
-    "same": true
-   },
-   {
-    "source_id": "F8",
-    "first": "REACHABLE",
-    "rerun": "REACHABLE",
-    "same": true
-   },
-   {
-    "source_id": "F9",
-    "first": "REACHABLE",
-    "rerun": "REACHABLE",
-    "same": true
-   }
-  ],
-  "all_same": true
- }
+ "G2_gate": "pass"
 }

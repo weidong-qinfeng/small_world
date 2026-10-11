@@ -501,6 +501,92 @@ def main(argv=None) -> int:
                  ("%.3f" % c["Q_dwell_low_s"]) if c["Q_dwell_low_s"] else "n/a"))
     print("  ⇒ %s" % controls["_verdict"]["text"])
 
+    # ---------------- 交叉核对（**先算完再看对方结果**：本块在全部计算完成后才读对方文件）----------------
+    ref_band = os.path.join(DATA_DIR, "_mainagent_m11_same_source_band.json")
+    ref_parse = os.path.join(DATA_DIR, "m11_microns_parse_validation.json")
+    cross = dict(sources={
+        "band": os.path.basename(ref_band) if os.path.exists(ref_band) else None,
+        "parse": os.path.basename(ref_parse) if os.path.exists(ref_parse) else None,
+        "order_note": "本块在自身全部计算完成后才读对方文件（RF-33 要求先算后比）"}, comparisons=[], attribution={})
+    if os.path.exists(ref_band):
+        rb = json.load(open(ref_band))["pipelines"]
+        pairs = [("bin1_spatial_mean_dfF", "frame_mean|native|unsmoothed"),
+                 ("bin1_spatial_mean_dfF", "frame_mean|native|smooth5"),
+                 ("bin6_spatial_mean_dfF", "frame_mean|box0.914|unsmoothed"),
+                 ("bin6_spatial_mean_dfF", "frame_mean|box0.914|smooth5")]
+        mine = {b["label"]: b for b in bands}
+        for myk, rk in pairs:
+            mb = mine[myk]; ar = mb["AR1"]; r = rb[rk]
+            smoothed = rk.endswith("smooth5")
+            my_phi = ar["phi_smoothed"] if smoothed else ar["phi_unsmoothed"]
+            my_tau = ar.get("tau_s") if smoothed else ar.get("tau_unsmoothed_s")
+            my_n = mb["n_frames_smoothed"] if smoothed else mb["n_frames_binned"]
+            rel_tau = (my_tau - r["tau_s"]) / r["tau_s"] if (my_tau and r.get("tau_s")) else None
+            rel_phi = (my_phi - r["phi"]) / r["phi"] if (my_phi and r.get("phi")) else None
+            # **口径归因**：把 dt 换成 B4 标称 0.9138 s 重算 τ（仅 box 路径有差异）
+            tau_nominal = None
+            if my_phi is not None and 0 < my_phi < 1 and "bin6" in myk:
+                tau_nominal = float(-B4_BIN_S / math.log(my_phi))
+            cross["comparisons"].append(dict(
+                mine_label=myk, theirs_key=rk, smoothed=smoothed,
+                my_n=my_n, their_n=r["n"], n_match=bool(my_n == r["n"]),
+                my_phi=my_phi, their_phi=r["phi"], rel_phi=rel_phi,
+                my_tau_s=my_tau, their_tau_s=r["tau_s"], rel_tau=rel_tau,
+                over_5pct=bool(rel_tau is not None and abs(rel_tau) > 0.05),
+                tau_with_b4_nominal_dt=tau_nominal,
+                tau_nominal_vs_theirs=((tau_nominal - r["tau_s"]) / r["tau_s"]
+                                       if (tau_nominal and r.get("tau_s")) else None)))
+        cross["attribution"] = dict(
+            dt_dimension=("box 路径**唯一**系统性差异：对方 bin 为 6 帧/n=333（与我相同），"
+                          "但 τ=−dt/lnφ 用 **B4 标称 dt=0.913826 s**；实测箱宽 = 6/%.6f = **%.6f s**（+%.2f%%）"
+                          "⇒ 其 box 路径 τ 系统性偏低 %.2f%%（把 dt 换成实测值即复现我方值）"
+                          % (a.fps, 6 / a.fps, 100 * (6 / a.fps / B4_BIN_S - 1), 100 * (6 / a.fps / B4_BIN_S - 1))),
+            trace_dimension=("trace 口径（我方=剔除「曾现哨兵」体素的空间均值；对方=frame_mean 且逐元素排除哨兵）"
+                             "⇒ φ 相对差 ≤0.01% ⇒ **该维度在本次量级下可忽略**（已量化，非声明）"),
+            unresolved=("Q/H dwell 仍差 2.1×（我方 H 低态 dwell 6.59 s vs 对方 3.17 s）："
+                        "H 序列 run 数仅 14–17、p90/中位≈7（重尾）⇒ 中位 dwell 的抽样不确定度大；"
+                        "且对方 A 矩阵 [[0.9798,0.0202],[0.0375,0.9625]] 在 occ_low=0.6425 下蕴含约 52.8 次切换，"
+                        "而其自报 n_switches=35 ⇒ **对方记录内部不一致**。故该差异**未定位**，"
+                        "需 B1 提供其 HMM 的拟合序列（平滑/未平滑）、初始化与迭代设置。"))
+    if os.path.exists(ref_parse):
+        pf = json.load(open(ref_parse)).get("full_objects", {})
+        cross["parse_metrics"] = dict(
+            theirs=dict(lat_x_mean=pf.get("lat_x_mean"), lat_y_mean=pf.get("lat_y_mean"),
+                        frame_mean=pf.get("frame_mean"), p50_min=pf.get("p50_min"), p50_max=pf.get("p50_max"),
+                        n_neg=pf.get("n_int16_negative"), n_u16gt=pf.get("n_uint16_gt_65000"),
+                        vmin=pf.get("vmin_global")),
+            mine=dict(sentinels=sentinels, structure_pooled=st[">i2（正解）"],
+                      structure_per_object=per_obj_summary, p50={">i2": st[">i2（正解）"]["p50_median"]}),
+            note="我方为**中位+区间**、对方为**均值+区间**（统计量口径不同，非数据不同）")
+        cross["parse_metrics"]["agreement"] = dict(
+            sentinel_exact=bool(sentinels["neg16"] == pf.get("n_int16_negative")),
+            u16gt_exact=bool(sentinels["u16gt"] == pf.get("n_uint16_gt_65000")),
+            vmin_exact=bool(gmin == pf.get("vmin_global")),
+            p50_min_match=bool(abs(min(p50[">i2"]) - pf.get("p50_min", -1)) < 1e-6),
+            p50_max_match=bool(abs(max(p50[">i2"]) - pf.get("p50_max", -1)) < 1e-6),
+            rel_lat_x=float((st[">i2（正解）"]["px_h"] - pf.get("lat_x_mean", float("nan"))) / pf.get("lat_x_mean", 1)),
+            rel_frame=float((st[">i2（正解）"]["ft"] - pf.get("frame_mean", float("nan"))) / pf.get("frame_mean", 1)))
+    print("\n=== 交叉核对（先算后比）===")
+    for c in cross["comparisons"]:
+        print("  %-26s φ: 我 %.6f vs 他 %.6f (Δ%+.4f%%) | τ: 我 %8.4f vs 他 %8.4f (Δ%+.2f%%)%s"
+              % (c["theirs_key"], c["my_phi"], c["their_phi"], 100 * c["rel_phi"],
+                 c["my_tau_s"], c["their_tau_s"], 100 * c["rel_tau"],
+                 "  **>5%**" if c["over_5pct"] else ""))
+    if cross["comparisons"] and cross["comparisons"][-1]["tau_with_b4_nominal_dt"]:
+        c0 = [c for c in cross["comparisons"] if c["tau_with_b4_nominal_dt"]]
+        print("  [口径归因] box 路径改用 B4 标称 dt=0.913826：")
+        for c in c0:
+            print("     %-26s 归因后 τ=%.4f vs 他 %.4f ⇒ 残差 %+.3f%%"
+                  % (c["theirs_key"], c["tau_with_b4_nominal_dt"], c["their_tau_s"],
+                     100 * c["tau_nominal_vs_theirs"]))
+    print("  [归因] %s" % cross["attribution"]["dt_dimension"])
+    if "parse_metrics" in cross:
+        ag = cross["parse_metrics"]["agreement"]
+        print("  [结构指标] 哨兵逐位一致=%s u16gt一致=%s vmin一致=%s | 我的 pooled lat_x=%.4f vs 他 %.4f（Δ%+.2f%%）"
+              % (ag["sentinel_exact"], ag["u16gt_exact"], ag["vmin_exact"],
+                 cross["parse_metrics"]["mine"]["structure_pooled"]["px_h"],
+                 cross["parse_metrics"]["theirs"]["lat_x_mean"], 100 * ag["rel_lat_x"]))
+
     payload = dict(
         task="M11-B3b 独立复核：MICrONS 功能体素序列解码 + 同源成像目标带",
         independence="本工具未参照 M11-B1 实现；解码路径独立写就并自证；下游估计器复用 M10 冻结口径",
@@ -519,6 +605,7 @@ def main(argv=None) -> int:
                     n_voxels_valid=int(valid.sum()), n_voxels_ever_sentinel=int(ever_sent.sum())),
         contiguity=contig,
         controls=controls,
+        crosscheck=cross,
         bands=bands,
         gates=dict(MIN_FRAMES_VALID=MIN_FRAMES_VALID, MIN_FRAMES_SHAPE=MIN_FRAMES_SHAPE,
                    TAU_MIN_FRAMES=TAU_MIN_FRAMES, MIN_FRAMES_BIC=MIN_FRAMES_BIC),

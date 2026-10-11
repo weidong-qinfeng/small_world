@@ -50,7 +50,7 @@
 | **体素解码证据**（RF-M11-A 反证） | **measured** | `demo_m11_microns_decode.py` 一条命令复核：LE lat_x **−0.001** / 帧轴 lag1 **0.000** / p50 **0** ⇔ **BE lat_x +0.814** / 帧轴 lag1 **+0.803** / p50 **1953**；帧轴 lag1..6 = 0.803→0.709 平滑衰减 | `m11_decode_proof.json` + `m11_microns_decode_proof.png` |
 | **活动回退源**（RF-M11-A §二.3.a） | **measured**（自描述 CSV） | Allen BO ecephys：`probes.csv` **完整** ⇒ **spike 30,000.3 Hz / LFP 2,500.03 Hz**（332 probe，均值 29,909.6 / 2,492.5）；`sessions.csv` 完整（58 session）；`units.csv` 全量 51.4 MB **未取**（DQ-6），1 MB 前缀读回 27 列 schema | `m11_allen_activity_fallback.json` / `m11_allen_activity_objects.csv` |
 | 结构-功能**同源**证据 | **measured** | 同一 minnie65 体积内的 EM/seg 与 144 个双光子 field；`functional_coregistration` 前缀可达（2 键） | 同上 |
-| Allen Cell Types 元数据 | **measured（全取）** | **1,920/1,920 行**；54 字段（11 个 `ef__*`）；`ef__avg_firing_rate` n=**1,808**（中位 17.44 Hz） | `m11_allen_celltypes_metadata.csv` |
+| Allen Cell Types 元数据 | **measured（全取）** | **1,920/1,920 行**；54 字段（11 个 `ef__*`）；`ef__avg_firing_rate` n=**1,808**（中位 **17.4130 Hz**；min 1.984915 / max 261.210274） | `m11_allen_celltypes_metadata.csv` |
 | Allen per-cell NWB | **measured（对象级 + 头）** | HEAD 200 / **91,560,414 B** / `486940961_ephys.nwb`；Range 0-99 → 206；**44.7 MB 可见前缀 + 稀疏文件头解析**：`nwb_version = NWB-1.0.5`、`file_create_date = 2018-02-28`、根组 11 键、`Sweep_10` = `CurrentClampSeries`（"Voltage recorded from cell during current-clamp recording"） | `m11_allen_sources.json` |
 | Allen BO Neuropixels 目录 | **measured** | **569 对象 / 853.7 GB**（未截断）；单体对象 2,062,950,784 B（LFP NWB，200） | 同上 |
 | 文献先验（§1.3 + §4.1 C-1..C-8） | **literature 31 / literature_unverified 6** | 清单 12 个 PMID **全部题录核对通过**；C-5/C-6/C-8 **由 unverified 升级** | `m11_literature_priors.csv` |
@@ -258,6 +258,15 @@ $PY neural_exploration/tools/validate_p11_data_gate.py --determinism-check
 > 不含任何活性统计）；若主 agent 认为该几何用途亦在禁令内，可依裁撤除该节（并记得同格性判定将退回元数据声明）。
 > **本节点保留反证证据**（大端解码，`tools/demo_m11_microns_decode.py` 一条命令可复核 + B3b 独立复现），
 > 并**建议**改判 `decoded(big-endian int16)`；**在裁定变更前，一切产出按 `format_unverified` 执行。**
+
+## §6e ★ P2 结论**显式收窄**（主 agent §四要求，写入结论段而非仅限制登记）
+
+> **本里程碑的"结构-功能同源"仅就结构侧成立。**
+> 结构侧（EM/seg/seg_m1300）为**真实可达且自描述**（`measured`，体积/分辨率/bbox/SHA 齐备，含 shard 与对象级实测）；
+> **功能侧**因"体素序列 `format_unverified`（RF-M11-A/B 裁定）+ 逐细胞 ΔF/F 仅存 v8 DataJoint DB（`unavailable`）
+> + 144 field 中仅 2 个有 `functional_series`"，活动通道改由 **Allen NWB（跨制备/跨品系/跨实验室）**承担
+> ⇒ **功能侧为跨源代理，证据级别 `derived / cross_source`，不得声称"同源对照"**。
+> 该收窄已同步写入 **M12 交接缺口 G-1/G-2**。
 
 ## §7 结论与下一步建议
 

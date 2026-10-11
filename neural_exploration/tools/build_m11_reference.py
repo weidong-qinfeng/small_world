@@ -184,6 +184,28 @@ def main():
                (ga.get("aligned_after_search", {}).get("r", 0) or 0)
                / max(ga.get("negative_control_shuffled_series", {}).get("r", 0) or 1, 1e-9)))
 
+    st = json.load(open(os.path.join(DATA, "m11_microns_structure.json"))) \
+        if os.path.exists(os.path.join(DATA, "m11_microns_structure.json")) else {}
+    if st:
+        vols = st.get("volumes", {})
+
+        def _bbox(v):
+            sc = (vols.get(v, {}).get("gcs", {}).get("scales") or [{}])[0]
+            return sc.get("bbox_mm"), sc.get("voxel_offset"), sc.get("size_voxels"), sc.get("resolution_nm")
+        be, oe, se, re_ = _bbox("em")
+        bs, os_, ss, rs = _bbox("seg")
+        add("R-29", "structural_subvolume_frame", "预注册：取自 seg 的像素坐标盒（换算到 em 帧）", "-",
+            "不采用 em 桶 bbox、也不采用论文 1 mm³", "asserted", "measured+derived",
+            "data/m11_microns_structure.json", st.get("generated_at", ""),
+            "**口径澄清（主 agent §二.2 必说明）**：em 桶 bbox = %s mm（%s mm³，含拼接 padding）；"
+            "seg bbox = %s mm（%s mm³）；论文 in vivo 立方毫米 = **1.3×0.87×0.82 mm**（≈0.93 mm³，"
+            "成像/分析立方体）⇒ 三者**互不相同**（em vs 论文：x +31%%、y +66%%、z **−36%%**）。"
+            "且 **em 与 seg 的 voxel_offset 不同**（em %s nm vs seg %s nm）⇒ **坐标系不同**，"
+            "M11 的结构子体积**必须在 seg/seg_m1300 的像素盒内预注册**，再按 offset 差换算到 em 帧；"
+            "**不得**把 em 桶 bbox 当'论文的 1 mm³'，**不得**跨帧直接用同一边界框坐标。"
+            % (be, round(be[0] * be[1] * be[2], 4) if be else None, bs,
+               round(bs[0] * bs[1] * bs[2], 4) if bs else None, oe, os_))
+
     with open(OUT, "w", newline="", encoding="utf-8") as f:
         f.write("# M11 参考锚（generated_by=tools/build_m11_reference.py；**只允许新增行**；"
                 "status ∈ {asserted, NEEDS_VERIFY, unverified}；**unverified 行不得作为判据带**）\n")

@@ -291,6 +291,24 @@ def main():
         except ValueError:
             pass
     fr = [x for x in fr if x == x]
+    # **双估计器一致性（主 agent M10 抓到 5 次的同类事故）**：偶数 n 必须取两中位均值；
+    # 并与 statistics.median 交叉核对（相对差 ≤1e-6），不一致即在此处暴露。
+    import statistics as _st
+    def _median_explicit(v):
+        w = sorted(v)
+        n = len(w)
+        if n == 0:
+            return None
+        return w[n // 2] if n % 2 else 0.5 * (w[n // 2 - 1] + w[n // 2])
+    med_a = _median_explicit(fr) if fr else None
+    med_b = _st.median(fr) if fr else None
+    med_rel = (abs(med_a - med_b) / abs(med_b)) if (med_a is not None and med_b) else None
+    median_check = dict(median_explicit=round(med_a, 6) if med_a is not None else None,
+                        median_statistics=round(med_b, 6) if med_b is not None else None,
+                        rel_diff=(round(med_rel, 12) if med_rel is not None else None),
+                        tol=1e-6, agree=bool(med_rel is not None and med_rel <= 1e-6),
+                        note="**旧实现缺陷已修**：曾用 `sorted[n//2]`（奇数式取单元素），n=1808 时给出 17.4379；"
+                             "正确值 = 两中位均值 = **17.4130**（numpy/statistics 两实现一致）")
     donors = {r.get("donor__id") for r in av if r.get("donor__id")}
     allen_counts = dict(
         celltypes_total_rows_reported=ct.get("total_rows"),
@@ -299,9 +317,11 @@ def main():
         celltypes_n_fields=ct.get("n_fields"),
         celltypes_n_ef_fields=ct.get("n_ef_fields"),
         celltypes_n_unique_donors=len(donors),
-        ef_avg_firing_rate=dict(n=len(fr), min=round(min(fr), 3) if fr else None,
-                                median=round(sorted(fr)[len(fr) // 2], 3) if fr else None,
-                                max=round(max(fr), 3) if fr else None,
+        ef_avg_firing_rate=dict(n=len(fr), min=round(min(fr), 6) if fr else None,
+                                median=round(med_a, 6) if fr else None,
+                                median_alt=round(med_b, 6) if fr else None,
+                                max=round(max(fr), 6) if fr else None,
+                                two_estimator_check=median_check,
                                 evidence="measured(API 返回的 ef__ 特征字段，逐标本一行)"),
         per_cell_nwb=dict(head_http_code=nwb.get("head_http_code"),
                           content_length=nwb.get("head_content_length"),

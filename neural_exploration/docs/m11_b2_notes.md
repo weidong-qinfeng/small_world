@@ -276,3 +276,100 @@
 - `evidence`：判据 JSON / 引擎源码 / 工具的 **sha256 指纹** + `stale_guard`（防陈旧快照误读）；
 - 每项判据新增 `reference` 字段（R14："须先定参照"）；
 - `upstream_defect_E_M9_4` 的 `status` 由非法值 `registered` 改为 **`informational`**（R14 裁定），且**不进判据集合**。
+
+---
+
+## B2-L12 — RF-M11-G（(e) 裁定精确化）答复：**失败条件已被界定为单轴，且已修正**（非"物理配置相关"）
+
+### B2-L12.1 R11 失败配置的**全部参数**（可逐项复算）
+
+```
+内核      : MouseCortexEngine(n=400, device=cpu, use_compile=False, ext_abs_index∈{True,False})
+机制      : E1b 四槽 ON（configure_subtypes(True)）+ E2b 慢变量 ON（tau_slow=1000 ms, inc=6.0）
+参考档    : REF_FIX（默认）
+网络      : build_laminar_probe_column(n_total=400, indegree=20, seed=0, delay_bins=(40,60,80),
+            layer_frac=(0.35,0.15,0.30,0.20), e_frac=(0.80,0.80,0.80,0.85),
+            sub_frac=(0.35,0.30,0.35), inh_frac=0.20,
+            gmax_band={E:(6,18), PV:(40,90), SST:(20,60), VIP:(8,24)}, gmax_scale=1.0,
+            bias_log_mean=230.0, bias_log_sigma=0.30, bias_scale=1.0)
+事件表    : T_table=20000 步；λ=2.0 Hz/神经元 ⇒ 800 事件；np.random.default_rng(11)；
+            幅度均匀 [17,23]；syn_class 全 0（兴奋）
+运行      : T=4000 步；delivery="step"；segment_steps = T//k（k=2 ⇒ 2000+2000；k=5 ⇒ 800×5）
+            reset(seed=1)
+```
+**复算结果（本节点逐位重现，与 R11/RF-M11-G 引用的数字完全一致）**：
+
+| `ext_abs_index` | k=1 | k=2 | k=5 |
+|---|---|---|---|
+| **True（M11 默认/修正档）** | 173 / 0 差 / BIT | **173 / 0 / BIT** | **173 / 0 / BIT** |
+| **False（冻结件行为）** | 173 / 0 差 | **172 / 11 个神经元差** | **165 / 28 个神经元差** |
+
+⇒ **R11 引用的 172/11 与 165/28 精确来自 `ext_abs_index=False` 这一档**（即修复前快照）；默认档**逐位一致**。
+
+### B2-L12.2 逐神经元差异的**分布**（RF-M11-G 第 1 条：决定根因假设）
+
+| 臂 | 差异神经元 | 按层 L2/3, L4, L5, L6 | 按类型 E, PV, SST, VIP |
+|---|---|---|---|
+| `ext_abs_index=False`, k=2 | 11 | **[3, 3, 1, 4]** | **[8, 1, 1, 1]** |
+| `ext_abs_index=False`, k=5 | 28 | **[11, 6, 6, 5]** | **[22, 2, 2, 2]** |
+| （群体规模，供对照）| — | 140, 60, 120, 80 | 324, 19, 19, 38 |
+
+⇒ 差异**按群体规模成比例**（E 占差异 79% 而 E 占神经元 81%；四层均出现）
+⇒ **不集中**于任何层或任何亚型 ⇒ **排除"per-class 槽算术"类假设**（若是逐类槽偏移，差异会集中在某类）；
+与"外部驱动事件被整段重放"（影响几乎所有神经元的输入电流）的预期**一致**。
+
+### B2-L12.3 配置交叉矩阵（RF-M11-G 第 2 条）—— **失败是单轴决定，不是"角落"适用域**
+
+工具：`tools/scan_m11_compose_matrix.py` → `data/m11_compose_matrix.csv/.json`
+矩阵：**{低 λ=0.5 / 中 λ=2 / 高 λ=8 Hz} × {单档(40) / 三档(40,60,80)} × {E1b 关(n_ch=2) / 开(n_ch=4)}
+× k∈{1,2,5,10} × {ext_abs_index=True / False}**，n=200 / indegree=8 / T=3000 / delivery=step（**96 格**）。
+
+| 轴 | 修正档（默认） | 冻结档（`ext_abs_index=False`） |
+|---|---|---|
+| 低/中/高 活动密度 | **全 BIT** | 三种密度**均有**失败格（k>1） |
+| 单档 / 三延迟档 | **全 BIT** | 两种延迟档**均有**失败格 |
+| E1b 关 / 开 | **全 BIT** | 两种状态**均有**失败格 |
+| k=1 | BIT | BIT（k=1 无分段） |
+| k=2/5/10 | **全 BIT** | 全部失败（差异神经元数随密度升高而增多：低 22–34 / 中 21–26 / 高 64–67） |
+
+**判定**：失败**只**由 `ext_abs_index` 一个轴决定（`ext_abs_index_True_n_fail = 0`；
+`ext_abs_index_False = true`），因此**不是**"多延迟档 + 高密度 + 大步长"的角落适用域，
+而是**冻结件缺陷的确定性条件**：`delivery="step"` ∧ 外部事件表非空 ∧ `k>1` ∧ 冻结档索引。
+**修正档下全矩阵逐位** ⇒ 不需要"禁止 k>1 + 多延迟档"这类限制性适用域；改为**加守卫**（见 B2-L12.4）。
+
+### B2-L12.4 固化为断言（RF-M11-G 第 4 条）
+
+1. **引擎守卫** `MouseCortexEngine.assert_composable_for_segmentation(delivery)`：
+   `step` ∧ 外部事件非空 ∧ `ext_abs_index=False` ⇒ **`RuntimeError`**（`chunk` 路径放行，因其原本就用绝对步号）。
+2. **回归测试** `test_compose_matrix_and_domain_guard`：{单档 / 三档} × {E1b 关 / 开} × k∈{1,2,5,10}
+   全部逐位 + 守卫必须拦冻结档、放行默认档；**`pytest` 11 passed**。
+3. 矩阵汇总已写入 `m11_g0_engine_summary.json::criteria.e_segment_composability.detail.compose_matrix`
+   （含矩阵 JSON 的 sha256 前缀），使 (e) 的判定与矩阵证据**同源可核**。
+
+### B2-L12.5 (f) 失败的最小复现（RF-M11-G 第 3 条）—— **与 (e) 不同源**
+
+```
+输入：MouseCortexEngine(n_neuron=4)（**未启用 E1b ⇒ n_ch=2**）
+      add_synapses(pre=[0], post=[1], gmax=[10.0], delay=[40], inhibitory=True, syn_class=[2])
+异常：ValueError: E1b 关闭态但存在 syn_class>1 的边 ⇒ 拒绝（会静默丢类）
+栈顶：neural_exploration/src/mouse_cortex_engine.py, line 450, in _finalize_no_ring
+```
+- **性质**：**配置级守卫**在 `finalize()` 阶段拒绝（四态纪律 ⇒ 该臂 = **`invalid`**，既非 pass 亦非 fail）；
+  它正是 M10 L21「`syn_class` 未传 ⇒ 抑制边写进兴奋槽」的对应防护（RF-M11-G §一 亦独立确认该守卫有效）。
+- **是否与 (e) 同源**：**否**。异常点在 `finalize`（配置校验），(e) 的问题点在 `run()` 的外部事件索引；
+  两者的栈、触发阶段、可修复方式完全不同。
+- 修好夹具后：`m9_raises=True`、**`m11_ok=True`**、逐类落槽 `rel_diff` **全 0**（E 11 / PV 23 / SST 37 / VIP 47）
+  ⇒ (f) 判 **pass**（详见 `reports/neuro/m11_g0_engine_summary.json::criteria.f_synchronous_firing`；
+  `m11_g0_report.md` §8 与 `data/m11_minrepro_delivery.json` 的 MR1–MR6 给出索引级证据）。
+
+### B2-L12.6 关于"三延迟档 = 单 ULP"的**最终量化**（RF-M11-G §三 再次提及，必须钉死）
+
+| 工况 | M10 冻结内核 | M11-冻结档 | 差 |
+|---|---|---|---|
+| **三延迟档 + 无外部事件**（纯网络语义）| 2201 / 5639 | **2201 / 5639** | **逐位 0（0 个神经元差）** |
+| 三延迟档 + 含外部事件 | 2224（事件被丢弃）| 2352（事件正常交付）| **+5.75%（语义级）** |
+
+⇒ **不存在 ULP 级差异**：共享环槽与"每延迟一槽"**逐位等价**（这正是上面第一行）。
+含事件时的差异是 **E-M10-2 的语义差异**，量化为 **+5.75%/+4.9%**。
+**本节点早期"单 ULP FP 累加序"的主张已撤回**（`m11_g0_engine_summary.json` 的对应措辞亦已改写），
+请勿据此去排查 FP 累加序 —— 该方向经实测为**否**。

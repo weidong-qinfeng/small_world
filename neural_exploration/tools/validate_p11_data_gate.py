@@ -412,6 +412,20 @@ def main():
                      "判定**草案**" in txt or "P2 判定" in txt,
                      "命中 §6d" if "§6d" in txt else "缺失"))
 
+    # ---------------- P1.11 双估计器一致性（中位数）----------------
+    efr = ((cnt.get("allen") or {}).get("ef_avg_firing_rate") or {})
+    chk = efr.get("two_estimator_check") or {}
+    A.append(assert_("P1.11 中位数双估计器一致（显式两中位均值 vs statistics.median，rel_diff ≤1e-6）",
+                     bool(chk.get("agree")) and (chk.get("rel_diff") is not None and chk["rel_diff"] <= 1e-6),
+                     "median=%s / median_alt=%s / rel_diff=%s（旧实现缺陷值 17.4379 已修）"
+                     % (efr.get("median"), efr.get("median_alt"), chk.get("rel_diff"))))
+    A.append(assert_("P1.11b 报告与计数锚的 firing_rate 统计一致（n/min/median/max 与独立复算一致）",
+                     efr.get("n") == 1808 and abs((efr.get("median") or 0) - 17.413) < 1e-6
+                     and abs((efr.get("min") or 0) - 1.984915) < 1e-5
+                     and abs((efr.get("max") or 0) - 261.210274) < 1e-5,
+                     "n=%s min=%s median=%s max=%s（主 agent 独立值：1808/1.985/17.4130/261.210）"
+                     % (efr.get("n"), efr.get("min"), efr.get("median"), efr.get("max"))))
+
     # ---------------- 判定 ----------------
     for a in A:
         if not a["ok"]:

@@ -485,3 +485,29 @@ J2 预留 key 命名**对称化**（新增 `silent_frac_calcium_band_lo/hi` 与 
 - **DQ-6 = `unavailable（吞吐限制）`**（实测 3.3% 停滞，已中止）；**DQ-7 批准**（接受 `probes.csv` 自描述表满足采样率需求；不再续取）；
 - **`format_unverified → decoded(big-endian int16)` 确认**（**R9 已反转**；`m11_acceptance_master.md` §3 的 R2 行已标"被 R9 反转"）⇒ **几何用途的禁令随之解除**（该禁令针对"未解码"状态，现已不存在）⇒ 节点无需撤销 `m11_grid_alignment` 的工作；
 - **P2 判定 = `pass`**（结构 measured / 功能体素 decoded / 覆盖 partial(2/144) / 逐细胞 unavailable），**M12 缺口 G-1..G-6 定稿**（含 G-1「MICrONS 功能侧不可用」与 G-2「四类参考量口径已核、参考量未重建」）。
+
+## 3v. R26（G0 终极收口）：(e) 的失败条件是**单轴且已消除**；(f) 转 **pass**；ULP 主张已撤回
+
+**① (e) 的失败条件 = `step` ∧ 外部事件非空 ∧ `k>1` ∧ **冻结档索引**（`ext_abs_index=False`）** —— **单轴决定，非"物理配置相关的适用域"**：
+`tools/scan_m11_compose_matrix.py` 的 **24 配置 × k∈{1,2,5,10} = 96 格**交叉矩阵（{低 0.5 / 中 2 / 高 8 Hz} × {单档 / 三档} × {E1b 关 / 开} × {`ext_abs_index` T/F}）：
+- **修正档（默认 `ext_abs_index=True`）：96 格全 BIT**；**冻结档**：除 k=1（无分段）外**全失败**（差异数随密度升高：低 22–34 / 中 21–26 / 高 64–67）；
+- 汇总：`ext_abs_index_True_n_fail = 0`、`all_fixed_pass = true`。
+⇒ **不需要"禁止 k>1 + 多延迟档"式的限制性适用域**；改为**加守卫**：
+`assert_composable_for_segmentation(delivery)`：step ∧ 外部事件非空 ∧ `ext_abs_index=False` ⇒ **`RuntimeError`**（chunk 放行，因其本就用绝对步号）。
+**回归测试** `test_compose_matrix_and_domain_guard`（{单档/三档}×{E1b 关/开}×k∈{1,2,5,10} 全逐位 + 守卫拦冻结档放行默认档）⇒ **pytest 11 passed**；
+矩阵汇总 + sha256 指纹已写入 `m11_g0_engine_summary.json::criteria.e_segment_composability.detail.compose_matrix`（**(e) 判定与矩阵证据同源可核**）。
+
+**② 我（主agent）的"逐类 CSR 槽算术"假设被**两重证伪**（再次确认）**：R11 的 **172/11** 与 **165/28** 已在 `ext_abs_index=False` 档**逐位重现**（即修复前快照）；
+且差异的**分布与群体规模成比例**（E 占差异 79% vs E 占神经元 81%；四层 L2/3,L4,L5,L6 均出现 [3,3,1,4] / [11,6,6,5]）⇒ **不集中于任何层或任何亚型** ⇒ 排除"per-class 槽算术偏移"，与"外部事件被整段重放"一致。
+
+**③ (f) 转 `pass`**：`m11_ok=False` 来自一个 **`invalid` 臂**——夹具把 `syn_class=[2]`（cls>1）喂给 **E1b 关闭（`n_ch=2`）** 的引擎，
+被**配置级守卫**在 `finalize()` 正确拒绝（`ValueError: E1b 关闭态但存在 syn_class>1 的边 ⇒ 拒绝`，`mouse_cortex_engine.py:450`）⇒ **该臂按四态纪律是 `invalid`，不是内核失败**。
+最小复现已落盘（与 (e) 的异常阶段/栈/修法**均不同源**）；夹具修好后 `m9_raises=True ∧ m11_ok=True ∧` 逐类落槽 `rel_diff` 全 0（E 11/PV 23/SST 37/VIP 47）。
+
+**④ "三延迟档 = 单 ULP" 主张**（节点曾提出、后自撤）：**最终量化** —— 无外部事件时 M10 与 M11-冻结档 **逐位一致（2201 / 5639）**；
+含外部事件时 **2224 vs 2352 = +5.75%（语义级，源于 E-M10-2 的丢事件）** ⇒ **不存在 ULP 级差异**，后续节点**不得**再去排查 FP 累加序。
+
+**⑤ G0 终极状态**：`gate_verdict = pass`、`criterion_counts = {n_total:11, n_measured:11, n_pass:11, n_fail:0, n_unavailable:0}`、
+`gate_pass_condition = "11 项全 pass；有 unavailable ⇒ incomplete；有 fail ⇒ fail"`、`upstream_defect_E_M9_4 = informational`（**不进判据集合**）。
+**⇒ M11 G0 的验收证据链至此完整：11/11 measured + 反例臂可证伪 + 三条阳性对照 + 索引级最小复现（MR1–MR6）+ 96 格配置矩阵 + 域守卫 + 11 个回归测试 + 陈旧快照防护。**
+（B2 亦把主agent 的教训"不得把各段返回值相加当总计"写死为其工具内的 `count_rule` —— **双方纪律互认**。）

@@ -2,52 +2,52 @@
   "task": "M11-B3b 独立复核：MICrONS 功能体素序列解码 + 同源成像目标带",
   "independence": "本工具未参照 M11-B1 实现；解码路径独立写就并自证；下游估计器复用 M10 冻结口径",
   "raw": {
-    "dir": "../../../../tmp/m11probe",
-    "n_objects": 10,
-    "n_bytes": 6846404,
+    "dir": "neural_exploration/data/m11_raw/microns/functional_subset",
+    "n_objects": 200,
+    "n_bytes": 137291280,
     "field_prefixes": [
       "session4_scan7_field4"
     ],
     "header_shapes": [
       "(200, 200, 1, 10)"
     ],
-    "header_ok_objects": 10,
+    "header_ok_objects": 200,
     "decode_path": "20B >5I 头(ndim=4 + 4 dims) → gzip@offset20 → >i2 → reshape"
   },
   "fps": 6.300006,
   "frame_dt_s": 0.15873000755872296,
   "b4_target_bin_s": 0.9138261902586128,
-  "total_frames": 100,
-  "total_seconds": 15.873000755872297,
+  "total_frames": 2000,
+  "total_seconds": 317.46001511744595,
   "self_proof": {
     "sentinels": {
-      "neg16": 355,
-      "u16gt": 355,
-      "both": 355,
+      "neg16": 10383,
+      "u16gt": 10383,
+      "both": 10383,
       "u16gt_not_neg": 0,
-      "total": 4000000,
-      "ratio_of_total": 8.875e-05,
+      "total": 80000000,
+      "ratio_of_total": 0.0001297875,
       "equiv_int16_neg_iff_u16gt65000": true
     },
-    "global_min_int16": -72,
+    "global_min_int16": -138,
     "structure": {
       ">i2（正解）": {
-        "px_h": 0.7997706249204868,
-        "px_v": 0.8037474110342503,
-        "ft": 0.8082704404204906,
-        "p50_median": 2005.0,
-        "p50_min": 1216.0,
-        "p50_max": 2491.0,
-        "n_prod": 3980000
+        "px_h": 0.779222335392576,
+        "px_v": 0.7977021090281923,
+        "ft": 0.7987254768893741,
+        "p50_median": 1784.0,
+        "p50_min": 1212.0,
+        "p50_max": 2797.0,
+        "n_prod": 79600000
       },
       "<i2（对照）": {
-        "px_h": -0.00033132169561844716,
-        "px_v": 5.867641362379979e-06,
-        "ft": 5.4280524423224514e-05,
+        "px_h": 2.2908505257838004e-05,
+        "px_v": -0.00015875026352481347,
+        "ft": -9.556099225541119e-05,
         "p50_median": 0.0,
-        "p50_min": -244.0,
-        "p50_max": 3.0,
-        "n_prod": 3980000
+        "p50_min": -250.0,
+        "p50_max": 8.0,
+        "n_prod": 79600000
       }
     },
     "axis_order_control": {
@@ -66,62 +66,64 @@
     },
     "structure_per_object": {
       "px_h": {
-        "median": 0.7631474255290762,
-        "min": 0.7092702849430893,
-        "max": 0.8147198701308488,
-        "n": 10
+        "median": 0.7752704337164051,
+        "min": 0.628913962563683,
+        "max": 0.8548999013967388,
+        "n": 200
       },
       "px_v": {
-        "median": 0.7629679307940986,
+        "median": 0.7835352676551088,
         "min": 0.6154982002326714,
-        "max": 0.841468487199822,
-        "n": 10
+        "max": 0.8867808190568702,
+        "n": 200
       },
       "ft": {
-        "median": 0.7666431653362418,
+        "median": 0.7724065083872829,
         "min": 0.5843696139252239,
-        "max": 0.8495848780050486,
-        "n": 10
+        "max": 0.8818133733939922,
+        "n": 200
       }
     }
   },
   "traces": {
     "spatial_mean_dfF": {
-      "mean": 2125.009683751638,
-      "sd": 563.1130054364658
+      "mean": 2232.6155477370057,
+      "sd": 393.5166612907243
     },
     "active_fraction_p99": {
-      "mean": 0.009996472129825622,
-      "thr_hi": 6892.0
+      "mean": 0.009997662832031797,
+      "thr_hi": 6965.0
     },
-    "n_voxels_valid": 39684,
-    "n_voxels_ever_sentinel": 316
+    "n_voxels_valid": 35727,
+    "n_voxels_ever_sentinel": 4273
   },
   "contiguity": {
-    "lag1_within_median": 0.7681015773481403,
-    "lag1_boundary_median": 0.7886183147024036,
-    "boundary_over_within": 1.0267109689125975,
-    "meanimg_adjacent_r_median": 0.9320584977467914,
+    "lag1_within_median": 0.7744716912205056,
+    "lag1_boundary_median": 0.7833995175462616,
+    "boundary_over_within": 1.011527634162698,
+    "meanimg_adjacent_r_median": 0.9262707493689867,
     "same_spatial_tile": true,
     "per_phase_lag1": [
-      0.7808099157016986,
-      0.7714007785472122,
-      0.7596495757017636,
-      0.735406867140983,
-      0.7397208707683274,
-      0.7244009847264812,
-      0.7696220648431988,
-      0.7904982057842329,
-      0.7923353349126598
+      0.7770758579655229,
+      0.7722622067302204,
+      0.7755127355262141,
+      0.7745044825300686,
+      0.7730465973778634,
+      0.7736035669404728,
+      0.7749594957289914,
+      0.7729874349590251,
+      0.7749689052330175
     ],
     "same_phase_across_chunks": {
-      "1": 0.6953077191555933,
-      "2": 0.6584460896303096,
-      "5": 0.5392502880734873
+      "1": 0.7249081512396373,
+      "2": 0.6867328637009813,
+      "5": 0.6327879036063611,
+      "10": 0.6088895469970236,
+      "30": 0.5521773029942716
     },
-    "trace_jump_within_median": 44.234525000000076,
-    "trace_jump_boundary_median": 83.95677499999965,
-    "trace_jump_ratio": 1.897992009634997,
+    "trace_jump_within_median": 45.51219999999989,
+    "trace_jump_boundary_median": 44.42112499999985,
+    "trace_jump_ratio": 0.9760267576605822,
     "chunk_means_first10": [
       2149.0,
       1632.6,
@@ -134,82 +136,82 @@
       2658.9,
       2793.7
     ],
-    "chunk_means_monotone_frac": 0.5555555555555556,
+    "chunk_means_monotone_frac": 0.5175879396984925,
     "stitched_trace_autocorr_lag1_30": [
-      0.9875,
-      0.9653,
-      0.9385,
-      0.9105,
-      0.8807,
-      0.8503,
-      0.8157,
-      0.7812,
-      0.7456,
-      0.7077,
-      0.6708,
-      0.6332,
-      0.5969,
-      0.5607,
-      0.5263,
-      0.4914,
-      0.4609,
-      0.4273,
-      0.3969,
-      0.3696,
-      0.3499,
-      0.3334,
-      0.3155,
-      0.2938,
-      0.2739,
-      0.2524,
-      0.2293,
-      0.2051,
-      0.1754,
-      0.1429
+      0.9824,
+      0.9569,
+      0.9259,
+      0.8979,
+      0.8692,
+      0.8435,
+      0.8164,
+      0.7911,
+      0.766,
+      0.7428,
+      0.722,
+      0.7028,
+      0.6853,
+      0.6673,
+      0.652,
+      0.636,
+      0.6225,
+      0.6062,
+      0.5921,
+      0.5757,
+      0.5621,
+      0.5464,
+      0.5321,
+      0.5157,
+      0.5005,
+      0.4841,
+      0.4679,
+      0.4512,
+      0.4343,
+      0.4166
     ],
     "autocorr_peak_lag": 1,
-    "autocorr_lag10": 0.7077333466037278,
+    "autocorr_lag10": 0.7428182888470383,
     "verdict": "链内相邻（可作时间序列）"
   },
   "controls": {
     "real_argv_order": {
-      "tau_smoothed_s": null,
-      "phi_smoothed": null,
-      "tau_unsmoothed_s": null,
-      "phi_unsmoothed": null,
-      "lag1_autocorr_binned": 0.8832464973594254,
+      "tau_smoothed_s": 32.58788278961139,
+      "phi_smoothed": 0.9711979450606326,
+      "tau_unsmoothed_s": 7.976272428208702,
+      "phi_unsmoothed": 0.8874512891925317,
+      "lag1_autocorr_binned": 0.8874108524402202,
       "Q_dwell_low_s": 7.619040362818702
     },
     "block_shuffled": {
-      "tau_smoothed_s": null,
-      "phi_smoothed": null,
-      "tau_unsmoothed_s": null,
-      "phi_unsmoothed": null,
-      "lag1_autocorr_binned": 0.0702122775130471,
-      "Q_dwell_low_s": 2.3809501133808446
+      "tau_smoothed_s": 7.793130131928255,
+      "phi_smoothed": 0.8849645949533432,
+      "tau_unsmoothed_s": 1.2711701875070598,
+      "phi_unsmoothed": 0.47273740441993173,
+      "lag1_autocorr_binned": 0.47239974010537905,
+      "Q_dwell_low_s": 2.8571401360570134
     },
     "within_block_shuffled": {
-      "tau_smoothed_s": null,
-      "phi_smoothed": null,
-      "tau_unsmoothed_s": null,
-      "phi_unsmoothed": null,
-      "lag1_autocorr_binned": 0.877988396806394,
-      "Q_dwell_low_s": 7.619040362818702
+      "tau_smoothed_s": 35.17418472471907,
+      "phi_smoothed": 0.9732871631867064,
+      "tau_unsmoothed_s": 9.684603864807773,
+      "phi_unsmoothed": 0.9063410603889641,
+      "lag1_autocorr_binned": 0.9060783800643512,
+      "Q_dwell_low_s": 9.04761043084721
     },
     "white_noise_null": {
-      "tau_smoothed_s": null,
-      "phi_smoothed": null,
+      "tau_smoothed_s": 3.948546029037772,
+      "phi_smoothed": 0.7856863157158666,
       "tau_unsmoothed_s": null,
-      "phi_unsmoothed": null,
-      "lag1_autocorr_binned": -0.2675999222599932,
-      "Q_dwell_low_s": 0.9523800453523378
+      "phi_unsmoothed": -0.030239997605815527,
+      "lag1_autocorr_binned": -0.03030398249462912,
+      "Q_dwell_low_s": 1.9047600907046756
     },
     "_verdict": {
-      "real_tau_s": null,
-      "block_shuffled_tau_s": null,
-      "rel_diff": null,
+      "real_tau_s": 32.58788278961139,
+      "block_shuffled_tau_s": 7.793130131928255,
+      "rel_diff": 0.7608580409399102,
       "indistinguishable": false,
-      "text": "该 τ 与块序重排对照可区分（差 nan%）"
+      "text": "该 τ 与块序重排对照可区分（差 76.1%）"
     }
   },
   "bands": [
@@ -218,16 +220,16 @@
       "source": "spatial_mean_dfF",
       "bin_frames": 1,
       "dt_bin_s": 0.15873000755872296,
-      "n_frames_binned": 100,
-      "n_frames_smoothed": 96,
-      "trace_s_total": 15.873000755872296,
+      "n_frames_binned": 2000,
+      "n_frames_smoothed": 1996,
+      "trace_s_total": 317.46001511744595,
       "b4_target_bin_s": 0.9138261902586128,
       "bin_vs_b4_rel": -0.8263017527284895,
       "sample_size_gate": {
-        "n_frames": 100,
+        "n_frames": 2000,
         "valid": true,
-        "shape_ok": false,
-        "bic_ok": false,
+        "shape_ok": true,
+        "bic_ok": true,
         "thresholds": {
           "valid": 65,
           "shape": 130,
@@ -236,118 +238,128 @@
         "note": "n_frames<65 ⇒ invalid（最短协议 T≥60 s）；形状判据需 ≥130（T≥120 s）；BIC 需 ≥500"
       },
       "AR1": {
-        "status": "invalid",
-        "reason": "φ=1.0043638533630577 不在 (0,1)",
-        "phi": 1.0043638533630577,
+        "status": "measured",
+        "phi": 0.9946595210851301,
+        "tau_s": 29.64261907674861,
+        "holdout_ll_per_frame": 0.8400721490750289,
+        "ljung_box": {
+          "Q": 2810.802500041117,
+          "df": 9,
+          "p": 0.0,
+          "lags": 10
+        },
+        "rho1": 0.8539896955871342,
+        "rho1_ci": 0.04388181895828521,
+        "resid_whiten": false,
+        "n_frames": 1996,
         "pipeline": "帧箱(bin=1, dt=0.158730 s) → 5 帧滑动平均 → z → AR(1)",
-        "phi_smoothed": 1.0043638533630577,
-        "phi_unsmoothed": 0.9970850380901525,
-        "tau_unsmoothed_s": 54.374140705596716,
+        "phi_smoothed": 0.9946595210851301,
+        "phi_unsmoothed": 0.9825306782165436,
+        "tau_unsmoothed_s": 9.006616532314862,
         "min_frames_for_tau": 300,
-        "tau_criterion_status": "unavailable（n_frames<300）"
+        "tau_criterion_status": "measured"
       },
       "Q_method": {
-        "threshold": 2140.2102106642474,
+        "threshold": 2137.357628684188,
         "occupancy": [
           0.5,
           0.5
         ],
-        "transition_rate_hz": 0.3150003,
+        "transition_rate_hz": 0.42525040499999994,
         "dwell": {
           "low": {
-            "n": 2,
-            "median_s": 3.809520181409351,
-            "mean_s": 3.809520181409351,
-            "p90_s": 6.730152320489854,
-            "p90_over_median": 1.7666666666666666,
+            "n": 67,
+            "median_s": 1.2698400604697837,
+            "mean_s": 2.359628172066986,
+            "p90_s": 7.841262373400914,
+            "p90_over_median": 6.175,
             "ks_vs_exp": {
-              "n": 2,
-              "D": null,
-              "p": null,
-              "pass_": false
+              "n": 67,
+              "D": 0.18199539751403448,
+              "p": 0.02042214637060632,
+              "pass_": true
             }
           },
           "high": {
-            "n": 2,
-            "median_s": 0.47619002267616894,
-            "mean_s": 0.47619002267616894,
-            "p90_s": 0.7301580347701258,
-            "p90_over_median": 1.5333333333333334,
+            "n": 67,
+            "median_s": 0.4761900226761689,
+            "mean_s": 2.350151753705271,
+            "p90_s": 4.857138231296921,
+            "p90_over_median": 10.199999999999998,
             "ks_vs_exp": {
-              "n": 2,
-              "D": null,
-              "p": null,
-              "pass_": false
+              "n": 67,
+              "D": 0.3539011286893877,
+              "p": 5.9251531428535865e-08,
+              "pass_": true
             }
           }
         }
       },
       "H_K2": {
         "occupancy": [
-          0.4479166666666667,
-          0.5520833333333334
+          0.6362725450901804,
+          0.3637274549098196
         ],
-        "transition_rate_hz": 0.131250125,
+        "transition_rate_hz": 0.09153315330661323,
         "dwell": {
           "low": {
-            "n": 1,
-            "median_s": 6.825390325025087,
-            "mean_s": 6.825390325025087,
-            "p90_s": 6.825390325025087,
-            "p90_over_median": 1.0,
+            "n": 14,
+            "median_s": 6.587295313687003,
+            "mean_s": 14.194997818822939,
+            "p90_s": 47.73011327290804,
+            "p90_over_median": 7.245783132530128,
             "ks_vs_exp": {
-              "n": 1,
-              "D": null,
-              "p": null,
+              "n": 14,
+              "D": 0.255451305054288,
+              "p": 0.2765138688677382,
               "pass_": false
             }
           },
           "high": {
-            "n": 0,
-            "median_s": 0.0,
-            "mean_s": 0.0,
-            "p90_s": 0.0,
-            "p90_over_median": null,
+            "n": 14,
+            "median_s": 3.0952351473950976,
+            "mean_s": 8.174595389274232,
+            "p90_s": 22.65077207862977,
+            "p90_over_median": 7.3179487179487195,
             "ks_vs_exp": {
-              "n": 0,
-              "D": null,
-              "p": null,
+              "n": 14,
+              "D": 0.24731975298699382,
+              "p": 0.3125785349321253,
               "pass_": false
             }
           }
         },
-        "bic": 109.06998541480434,
-        "loglik": -40.84194813299866
+        "bic": 3361.222646655635,
+        "loglik": -1657.8146219572031
       },
       "BIC_by_K": {
         "1": {
-          "bic": 281.56489475823264,
-          "loglik": -136.21809918764848,
+          "bic": 5679.600425466775,
+          "loglik": -2832.201312276516,
           "n_par": 2
         },
         "2": {
-          "bic": 109.06998541480434,
-          "loglik": -40.84194813299866,
+          "bic": 3361.222646655635,
+          "loglik": -1657.8146219572031,
           "n_par": 6
         },
         "3": {
-          "bic": 50.1088120225479,
-          "loglik": 2.3316831375330658,
+          "bic": 2452.889883055565,
+          "loglik": -1180.851538786554,
           "n_par": 12
         },
         "4": {
-          "bic": 61.25433906035474,
-          "loglik": 15.016312384500992,
+          "bic": 1626.2832762085102,
+          "loglik": -737.152633535541,
           "n_par": 20
         }
       },
-      "best_K_by_BIC": "unavailable",
-      "BIC_note": "n_frames=100 < 500 ⇒ K 选择结论 unavailable（RF-18(4)）",
+      "best_K_by_BIC": 4,
       "internal_consistency": {
         "applicable": true,
-        "predicted_dwell_s": 3.809520181409351,
-        "observed_dwell_s": 6.825390325025087,
-        "rel_diff": 0.4418604651162791,
+        "predicted_dwell_s": 5.462501639434673,
+        "observed_dwell_s": 6.587295313687003,
+        "rel_diff": 0.1707519734108849,
         "pass_": true,
         "note": "2 状态稳态近似；若状态数>2 或转移矩阵强非对称则本条不适用（须显式声明）"
       },
@@ -361,16 +373,16 @@
       "source": "active_fraction_p99",
       "bin_frames": 1,
       "dt_bin_s": 0.15873000755872296,
-      "n_frames_binned": 100,
-      "n_frames_smoothed": 96,
-      "trace_s_total": 15.873000755872296,
+      "n_frames_binned": 2000,
+      "n_frames_smoothed": 1996,
+      "trace_s_total": 317.46001511744595,
       "b4_target_bin_s": 0.9138261902586128,
       "bin_vs_b4_rel": -0.8263017527284895,
       "sample_size_gate": {
-        "n_frames": 100,
+        "n_frames": 2000,
         "valid": true,
-        "shape_ok": false,
-        "bic_ok": false,
+        "shape_ok": true,
+        "bic_ok": true,
         "thresholds": {
           "valid": 65,
           "shape": 130,
@@ -379,116 +391,130 @@
         "note": "n_frames<65 ⇒ invalid（最短协议 T≥60 s）；形状判据需 ≥130（T≥120 s）；BIC 需 ≥500"
       },
       "AR1": {
-        "status": "invalid",
-        "reason": "φ=1.0212558862006658 不在 (0,1)",
-        "phi": 1.0212558862006658,
+        "status": "measured",
+        "phi": 0.9955033181411165,
+        "tau_s": 35.21993889962221,
+        "holdout_ll_per_frame": 0.9248980349340747,
+        "ljung_box": {
+          "Q": 2170.9711573158565,
+          "df": 9,
+          "p": 0.0,
+          "lags": 10
+        },
+        "rho1": 0.749503501151199,
+        "rho1_ci": 0.04388181895828521,
+        "resid_whiten": false,
+        "n_frames": 1996,
         "pipeline": "帧箱(bin=1, dt=0.158730 s) → 5 帧滑动平均 → z → AR(1)",
-        "phi_smoothed": 1.0212558862006658,
-        "phi_unsmoothed": 1.0041262858245428,
-        "tau_unsmoothed_s": null,
+        "phi_smoothed": 0.9955033181411165,
+        "phi_unsmoothed": 0.9741746543890606,
+        "tau_unsmoothed_s": 6.066576741744251,
         "min_frames_for_tau": 300,
-        "tau_criterion_status": "unavailable（n_frames<300）"
+        "tau_criterion_status": "measured"
       },
       "Q_method": {
-        "threshold": 0.00680374962201391,
+        "threshold": 0.00783720995325664,
         "occupancy": [
-          0.5,
-          0.5
+          0.502,
+          0.498
         ],
-        "transition_rate_hz": 0.3150003,
+        "transition_rate_hz": 0.352800336,
         "dwell": {
           "low": {
-            "n": 2,
-            "median_s": 3.7301551776299897,
-            "mean_s": 3.7301551776299897,
-            "p90_s": 6.587295313687004,
-            "p90_over_median": 1.7659574468085109,
+            "n": 55,
+            "median_s": 0.6349200302348919,
+            "mean_s": 2.8831141372938944,
+            "p90_s": 7.873008374912659,
+            "p90_over_median": 12.4,
             "ks_vs_exp": {
-              "n": 2,
-              "D": null,
-              "p": null,
-              "pass_": false
+              "n": 55,
+              "D": 0.34779663200903244,
+              "p": 2.0432917185254635e-06,
+              "pass_": true
             }
           },
           "high": {
-            "n": 2,
-            "median_s": 0.47619002267616894,
-            "mean_s": 0.47619002267616894,
-            "p90_s": 0.7301580347701258,
-            "p90_over_median": 1.5333333333333334,
+            "n": 56,
+            "median_s": 0.3174600151174459,
+            "mean_s": 2.823126563008716,
+            "p90_s": 9.206340438405931,
+            "p90_over_median": 28.999999999999996,
             "ks_vs_exp": {
-              "n": 2,
-              "D": null,
-              "p": null,
-              "pass_": false
+              "n": 56,
+              "D": 0.41149935039623775,
+              "p": 5.8262422896816314e-09,
+              "pass_": true
             }
           }
         }
       },
       "H_K2": {
         "occupancy": [
-          0.5625,
-          0.4375
+          0.6197394789579158,
+          0.3802605210420842
         ],
-        "transition_rate_hz": 0.0656250625,
+        "transition_rate_hz": 0.0757515751503006,
         "dwell": {
           "low": {
-            "n": 0,
-            "median_s": 0.0,
-            "mean_s": 0.0,
-            "p90_s": 0.0,
-            "p90_over_median": null,
+            "n": 11,
+            "median_s": 10.634910506434439,
+            "mean_s": 17.027400810844828,
+            "p90_s": 46.03170219202966,
+            "p90_over_median": 4.328358208955224,
             "ks_vs_exp": {
-              "n": 0,
-              "D": null,
-              "p": null,
+              "n": 11,
+              "D": 0.2543789428766867,
+              "p": 0.4171383081104226,
               "pass_": false
             }
           },
           "high": {
-            "n": 0,
-            "median_s": 0.0,
-            "mean_s": 0.0,
-            "p90_s": 0.0,
-            "p90_over_median": null,
+            "n": 12,
+            "median_s": 4.84126523054105,
+            "mean_s": 10.039672978089227,
+            "p90_s": 24.730135177649043,
+            "p90_over_median": 5.108196721311477,
             "ks_vs_exp": {
-              "n": 0,
-              "D": null,
-              "p": null,
+              "n": 12,
+              "D": 0.1768208310893613,
+              "p": 0.8082919758752144,
               "pass_": false
             }
           }
         },
-        "bic": 111.0912146328991,
-        "loglik": -41.85256274204604
+        "bic": 3056.7743871030657,
+        "loglik": -1505.5904921809185
       },
       "BIC_by_K": {
         "1": {
-          "bic": 281.56489473492775,
-          "loglik": -136.21809917599603,
+          "bic": 5679.600424879891,
+          "loglik": -2832.201311983074,
           "n_par": 2
         },
         "2": {
-          "bic": 111.0912146328991,
-          "loglik": -41.85256274204604,
+          "bic": 3056.7743871030657,
+          "loglik": -1505.5904921809185,
           "n_par": 6
         },
         "3": {
-          "bic": 68.71372473539131,
-          "loglik": -6.970773218888638,
+          "bic": 1922.9318510500116,
+          "loglik": -915.8725227837773,
           "n_par": 12
         },
         "4": {
-          "bic": 62.209424761607096,
-          "loglik": 14.538769533874813,
+          "bic": 801.3355046600126,
+          "loglik": -324.6787477612922,
           "n_par": 20
         }
       },
-      "best_K_by_BIC": "unavailable",
-      "BIC_note": "n_frames=100 < 500 ⇒ K 选择结论 unavailable（RF-18(4)）",
+      "best_K_by_BIC": 4,
       "internal_consistency": {
-        "applicable": false,
-        "reason": "dwell 或转换率为 0/缺失（样本不足）"
+        "applicable": true,
+        "predicted_dwell_s": 6.600522814316896,
+        "observed_dwell_s": 10.634910506434439,
+        "rel_diff": 0.3793532338308458,
+        "pass_": true,
+        "note": "2 状态稳态近似；若状态数>2 或转移矩阵强非对称则本条不适用（须显式声明）"
       },
       "dwell_resolution_floor": {
         "at_floor": false,
@@ -500,15 +526,15 @@
       "source": "spatial_mean_dfF",
       "bin_frames": 6,
       "dt_bin_s": 0.9523800453523378,
-      "n_frames_binned": 16,
-      "n_frames_smoothed": 12,
-      "trace_s_total": 15.238080725637404,
+      "n_frames_binned": 333,
+      "n_frames_smoothed": 329,
+      "trace_s_total": 317.14255510232846,
       "b4_target_bin_s": 0.9138261902586128,
       "bin_vs_b4_rel": 0.042189483629063274,
       "sample_size_gate": {
-        "n_frames": 16,
-        "valid": false,
-        "shape_ok": false,
+        "n_frames": 333,
+        "valid": true,
+        "shape_ok": true,
         "bic_ok": false,
         "thresholds": {
           "valid": 65,
@@ -518,58 +544,131 @@
         "note": "n_frames<65 ⇒ invalid（最短协议 T≥60 s）；形状判据需 ≥130（T≥120 s）；BIC 需 ≥500"
       },
       "AR1": {
-        "status": "invalid",
-        "reason": "序列过短 n=12",
+        "status": "measured",
+        "phi": 0.9711979450606326,
+        "tau_s": 32.58788278961139,
+        "holdout_ll_per_frame": -0.014556647011913707,
+        "ljung_box": {
+          "Q": 423.5298462231743,
+          "df": 9,
+          "p": 0.0,
+          "lags": 10
+        },
+        "rho1": 0.7880503097004393,
+        "rho1_ci": 0.1082228955533496,
+        "resid_whiten": false,
+        "n_frames": 329,
         "pipeline": "帧箱(bin=6, dt=0.952380 s) → 5 帧滑动平均 → z → AR(1)",
-        "phi_smoothed": null,
-        "phi_unsmoothed": null,
-        "tau_unsmoothed_s": null,
+        "phi_smoothed": 0.9711979450606326,
+        "phi_unsmoothed": 0.8874512891925317,
+        "tau_unsmoothed_s": 7.976272428208702,
         "min_frames_for_tau": 300,
-        "tau_criterion_status": "unavailable（n_frames<300）"
+        "tau_criterion_status": "measured"
       },
       "Q_method": {
-        "threshold": 2089.804816382757,
+        "threshold": 2122.052369356509,
         "occupancy": [
-          0.5,
-          0.5
+          0.5015015015015015,
+          0.4984984984984985
         ],
-        "transition_rate_hz": 0.131250125,
+        "transition_rate_hz": 0.13558571471471473,
         "dwell": {
           "low": {
-            "n": 1,
+            "n": 21,
             "median_s": 7.619040362818702,
-            "mean_s": 7.619040362818702,
-            "p90_s": 7.619040362818702,
-            "p90_over_median": 1.0,
+            "mean_s": 7.528337501356575,
+            "p90_s": 14.285700680285066,
+            "p90_over_median": 1.875,
             "ks_vs_exp": {
-              "n": 1,
-              "D": null,
-              "p": null,
+              "n": 21,
+              "D": 0.1603357714740069,
+              "p": 0.613985513801739,
               "pass_": false
             }
           },
           "high": {
-            "n": 0,
-            "median_s": 0.0,
-            "mean_s": 0.0,
-            "p90_s": 0.0,
-            "p90_over_median": null,
+            "n": 21,
+            "median_s": 2.8571401360570134,
+            "mean_s": 7.482986070625509,
+            "p90_s": 19.999980952399092,
+            "p90_over_median": 6.999999999999999,
             "ks_vs_exp": {
-              "n": 0,
-              "D": null,
-              "p": null,
+              "n": 21,
+              "D": 0.22008935114541195,
+              "p": 0.22930765367332337,
               "pass_": false
             }
           }
         }
       },
       "H_K2": {
-        "status": "invalid",
-        "reason": "z 过短 n=12"
+        "occupancy": [
+          0.6200607902735562,
+          0.3799392097264438
+        ],
+        "transition_rate_hz": 0.041489401215805466,
+        "dwell": {
+          "low": {
+            "n": 6,
+            "median_s": 12.85713061225656,
+            "mean_s": 31.269811489068427,
+            "p90_s": 73.33326349213002,
+            "p90_over_median": 5.703703703703704,
+            "ks_vs_exp": {
+              "n": 6,
+              "D": 0.29994022287898403,
+              "p": 0.5701113798445925,
+              "pass_": false
+            }
+          },
+          "high": {
+            "n": 6,
+            "median_s": 13.809510657608897,
+            "mean_s": 15.55554074075485,
+            "p90_s": 28.571401360570135,
+            "p90_over_median": 2.0689655172413794,
+            "ks_vs_exp": {
+              "n": 6,
+              "D": 0.21721558987308032,
+              "p": 0.9037396728334866,
+              "pass_": false
+            }
+          }
+        },
+        "bic": 589.8577238698812,
+        "loglik": -277.5406886826445
       },
+      "BIC_by_K": {
+        "1": {
+          "bic": 945.2536703502029,
+          "loglik": -466.8307774243361,
+          "n_par": 2
+        },
+        "2": {
+          "bic": 589.8577238698812,
+          "loglik": -277.5406886826445,
+          "n_par": 6
+        },
+        "3": {
+          "bic": 499.2370298428878,
+          "loglik": -214.84216841685168,
+          "n_par": 12
+        },
+        "4": {
+          "bic": 434.3043761614425,
+          "loglik": -159.19161057306755,
+          "n_par": 20
+        }
+      },
+      "best_K_by_BIC": "unavailable",
+      "BIC_note": "n_frames=333 < 500 ⇒ K 选择结论 unavailable（RF-18(4)）",
       "internal_consistency": {
-        "applicable": false,
-        "reason": "z 过短"
+        "applicable": true,
+        "predicted_dwell_s": 12.051270573881506,
+        "observed_dwell_s": 12.85713061225656,
+        "rel_diff": 0.06267806267806254,
+        "pass_": true,
+        "note": "2 状态稳态近似；若状态数>2 或转移矩阵强非对称则本条不适用（须显式声明）"
       },
       "dwell_resolution_floor": {
         "at_floor": false,
@@ -581,15 +680,15 @@
       "source": "active_fraction_p99",
       "bin_frames": 6,
       "dt_bin_s": 0.9523800453523378,
-      "n_frames_binned": 16,
-      "n_frames_smoothed": 12,
-      "trace_s_total": 15.238080725637404,
+      "n_frames_binned": 333,
+      "n_frames_smoothed": 329,
+      "trace_s_total": 317.14255510232846,
       "b4_target_bin_s": 0.9138261902586128,
       "bin_vs_b4_rel": 0.042189483629063274,
       "sample_size_gate": {
-        "n_frames": 16,
-        "valid": false,
-        "shape_ok": false,
+        "n_frames": 333,
+        "valid": true,
+        "shape_ok": true,
         "bic_ok": false,
         "thresholds": {
           "valid": 65,
@@ -599,58 +698,131 @@
         "note": "n_frames<65 ⇒ invalid（最短协议 T≥60 s）；形状判据需 ≥130（T≥120 s）；BIC 需 ≥500"
       },
       "AR1": {
-        "status": "invalid",
-        "reason": "序列过短 n=12",
+        "status": "measured",
+        "phi": 0.9765426995999085,
+        "tau_s": 40.12250799399332,
+        "holdout_ll_per_frame": 0.05677096512275961,
+        "ljung_box": {
+          "Q": 429.1106321480819,
+          "df": 9,
+          "p": 0.0,
+          "lags": 10
+        },
+        "rho1": 0.8125342569187796,
+        "rho1_ci": 0.1082228955533496,
+        "resid_whiten": false,
+        "n_frames": 329,
         "pipeline": "帧箱(bin=6, dt=0.952380 s) → 5 帧滑动平均 → z → AR(1)",
-        "phi_smoothed": null,
-        "phi_unsmoothed": null,
-        "tau_unsmoothed_s": null,
+        "phi_smoothed": 0.9765426995999085,
+        "phi_unsmoothed": 0.9106314440532204,
+        "tau_unsmoothed_s": 10.173150021065505,
         "min_frames_for_tau": 300,
-        "tau_criterion_status": "unavailable（n_frames<300）"
+        "tau_criterion_status": "measured"
       },
       "Q_method": {
-        "threshold": 0.006354366159325338,
+        "threshold": 0.00786053498287943,
         "occupancy": [
-          0.5,
-          0.5
+          0.5015015015015015,
+          0.4984984984984985
         ],
-        "transition_rate_hz": 0.131250125,
+        "transition_rate_hz": 0.09144152852852853,
         "dwell": {
           "low": {
-            "n": 1,
-            "median_s": 7.619040362818702,
-            "mean_s": 7.619040362818702,
-            "p90_s": 7.619040362818702,
-            "p90_over_median": 1.0,
+            "n": 14,
+            "median_s": 9.04761043084721,
+            "mean_s": 10.748289083262097,
+            "p90_s": 21.714265034033307,
+            "p90_over_median": 2.4000000000000004,
             "ks_vs_exp": {
-              "n": 1,
-              "D": null,
-              "p": null,
+              "n": 14,
+              "D": 0.131031736010075,
+              "p": 0.9572916693088399,
               "pass_": false
             }
           },
           "high": {
-            "n": 0,
-            "median_s": 0.0,
-            "mean_s": 0.0,
-            "p90_s": 0.0,
-            "p90_over_median": null,
+            "n": 14,
+            "median_s": 7.142850340142534,
+            "mean_s": 9.387746161330186,
+            "p90_s": 18.85712489797629,
+            "p90_over_median": 2.64,
             "ks_vs_exp": {
-              "n": 0,
-              "D": null,
-              "p": null,
+              "n": 14,
+              "D": 0.16617569239325508,
+              "p": 0.7972603063002307,
               "pass_": false
             }
           }
         }
       },
       "H_K2": {
-        "status": "invalid",
-        "reason": "z 过短 n=12"
+        "occupancy": [
+          0.5227963525835866,
+          0.47720364741641336
+        ],
+        "transition_rate_hz": 0.041489401215805466,
+        "dwell": {
+          "low": {
+            "n": 6,
+            "median_s": 12.38094058958039,
+            "mean_s": 26.19045124718929,
+            "p90_s": 58.57137278916878,
+            "p90_over_median": 4.730769230769231,
+            "ks_vs_exp": {
+              "n": 6,
+              "D": 0.26770839876445973,
+              "p": 0.7114082384481167,
+              "pass_": false
+            }
+          },
+          "high": {
+            "n": 6,
+            "median_s": 21.428551020427598,
+            "mean_s": 20.634900982633983,
+            "p90_s": 31.90473151930332,
+            "p90_over_median": 1.4888888888888892,
+            "ks_vs_exp": {
+              "n": 6,
+              "D": 0.27608183378669504,
+              "p": 0.674726122161557,
+              "pass_": false
+            }
+          }
+        },
+        "bic": 584.0864671055533,
+        "loglik": -274.65506030048056
       },
+      "BIC_by_K": {
+        "1": {
+          "bic": 945.2536702449336,
+          "loglik": -466.8307773717014,
+          "n_par": 2
+        },
+        "2": {
+          "bic": 584.0864671055533,
+          "loglik": -274.65506030048056,
+          "n_par": 6
+        },
+        "3": {
+          "bic": 458.0233948424383,
+          "loglik": -194.2353509166269,
+          "n_par": 12
+        },
+        "4": {
+          "bic": 374.7211478220435,
+          "loglik": -129.39999640336805,
+          "n_par": 20
+        }
+      },
+      "best_K_by_BIC": "unavailable",
+      "BIC_note": "n_frames=333 < 500 ⇒ K 选择结论 unavailable（RF-18(4)）",
       "internal_consistency": {
-        "applicable": false,
-        "reason": "z 过短"
+        "applicable": true,
+        "predicted_dwell_s": 12.051270573881506,
+        "observed_dwell_s": 12.38094058958039,
+        "rel_diff": 0.026627218934911077,
+        "pass_": true,
+        "note": "2 状态稳态近似；若状态数>2 或转移矩阵强非对称则本条不适用（须显式声明）"
       },
       "dwell_resolution_floor": {
         "at_floor": false,
@@ -664,11 +836,11 @@
     "TAU_MIN_FRAMES": 300,
     "MIN_FRAMES_BIC": 500
   },
-  "wallclock_s": 0.920971155166626,
-  "cpu_s": 0.998394,
+  "wallclock_s": 25.605237007141113,
+  "cpu_s": 25.179594,
   "determinism": "gzip 确定性 + HMM seed=0 + 无随机采样 ⇒ 可复跑逐位一致",
   "artifacts_sha256_file_bytes": {
-    "_b3_m11_series_reference.json": "62c86a60de8583093a4b8eff340e6b08a38691331dd349ee7bcd24df40d39928",
-    "_b3_m11_series_reference.csv": "e64d96b220f22eb6223798f36b32bf753825dd5aeb443bbb8f6b63445d21995f"
+    "_b3_m11_series_reference.json": "c885fe1d7cf8afe7b814d663e8d29d83cfc7a258e85917facb2520e3a5d18cd9",
+    "_b3_m11_series_reference.csv": "bb485950cc58265f3935b1dbc80bc346fa1d5cc21471650a7ec0b57ef85ce71a"
   }
 }

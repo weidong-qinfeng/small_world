@@ -1,6 +1,6 @@
 {
  "generated_by": "tools/build_m11_inventory.py",
- "generated_at": "2026-10-11T15:11:25Z",
+ "generated_at": "2026-10-11T15:28:13Z",
  "units": "bytes; evidence ∈ {measured, derived, literature, unavailable}",
  "microns_structure": {
   "evidence": "measured(元数据) + derived(chunk 计数); shard 清单 = measured(有界)",
@@ -279,9 +279,18 @@
   "celltypes_n_unique_donors": 772,
   "ef_avg_firing_rate": {
    "n": 1808,
-   "min": 1.985,
-   "median": 17.438,
-   "max": 261.21,
+   "min": 1.984915,
+   "median": 17.413,
+   "median_alt": 17.413,
+   "max": 261.210274,
+   "two_estimator_check": {
+    "median_explicit": 17.413,
+    "median_statistics": 17.413,
+    "rel_diff": 0.0,
+    "tol": 1e-06,
+    "agree": true,
+    "note": "**旧实现缺陷已修**：曾用 `sorted[n//2]`（奇数式取单元素），n=1808 时给出 17.4379；正确值 = 两中位均值 = **17.4130**（numpy/statistics 两实现一致）"
+   },
    "evidence": "measured(API 返回的 ef__ 特征字段，逐标本一行)"
   },
   "per_cell_nwb": {
@@ -703,8 +712,8 @@
     "declared_bytes": null,
     "exists": true,
     "note": "",
-    "bytes_on_disk": 9737,
-    "sha256": "330976edb5cf11ae26c3d75f998482000b7188b973bdf58c766b84c229caf8fd",
+    "bytes_on_disk": 10679,
+    "sha256": "f7504c4b0a13b91d5d1ee6b8e5efd63000a66dd6a66c0da331359e27ee18c572",
     "status": "COMPLETE"
    },
    {
@@ -721,8 +730,8 @@
  },
  "inventory": {
   "n_items": 236,
-  "total_bytes": 288485329,
-  "total_MB": 288.485
+  "total_bytes": 288486271,
+  "total_MB": 288.486
  },
  "functional_connectomics_release": {
   "evidence": "measured(列举 200：KeyCount=4)",

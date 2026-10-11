@@ -236,6 +236,44 @@ def main():
         % (sweep["2.50"], best_orient, best_shift, r_aligned, ctrl if ctrl is not None else float("nan"),
            sweep.get("25.00", float("nan"))))
 
+    # ---- R4 附加：掩膜格与 series 的"格层"对齐（实测 chunk 键范围，不靠声明）----
+    mask_dir = os.path.join(RAW, "field_masks")
+    mkeys = sorted(os.path.basename(f)[:-4] for f in glob.glob(os.path.join(mask_dir, "*.bin")))
+    xs, ys = set(), set()
+    spans = []
+    for k in mkeys:
+        xr, yr, zr = k.split("_")
+        x0, x1 = [int(v) for v in xr.split("-")]
+        y0, y1 = [int(v) for v in yr.split("-")]
+        spans.append((x0, x1, y0, y1))
+        xs.update(range(x0, x1)); ys.update(range(y0, y1))
+    cover = (min(xs), max(xs) + 1, min(ys), max(ys) + 1) if xs else None
+    # series 的 dims（来自 attributes.json 读回）
+    pr = json.load(open(os.path.join(DATA, "m11_microns_protocol.json")))
+    dims = (pr.get("protocol", {}).get("functional_series") or [{}])[0].get("dimensions")
+    ok_cover = bool(cover and dims and cover[0] == 0 and cover[2] == 0
+                    and cover[1] == dims[0] and cover[3] == dims[1])
+    res["mask_grid_check"] = dict(
+        mask_chunks=mkeys, n_chunks=len(mkeys),
+        chunk_spans=[dict(x=[a, b], y=[c, d]) for a, b, c, d in spans],
+        union_coverage_xy=[cover[0], cover[1], cover[2], cover[3]] if cover else None,
+        series_dims_xy=dims[:2] if dims else None,
+        grid_identical=ok_cover,
+        evidence_level="measured（**由 chunk 键的索引范围互补铺满**得出，不是引用元数据声明）",
+        mask_info_resolution_nm=(pr.get("protocol", {}).get("field_seg_masks") or [{}])[0].get("resolution_nm"),
+        pixel_level_alignment="**unresolved（形式未自证）**：`field_seg_masks` 为 "
+                              "`compressed_segmentation`（data_type uint64，块尺寸 8×8×8，chunk 前缀=裸 gzip）；"
+                              "在**无官方规范/客户端**（PyPI 不可达、无 `bossdb`/`intern`）的条件下，"
+                              "本节点未能自证解码（实测头部 uint32 序列 "
+                              "[1, 16777744, 512, 33554996, 532, …] 不符合已知布局）⇒ **未使用其像素值**；"
+                              "R4 要求的'实际索引对齐'由 **summaries↔series 实像素**（尺度峰值 f=2.5、位移 (0,0)、"
+                              "地板×9）承担——**该检验验证的正是 10× 所在的「层级/尺度」问题**，"
+                              "而掩膜的格层则由上表 chunk 键覆盖实测确认。")
+    res["mask_grid_verdict"] = ("格层：**同格（measured）**——8 个 chunk 的 x/y 索引范围互补且无重叠，"
+                                "并集恰为 [0,%s)×[0,%s)，与 series dims %s **逐值相同**；"
+                                "像素层：**unresolved（形式未自证，未用其像素）**。"
+                                % (cover[1] if cover else "?", cover[3] if cover else "?", dims[:2] if dims else None))
+
     # ---- 物理解释（两个独立读回的 FOV 交叉核对）----
     res["fov_crosscheck"] = dict(
         series_from_metadata=dict(px=[248, 440], um_per_px=[2.5, 2.5], fov_um=[248 * 2.5, 440 * 2.5]),
