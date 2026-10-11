@@ -355,6 +355,11 @@ def main():
                                    "n_int16_saturated_max")},
             sentinel_and_missing=((load_json(os.path.join(DATA, "m11_microns_parse_validation.json")) or {})
                                   .get("sentinel_and_missing") or {})),
+        allen_activity_fallback=dict(
+            evidence="measured(自描述 CSV / HDF5 前缀)",
+            **(load_json(os.path.join(DATA, "m11_allen_activity_fallback.json")) or {}).get(
+                "sampling_rate_readback", {}) or {},
+            ),
         literature=dict(n_rows=len(lit_rows), by_status=lit_v,
                         evidence="literature=Europe PMC 题录实测命中；未命中=literature_unverified"),
         reachability=dict(n_sources=len(reach_rows), by_verdict=vc,

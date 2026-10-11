@@ -1,6 +1,6 @@
 {
  "generated_by": "tools/build_m11_inventory.py",
- "generated_at": "2026-10-11T14:26:24Z",
+ "generated_at": "2026-10-11T14:26:48Z",
  "units": "bytes; evidence ∈ {measured, derived, literature, unavailable}",
  "microns_structure": {
   "evidence": "measured(元数据) + derived(chunk 计数); shard 清单 = measured(有界)",
@@ -356,6 +356,25 @@
    "discipline": "**未处理 ≠ 无缺失**：NaN/哨兵/零值计数与掩膜规则必须随统计量一并落盘"
   }
  },
+ "allen_activity_fallback": {
+  "evidence": "measured(自描述 CSV / HDF5 前缀)",
+  "n_probes": 332,
+  "n_with_sampling_rate": 332,
+  "sampling_rate_hz": {
+   "min": 0.0,
+   "max": 30000.3135112693,
+   "mean": 29909.625870735268
+  },
+  "lfp_sampling_rate_hz": {
+   "min": 0.0,
+   "max": 2500.02612593911,
+   "mean": 2492.4688225612726
+  },
+  "lfp_temporal_subsampling_factor": [
+   2.0
+  ],
+  "n_has_lfp_data": 325
+ },
  "literature": {
   "n_rows": 37,
   "by_status": {
@@ -378,7 +397,7 @@
  },
  "inventory": {
   "n_items": 235,
-  "total_bytes": 288474029,
+  "total_bytes": 288474363,
   "total_MB": 288.474
  },
  "functional_connectomics_release": {

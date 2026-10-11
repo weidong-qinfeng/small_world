@@ -1,6 +1,6 @@
 {
  "generated_by": "tools/build_m11_allen_activity.py",
- "generated_at": "2026-10-11T14:25:33Z",
+ "generated_at": "2026-10-11T14:26:48Z",
  "ruling": "RF-M11-A：P2 功能通道回退到自描述源（HDF5/CSV）",
  "channel_priority": {
   "a": "Allen Brain Observatory Neuropixels ecephys-cache（**本轮已落**：自描述 CSV + NWB/HDF5）",
@@ -199,10 +199,11 @@
    "range": null,
    "expected_bytes": 1879,
    "use": "数据集清单（BASEDIR/sessions/probes/channels/units/session_data）",
-   "retrieved_at": "2026-10-11T14:25:33Z",
+   "retrieved_at": "2026-10-11T14:26:48Z",
    "bytes": 1879,
    "sha256": "f704d2f9127bcde83942815dd5ed6ebe757a1742f4745b45264bb5a323a4c62d",
-   "verdict": "COMPLETE"
+   "verdict": "COMPLETE",
+   "stat_eligible": true
   },
   {
    "local_file": "data/m11_raw/allen/bo_ecephys/sessions.csv",
@@ -210,10 +211,11 @@
    "range": null,
    "expected_bytes": 7849,
    "use": "session 级元数据（type/specimen/age/sex/genotype/has_nwb）",
-   "retrieved_at": "2026-10-11T14:25:33Z",
+   "retrieved_at": "2026-10-11T14:26:48Z",
    "bytes": 7849,
    "sha256": "cdd12b8becac84d284f222718a2a94f4155893fb9f26f1a9c725f541acc738f8",
-   "verdict": "COMPLETE"
+   "verdict": "COMPLETE",
+   "stat_eligible": true
   },
   {
    "local_file": "data/m11_raw/allen/bo_ecephys/probes.csv",
@@ -221,10 +223,11 @@
    "range": null,
    "expected_bytes": 26954,
    "use": "**采样率读回**：sampling_rate / lfp_sampling_rate / has_lfp_data",
-   "retrieved_at": "2026-10-11T14:25:33Z",
+   "retrieved_at": "2026-10-11T14:26:48Z",
    "bytes": 26954,
    "sha256": "f555ce63317d5b6a83bfafd9f7e6a7b7393c0d7416952bafae0fe67412bfb6bf",
-   "verdict": "COMPLETE"
+   "verdict": "COMPLETE",
+   "stat_eligible": true
   },
   {
    "local_file": "data/m11_raw/allen/bo_ecephys/units_prefix_1MB.csv",
@@ -232,11 +235,12 @@
    "range": "0-1048575",
    "expected_bytes": 1048576,
    "use": "逐 unit 质量表（全量 51,439,189 B **未取** ⇒ 仅前缀 schema/样本）",
-   "retrieved_at": "2026-10-11T14:25:33Z",
+   "retrieved_at": "2026-10-11T14:26:48Z",
    "bytes": 1048576,
    "sha256": "5b09eecda9bb76c7a8dc297528e3e1757fccea0914499c087be1fc78ed7f820d",
    "verdict": "RANGE_BOUNDED",
-   "note": "有界 Range 前缀（**故意只取前 1048576 B**；全量 units.csv ⇒ 未取）"
+   "note": "有界 Range 前缀（**故意只取前 1048576 B**；全量 units.csv ⇒ 未取）",
+   "stat_eligible": true
   },
   {
    "local_file": "data/m11_raw/allen/bo_ecephys/channels_prefix_1MB.csv",
@@ -244,11 +248,12 @@
    "range": "0-1048575",
    "expected_bytes": 1048576,
    "use": "逐 channel 表（全量 6,613,329 B 未取 ⇒ 仅前缀）",
-   "retrieved_at": "2026-10-11T14:25:33Z",
-   "bytes": 225280,
-   "sha256": "6f52d7481245939c7160e3dd85cc172d77f04493ade288627714354b67e53546",
-   "verdict": "INCOMPLETE",
-   "note": "期望 1048576 B，实收 225280 B ⇒ **INCOMPLETE（不进统计，需重取）**"
+   "retrieved_at": "2026-10-11T14:26:48Z",
+   "bytes": 1048576,
+   "sha256": "297b5e1b2dd8698080c4f42ea6a379ccd4aef8c6d8fa07a2779b8710b935ae74",
+   "verdict": "RANGE_BOUNDED",
+   "note": "有界 Range 前缀（**故意只取前 1048576 B**；全量 channels.csv ⇒ 未取）",
+   "stat_eligible": true
   },
   {
    "local_file": "data/m11_raw/allen/bo_ecephys/probe_810755797_lfp_head8MB.bin",
@@ -256,11 +261,12 @@
    "range": "0-8388607",
    "expected_bytes": 8388608,
    "use": "LFP NWB(HDF5) 前缀 ⇒ 读回 sampling_rate / 电极与单元结构（全量 2,062,950,784 B **>2 GB 上限**）",
-   "retrieved_at": "2026-10-11T14:25:33Z",
-   "bytes": 413696,
-   "sha256": "782c7f41c3082ddba1c03aa13f2fc80b81afb324b305c15eb13dd6e443e8a6d0",
+   "retrieved_at": "2026-10-11T14:26:48Z",
+   "bytes": 1564672,
+   "sha256": "52b325d93a42704298f99e52cedef6890b4f86111aa02802a212ca244320210a",
    "verdict": "INCOMPLETE",
-   "note": "期望 8388608 B，实收 413696 B ⇒ **INCOMPLETE（不进统计，需重取）**"
+   "note": "期望 8388608 B，实收 1564672 B ⇒ **INCOMPLETE（不进统计，需重取）**；**不入统计**（stat_eligible=False），需重取",
+   "stat_eligible": false
   }
  ]
 }

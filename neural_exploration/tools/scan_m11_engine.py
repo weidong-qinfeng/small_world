@@ -1602,7 +1602,7 @@ def build_summary(res: dict) -> dict:
                                     "on 档 N=75,909 实测 "
                                     + str(next((r["gpu_h_per_30s"] for r in t10.get("rows", [])
                                                 if r.get("arm") == "on" and r.get("n") == 75909),
-                                               None)) + " GPU-h"))
+                                               None)) + " GPU-h")))
 
 
 def main(argv=None) -> int:

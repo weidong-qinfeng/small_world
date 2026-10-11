@@ -762,6 +762,33 @@
   "two_comp": {
    "status": "unavailable",
    "reason": "E4b 层特异双房室档未实现（清单 §2.2 标『复用+扩展』，属 P-EXT1 预算门控）"
-  }
+  },
+  "fit": {
+   "off_frozen": {
+    "a_ms": 2.0438514187115926,
+    "b_ms_per_neuron_step": 9.06461059300287e-06,
+    "max_rel_resid": 0.038243351220501536,
+    "points": 3,
+    "spk_per_neuron_hz": [
+     5.242,
+     5.219,
+     5.182
+    ],
+    "density_caveat": "墙钟混入发放密度（M10 L18.4）：各臂的 spk/neuron 已并列，跨臂比较墙钟前必须核对密度"
+   },
+   "on": {
+    "a_ms": 0.5878696703164494,
+    "b_ms_per_neuron_step": 1.5209172718313931e-05,
+    "max_rel_resid": 0.07704189451984457,
+    "points": 3,
+    "spk_per_neuron_hz": [
+     1.346,
+     1.359,
+     1.355
+    ],
+    "density_caveat": "墙钟混入发放密度（M10 L18.4）：各臂的 spk/neuron 已并列，跨臂比较墙钟前必须核对密度"
+   }
+  },
+  "ng_note": "预注册上限 0.5 GPU-h/试次（30 s）：on 档 N=75,909 实测 0.2861 GPU-h"
  }
 }
