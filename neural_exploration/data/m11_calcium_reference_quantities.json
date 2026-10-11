@@ -1,0 +1,516 @@
+{
+  "generated_by": "neural_exploration/tools/build_m11_calcium_reference_quantities.py",
+  "generated_at": "2026-10-12 07:12:41",
+  "scope": "优先级 4：四类参考量的**钙域口径**（同源 MICrONS functional_series；无新下载）",
+  "pipeline": {
+    "same_as": [
+      "neural_exploration/data/m11_calcium_silence_reference.json",
+      "neural_exploration/data/m11_dwell_reference.json"
+    ],
+    "frames_per_bin": 6,
+    "bin_s": 0.95238,
+    "bin_naming_note": "B4 冻结模块以 FRAME_S=1/1.0943=0.9138 s 为一箱；dt_ms=158.73 ⇒ b=6 帧/箱= 0.9524 s ⇒ 命名与实宽差 4.2%（已在 dwell 产物留痕）",
+    "smoothing": "5 帧平滑与未平滑并列（后者见 dwell 产物 ar1_tau_s_unsmoothed_module）",
+    "frame_rate_hz": 6.3000063000063,
+    "event_sigma_mad": 3.0,
+    "proxy_bin_px": 20,
+    "n_surrogate": 8,
+    "seed": 0
+  },
+  "same_pipeline_check": [
+    {
+      "field": "field4",
+      "recomputed_zero_activity": 0.49,
+      "j2_stored_zero_activity": 0.49,
+      "abs_diff": 0.0,
+      "consistent_le_1e-9": true,
+      "n_files": 200,
+      "n_negative_samples": 10383,
+      "negative_fraction": 0.00013
+    },
+    {
+      "field": "field2",
+      "recomputed_zero_activity": 0.48,
+      "j2_stored_zero_activity": 0.48,
+      "abs_diff": 0.0,
+      "consistent_le_1e-9": true,
+      "n_files": 200,
+      "n_negative_samples": 75288,
+      "negative_fraction": 0.003764
+    }
+  ],
+  "quantity_1_rate_distribution": [
+    {
+      "label": "field4 / session4_scan7_field4",
+      "n_units_proxy": 100,
+      "n_frames": 2000,
+      "duration_s": 317.46,
+      "unit_bin_px": 20,
+      "unit_area_um2": 2500.0,
+      "event_threshold_dff": 1.57847,
+      "rate_hz_native_frames": {
+        "n": 100,
+        "median": 0.00315000315000315,
+        "p10": 0.0,
+        "p25": 0.0,
+        "p75": 0.03150003150003149,
+        "p90": 0.1008001008001008,
+        "min": 0.0,
+        "max": 0.3276003276003276,
+        "mean": 0.032445032445032454
+      },
+      "rate_hz_binned_6frames": {
+        "n": 100,
+        "median": 0.0031531563063094594,
+        "p10": 0.0,
+        "p25": 0.0,
+        "p75": 0.0315315630630946,
+        "p90": 0.1009010018019027,
+        "min": 0.0,
+        "max": 0.3279282558561838,
+        "mean": 0.03247750995498743
+      },
+      "total_events_native": 1030.0,
+      "total_events_binned": 1030.0,
+      "dual_estimator_rel_diff": 0.0,
+      "dual_estimator_scope": "同一帧范围（前 1998 帧）比较；分箱口径丢尾部 2 帧 / 0 事件（0.1000% 帧）",
+      "dropped_frames": 2,
+      "dropped_events": 0,
+      "events_per_unit_distribution": {
+        "n": 100,
+        "median": 1.0,
+        "p10": 0.0,
+        "p25": 0.0,
+        "p75": 10.0,
+        "p90": 32.0,
+        "min": 0.0,
+        "max": 104.0,
+        "mean": 10.3
+      },
+      "events_per_bin_distribution": {
+        "n": 33300,
+        "median": 0.0,
+        "p10": 0.0,
+        "p25": 0.0,
+        "p75": 0.0,
+        "p90": 0.0,
+        "min": 0.0,
+        "max": 6.0,
+        "mean": 0.030930930930930932
+      },
+      "rate_resolution_floor": "每单元事件中位 = 1.0 ⇒ **触分辨率地板**（事件数 ≤3 时率的相对不确定度 ≳60%）；分位 p10/p25/p50 均落在地板区 ⇒ **只能报『多数代理单元在 317 s 窗内几乎无事件』**，**不得**把中位率当作神经元发放率",
+      "n_bins": 333,
+      "bin_s": 0.95238,
+      "fullfov_rate_hz": 3.2445032445032442,
+      "fullfov_rate_hz_binned": 3.247750995498743,
+      "fullfov_events_per_frame_mean": 0.515,
+      "unit_vs_neuron_scope_caveat": "**代理单元 ≠ 单个神经元**：20×20 px = 50×50 µm 的空间分箱内神经元数**未知**（真实 ROI 掩膜未解码）⇒ 分箱事件率**不可**与『单神经元 spike 率』并列比较；跨口径仅可在**全视野聚合**层面陈述",
+      "caveat_note": "钙事件口径 ≠ spike 率：本表单位 = 钙事件/秒（阈值 = dF/F 中位 + 3·MAD）；与电生理 spike 率**分列**，不得合并"
+    },
+    {
+      "label": "field2 / session5_scan3_field1",
+      "n_units_proxy": 25,
+      "n_frames": 2000,
+      "duration_s": 317.46,
+      "unit_bin_px": 20,
+      "unit_area_um2": 2500.0,
+      "event_threshold_dff": 2.308268,
+      "rate_hz_native_frames": {
+        "n": 25,
+        "median": 0.00315000315000315,
+        "p10": 0.0,
+        "p25": 0.0,
+        "p75": 0.037800037800037795,
+        "p90": 0.6583506583506583,
+        "min": 0.0,
+        "max": 5.377055377055377,
+        "mean": 0.31084231084231084
+      },
+      "rate_hz_binned_6frames": {
+        "n": 25,
+        "median": 0.0031531563063094594,
+        "p10": 0.0,
+        "p25": 0.0,
+        "p75": 0.03783787567571351,
+        "p90": 0.659009668018677,
+        "min": 0.0,
+        "max": 5.376131502257628,
+        "mean": 0.31077508554986033
+      },
+      "total_events_native": 2464.0,
+      "total_events_binned": 2464.0,
+      "dual_estimator_rel_diff": 0.0,
+      "dual_estimator_scope": "同一帧范围（前 1998 帧）比较；分箱口径丢尾部 2 帧 / 3 事件（0.1000% 帧）",
+      "dropped_frames": 2,
+      "dropped_events": 3,
+      "events_per_unit_distribution": {
+        "n": 25,
+        "median": 1.0,
+        "p10": 0.0,
+        "p25": 0.0,
+        "p75": 12.0,
+        "p90": 209.0,
+        "min": 0.0,
+        "max": 1705.0,
+        "mean": 98.56
+      },
+      "events_per_bin_distribution": {
+        "n": 8325,
+        "median": 0.0,
+        "p10": 0.0,
+        "p25": 0.0,
+        "p75": 0.0,
+        "p90": 0.0,
+        "min": 0.0,
+        "max": 6.0,
+        "mean": 0.29597597597597597
+      },
+      "rate_resolution_floor": "每单元事件中位 = 1.0 ⇒ **触分辨率地板**（事件数 ≤3 时率的相对不确定度 ≳60%）；分位 p10/p25/p50 均落在地板区 ⇒ **只能报『多数代理单元在 317 s 窗内几乎无事件』**，**不得**把中位率当作神经元发放率",
+      "n_bins": 333,
+      "bin_s": 0.95238,
+      "fullfov_rate_hz": 7.77105777105777,
+      "fullfov_rate_hz_binned": 7.769377138746508,
+      "fullfov_events_per_frame_mean": 1.2335,
+      "unit_vs_neuron_scope_caveat": "**代理单元 ≠ 单个神经元**：20×20 px = 50×50 µm 的空间分箱内神经元数**未知**（真实 ROI 掩膜未解码）⇒ 分箱事件率**不可**与『单神经元 spike 率』并列比较；跨口径仅可在**全视野聚合**层面陈述",
+      "caveat_note": "钙事件口径 ≠ spike 率：本表单位 = 钙事件/秒（阈值 = dF/F 中位 + 3·MAD）；与电生理 spike 率**分列**，不得合并"
+    }
+  ],
+  "quantity_2_population_correlation": [
+    {
+      "label": "field4 / session4_scan7_field4 ｜ 口径 A：原始（未去全局分量）",
+      "n_units": 100,
+      "n_dropped_zero_variance": 0,
+      "n_bins": 333,
+      "bin_s": 0.95238,
+      "mean_pairwise_r_numpy": 0.794891,
+      "mean_pairwise_r_manual": 0.794891,
+      "dual_estimator_rel_diff": 0.0,
+      "eigenvalue_top10": [
+        79.8569,
+        5.5068,
+        1.9596,
+        1.7154,
+        1.4309,
+        1.0757,
+        0.8945,
+        0.6926,
+        0.6301,
+        0.5869
+      ],
+      "eigenvalue_first_over_sum": 0.798569,
+      "participation_ratio_effective_dim": 1.5575,
+      "surrogate_mean_r": -7.1e-05,
+      "surrogate_mean_r_sd": 0.001191,
+      "surrogate_participation_ratio": 24.6773,
+      "excess_over_surrogate": 0.794962,
+      "n_surrogates": 8,
+      "seed": 0,
+      "note": "代理零分布 = 同管线 FFT 相位随机化（保幅谱、随机相位、8 次）；『平均成对相关』若未超过代理地板 ⇒ 判为**无群体结构**，不得解释为同步；零方差单元已剔除并登记（n=0）",
+      "global_mode_removed": {
+        "label": "field4 / session4_scan7_field4 ｜ 口径 B：去全局分量（X − 逐箱跨单元均值）",
+        "n_units": 100,
+        "n_dropped_zero_variance": 0,
+        "n_bins": 333,
+        "bin_s": 0.95238,
+        "mean_pairwise_r_numpy": -0.008247,
+        "mean_pairwise_r_manual": -0.008247,
+        "dual_estimator_rel_diff": 6.310532113604519e-16,
+        "eigenvalue_top10": [
+          26.4653,
+          14.4798,
+          7.663,
+          6.4885,
+          5.6326,
+          4.1282,
+          3.321,
+          2.8836,
+          2.7083,
+          2.0446
+        ],
+        "eigenvalue_first_over_sum": 0.264653,
+        "participation_ratio_effective_dim": 9.0331,
+        "surrogate_mean_r": 0.001052,
+        "surrogate_mean_r_sd": 0.001328,
+        "surrogate_participation_ratio": 38.511,
+        "excess_over_surrogate": -0.009299,
+        "n_surrogates": 8,
+        "seed": 0,
+        "note": "代理零分布 = 同管线 FFT 相位随机化（保幅谱、随机相位、8 次）；『平均成对相关』若未超过代理地板 ⇒ 判为**无群体结构**，不得解释为同步；零方差单元已剔除并登记（n=0）"
+      },
+      "degeneracy_check": {
+        "raw_PR": 1.5575,
+        "raw_lambda1_over_sum": 0.798569,
+        "resid_PR": 9.0331,
+        "verdict": "**单一共同模式主导（PR<3）** ⇒ 原始平均 r 不得作为群体结构证据",
+        "note": "**可比性警告**：PR 接近 1 表示全部单元几乎由**一个共同模式**驱动。本轮两 field 的原始口径 PR = 1.5575 / λ1/Σλ = 0.798569 ⇒ 高 r **不能**解释为神经元同步，须以**去全局分量**口径为准（PR 升到 9.0331）"
+      }
+    },
+    {
+      "label": "field2 / session5_scan3_field1 ｜ 口径 A：原始（未去全局分量）",
+      "n_units": 25,
+      "n_dropped_zero_variance": 0,
+      "n_bins": 333,
+      "bin_s": 0.95238,
+      "mean_pairwise_r_numpy": 0.959427,
+      "mean_pairwise_r_manual": 0.959427,
+      "dual_estimator_rel_diff": 0.0,
+      "eigenvalue_top10": [
+        24.0282,
+        0.3163,
+        0.1877,
+        0.0973,
+        0.0554,
+        0.0475,
+        0.036,
+        0.0307,
+        0.0278,
+        0.0205
+      ],
+      "eigenvalue_first_over_sum": 0.961129,
+      "participation_ratio_effective_dim": 1.0822,
+      "surrogate_mean_r": -0.003599,
+      "surrogate_mean_r_sd": 0.007597,
+      "surrogate_participation_ratio": 16.2609,
+      "excess_over_surrogate": 0.963026,
+      "n_surrogates": 8,
+      "seed": 0,
+      "note": "代理零分布 = 同管线 FFT 相位随机化（保幅谱、随机相位、8 次）；『平均成对相关』若未超过代理地板 ⇒ 判为**无群体结构**，不得解释为同步；零方差单元已剔除并登记（n=0）",
+      "global_mode_removed": {
+        "label": "field2 / session5_scan3_field1 ｜ 口径 B：去全局分量（X − 逐箱跨单元均值）",
+        "n_units": 25,
+        "n_dropped_zero_variance": 0,
+        "n_bins": 333,
+        "bin_s": 0.95238,
+        "mean_pairwise_r_numpy": 0.029145,
+        "mean_pairwise_r_manual": 0.029145,
+        "dual_estimator_rel_diff": 3.57122391106928e-16,
+        "eigenvalue_top10": [
+          10.8601,
+          4.105,
+          3.2235,
+          1.2455,
+          0.8407,
+          0.6749,
+          0.6648,
+          0.5497,
+          0.3935,
+          0.3127
+        ],
+        "eigenvalue_first_over_sum": 0.434403,
+        "participation_ratio_effective_dim": 4.1869,
+        "surrogate_mean_r": 0.002598,
+        "surrogate_mean_r_sd": 0.008569,
+        "surrogate_participation_ratio": 19.7528,
+        "excess_over_surrogate": 0.026547,
+        "n_surrogates": 8,
+        "seed": 0,
+        "note": "代理零分布 = 同管线 FFT 相位随机化（保幅谱、随机相位、8 次）；『平均成对相关』若未超过代理地板 ⇒ 判为**无群体结构**，不得解释为同步；零方差单元已剔除并登记（n=0）"
+      },
+      "degeneracy_check": {
+        "raw_PR": 1.0822,
+        "raw_lambda1_over_sum": 0.961129,
+        "resid_PR": 4.1869,
+        "verdict": "**单一共同模式主导（PR<3）** ⇒ 原始平均 r 不得作为群体结构证据",
+        "note": "**可比性警告**：PR 接近 1 表示全部单元几乎由**一个共同模式**驱动。本轮两 field 的原始口径 PR = 1.0822 / λ1/Σλ = 0.961129 ⇒ 高 r **不能**解释为神经元同步，须以**去全局分量**口径为准（PR 升到 4.1869）"
+      }
+    }
+  ],
+  "quantity_3_state_structure": {
+    "source": "neural_exploration/data/m11_dwell_reference.json",
+    "H_method": {
+      "occupancy_low": 0.6306306306306306,
+      "occupancy_high": 0.36936936936936937,
+      "transition_rate_hz": 0.04600660660660661,
+      "ar1_tau_s_physical": 32.549,
+      "ar1_phi_smoothed": 0.971164005474068,
+      "ar1_tau_bias_corrected_s_physical": null,
+      "best_K_by_BIC": "unavailable",
+      "BIC_note": "n_frames=333 < 500 ⇒ **K 选择结论标 unavailable**（BIC 在小样本上无意义，RF-18(4)）"
+    },
+    "Q_method": {
+      "q_low_dwell_median_s_module": 7.310609522068902,
+      "q_transition_rate_hz": 0.141306006006006,
+      "h_vs_q_dwell_ratio": 1.6875,
+      "low_dwell_ks_p": 0.5575692302520915,
+      "low_dwell_p90_over_median": 5.777777777777778,
+      "dwell_resolution_floor": {
+        "frame_s": 0.9138261902586128,
+        "q_median_s": null,
+        "h_median_s": 12.336653568491272,
+        "at_floor": true,
+        "note": "dwell 中位 ≤1.5 帧 ⇒ **触分辨率地板、无分辨力**：只能作为'未产生慢状态'的**旁证**，**不得**作为'×N 倍差距'引用（时间尺度应以 AR(1) τ 与转换率为准）"
+      }
+    },
+    "smoothed_and_unsmoothed": {
+      "tau_smoothed_s": 32.549,
+      "tau_unsmoothed_s_module": null,
+      "phi_smoothed": 0.971164005474068,
+      "phi_unsmoothed": 0.8875082579415406
+    },
+    "internal_consistency": {
+      "applicable": true,
+      "predicted_dwell_s": 10.868004334147074,
+      "observed_dwell_s": 12.8571,
+      "rel_diff": 0.1547079563706378,
+      "pass_": true,
+      "note": "2 状态稳态近似；若状态数>2 或转移矩阵强非对称则本条不适用（须显式声明）"
+    },
+    "internal_consistency_stored": {
+      "applicable": true,
+      "predicted_dwell_s": 10.868004334147074,
+      "observed_dwell_s": 12.336653568491272,
+      "rel_diff": 0.119047619047619,
+      "pass_": true,
+      "note": "2 状态稳态近似；若状态数>2 或转移矩阵强非对称则本条不适用（须显式声明）"
+    },
+    "internal_consistency_dual_check": {
+      "recomputed_rel_diff": 0.1547079563706378,
+      "stored_rel_diff": 0.119047619047619,
+      "match": false
+    },
+    "cross_field": {
+      "field4": {
+        "dwell_median_s_module": 12.336653568491272,
+        "tau_s_module": 31.231327717675093,
+        "phi_smoothed": 0.971164005474068,
+        "n_bins": 333
+      },
+      "field2": {
+        "dwell_median_s_module": 10.965914283103354,
+        "tau_s_module": 31.558934159781415,
+        "phi_smoothed": 0.9714590324956673,
+        "n_bins": 333
+      },
+      "spread_dwell": 1.125,
+      "spread_tau": 1.01,
+      "note": "**跨 field 生物学/制备离散**（与上面「同 field 内口径离散」**不同维度**，须分列）"
+    },
+    "cross_field_note": "**cross-field = measured（两 field 均在盘）**：dwell 1.125× / τ 1.010×（与主 agent 『cross-field 一律 unavailable』的前提『第二 field 不在盘上』不一致 —— 该前提已过期，第二 field 200/200 片已入库）"
+  },
+  "quantity_4_resting_silence": {
+    "source": "neural_exploration/data/m11_calcium_silence_reference.json",
+    "rows": [
+      {
+        "label": "field4 session4_scan7_field4 x[0,200)y[0,200)（200 片/2000 帧）",
+        "silent_frac_zero_activity": 0.49,
+        "silent_frac_below_baseline": 0.0,
+        "silent_frac_low_percentile": 0.0,
+        "fullfov_frame_no_event_frac": 0.8915,
+        "n_units_proxy": 100
+      },
+      {
+        "label": "field2 session5_scan3_field1 (0,0,0)（200 片/2000 帧）",
+        "silent_frac_zero_activity": 0.48,
+        "silent_frac_below_baseline": 0.0,
+        "silent_frac_low_percentile": 0.0,
+        "fullfov_frame_no_event_frac": 0.1465,
+        "n_units_proxy": 25
+      }
+    ],
+    "acceptance": {
+      "1": "pass",
+      "2": "pass",
+      "3": "pass",
+      "4": "pass",
+      "5": "pass"
+    }
+  },
+  "cross_scope_calcium_vs_spike": {
+    "calcium_event_rate_median_hz": 0.00315000315000315,
+    "spike_rate_median_hz_visp": 2.48496852951443,
+    "calcium_over_spike_ratio": 0.0013,
+    "calcium_event_rate_nyquist_hz": 3.15000315000315,
+    "interpretation": "两域**分列**：钙事件率是本工具的实测中位；spike 率为 Allen NP VISp 实测中位（口径 complete_session）。比值 = 钙事件率/spike 率，量级差即『钙≠spike』的**实测**下界（不需要再引用 in vitro 代理）"
+  },
+  "assertions": {
+    "P1.23a_same_pipeline": {
+      "ok": true,
+      "detail": [
+        {
+          "field": "field4",
+          "recomputed_zero_activity": 0.49,
+          "j2_stored_zero_activity": 0.49,
+          "abs_diff": 0.0,
+          "consistent_le_1e-9": true,
+          "n_files": 200,
+          "n_negative_samples": 10383,
+          "negative_fraction": 0.00013
+        },
+        {
+          "field": "field2",
+          "recomputed_zero_activity": 0.48,
+          "j2_stored_zero_activity": 0.48,
+          "abs_diff": 0.0,
+          "consistent_le_1e-9": true,
+          "n_files": 200,
+          "n_negative_samples": 75288,
+          "negative_fraction": 0.003764
+        }
+      ]
+    },
+    "P1.23b_dual_estimator": {
+      "ok": true,
+      "event_count_rel_diff": [
+        0.0,
+        0.0
+      ],
+      "mean_r_rel_diff": [
+        0.0,
+        0.0
+      ]
+    },
+    "P1.23c_sample_size_gate": {
+      "ok": true,
+      "gate": {
+        "n_frames": 2000,
+        "valid": true,
+        "shape_ok": true,
+        "bic_ok": true,
+        "thresholds": {
+          "valid": 65,
+          "shape": 130,
+          "bic": 500
+        },
+        "note": "n_frames<65 ⇒ invalid（最短协议 T≥60 s）；形状判据需 ≥130（T≥120 s）；BIC 需 ≥500"
+      },
+      "n_bins": 333,
+      "bins_note": "箱数 333 < 500 ⇒ BIC/K 选择结论 unavailable（四态纪律）"
+    },
+    "P1.23d_internal_consistency": {
+      "ok": true,
+      "detail": {
+        "applicable": true,
+        "predicted_dwell_s": 10.868004334147074,
+        "observed_dwell_s": 12.8571,
+        "rel_diff": 0.1547079563706378,
+        "pass_": true,
+        "note": "2 状态稳态近似；若状态数>2 或转移矩阵强非对称则本条不适用（须显式声明）"
+      },
+      "rule": "|dwell − 1/(2λ)|/dwell ≤ 1"
+    },
+    "P1.23e_two_unit_scopes": {
+      "ok": true,
+      "note": "全视野口径为**单条**聚合序列 ⇒ **群体相关在全视野口径下无定义**（n=1），该维登记为『口径不适用』而非『不可用』"
+    },
+    "P1.23f_cross_field_measured": {
+      "ok": true,
+      "spread_dwell": 1.125,
+      "spread_tau": 1.01,
+      "note": "两 field 均在盘 ⇒ cross-field 为 measured（推翻『一律 unavailable』的过期前提）"
+    },
+    "P1.23g_surrogate_floor": {
+      "ok": true,
+      "excess": [
+        0.794962,
+        0.963026
+      ]
+    }
+  },
+  "caveats": [
+    "① 钙事件口径 ≠ spike 率：两域**分列**，本文件不复用任何 spike 值作钙域带；",
+    "② 单元 = **空间分箱代理**（真实 ROI 掩膜未解码）⇒ 群体相关的『单元』是代理单元；",
+    "③ 箱数 333 < 500 ⇒ BIC/K 选择结论 unavailable（未测 ≠ 未命中）；",
+    "④ 全视野口径下群体相关**不适用**（单序列）；",
+    "⑤ 覆盖 = 2 field × 2,000 帧（317.46 s each），**非**全场/全 144 field。"
+  ]
+}

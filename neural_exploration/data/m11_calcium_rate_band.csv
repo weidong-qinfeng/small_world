@@ -1,0 +1,5 @@
+field_scope,unit_scope,n_units,n_frames,duration_s,rate_median_hz,rate_p10,rate_p90,rate_max,bin_s,evidence
+field4 / session4_scan7_field4,per_roi_proxy(20px),100,2000,317.46,0.00315,0.0,0.1008,0.3276,native_frames,measured
+field4 / session4_scan7_field4,full_fov_aggregate,1,2000,317.46,3.244503,,,,native_frames,measured
+field2 / session5_scan3_field1,per_roi_proxy(20px),25,2000,317.46,0.00315,0.0,0.658351,5.377055,native_frames,measured
+field2 / session5_scan3_field1,full_fov_aggregate,1,2000,317.46,7.771058,,,,native_frames,measured

@@ -753,6 +753,59 @@ def main():
                      .get("acceptance_completion") is not None,
                      "rows=2 band_rows=4 acceptance_completion 已追加"))
 
+    # ---------------- P1.23 优先级 4 钙域四类参考量 ----------------
+    cq = load(os.path.join(DATA, "m11_calcium_reference_quantities.json")) if os.path.exists(
+        os.path.join(DATA, "m11_calcium_reference_quantities.json")) else {}
+    ca = cq.get("assertions") or {}
+    A.append(assert_("P1.23a 钙域四类参考量与 J2 **同管线**（数值一致 ≤1e-9，非声称）",
+                     (ca.get("P1.23a_same_pipeline") or {}).get("ok") is True,
+                     json.dumps((ca.get("P1.23a_same_pipeline") or {}).get("detail"), ensure_ascii=False)[:160]))
+    A.append(assert_("P1.23b 双估计器（事件计数 + 平均成对相关）rel_diff ≤1e-9",
+                     (ca.get("P1.23b_dual_estimator") or {}).get("ok") is True,
+                     "event=%s r=%s" % ((ca.get("P1.23b_dual_estimator") or {}).get("event_count_rel_diff"),
+                                        (ca.get("P1.23b_dual_estimator") or {}).get("mean_r_rel_diff"))))
+    A.append(assert_("P1.23c 样本量门（≥300 帧；箱数<500 ⇒ BIC 结论 unavailable 须写明）",
+                     (ca.get("P1.23c_sample_size_gate") or {}).get("ok") is True
+                     and "unavailable" in ((ca.get("P1.23c_sample_size_gate") or {}).get("bins_note") or ""),
+                     (ca.get("P1.23c_sample_size_gate") or {}).get("bins_note")))
+    A.append(assert_("P1.23d 内部一致性 |dwell−1/(2λ)|/dwell ≤ 1",
+                     (ca.get("P1.23d_internal_consistency") or {}).get("ok") is True,
+                     "rel_diff=%s" % ((ca.get("P1.23d_internal_consistency") or {}).get("detail") or {}).get("rel_diff")))
+    A.append(assert_("P1.23e 逐 ROI 与全视野两口径并列（全视野群体相关=口径不适用，非不可用）",
+                     (ca.get("P1.23e_two_unit_scopes") or {}).get("ok") is True,
+                     ((ca.get("P1.23e_two_unit_scopes") or {}).get("note") or "")[:100]))
+    A.append(assert_("P1.23f cross-field 为 **measured**（两 field 均在盘；推翻『一律 unavailable』的过期前提）",
+                     (ca.get("P1.23f_cross_field_measured") or {}).get("ok") is True
+                     and "过期" in ((ca.get("P1.23f_cross_field_measured") or {}).get("note") or ""),
+                     "dwell=%s τ=%s" % ((ca.get("P1.23f_cross_field_measured") or {}).get("spread_dwell"),
+                                        (ca.get("P1.23f_cross_field_measured") or {}).get("spread_tau"))))
+    A.append(assert_("P1.23g 相位随机化代理零分布已建，且已做**退化体检**（单一共同模式警告）",
+                     (ca.get("P1.23g_surrogate_floor") or {}).get("ok") is True
+                     and all((c.get("degeneracy_check") or {}).get("verdict") for c in
+                             (cq.get("quantity_2_population_correlation") or [])),
+                     "excess=%s" % (ca.get("P1.23g_surrogate_floor") or {}).get("excess")))
+    A.append(assert_("P1.23h R-41/R-42 为**新增行**，且 R-42 明写『禁止把 0.79/0.96 当群体结构』",
+                     (rmap2.get("R-41") or {}).get("status") == "asserted"
+                     and (rmap2.get("R-42") or {}).get("status") == "asserted"
+                     and "禁止" in ((rmap2.get("R-42") or {}).get("note") or ""),
+                     "R-41=%s | R-42 含禁令=%s" % (
+                         (rmap2.get("R-41") or {}).get("value"),
+                         "禁止" in ((rmap2.get("R-42") or {}).get("note") or ""))))
+
+    # ---------------- P1.24 format_unverified 文本更正 ----------------
+    rep = open(os.path.join(DOCS, "m11_data_gate_report.md"), encoding="utf-8").read()
+    A.append(assert_("P1.24a 报告含 §6m 的 **G-1′** 更正表述（同源在时间序列级成立）",
+                     "G-1′" in rep and "同源在时间序列级成立" in rep, "报告已含 G-1′ 段"))
+    A.append(assert_("P1.24b 报告已把两个 field 与『cross-field 已测』写清（不得写成 unavailable）",
+                     "第二个 field 已在盘并已入库" in rep and "把已测写成未测" in rep,
+                     "含两 field 更正与『未测≠未命中』的反向错误说明"))
+    A.append(assert_("P1.24c 旧执行条款（format_unverified）已标失效并保留原文",
+                     "该执行条款自即日起失效" in rep and "保留原文" in rep,
+                     "报告 L266 更正行在位"))
+    cl = open(os.path.join(DOCS, "生物仿真M11实施清单.md"), encoding="utf-8").read()
+    A.append(assert_("P1.24d 清单回退行已更正（不再写『体素 format_unverified / 活动通道改由 Allen 承担』为现行）",
+                     "同源时间序列已可用" in cl and "均已作废" in cl, "清单已加更正行（只增不改）"))
+
     # ---------------- 判定 ----------------
     for a in A:
         if not a["ok"]:

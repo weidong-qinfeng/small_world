@@ -374,6 +374,43 @@ def main():
             "未量化口径余量）；② 样本量 **thin**（100/25 代理单元，B4 门 65/130/500）；"
             "③ 电生理并列仅作量级（**不同量纲**，不得替换/合并）；④ 观测窗口径（前 2,000 帧），非全场")
 
+    # ---- R-41/R-42：优先级 4 钙域四类参考量（**新增行**；主 agent §二）----
+    cq = json.load(open(os.path.join(DATA, "m11_calcium_reference_quantities.json"))) \
+        if os.path.exists(os.path.join(DATA, "m11_calcium_reference_quantities.json")) else {}
+    cqr = cq.get("quantity_1_rate_distribution") or []
+    cqc = cq.get("quantity_2_population_correlation") or []
+    if cqr:
+        add("R-41", "calcium_domain_rate_and_silence",
+            "proxy 中位=%.4f Hz（两 field 同）; 全视野聚合=%.4f/%.4f Hz"
+            % (cqr[0]["rate_hz_native_frames"]["median"], cqr[0]["fullfov_rate_hz"],
+               cqr[1]["fullfov_rate_hz"] if len(cqr) > 1 else 0),
+            "Hz", "钙事件口径（阈值=dF/F 中位+3·MAD）；**与 spike 率分列**；双估计器 rel_diff ≤1e-9",
+            "asserted", "measured（代理口径）",
+            "data/m11_calcium_reference_quantities.json", cq.get("generated_at", ""),
+            "**钙域率分布（主 agent §二①）**：per-ROI 代理（50×50 µm）事件率中位 **0.0032 Hz**（两 field 一致）"
+            "⇒ **触分辨率地板**（中位单元 317 s 内仅 **1 个事件**，相对不确定度 ≳60%）⇒ **不得**当神经元发放率；"
+            "全视野聚合 = **3.2445 / 7.7711 Hz**。★ **代理单元 ≠ 神经元**（50×50 µm 内神经元数未知）"
+            "⇒ 分箱事件率**不可**与单神经元 spike 率并列（跨口径只允许在全视野聚合层面陈述）。"
+            "**双估计器**：原生帧 vs 分箱（同一帧范围）rel_diff **0.00e+00**")
+    if cqc:
+        c0 = cqc[0]
+        g0 = (c0.get("global_mode_removed") or {})
+        add("R-42", "calcium_population_correlation_and_degeneracy",
+            "原始 r=%.5f/%.5f（PR=%.3f/%.3f）→ **去全局分量** r=%.5f/%.5f（PR=%.3f/%.3f）"
+            % (c0["mean_pairwise_r_numpy"], cqc[1]["mean_pairwise_r_numpy"] if len(cqc) > 1 else 0,
+               c0["participation_ratio_effective_dim"],
+               cqc[1]["participation_ratio_effective_dim"] if len(cqc) > 1 else 0,
+               g0.get("mean_pairwise_r_numpy") or 0,
+               ((cqc[1].get("global_mode_removed") or {}).get("mean_pairwise_r_numpy") or 0) if len(cqc) > 1 else 0,
+               g0.get("participation_ratio_effective_dim") or 0,
+               ((cqc[1].get("global_mode_removed") or {}).get("participation_ratio_effective_dim") or 0) if len(cqc) > 1 else 0),
+            "r / effective dim", "6 帧箱 dF/F；相位随机化代理零分布（8 次，保幅谱）",
+            "asserted", "measured + **退化体检**",
+            "data/m11_calcium_population_corr.csv", cq.get("generated_at", ""),
+            "**★ 防假结论（主 agent §二②）**：原始平均成对相关 **0.79489 / 0.95943** 看似极强，但 **PR=1.558 / 1.082、"
+            "λ1/Σλ=0.799 / 0.961** ⇒ **被单一共同模式（全局/神经毡分量）主导**；**去掉逐箱跨单元均值后**"
+            "平均 r 塌到 **−0.00825 / +0.02915**（代理地板 ≈0±0.008）⇒ **本轮窗口内未检出全局模式以外的成对群体结构**。"
+            "⇒ **禁止**把 0.79/0.96 作为群体同步/相关证据写入 P14（否则为测量假象）；有效维度 PR：1.6→9.0 / 1.1→4.2")
     with open(OUT, "w", newline="", encoding="utf-8") as f:
         f.write("# M11 参考锚（generated_by=tools/build_m11_reference.py；**只允许新增行**；"
                 "status ∈ {asserted, NEEDS_VERIFY, unverified}；**unverified 行不得作为判据带**）\n")
