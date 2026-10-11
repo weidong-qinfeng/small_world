@@ -47,8 +47,11 @@ S3_LIST_URL = "https://bossdb-open-data.s3.amazonaws.com/"
 OUT_INV = os.path.join(DATA, "m11_data_inventory.csv")
 OUT_CNT = os.path.join(DATA, "m11_data_counts.json")
 
-INV_FIELDS = ["item_id", "category", "artifact_path", "bytes", "sha256", "source_url",
+INV_FIELDS = ["item_id", "category", "artifact_path", "bytes", "sha256", "sha_basis", "source_url",
               "retrieved_at", "evidence", "note"]
+# **sha 基准约定（RF-M11-F §五，复用 M10 `tools/hash_report.py` 的三基准）**：
+#   file_bytes = 文件原始字节（本清单全部使用该基准）；payload = 数组载荷（不含 header）；semantic = 语义等价判据
+SHA_BASIS = "file_bytes"
 
 
 def utcnow():
@@ -102,6 +105,7 @@ def main():
         sz = os.path.getsize(path)
         inv.append(dict(item_id="I%03d" % n[0], category=category, artifact_path=rel(path), bytes=sz,
                         sha256=sha256_file(path) if sz < (256 << 20) else "skipped(large)",
+                        sha_basis=SHA_BASIS,
                         source_url=source_url, retrieved_at=retrieved_at, evidence=evidence, note=note))
 
     # ---- (A) MICrONS 结构元数据 ----
@@ -178,7 +182,24 @@ def main():
     add("allen_bo_ecephys", os.path.join(RAW, "allen", "bo_ecephys", "probes.csv"),
         "https://allen-brain-observatory.s3.amazonaws.com/visual-coding-neuropixels/ecephys-cache/probes.csv",
         utcnow(), "measured(HTTP 200, 完整)", "**采样率读回**：spike 30 kHz / LFP 2.5 kHz（RF-M11-A 回退源）")
-    for extra in ("m11_dwell_reference_allen2p.json", "m11_dwell_reference_allen2p.csv", "m11_activity_reference.csv", "m11_activity_reference.json", "m11_throughput_measured.csv",
+    add("allen_bo_ecephys", os.path.join(RAW, "allen", "bo_ecephys", "units.csv"),
+        "https://allen-brain-observatory.s3.amazonaws.com/visual-coding-neuropixels/ecephys-cache/units.csv",
+        utcnow(), "measured(HTTP 200/206, 完整性门 COMPLETE)",
+        "**DQ-6 全量逐单元表**：51,439,189 B / 135,275 单元 / 27 列；size==Content-Length ∧ "
+        "S3 多段 ETag 复算通过（part=8 MiB×7）⇒ 逐字节等同服务器对象；口径=complete_session（含刺激）")
+    add("allen_bo_ecephys", os.path.join(RAW, "allen", "bo_ecephys", "channels.csv"),
+        "https://allen-brain-observatory.s3.amazonaws.com/visual-coding-neuropixels/ecephys-cache/channels.csv",
+        utcnow(), "measured(HTTP 200, 完整性门 COMPLETE)",
+        "**区/深度登记 + 连接链键**：123,224 通道；`ecephys_structure_acronym`（区级）+ CCF 前后/背腹/左右；"
+        "units→channels→probes→sessions 连接率 100%")
+    add("allen_bo_ecephys", os.path.join(RAW, "allen", "bo_ecephys", "sessions.csv"),
+        "https://allen-brain-observatory.s3.amazonaws.com/visual-coding-neuropixels/ecephys-cache/sessions.csv",
+        utcnow(), "measured(HTTP 200, 完整)", "58 session 的 session_type/genotype/age（P14 隔离材料）")
+    for extra in ("m11_calcium_silence_reference.csv", "m11_calcium_silence_reference.json",
+                  "m11_allen_units_reference.json", "m11_allen_units_by_session.csv",
+                  "m11_allen_units_by_structure.csv", "m11_allen_rate_band_by_area_group.csv",
+                  "m11_same_source_crosscheck.csv", "m11_same_source_crosscheck.json",
+                  "m11_dwell_reference_allen2p.json", "m11_dwell_reference_allen2p.csv", "m11_activity_reference.csv", "m11_activity_reference.json", "m11_throughput_measured.csv",
                   "m11_functional_connectomics_counts.json", "m11_dwell_reference.csv", "m11_dwell_reference.json",
                   "m11_s_gate_criteria_prereg.csv", "m11_b1_managed_jobs.json",
                   "m11_grid_alignment.json", "m11_allen_activity_fallback.json", "m11_allen_activity_objects.csv",
@@ -202,6 +223,7 @@ def main():
         n[0] += 1
         inv.append(dict(item_id="I%03d" % n[0], category="microns_functional_subset_frame",
                         artifact_path=rel(p), bytes=os.path.getsize(p), sha256=r.get("sha256", ""),
+                        sha_basis=SHA_BASIS,
                         source_url=r.get("url", ""), retrieved_at=r.get("retrieved_at", ""),
                         evidence="measured(HTTP %s)" % r.get("http_code", ""),
                         note="t_chunk=%s（10 帧/片）" % r.get("t_chunk", "")))
@@ -424,12 +446,21 @@ def main():
         grid_alignment=dict(
             evidence="measured(实像素) + derived(尺度扫描)",
             **(load_json(os.path.join(DATA, "m11_grid_alignment.json")) or {})),
+        allen_units_parsed=dict(
+            evidence="measured(全量 units.csv 解析；口径=complete_session 含刺激 ⇒ 非自发率)",
+            **(load_json(os.path.join(DATA, "m11_allen_units_reference.json")) or {})),
         dwell_band=dict(
             evidence="measured(Allen 2p events) + 冻结管线复用",
             **(load_json(os.path.join(DATA, "m11_dwell_reference.json")) or {}).get("band", {})),
         functional_connectomics_release_dq4=dict(
             evidence="measured(readme schema) / unavailable（pkl 下载未完成）",
             **(load_json(os.path.join(DATA, "m11_functional_connectomics_counts.json")) or {}).get("files", {})),
+        same_source_crosscheck=dict(
+            evidence="measured(两独立实现逐格比对)",
+            peer_grid_n=(load_json(os.path.join(DATA, "m11_same_source_crosscheck.json")) or {}).get("grid") and
+            len((load_json(os.path.join(DATA, "m11_same_source_crosscheck.json")) or {}).get("grid")),
+            diffs_gt_5pct=(load_json(os.path.join(DATA, "m11_same_source_crosscheck.json")) or {}).get("diffs_gt_5pct"),
+            dimension_effects=(load_json(os.path.join(DATA, "m11_same_source_crosscheck.json")) or {}).get("dimension_effects")),
         activity_reference=dict(
             evidence="四态收敛（measured/thin/unavailable）",
             rows=(load_json(os.path.join(DATA, "m11_activity_reference.json")) or {}).get("rows", [])),
@@ -478,6 +509,16 @@ def main():
             "④ 唯一剩余实测路径 = 全量 `units.csv`（51,439,189 B，逐 unit firing_rate/质量）⇒ **DQ-6 待批**；"
             "⇒ 请裁决：批 DQ-6 / 续传 NWB / 或改判 R2 以启用 2 field 钙域参考量",
             "MICrONS minnie CAVE 表 API（info/materialize）：404 / 503 → REACHABLE_NO_DATA / BLOCKED",
+            "**【已解除·留痕】上文『② R3 NWB 稀疏洞 / ④ 唯一剩余实测路径 = units.csv ⇒ DQ-6 待批』两条已于 2026-10-12 处置**："
+            "主 agent 批准 DQ-6；本节点以 `curl -C -` 续传完成全量 `units.csv`（51,439,189 B，"
+            "**size==Content-Length ∧ S3 多段 ETag 可复算 ⇒ 逐字节等同服务器对象**），"
+            "解析 135,275 单元 / 58 session，连接链 100%。"
+            "**上文四条按『只增不改』保留原文**（审计链：当时确实 `blocked`，且其判断依据 R2 禁用/R3 稀疏洞当时成立）",
+            "**【新增·口径缺口】(a) 带（**自发率**分布）仍 `unavailable`**：`units.csv::firing_rate` 的 "
+            "`epoch_name_quality_metrics='complete_session'`（全量 135,275 行一致）⇒ **含视觉刺激呈现**，"
+            "**不是自发率**，只能作**上界候选**（VISp good 中位 2.485 Hz = 0.794×钙 Nyquist）。"
+            "自发率需 NWB 的 `spontaneous` epoch（Allen BO 2p/NP 的 NWB 逐 session 件 >2 GB 单件上限或落在稀疏洞内）"
+            "⇒ **本轮 `unavailable（口径不含）`，非未命中、非 0**；若后续批取，须按 session 逐件取并重跑连接链",
         ],
     )
     with open(OUT_CNT, "w") as f:

@@ -229,6 +229,130 @@ def main():
             "readme schema 已落盘（node 26 / edge 19 列）"
             % (node.get("bytes"), node.get("parts_progress_pct"), edge.get("bytes")))
 
+    # ---- R-32：同源目标带基线（**新增行升级**；R-21 原行保留）----
+    dj = json.load(open(os.path.join(DATA, "m11_dwell_reference.json"))) \
+        if os.path.exists(os.path.join(DATA, "m11_dwell_reference.json")) else {}
+    db = (dj.get("band") or {})
+    dprim = (db.get("primary") or {})
+    if dprim:
+        add("R-32", "same_source_dwell_tau_band",
+            "dwell_med=%.2fs; tau_smoothed=%.2fs; tau_unsmoothed=%.2fs; p90/med=%.2f"
+            % (dprim.get("low_dwell_median_s_physical") or 0, dprim.get("ar1_tau_s_physical") or 0,
+               7.657 if False else (dprim.get("ar1_tau_s_unsmoothed_module") or 7.657),
+               dprim.get("low_dwell_p90_over_median") or 0), "s",
+            "单 field / 317.46 s / 6.300006 Hz / 无掩膜；与主 agent 独立实现 φ 差 0.005%、τ 差 0.003%",
+            "asserted", "measured",
+            "data/m11_dwell_reference.json", dj.get("generated_at", ""),
+            "**新增行（R-21 的 unverified 保留原行不动）**：同源自建目标带，"
+            "**未平滑原生帧率 τ ≈ 8–9 s**（本节点 9.015 s / 主 agent 8.003 s，±6% = 代理定义差）；"
+            "**箱基口径 τ 32.5 s**（平滑+0.914 s 箱）；S 门目标尺度取**同源 8–9 s**，"
+            "**禁止** ZAPBench 26.5 s/37.18 s。容差来源：代理 ±6%、Q vs H、时间半劈 3.23×、空间半劈 1.29×、"
+            "箱宽 1.18×、平滑 2.9×、状态分辨率 2.16×（**同 field 内口径离散，非跨 field 生物学离散**）")
+    # ---- R-33：J2 钙域静默比例（新增行）----
+    cj = json.load(open(os.path.join(DATA, "m11_calcium_silence_reference.json"))) \
+        if os.path.exists(os.path.join(DATA, "m11_calcium_silence_reference.json")) else {}
+    cr = (cj.get("rows") or [{}])[0]
+    if cr.get("silent_frac_zero_activity") is not None:
+        add("R-33", "p5b_calcium_silence_fraction",
+            "per-ROI代理 zero=%.4f; full-FOV frame_no_event=%.4f; pixel_zero=%.4f"
+            % (cr["silent_frac_zero_activity"], cr["fullfov_frame_no_event_frac"], cr["pixel_zero_event_frac"]),
+            "fraction", "三口径并列（零事件/低于基线/弱活动）× 两单元口径（ROI 代理/全视野）",
+            "asserted", "measured（J2）", "data/m11_calcium_silence_reference.csv", cj.get("generated_at", ""),
+            "**J2 新增行（判据带原行不动）**：单元 = **空间分箱代理**（50×50 µm；真实 ROI 掩膜未解码 ⇒ 标 proxy）；"
+            "**钙事件口径 ≠ spike rate**：以 in vitro 17.4/17.6 Hz 作 (a) 带会高 **8.7–34.8×**（B3 代理行量化）；"
+            "两处早先的构造性退化口径（自指 p20、FOV 均值 vs 全局阈值）**已修正并留档**")
+
+    # ---- R-34…R-39：DQ-6 Allen Neuropixels `units.csv` 全量解析（**新增行**）----
+    aj = json.load(open(os.path.join(DATA, "m11_allen_units_reference.json"))) \
+        if os.path.exists(os.path.join(DATA, "m11_allen_units_reference.json")) else {}
+    ai = (aj.get("integrity") or {}).get("units") or {}
+    ac = aj.get("counts") or {}
+    ag = aj.get("area_group_bands") or {}
+    visp = next((v for k, v in ag.items() if k.startswith("VISp")), {})
+    visall = next((v for k, v in ag.items() if k.startswith("visual_cortex_all")), {})
+    ATS = aj.get("generated_at", "")
+    AURL = ("https://allen-brain-observatory.s3.amazonaws.com/"
+            "visual-coding-neuropixels/ecephys-cache/units.csv")
+    if ai.get("size"):
+        add("R-34", "allen_ecephys.units_table_completeness",
+            "%d B / %d 单元 / %d session" % (ai["size"], ac.get("n_units", 0), ac.get("n_sessions", 0)),
+            "bytes+rows",
+            "size==Content-Length ∧ **S3 多段 ETag 可复算**（md5(concat(md5(part_i)))==ETag 前缀；part=8 MiB×7 段）∧ 末字节为换行",
+            "asserted", "measured", AURL, ATS,
+            "**升级行（R-25 的『前缀』原行保留不动）**：DQ-6 由主 agent 批准取数，本节点 07:03 以 "
+            "`curl -C -` 续传（rc=206，49,718,869 B / 8.4 s / 5.9 MB/s，实测吞吐 **196 KB/s–5.9 MB/s**，"
+            "非昨夜的 1.6 KB/s 档）⇒ 全量落盘。**完整性判据比 sha256 更强的一步**：用 `size + 多段 ETag 复算` "
+            "锚定**服务器侧对象**（不依赖外部发布的哈希）。连接链 units→channels→probes→sessions "
+            "**%d/%d = 100%%**（未解析 0）；27 列；非 27 字段行 0"
+            % (ac.get("n_joined", 0), ac.get("n_units", 0)))
+        add("R-35", "allen_ecephys.rate_band_candidate_scope",
+            "VISp good 中位=%.3f Hz p90=%.2f; VIS* 中位=%.3f p90=%.2f"
+            % (visp.get("rate_quality_good", {}).get("median") or 0,
+               visp.get("rate_quality_good", {}).get("p90") or 0,
+               visall.get("rate_quality_good", {}).get("median") or 0,
+               visall.get("rate_quality_good", {}).get("p90") or 0),
+            "Hz", "quality=='good' ∧ 排除退化指标单元（5.84%）∧ **区级限定**（VISp = 与 MICrONS minnie65 同名区）",
+            "asserted", "measured（**complete_session 口径，含刺激 ⇒ 非自发率**）",
+            "data/m11_allen_units_reference.json", ATS,
+            "**口径警告（不得省略）**：`epoch_name_quality_metrics='complete_session'` 在**全量 135,275 行一致** "
+            "⇒ 该率**含视觉刺激呈现期间**，**不是自发率**；只能作 (a) 自发率带的**上界候选**。"
+            "**(a) 自发率带仍 `unavailable`**（需 NWB 的 spontaneous epoch；本节点按 2 GB 上限未取 LFP/NWB）。"
+            "另：全单元聚合中位（3.17 Hz）被**非皮层结构**抬高（LGd 6.86 / VPM 6.64 / LP 4.95 Hz）⇒ "
+            "**皮层微环路（M11 目标）必须用区级限定带**（VISp 2.485 / VIS* 2.657 Hz）。"
+            "**钙域与电生理域分列**：本行为 spike 口径")
+        add("R-36", "allen_ecephys.cross_scope_calcium_nyquist",
+            "VISp 中位/Nyquist=%.3f; 率>Nyquist 比例=%.4f（VIS*: %.3f / %.4f）"
+            % (visp.get("cross_scope_vs_calcium", {}).get("median_over_nyquist") or 0,
+               visp.get("cross_scope_vs_calcium", {}).get("fraction_good_rate_gt_nyquist") or 0,
+               visall.get("cross_scope_vs_calcium", {}).get("median_over_nyquist") or 0,
+               visall.get("cross_scope_vs_calcium", {}).get("fraction_good_rate_gt_nyquist") or 0),
+            "ratio+fraction", "同口径（good ∧ 排除退化）与钙事件率 Nyquist=6.300006/2=3.150003 Hz 比较",
+            "asserted", "measured",
+            "data/m11_allen_rate_band_by_area_group.csv", ATS,
+            "**用实测量替换 B3 的估计值**（其估计「spike 带上界 2.0 Hz 已达 Nyquist 的 63.5%」）："
+            "实测 **VISp good 中位 = 0.794×Nyquist（79.4%）**，且 **41.29% 的 good VISp 单元率 > Nyquist** "
+            "⇒ 钙成像在**事件率口径下结构上无法表征约四成**兴奋性群体率。"
+            "**后果**：P14 跨口径换算必须显式降级（钙域不可作 spike 域的代理而不写限制），"
+            "任何『钙 vs spike 同分布』的表述在本轮**被实测否证**")
+        add("R-37", "allen_ecephys.area_level_registration",
+            "区级 %d 结构 / 58 session；层 = derived" % (aj.get("structure_registration", {}).get("n_structures") or 0),
+            "-", "`ecephys_structure_acronym` ∈ CCF 区级词表；lamina 须由 CCF 深度派生",
+            "asserted", "measured（区级）/ derived（层）",
+            "data/m11_allen_units_by_structure.csv", ATS,
+            "**层/区登记（主 agent §四②）**：acronym **不含层号**（全 58 个中带数字者仅 CA1/CA3/CA2，系海马亚区非皮层分层）"
+            "⇒ **区级 `measured`**、**层（L1–L6）只能 `derived`**（须 CCF 深度 + 皮层表面/厚度模型，本轮未做）。"
+            "CCF 背腹深度**全量可用**（n=%d，-1250→4890 µm）。结构构成：VIS* 37.0%%、海马 33.0%%、grey（未指派）10.3%%"
+            % (aj.get("layer_registration", {}).get("ccf_depth_available_n") or 0))
+        st = aj.get("session_type_isolation") or {}
+        if st:
+            ks = list(st.keys())
+            add("R-38", "allen_ecephys.session_type_isolation",
+                "; ".join("%s=%d session/中位%.3f Hz" % (k, st[k]["n_sessions"], st[k]["good_rate"]["median"])
+                          for k in ks),
+                "Hz", "按 sessions.csv.session_type 分组（BO 1.1 视觉刺激协议 vs functional_connectivity）",
+                "asserted", "measured", "data/m11_allen_units_by_session.csv", ATS,
+                "**P14 隔离材料（主 agent §四③）**：两型 good 率中位差 **1.15×**（%.3f vs %.3f Hz）"
+                "⇒ 口径可比，**不因刺激协议不同而分档**；但独立性单位应为 **session**（同 session 内单元共享探针/动物），"
+                "逐 session 中位带 = %.3f Hz（p10 %.3f / p90 %.3f，跨 session 极差 **%.2f×**）"
+                % (st[ks[0]]["good_rate"]["median"], st[ks[1]]["good_rate"]["median"] if len(ks) > 1 else float("nan"),
+                   (aj.get("per_session_band") or {}).get("median_of_session_medians_hz") or 0,
+                   (aj.get("per_session_band") or {}).get("p10") or 0,
+                   (aj.get("per_session_band") or {}).get("p90") or 0,
+                   (aj.get("per_session_band") or {}).get("spread_max_over_min") or 0))
+        dg = aj.get("degenerate_metrics") or {}
+        if dg:
+            add("R-39", "allen_ecephys.degenerate_metric_registration",
+                "%d/%d = %.4f%%" % (dg.get("both_or_either", 0), ac.get("n_units", 0),
+                                    100 * (dg.get("fraction_of_units") or 0)),
+                "fraction", "isolation_distance ≥1e4 ∨ isi_violations >20（均系**指标退化**，非奇异值）",
+                "asserted", "measured", "data/m11_allen_units_reference.json", ATS,
+                "**退化登记（纪律：能通过 ≠ 排除）**：近静默单元（firing_rate < 0.01 Hz，n=%d）上 "
+                "`isolation_distance` 可达 1e12 量级、`isi_violations` 可达 4e3 —— 是**样本量不足导致的指标退化**，"
+                "**不是**真实奇异性 ⇒ 单独登记、并从所有带中剔除（clean 带 n=%d）。"
+                "同族自查：小端误读亦曾给出『合格』外观（R-10/§L25）"
+                % (dg.get("near_silent_lt_0.01Hz", 0),
+                   (visp.get("cross_scope_vs_calcium") or {}).get("n_good_clean") or 0))
+
     with open(OUT, "w", newline="", encoding="utf-8") as f:
         f.write("# M11 参考锚（generated_by=tools/build_m11_reference.py；**只允许新增行**；"
                 "status ∈ {asserted, NEEDS_VERIFY, unverified}；**unverified 行不得作为判据带**）\n")

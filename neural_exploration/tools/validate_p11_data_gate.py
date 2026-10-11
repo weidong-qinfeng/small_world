@@ -473,7 +473,7 @@ def main():
                                        (sh.get("S3_heavy_tail") or {}).get("status"))))
     ts = pb.get("tolerance_sources") or {}
     A.append(assert_("P1.13d 容差来源齐全（H/Q、掩膜开关、时间半劈、空间半劈、B4 三项锚）",
-                     all(ts.get(k) is not None for k in ("method_H_vs_Q", "mask_on_off", "time_half_spread",
+                     all(ts.get(k) is not None for k in ("method_H_vs_Q", "mask_off_over_on", "time_half_spread",
                                                          "spatial_half_spread", "B4_anchors")),
                      json.dumps(ts, ensure_ascii=False)[:220]))
     A.append(assert_("P1.13e **未**沿用 ZAPBench 26.5 s / 37.18 s",
@@ -481,11 +481,13 @@ def main():
                      and abs((prim.get("ar1_tau_s_physical") or 0) - 37.18) > 1e-6,
                      "同源带 dwell=%.2fs τ=%.2fs（对照 ZAPBench 26.5/37.18）"
                      % (prim.get("low_dwell_median_s_physical") or 0, prim.get("ar1_tau_s_physical") or 0)))
-    A.append(assert_("P1.13f 哨兵掩膜规则与占比已登记 + BIC 门如实标 unavailable",
-                     (sen.get("n_sentinel") or 0) > 0 and "int16" in (sen.get("rule") or "")
+    A.append(assert_("P1.13f 缺失/极值登记（低于基线保留 + 哨兵仅指 32767=0）+ BIC 门如实 unavailable",
+                     (sen.get("n_below_baseline") or 0) > 0 and (sen.get("n_saturated_32767") == 0)
+                     and "int16" in (sen.get("rule") or "")
                      and (sh.get("S7_sample_size") or {}).get("bic_ok") is False,
-                     "哨兵=%s/%s (%.5f%%)；bic_ok=%s"
-                     % (sen.get("n_sentinel"), sen.get("n_elements_total"), 100 * (sen.get("frac") or 0),
+                     "低于基线=%s/%s (%.5f%%)；饱和32767=%s；bic_ok=%s"
+                     % (sen.get("n_below_baseline"), sen.get("n_elements_total"),
+                        100 * (sen.get("frac_below_baseline") or 0), sen.get("n_saturated_32767"),
                         (sh.get("S7_sample_size") or {}).get("bic_ok"))))
     A.append(assert_("P1.13g Allen 2p 带已转为**跨制备参照**且原证据保留",
                      os.path.exists(os.path.join(DATA, "m11_dwell_reference_allen2p.json"))
@@ -566,6 +568,154 @@ def main():
     A.append(assert_("P1.17e 报告含 DQ-4 = unavailable（吞吐限制）与 G-7（应做而未做）",
                      "unavailable（吞吐限制）" in rp2 and "G-7" in rp2,
                      "命中 DQ-4 口径与 G-7"))
+
+    # ---------------- P1.19 RF-M11-E：交叉核对 + 掩膜定稿 + DQ-5 + P2 建议文本 ----------------
+    cc = load(os.path.join(DATA, "m11_same_source_crosscheck.json")) if os.path.exists(
+        os.path.join(DATA, "m11_same_source_crosscheck.json")) else {}
+    grid = cc.get("grid") or []
+    exact = [r for r in grid if r.get("dtau_pct") is not None and r["dtau_pct"] < 5]
+    A.append(assert_("P1.19a 同源带**交叉核对**已落盘（逐格 φ/τ 与主 agent 独立实现比对）",
+                     len(grid) >= 8 and len(exact) >= 5,
+                     "网格=%d 格；τ 差<5%% 的格=%d；>5%% 的格=%d"
+                     % (len(grid), len(exact), len(cc.get("diffs_gt_5pct") or []))))
+    A.append(assert_("P1.19b 差异>5% 的格已**定位到口径维度**（对数放大/平滑边界/箱宽）",
+                     bool(cc.get("dimension_effects")) and bool(cc.get("diffs_gt_5pct")),
+                     json.dumps(cc.get("dimension_effects"), ensure_ascii=False)[:200]))
+    bandj = load(os.path.join(DATA, "m11_dwell_reference.json")) or {}
+    sen2 = ((bandj.get("band") or {}).get("sentinel")) or {}
+    A.append(assert_("P1.19c 掩膜定稿已落实（主口径**无掩膜** + 低于基线保留登记 + 哨兵仅指 32767=0）",
+                     "无掩膜" in (sen2.get("rule") or "") and (sen2.get("n_saturated_32767") == 0)
+                     and (sen2.get("n_below_baseline") or 0) > 0,
+                     "n_below_baseline=%s n_saturated=%s" % (sen2.get("n_below_baseline"),
+                                                             sen2.get("n_saturated_32767"))))
+    cl2 = open(os.path.join(DOCS, "生物仿真M11实施清单.md"), encoding="utf-8").read()
+    A.append(assert_("P1.19d DQ-5 已写入清单（读取约定/解析门标准动作 + 6.30 Hz 读回断言）",
+                     "1.1.3" in cl2 and "6.300006" in cl2 and "大端 int16" in cl2,
+                     "命中 §1.1.3 与 6.300006"))
+    A.append(assert_("P1.19e P2 判定独立建议文本已落盘（待审，未越权定稿）",
+                     os.path.exists(os.path.join(DOCS, "m11_p2_verdict_recommendation.md")),
+                     "docs/m11_p2_verdict_recommendation.md"))
+    mj2 = load(os.path.join(DATA, "m11_b1_managed_jobs.json")) or {}
+    A.append(assert_("P1.19f 长作业登记表含 J1–J5（含第二 field 的 J5 与同源窗延长 J4）",
+                     len([j for j in (mj2.get("jobs") or [])]) >= 5,
+                     "jobs=%s" % [j.get("id") for j in (mj2.get("jobs") or [])]))
+
+    # ---------------- P1.20 J2（钙域静默）+ R-32/R-33 + sha 基准 ----------------
+    cj = load(os.path.join(DATA, "m11_calcium_silence_reference.json")) if os.path.exists(
+        os.path.join(DATA, "m11_calcium_silence_reference.json")) else {}
+    cr = (cj.get("rows") or [{}])[0]
+    A.append(assert_("P1.20a J2 钙域静默三口径 × 两单元口径已落盘（evidence=measured）",
+                     cr.get("silent_frac_zero_activity") is not None
+                     and cr.get("silent_frac_below_baseline") is not None
+                     and cr.get("fullfov_frame_no_event_frac") is not None
+                     and cr.get("evidence_level") == "measured",
+                     "zero=%.4f below=%.4f fullFOV_no_event=%.4f units=%s"
+                     % (cr.get("silent_frac_zero_activity") or 0, cr.get("silent_frac_below_baseline") or 0,
+                        cr.get("fullfov_frame_no_event_frac") or 0, cr.get("n_units_proxy"))))
+    A.append(assert_("P1.20b J2 必附限制（钙事件≠spike rate 8.7–34.8× / ROI 代理 / 退化口径已修正）",
+                     "8.7" in (cr.get("note") or "") and "代理" in (cr.get("note") or "")
+                     and "退化" in (cr.get("degenerate_check") or ""),
+                     (cr.get("note") or "")[:120]))
+    rmap2 = {r["ref_id"]: r for r in read_csv_rows(REFCSV)}
+    A.append(assert_("P1.20c R-21 原行保留（unverified）且 R-32/R-33 为**新增行**",
+                     (rmap2.get("R-21") or {}).get("status") == "unverified"
+                     and (rmap2.get("R-32") or {}).get("status") == "asserted"
+                     and (rmap2.get("R-33") or {}).get("status") == "asserted",
+                     "R-21=%s R-32=%s R-33=%s（总 %d 行）"
+                     % ((rmap2.get("R-21") or {}).get("status"), (rmap2.get("R-32") or {}).get("status"),
+                        (rmap2.get("R-33") or {}).get("status"), len(rmap2))))
+    inv2 = read_csv_rows(INV)
+    A.append(assert_("P1.20d 清单逐行标注 sha 基准（file_bytes；跨节点核对用 hash_report.py 三基准）",
+                     bool(inv2) and all(r.get("sha_basis") == "file_bytes" for r in inv2 if r.get("sha256")),
+                     "n=%d；sha_basis 取值=%s" % (len(inv2), sorted({r.get("sha_basis") for r in inv2}))))
+    tsj = ((bandj.get("band") or {}).get("tolerance_sources")) or {}
+    A.append(assert_("P1.20e 同阶窗来源含同 field 内口径离散（代理/Q-H/时间半劈/空间半劈/箱宽/平滑）",
+                     all(tsj.get(k) is not None for k in ("method_H_vs_Q", "time_half_spread",
+                                                          "spatial_half_spread", "mask_off_over_on")),
+                     json.dumps(tsj, ensure_ascii=False)[:200]))
+
+    # ---------------- P1.21 DQ-6 Allen `units.csv` 全量解析 ----------------
+    aj = load(os.path.join(DATA, "m11_allen_units_reference.json")) if os.path.exists(
+        os.path.join(DATA, "m11_allen_units_reference.json")) else {}
+    aiu = (aj.get("integrity") or {}).get("units") or {}
+    auc = aj.get("counts") or {}
+    A.append(assert_("P1.21a Allen units.csv 完整性门 COMPLETE（size==Content-Length ∧ 多段 ETag 复算 ∧ 末尾换行）",
+                     aiu.get("status") == "COMPLETE" and aiu.get("etag_ok") is True
+                     and aiu.get("size") == 51439189 and aiu.get("ends_with_newline") is True,
+                     "size=%s etag_ok=%s parts=%s status=%s"
+                     % (aiu.get("size"), aiu.get("etag_ok"), aiu.get("etag_n_parts"), aiu.get("status"))))
+    A.append(assert_("P1.21b units→channels→probes→sessions 连接链 100%（未解析 = 0）",
+                     auc.get("n_joined") == auc.get("n_units") and auc.get("n_units")
+                     and not (auc.get("unresolved_channel") or auc.get("unresolved_probe")
+                              or auc.get("unresolved_session")),
+                     "joined=%s/%s unres=(%s,%s,%s) sessions=%s"
+                     % (auc.get("n_joined"), auc.get("n_units"), auc.get("unresolved_channel"),
+                        auc.get("unresolved_probe"), auc.get("unresolved_session"), auc.get("n_sessions"))))
+    ep = aj.get("epoch_scope") or {}
+    A.append(assert_("P1.21c **口径强制**：epoch 全为 complete_session ⇒ 声明『非自发率、仅作上界候选』",
+                     list((ep.get("values") or {}).keys()) == ["complete_session"]
+                     and "不是自发率" in (ep.get("consequence") or "")
+                     and "上界" in (ep.get("consequence") or ""),
+                     "values=%s" % json.dumps(ep.get("values"), ensure_ascii=False)))
+    dgm = aj.get("degenerate_metrics") or {}
+    A.append(assert_("P1.21d 退化指标单独登记并从带中剔除（isolation_distance/isi_violations 退化）",
+                     (dgm.get("both_or_either") or 0) > 0
+                     and (dgm.get("near_silent_lt_0.01Hz") or 0) > 0
+                     and ((aj.get("caveats") or [""])[1].find("退化") >= 0),
+                     "退化解=%s/%s (%.4f%%) 近静默=%s"
+                     % (dgm.get("both_or_either"), auc.get("n_units"),
+                        dgm.get("fraction_of_units") or 0, dgm.get("near_silent_lt_0.01Hz"))))
+    A.append(assert_("P1.21e R-34…R-39 为**新增行**且 R-25 原行保留（只增不改）",
+                     all((rmap2.get(r) or {}).get("status") == "asserted"
+                         for r in ("R-34", "R-35", "R-36", "R-37", "R-38", "R-39"))
+                     and (rmap2.get("R-25") or {}).get("status") == "asserted",
+                     "R-25=%s；新增=%s；总 %d 行"
+                     % ((rmap2.get("R-25") or {}).get("value"),
+                        [r for r in ("R-34", "R-35", "R-36", "R-37", "R-38", "R-39") if r in rmap2],
+                        len(rmap2))))
+    agr = aj.get("area_group_bands") or {}
+    vispk = next((k for k in agr if k.startswith("VISp")), None)
+    visallk = next((k for k in agr if k.startswith("visual_cortex_all")), None)
+    A.append(assert_("P1.21f 皮层限定带齐备（VISp = MICrONS 同名区；VIS*）且注明聚合带被非皮层结构抬高",
+                     vispk and visallk
+                     and (agr[vispk].get("n_units") or 0) > 0
+                     and "非皮层" in ((rmap2.get("R-35") or {}).get("note") or ""),
+                     "VISp n=%s median=%.3f | VIS* n=%s median=%.3f"
+                     % (agr.get(vispk, {}).get("n_units"),
+                        agr.get(vispk, {}).get("rate_quality_good", {}).get("median") or 0,
+                        agr.get(visallk, {}).get("n_units"),
+                        agr.get(visallk, {}).get("rate_quality_good", {}).get("median") or 0)))
+    A.append(assert_("P1.21g 跨口径量化已落盘（中位/Nyquist 与 >Nyquist 比例）且与钙域分列",
+                     (agr.get(vispk, {}).get("cross_scope_vs_calcium", {}).get("median_over_nyquist") or 0) > 0
+                     and (agr.get(vispk, {}).get("cross_scope_vs_calcium", {})
+                          .get("fraction_good_rate_gt_nyquist") or 0) > 0
+                     and "钙域与电生理域分列" in ((rmap2.get("R-35") or {}).get("note") or ""),
+                     "VISp 中位/Nyq=%.3f, >Nyq=%.4f"
+                     % (agr.get(vispk, {}).get("cross_scope_vs_calcium", {}).get("median_over_nyquist") or 0,
+                        agr.get(vispk, {}).get("cross_scope_vs_calcium", {})
+                        .get("fraction_good_rate_gt_nyquist") or 0)))
+    A.append(assert_("P1.21h 层/区登记：区级 measured ∧ 层 derived（acronym 无层号）",
+                     (aj.get("layer_registration") or {}).get("area_level", "").startswith("measured")
+                     and (aj.get("layer_registration") or {}).get("lamina_level", "").startswith("derived"),
+                     "area=%s lamina=%s ccf_n=%s"
+                     % ((aj.get("layer_registration") or {}).get("area_level"),
+                        (aj.get("layer_registration") or {}).get("lamina_level"),
+                        (aj.get("layer_registration") or {}).get("ccf_depth_available_n"))))
+    A.append(assert_("P1.21i units.csv / channels.csv 已入落盘清单且 sha 基准=file_bytes",
+                     any(os.path.basename(r.get("artifact_path") or "") == "units.csv"
+                         and r.get("sha256") for r in inv2)
+                     and any(os.path.basename(r.get("artifact_path") or "") == "channels.csv"
+                             and r.get("sha256") for r in inv2),
+                     "清单含 units=%s channels=%s"
+                     % (any(os.path.basename(r.get("artifact_path") or "") == "units.csv" for r in inv2),
+                        any(os.path.basename(r.get("artifact_path") or "") == "channels.csv" for r in inv2))))
+    A.append(assert_("P1.21j **不得**把 complete_session 率登记为 (a) 自发率带（四态纪律：仍 unavailable）",
+                     (rmap2.get("R-35") or {}).get("evidence_level", "").find("非自发率") >= 0
+                     and any("自发率" in (u or "") and "unavailable" in (u or "")
+                             for u in (cnt.get("unavailable_register") or [])),
+                     "R-35 evidence=%s；register 含自发率缺口=%s"
+                     % ((rmap2.get("R-35") or {}).get("evidence_level"),
+                        any("自发率" in (u or "") for u in (cnt.get("unavailable_register") or [])))))
 
     # ---------------- 判定 ----------------
     for a in A:

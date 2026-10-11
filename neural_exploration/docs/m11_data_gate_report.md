@@ -269,6 +269,11 @@ $PY neural_exploration/tools/validate_p11_data_gate.py --determinism-check
 > **② 功能时间序列同源 ✅ `measured`（R2 反转）**：MICrONS **功能体素序列**由 `format_unverified` 改为
 > **`measured`（可解码：大端 int16；200/200 对象完整性通过；lat_x 0.777 / 帧间 0.773）**，
 > **允许并鼓励**用于统计（**须应用哨兵掩膜** `int16 < 0 ⇔ uint16 > 65000`，本轮实测 **10,383 / 80,000,000 = 0.01298%**）。
+> ★ **上句为历史引文，按"只增不改"保留原文；术语已定稿更正（主 agent §三，2026-10-12）**：
+> **"哨兵"一词今后仅指 `int16 = 32767` 饱和（实测计数 `0`）**；`int16 < 0` 的样本**不是哨兵**，
+> 而是**低于局部基线的噪声下探**（空间成簇、位于暗区、仅低 ~381 counts）⇒ **定稿 = 无掩膜、保留并登记**
+> （10,383/80,000,000 = 0.01298%）。⇒ **本文一切新产出按定稿术语**；旧段落的"哨兵掩膜"字样一律读作
+> "低于基线掩膜（已作废）"。B3 的 `unresolved_conflict` 亦已改为 `no_mask`。
 > **③ 属性级同源 = 设计可达、本轮 `unavailable（吞吐限制）`**：`functional_connectomics` node/edge pkl（HEAD 200、
 > readme schema 实证 node 26 列 / edge 19 列、DOI 10.1038/s41586-025-08840-3），但 294.6 + 201.5 MB 受吞吐限制（10–16 KB/s ⇒ 5–8 h）。
 > **④ 逐细胞级仍非同源 ❌**：ΔF/F 轨迹仅在 v8 DataJoint DB（R1 保持，DQ-1 裁定不下载）。
@@ -455,3 +460,58 @@ $PY neural_exploration/tools/validate_p11_data_gate.py --determinism-check
    DQ-3（21 条冲突项落清单）/ **DQ-4**（功能连接组学两表 ≈496 MB —— 决定 P2 能否全过）/
    **DQ-5**（把大端读法/完整性门/6.30 Hz 写入清单读取约定）/ **DQ-6**（`units.csv` 51.4 MB + `channels.csv` 6.6 MB 是否托管取）/
    **DQ-7**（NWB 读回：`brain-map` 剩 46.9 MB 或 DANDI 最小 asset 71.8 MB —— 现网络 1.6–16 KB/s 与 7.2 KB/s ⇒ 需托管，或改由 `probes.csv` 自描述表满足采样率需求）。
+
+---
+
+## §6l 【DQ-6 完成】Allen Neuropixels 逐单元表的**三件交付**（(a) 带上界候选 / 层·区登记 / P14 隔离）
+
+> **产物**：`tools/parse_m11_allen_units.py`（可复现）→ `data/m11_allen_units_reference.json`、
+> `data/m11_allen_units_by_session.csv`（58 行）、`data/m11_allen_units_by_structure.csv`（58 行）、
+> `data/m11_allen_rate_band_by_area_group.csv`（3 行）；参考锚新增 **R-34…R-39**（R-25 原行保留）。
+
+### (1) 完整性门：**新增一条强于 sha256 的判据**
+`units.csv` = **51,439,189 B / 135,275 单元 / 27 列**，`size == Content-Length`，
+**S3 多段 ETag 复算通过**（`md5(concat(md5(part_i))) == "5555828a…-7"`，part=8 MiB × 7 段）
+⇒ **本地文件逐字节等同服务器对象**（判据锚在**服务器侧**，不依赖外部发布的哈希）；末字节 `\n`、非 27 字段行 **0**。
+连接链 `units→channels→probes→sessions` **135,275/135,275 = 100%**（未解析 0）。
+另取 `channels.csv`（6,613,329 B）作连接键——★ 实测**推翻了"1 MB 前缀够用"的假设**（前缀覆盖 channel id 849.706–849.801 M，
+而 units 引用 **849.991–850.264 M** ⇒ 覆盖率 **0%**）。
+**吞吐**：25 日 22:33 的托管作业**已死**（无进程、日志 0 字节、3.35% 停滞 8.5 h）；今晨当场实测 **5.9 MB/s**
+（昨夜 1.6 KB/s，**差 ~3,600×**）⇒ `curl -C -` 8.42 s 续传完成。
+
+### (2) ★ (a) 带 = **仅得上界候选**（口径硬约束）
+- `epoch_name_quality_metrics` 在 **全量 135,275 行一律 `complete_session`** ⇒ 该率**含视觉刺激呈现**，
+  **不是自发率** ⇒ **(a) 自发率带仍 `unavailable（口径不含）`**（需 NWB `spontaneous` epoch，单件 >2 GB / 稀疏洞）。
+- **皮层限定**（M11 = 皮层微环路；MICrONS minnie65 = **VISp**）：
+
+| 口径 | n 单元 | 占比 | good 中位 | good p90 | 逐 session 中位带 | 跨 session 极差 |
+|---|---|---|---|---|---|---|
+| **VISp**（与 minnie65 同名区） | 10,750 | 8.0% | **2.485 Hz** | 10.30 Hz | 2.579 Hz（p10 1.969 / p90 3.144） | 3.29× |
+| **VIS\***（视觉皮层全） | 49,995 | 37.0% | **2.657 Hz** | 10.35 Hz | 2.760 Hz（p10 2.234 / p90 3.107） | 1.97× |
+| 海马（**非同源**） | 44,659 | 33.0% | 2.701 Hz | 11.16 Hz | 2.805 Hz | 3.81× |
+| 全单元聚合（**禁止当皮层先验**） | 135,275 | 100% | 3.175 Hz | 12.41 Hz | 2.798 Hz | 2.90× |
+
+  ⇒ **聚合值被非皮层结构抬高**（LGd 6.86 / VPM 6.64 / LP 4.95 Hz）⇒ **带必须区级限定**。
+
+### (3) 跨口径量化：**实测替换 B3 的估计值**
+VISp good 中位 = **0.794 × 钙事件率 Nyquist（3.150003 Hz）**，且 **41.29% 的 good VISp 单元率 > Nyquist**
+⇒ 钙成像在**事件率口径**下**结构上无法表征约四成**兴奋性群体率。
+（B3 原估计 = "spike 带上界 2.0 Hz 已达 Nyquist 的 63.5%" ⇒ 方向一致、**实测更强**。）
+⇒ **钙域与电生理域必须分列**；任何"钙 vs spike 同分布"的表述本轮**被实测否证**。
+
+### (4) 层/区登记（主 agent §四②）
+区级 **58 结构 / 58 session 全覆盖**；CCF 背腹深度**全量可用**（n=135,275，-1250→4890 µm）。
+★ **acronym 不含层号**（带数字者仅 CA1/CA3/CA2 = 海马亚区）⇒ **区级 `measured`；层（L1–L6）`derived`**
+（须 CCF 深度 + 皮层表面/厚度模型）⇒ **不得表述为"层已登记"**。
+
+### (5) P14 隔离材料（主 agent §四③）+ 退化登记
+`brain_observatory_1.1`（32 session / 74,072 单元，good 中位 **3.390 Hz**）vs
+`functional_connectivity`（26 session / 61,203 单元，**2.941 Hz**）⇒ 差 **1.15×** ⇒ **不因刺激协议分档**；
+**独立性单位 = session**。质量构成 `good` 99,180 / `noise` 36,095。
+**退化登记**：**5.84%（7,894/135,275）** 命中 `isolation_distance ≥1e4`（最大 2.3e15）或
+`isi_violations >20`（最大 4,061.65），归因于**近静默单元（<0.01 Hz，n=4,343）的指标退化**
+（**不是奇异值**）⇒ 单独登记、从带中剔除；空字段最多三列 `silhouette_score` 19,524 / `nn_hit_rate` 10,875 /
+`recovery_slope` 7,920 ⇒ **空 ≠ 0**。
+
+> **判定器**：`tools/validate_p11_data_gate.py` 新增 **P1.21a–j**（完整性/连接链/口径强制/退化登记/新增行/区级限定/
+> 跨口径/层 derived/清单入账/(a) 仍 unavailable）⇒ **101 断言 0 失败，P1=pass P2=pass G2=pass**。

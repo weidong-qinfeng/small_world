@@ -50,6 +50,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJ = os.path.dirname(ROOT)
 DATA = os.path.join(ROOT, "data")
 SUB = os.path.join(DATA, "m11_raw", "microns", "functional_subset")
+SUB2 = os.path.join(DATA, "m11_raw", "microns", "functional_subset_f2")
 TOOLS = os.path.join(ROOT, "tools")
 OUT_CSV = os.path.join(DATA, "m11_dwell_reference.csv")
 OUT_JSON = os.path.join(DATA, "m11_dwell_reference.json")
@@ -76,24 +77,26 @@ def load_frozen():
     return mod
 
 
-def decode_block(path):
-    """chunk → (10,200,200) int16（大端）。返回 (array, header_dims, sentinel_count, valid_count)。"""
+def decode_block(path, ny=200, nx=200):
+    """chunk → (10,ny,nx) int16（大端）。返回 (array, header_dims, sentinel_count, valid_count)。"""
     with open(path, "rb") as f:
         blob = f.read()
     off = blob.find(b"\x1f\x8b\x08", 0, 64)
     nd = struct.unpack_from(">I", blob, 0)[0]
     dims = struct.unpack_from(">%dI" % nd, blob, 4)
     raw = gzip.decompress(blob[off:])
-    a = np.frombuffer(raw, dtype=">i2").reshape(10, 200, 200)
+    a = np.frombuffer(raw, dtype=">i2").reshape(10, ny, nx)
     return a, dims, int((a < 0).sum()), int(a.size)
 
 
-def build_pop_series(mask_sentinel=True, region=None):
+def build_pop_series(mask_sentinel=True, region=None, dirpath=None, prefix="session4_scan7_field4",
+                     ny=200, nx=200):
     """逐帧有效像素均值（群体活动代理）。region=(y0,y1,x0,x1) 可做空间切分。"""
-    files = sorted(glob.glob(os.path.join(SUB, "session4_scan7_field4_*.bin")))[:200]
+    dirpath = dirpath or SUB
+    files = sorted(glob.glob(os.path.join(dirpath, prefix + "_*.bin")))[:200]
     series, n_sent, n_tot = [], 0, 0
     for f in files:
-        a, _, s, t = decode_block(f)
+        a, _, s, t = decode_block(f, ny, nx)
         n_sent += s; n_tot += t
         if region:
             y0, y1, x0, x1 = region
@@ -160,6 +163,16 @@ def main():
             rows.append(run(fs, fn(), tag))
         except AssertionError as e:
             rows.append(dict(label=tag, error=str(e)[:120]))
+    # **第二 field（RF-M11-F §二 / J5）**：session5_scan3_field1 的 (0,0,0) 块（100×100×1×10）
+    f2 = None
+    if os.path.isdir(SUB2) and glob.glob(os.path.join(SUB2, "*.bin")):
+        try:
+            pop2, s2n, t2n, n2f = build_pop_series(mask_sentinel=False, dirpath=SUB2,
+                                                   prefix="session5_scan3_field1", ny=100, nx=100)
+            f2 = run(fs, pop2, "field2 session5_scan3_field1 (0,0,0) 200 片/2000 帧（不掩膜）")
+            rows.append(f2)
+        except Exception as e:
+            rows.append(dict(label="field2", error=str(e)[:160]))
 
     ok = [r for r in rows if r.get("low_dwell_median_s_module") is not None]
     def spread(nums):
@@ -180,19 +193,18 @@ def main():
             evidence="低于基线样本**空间成簇**（3×3 邻域负值比例 p50=0.111 vs 随机 1.3e-4 ⇒ ~860× 富集；"
                      "孤立比例 0.000）且位于**暗区**（邻域均值≈395 vs 全局中位 1953），仅低局部基线 ~381 counts "
                      "⇒ 属噪声下探而非哨兵；按 uint16 读其真值将是对象最大值的 ~2.3 倍 ⇒ 物理荒诞",
-            note="**保留 + 登记** = 定稿；掩膜版仅作稳健性对照（比值见 tolerance_sources.mask_on_off）"),
+            note="**保留 + 登记** = 定稿；掩膜版仅作稳健性对照（比值见 tolerance_sources.mask_off_over_on）"),
         primary=main_row,
         robustness=rows[1:],
         tolerance_sources=dict(
-            method_H_vs_Q=main_row.get("h_vs_q_dwell_ratio"),
-            mask_on_off=None, time_half_spread=None, spatial_half_spread=None,
+            method_H_vs_Q=main_row.get("h_vs_q_dwell_ratio"), time_half_spread=None, spatial_half_spread=None,
             phi_smoothed_vs_unsmoothed_gap=(
                 abs((main_row.get("ar1_phi_smoothed") or 0) - (main_row.get("ar1_phi_unsmoothed") or 0))),
             B4_anchors=dict(method_ratio=3.87, cross_condition=6.9, tau_cross_condition=3.94),
         ),
         literature_s=LIT,
         caveats=[
-            "仅 **1 个 field** 的 **1 个子块**（第二个 field 无像素在盘；下载受吞吐限制 ⇒ 未取）",
+            "覆盖：field4 的 1 个 (x,y) 子块 + **field2 的 (0,0,0) 子块**（RF-M11-F §二 / J5 已完成，200/200 COMPLETE）",
             "**箱宽口径差**：模块以 0.9138 s 为一箱，实际 6×0.15873=0.9524 s ⇒ 4.2% 系统偏差；已给两种时间基",
             "**BIC 门未过**（333 箱 < 500）⇒ K 选择结论 `unavailable`（不得报 BIC 选 K）",
             "**禁止**沿用 ZAPBench 26.5 s / 37.18 s（跨物种+跨帧率 5.8×+跨口径）",
@@ -210,6 +222,18 @@ def main():
         [get("t_first_half", "low_dwell_median_s_module"), get("t_second_half", "low_dwell_median_s_module")])
     band["tolerance_sources"]["spatial_half_spread"] = spread(
         [get("x_left_half", "low_dwell_median_s_module"), get("x_right_half", "low_dwell_median_s_module")])
+    # **跨 field 离散度**（同 field 内口径离散之外的另一维；RF-M11-F §二）
+    band["cross_field"] = dict(
+        field4=dict(dwell_median_s_module=main_row.get("low_dwell_median_s_module"),
+                    tau_s_module=main_row.get("ar1_tau_s_module"),
+                    phi_smoothed=main_row.get("ar1_phi_smoothed"), n_bins=main_row.get("n_frames")),
+        field2=(dict(dwell_median_s_module=f2.get("low_dwell_median_s_module"),
+                     tau_s_module=f2.get("ar1_tau_s_module"), phi_smoothed=f2.get("ar1_phi_smoothed"),
+                     n_bins=f2.get("n_frames")) if f2 else "unavailable（第二 field 数据未就位）"),
+        spread_dwell=spread([main_row.get("low_dwell_median_s_module"),
+                             (f2 or {}).get("low_dwell_median_s_module")]),
+        spread_tau=spread([main_row.get("ar1_tau_s_module"), (f2 or {}).get("ar1_tau_s_module")]),
+        note="**跨 field 生物学/制备离散**（与上面「同 field 内口径离散」**不同维度**，须分列）")
 
     # ---- 跨制备对照（Allen 2p）+ S 门判据体检（如实四态）----
     allen = None
