@@ -221,6 +221,35 @@ def main(argv=None) -> int:
     print("对象数 = %d | 字段前缀 = %s | 文件总字节 = %d"
           % (len(files), fields, sum(os.path.getsize(f) for f in files)))
 
+    # ---------------- 轴序阳性对照（先于任何统计，防"轴序"这一类口径错）----------------
+    _raw0 = open(files[0], "rb").read()
+    _buf0 = gzip.decompress(_raw0[20:])
+    _arr0 = np.frombuffer(_buf0, dtype=">i2")
+    _shp0 = tuple(int(x) for x in struct.unpack(">5I", _raw0[:20])[1:5])
+    def _R(a, b):
+        a = np.asarray(a, np.float64).ravel(); b = np.asarray(b, np.float64).ravel()
+        d = math.sqrt(a.var() * b.var())
+        return float(((a * b).mean() - a.mean() * b.mean()) / d) if d > 0 else float("nan")
+    _F = _arr0.reshape(_shp0, order="F")[:, :, 0, :]
+    _C = _arr0.reshape(_shp0)[:, :, 0, :]
+    axis_order_control = dict(
+        F_order=dict(pixel_lag1=float(0.5 * (_R(_F[:, :-1, :], _F[:, 1:, :]) + _R(_F[:-1, :, :], _F[1:, :, :]))),
+                     pixel_lag10=float(0.5 * (_R(_F[:, :-10, :], _F[:, 10:, :]) + _R(_F[:-10, :, :], _F[10:, :, :]))),
+                     frame_lag1=_R(_F[..., :-1], _F[..., 1:])),
+        C_order=dict(pixel_lag1=float(0.5 * (_R(_C[:, :-1, :], _C[:, 1:, :]) + _R(_C[:-1, :, :], _C[1:, :, :]))),
+                     pixel_lag10=float(0.5 * (_R(_C[:, :-10, :], _C[:, 10:, :]) + _R(_C[:-10, :, :], _C[10:, :, :]))),
+                     frame_lag1=_R(_C[..., :-1], _C[..., 1:])),
+        rule="F 序下像素 lag10 应保持正的长程空间相关（显微图像特征）；C 序下会趋 0 ⇒ 用 F 序",
+    )
+    _fo, _co = axis_order_control["F_order"], axis_order_control["C_order"]
+    axis_order_control["verdict"] = ("F 序成立（像素 lag10=%.3f 有长程结构 vs C 序 %.3f 趋零）"
+                                     % (_fo["pixel_lag10"], _co["pixel_lag10"]))
+    assert _fo["pixel_lag10"] > 0.2 and _fo["pixel_lag10"] > _co["pixel_lag10"], \
+        "轴序对照未通过：F=%.3f C=%.3f" % (_fo["pixel_lag10"], _co["pixel_lag10"])
+    print("[③a 轴序阳性对照] F 序: 像素lag1=%.3f lag10=%.3f 帧lag1=%.3f | C 序: 像素lag1=%.3f lag10=%.3f 帧lag1=%.3f ⇒ %s"
+          % (_fo["pixel_lag1"], _fo["pixel_lag10"], _fo["frame_lag1"],
+             _co["pixel_lag1"], _co["pixel_lag10"], _co["frame_lag1"], axis_order_control["verdict"]))
+
     # ---------------- 单遍解码：自证三件事 + 留 trace 所需的数组 ----------------
     arrays, idxs = [], []
     sentinels = dict(neg16=0, u16gt=0, both=0, u16gt_not_neg=0, total=0)
@@ -243,9 +272,15 @@ def main(argv=None) -> int:
         for tag, dt_ in ((">", ">i2"), ("<", "<i2")):
             arr = np.frombuffer(dec, dtype=dt_)
             if tag == ">":
-                # ⚠️ 头为 (Y,X,Z,T)=(200,200,1,10)：必须 squeeze 单例的 Z 轴；
-                #    用 [...,0] 会**切掉帧轴**（本节点实测踩坑：只剩 1/10 帧、哨兵计数少 10×）
-                mat = arr.reshape(shape).squeeze().astype(np.int16)     # → (200,200,10)
+                # ⚠️⚠️ **轴序（本节点自查缺陷第 2 例）**：该分片存储为 **F 序（首轴 x 最快）**，
+                #   即"每帧是一整块连续的 200×200 图像"。用 C 序 reshape 会把末轴当成帧轴，
+                #   实际却在比较 **相距 10 像素的同一帧像素** ⇒ 相邻像素相关被压低到 0.41、
+                #   "帧间相关"被抬到 0.82（真值：像素 ~0.80、帧 ~0.80）。
+                #   判定依据（见 axis_order_control）：F 序下像素 lag10 相关 0.42（图像应有的长程结构），
+                #   C 序下 lag10 → 0.00（不可能）；且 F 序复现 M11-B1 独立实现的结构指标。
+                a4 = arr.reshape(shape, order="F")
+                assert len(shape) == 4, shape
+                mat = a4[:, :, 0, :].astype(np.int16)                  # → (200,200,10) 帧轴为最后一维
                 arrs = mat
                 # ⚠️ mat 已 astype(np.int16)（本机小端）⇒ 必须按**本机** uint16 视图读；
                 #    写成 mat.view(">u2") 会再做一次字节序交换（本节点实测踩坑，已修）
@@ -263,7 +298,7 @@ def main(argv=None) -> int:
                 arrays.append(mat)
                 idxs.append(k)
             else:
-                arrs = arr.reshape(shape).squeeze().astype(np.int16)
+                arrs = arr.reshape(shape, order="F")[:, :, 0, :].astype(np.int16)
                 p50["<"].append(float(np.percentile(arrs, 50)))
             # 空间结构：横向/纵向相邻像素
             smetrics[tag]["px_h"].add(arrs[:, :-1, :], arrs[:, 1:, :])
@@ -477,6 +512,7 @@ def main(argv=None) -> int:
         fps=a.fps, frame_dt_s=1.0 / a.fps, b4_target_bin_s=B4_BIN_S,
         total_frames=int(n_frames), total_seconds=float(n_frames / a.fps),
         self_proof=dict(sentinels=sentinels, global_min_int16=gmin, structure=st,
+                        axis_order_control=axis_order_control,
                         structure_per_object=per_obj_summary),
         traces=dict(spatial_mean_dfF=dict(mean=float(trace_mean.mean()), sd=float(trace_mean.std())),
                     active_fraction_p99=dict(mean=float(trace_frac.mean()), thr_hi=thr_hi),

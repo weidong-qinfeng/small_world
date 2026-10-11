@@ -314,9 +314,28 @@ def main():
     A.append(assert_("P2.12c dwell/τ 参考带仍标 unverified（未定稿不得入判据）",
                      (rmap.get("R-21") or {}).get("status") == "unverified",
                      "R-21 status=%s" % (rmap.get("R-21") or {}).get("status")))
-    A.append(assert_("P2.12d 空间分辨率 10× 口径冲突已登记 NEEDS_VERIFY",
-                     (rmap.get("R-16") or {}).get("status") == "NEEDS_VERIFY",
-                     "R-16=%s" % json.dumps(rmap.get("R-16", {}), ensure_ascii=False)[:160]))
+    A.append(assert_("P2.12d 空间分辨率 10× 口径差：R-16 原行保留（历史）+ R-27 解决行新增",
+                     (rmap.get("R-16") or {}).get("status") == "NEEDS_VERIFY"
+                     and (rmap.get("R-27") or {}).get("status") == "asserted",
+                     "R-16=%s / R-27=%s" % ((rmap.get("R-16") or {}).get("status"),
+                                            (rmap.get("R-27") or {}).get("status"))))
+    ga = load(os.path.join(DATA, "m11_grid_alignment.json")) or {}
+    sw = ga.get("scale_sweep") or {}
+    peak_ok = (ga.get("sweep_best_factor") == "2.50" or abs(float(ga.get("sweep_best_factor") or 0) - 2.5) < 1e-9) \
+        and (ga.get("sweep_best_r") or 0) > 0
+    others = [v for k, v in sw.items() if abs(float(k) - 2.5) > 1e-9]
+    A.append(assert_("P2.11f 空间口径实像素判定：尺度扫描峰值唯一在 f=2.5（其余因子无正相关）",
+                     peak_ok and max(others) < 0.05,
+                     "peak f=%s r=%.4f；其余 max r=%.4f；f=25 r=%s"
+                     % (ga.get("sweep_best_factor"), ga.get("sweep_best_r") or 0, max(others) if others else 0,
+                        sw.get("25.00"))))
+    aa = ga.get("aligned_after_search") or {}
+    nc = (ga.get("negative_control_shuffled_series") or {}).get("r") or 0
+    A.append(assert_("P2.11g 同格性实像素验证：位移(0,0)、无轴翻转、对齐 r ≥ 地板×3",
+                     aa.get("shift_px") == [0, 0] and ga.get("best_orientation") == "identity"
+                     and (aa.get("r") or 0) >= 3 * max(nc, 1e-9),
+                     "shift=%s orient=%s r=%.4f floor=%.4f" % (aa.get("shift_px"), ga.get("best_orientation"),
+                                                               aa.get("r") or 0, nc)))
 
     # ---------------- P1.8 活动通道回退源（RF-M11-A）----------------
     act = load(ACTJSON) if os.path.exists(ACTJSON) else {}

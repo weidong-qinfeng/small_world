@@ -164,6 +164,26 @@ def main():
             "**不登记 format_unverified**：大端 int16 直读给出 lat_x=0.814 / 帧轴 lag1..6=0.803…0.709 / p50=1953，"
             "并有独立地面真值（原始 TIFF lat_x=0.767）佐证；一条命令可复核（tools/demo_m11_microns_decode.py）")
 
+    ga = json.load(open(os.path.join(DATA, "m11_grid_alignment.json"))) \
+        if os.path.exists(os.path.join(DATA, "m11_grid_alignment.json")) else {}
+    if ga:
+        add("R-27", "spatial_scale_level_resolution", "series=2.5 um/px（处理后）；doc 4 px/µm（raw 子场）", "um/px",
+            "尺度扫描峰值唯一在 f=2.50（r=%.3f）；错配因子 r<0.05；最佳位移 (0,0)、无轴翻转" % ga.get("sweep_best_r", 0),
+            "asserted", "measured(实像素对齐)", "data/m11_grid_alignment.json", ga.get("generated_at", ""),
+            "**R-16 的 10× 待核项已解决**（R-16 原行按只增不改纪律保留）：4 px/µm 是 **raw 采集子场**口径"
+            "（440×248 px ⇒ 110×62 µm/field，需 ~10×20 子场拼 1100×1200 µm²），2.5 µm/px 是**处理后 series/summaries**"
+            "口径（248×440 px ⇒ 620×1100 µm）；两者比值恰 10.0 且两轴一致 ⇒ **不是矛盾而是层级差**。"
+            "用错后果：距离/尺度类物理量偏 10×、FOV 面积偏 100×（详见 env notes L29.4）")
+        add("R-28", "grid_colocalization", "同格（位移 0,0，无翻转）", "-",
+            "对齐 r=%.3f > 地板 %.3f×3" % (ga.get("aligned_after_search", {}).get("r", 0),
+                                          ga.get("negative_control_shuffled_series", {}).get("r", 0) or 1),
+            "asserted", "measured(实像素)", "data/m11_grid_alignment.json", ga.get("generated_at", ""),
+            "field_summaries(1 µm/px) 与 functional_series(2.5 µm/px) **实像素同格**：最佳位移 (0,0)、"
+            "identity 朝向最优、r 为随机平移地板(%.3f)的 %.1f 倍"
+            % (ga.get("negative_control_shuffled_series", {}).get("r", 0),
+               (ga.get("aligned_after_search", {}).get("r", 0) or 0)
+               / max(ga.get("negative_control_shuffled_series", {}).get("r", 0) or 1, 1e-9)))
+
     with open(OUT, "w", newline="", encoding="utf-8") as f:
         f.write("# M11 参考锚（generated_by=tools/build_m11_reference.py；**只允许新增行**；"
                 "status ∈ {asserted, NEEDS_VERIFY, unverified}；**unverified 行不得作为判据带**）\n")

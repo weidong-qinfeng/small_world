@@ -178,7 +178,7 @@ def main():
     add("allen_bo_ecephys", os.path.join(RAW, "allen", "bo_ecephys", "probes.csv"),
         "https://allen-brain-observatory.s3.amazonaws.com/visual-coding-neuropixels/ecephys-cache/probes.csv",
         utcnow(), "measured(HTTP 200, 完整)", "**采样率读回**：spike 30 kHz / LFP 2.5 kHz（RF-M11-A 回退源）")
-    for extra in ("m11_allen_activity_fallback.json", "m11_allen_activity_objects.csv",
+    for extra in ("m11_grid_alignment.json", "m11_allen_activity_fallback.json", "m11_allen_activity_objects.csv",
                   "m11_decode_proof.json",
                   "m11_reference.csv", "m11_download_integrity.csv", "m11_download_integrity_summary.json",
                   "m11_microns_parse_validation.json", "m11_microns_parse_hypotheses.csv"):
@@ -346,6 +346,8 @@ def main():
         dict(key="microns.structure.info", path="neural_exploration/data/m11_microns_structure.json", declared_bytes=None, note=""),
         dict(key="microns.protocol", path="neural_exploration/data/m11_microns_protocol.json", declared_bytes=None, note=""),
         dict(key="m11.reference", path="neural_exploration/data/m11_reference.csv", declared_bytes=None, note=""),
+        dict(key="m11.grid_alignment", path="neural_exploration/data/m11_grid_alignment.json", declared_bytes=None,
+             note="空间口径 10× 差与同格性的实像素判定（RF-M11-B §四）"),
     ]
     disk_verified = []
     for d in declared:
@@ -396,6 +398,9 @@ def main():
             **(load_json(os.path.join(DATA, "m11_allen_activity_fallback.json")) or {}).get(
                 "sampling_rate_readback", {}) or {},
             ),
+        grid_alignment=dict(
+            evidence="measured(实像素) + derived(尺度扫描)",
+            **(load_json(os.path.join(DATA, "m11_grid_alignment.json")) or {})),
         literature=dict(n_rows=len(lit_rows), by_status=lit_v,
                         evidence="literature=Europe PMC 题录实测命中；未命中=literature_unverified"),
         reachability=dict(n_sources=len(reach_rows), by_verdict=vc,

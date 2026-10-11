@@ -1,6 +1,6 @@
 {
  "generated_by": "tools/build_m11_inventory.py",
- "generated_at": "2026-10-11T14:35:24Z",
+ "generated_at": "2026-10-11T15:10:58Z",
  "units": "bytes; evidence ∈ {measured, derived, literature, unavailable}",
  "microns_structure": {
   "evidence": "measured(元数据) + derived(chunk 计数); shard 清单 = measured(有界)",
@@ -375,6 +375,245 @@
   ],
   "n_has_lfp_data": 325
  },
+ "grid_alignment": {
+  "evidence": "measured(实像素) + derived(尺度扫描)",
+  "generated_by": "tools/verify_m11_grid_alignment.py",
+  "generated_at": "2026-10-11T15:10:44Z",
+  "question": "文档 4 px/µm 与元数据 2.5 µm/px 的 10× 差属于哪一层的口径？",
+  "provenance": {
+   "doc": "data/m11_raw/microns/pdf_text/functional_data_technical_documentation_v3.pdf.txt —— 原文 '4 px/µm xy resolution (440×248 px/field) to tile a 1100×1200 µm² FOV'",
+   "metadata": "functional_series/*/attributes.json —— resolution=[2.5,2.5,10], units=[um,um,um]",
+   "summary_metadata": "field_summaries/*/attributes.json —— resolution=[1,1,10], dimensions=[620,1100,1]"
+  },
+  "inputs": {
+   "summary_shape": [
+    200,
+    200
+   ],
+   "summary_prefix_words": [
+    3,
+    100,
+    100,
+    1
+   ],
+   "summary_prefix_bytes": 16,
+   "series_mean_shape": [
+    200,
+    200
+   ],
+   "n_series_chunks": 200,
+   "series_frames": 2000
+  },
+  "scale_sweep": {
+   "1.00": -0.0423,
+   "1.25": -0.0224,
+   "1.50": -0.0108,
+   "2.00": -0.0443,
+   "2.50": 0.1256,
+   "3.00": -0.0193,
+   "4.00": -0.0461,
+   "5.00": -0.0656,
+   "8.00": -0.0607,
+   "10.00": -0.0411,
+   "12.50": -0.021,
+   "25.00": -0.0314
+  },
+  "sweep_best_factor": "2.50",
+  "sweep_best_r": 0.1256,
+  "profile_alignment": {
+   "1.00": 0.0636,
+   "2.50": 0.1836,
+   "10.00": -0.0953
+  },
+  "pixel_alignment_table": [
+   {
+    "case": "aligned(f=2.5)",
+    "factor": 2.5,
+    "n_pixels": 6400,
+    "r": 0.1256,
+    "mean_summary": 0.257,
+    "mean_series": 1068.45,
+    "ratio_means": 0.000241
+   },
+   {
+    "case": "mismatch(f=1)",
+    "factor": 1.0,
+    "n_pixels": 40000,
+    "r": -0.0423,
+    "mean_summary": 0.257,
+    "mean_series": 2083.3,
+    "ratio_means": 0.000123
+   },
+   {
+    "case": "mismatch(f=10)",
+    "factor": 10.0,
+    "n_pixels": 400,
+    "r": -0.0411,
+    "mean_summary": 0.257,
+    "mean_series": 514.44,
+    "ratio_means": 0.0005
+   }
+  ],
+  "orientation_search": {
+   "identity": 0.1256,
+   "flip_x": 0.0344,
+   "flip_y": -0.0423,
+   "transpose": 0.0018
+  },
+  "best_orientation": "identity",
+  "shift_search": {
+   "-8,-8": 0.0028,
+   "-8,-6": -0.0117,
+   "-8,-4": -0.0427,
+   "-8,-2": -0.0773,
+   "-8,0": -0.0109,
+   "-8,2": -0.0202,
+   "-8,4": -0.0373,
+   "-8,6": -0.0441,
+   "-8,8": -0.0368,
+   "-6,-8": 0.0078,
+   "-6,-6": -0.0157,
+   "-6,-4": -0.0556,
+   "-6,-2": -0.101,
+   "-6,0": -0.0445,
+   "-6,2": -0.0531,
+   "-6,4": -0.0578,
+   "-6,6": -0.0538,
+   "-6,8": -0.042,
+   "-4,-8": 0.0067,
+   "-4,-6": -0.0203,
+   "-4,-4": -0.0597,
+   "-4,-2": -0.1005,
+   "-4,0": -0.0522,
+   "-4,2": -0.0691,
+   "-4,4": -0.078,
+   "-4,6": -0.0683,
+   "-4,8": -0.047,
+   "-2,-8": -0.0032,
+   "-2,-6": -0.0305,
+   "-2,-4": -0.0645,
+   "-2,-2": -0.0699,
+   "-2,0": 0.0306,
+   "-2,2": 0.005,
+   "-2,4": -0.0455,
+   "-2,6": -0.055,
+   "-2,8": -0.036,
+   "0,-8": 0.0188,
+   "0,-6": -0.0077,
+   "0,-4": -0.0413,
+   "0,-2": -0.0336,
+   "0,0": 0.1256,
+   "0,2": 0.0762,
+   "0,4": -0.0146,
+   "0,6": -0.0461,
+   "0,8": -0.0339,
+   "2,-8": 0.0272,
+   "2,-6": 0.0032,
+   "2,-4": -0.0427,
+   "2,-2": -0.0814,
+   "2,0": 0.0044,
+   "2,2": -0.0039,
+   "2,4": -0.0398,
+   "2,6": -0.0534,
+   "2,8": -0.0365,
+   "4,-8": 0.0082,
+   "4,-6": -0.0102,
+   "4,-4": -0.0552,
+   "4,-2": -0.1048,
+   "4,0": -0.0459,
+   "4,2": -0.0384,
+   "4,4": -0.0448,
+   "4,6": -0.0587,
+   "4,8": -0.0376,
+   "6,-8": 0.0056,
+   "6,-6": -0.007,
+   "6,-4": -0.0411,
+   "6,-2": -0.0776,
+   "6,0": -0.016,
+   "6,2": -0.0281,
+   "6,4": -0.0459,
+   "6,6": -0.0592,
+   "6,8": -0.0311,
+   "8,-8": 0.0074,
+   "8,-6": -0.006,
+   "8,-4": -0.0392,
+   "8,-2": -0.0767,
+   "8,0": -0.0149,
+   "8,2": -0.0282,
+   "8,4": -0.0407,
+   "8,6": -0.0517,
+   "8,8": -0.0402
+  },
+  "best_shift_px": "0,0",
+  "aligned_after_search": {
+   "r": 0.1256,
+   "shift_px": [
+    0,
+    0
+   ],
+   "orientation": "identity",
+   "mean_summary": 0.257,
+   "mean_series": 2083.3
+  },
+  "negative_control_shuffled_series": {
+   "r": 0.0138,
+   "note": "对 series 做随机平移后与对齐后 summary 的相关（|r| 均值）⇒ 地板参考；对齐值应显著高于该地板"
+  },
+  "alignment_verdict": "同格性**通过（实像素）**：尺度扫描峰值唯一出现在 **f=2.50**（r=0.126），其余因子 r∈[−0.07,−0.01]；朝向/平移搜索后最佳为 identity，位移 0,0，r=0.126（地板 0.014）。峰值 r 偏低属**对比机制差异**（summary 为结构投影/归一化 0–1，series 为 GCaMP 时间均值），但**唯一正相关出现在 2.5 口径**这一点足以判定 2.5 µm/px 才是 series 的空间口径；0.25 µm/px 需 f≈25，实测 r=-0.031（无峰值）。",
+  "fov_crosscheck": {
+   "series_from_metadata": {
+    "px": [
+     248,
+     440
+    ],
+    "um_per_px": [
+     2.5,
+     2.5
+    ],
+    "fov_um": [
+     620.0,
+     1100.0
+    ]
+   },
+   "summary_from_metadata": {
+    "px": [
+     620,
+     1100
+    ],
+    "um_per_px": [
+     1.0,
+     1.0
+    ],
+    "fov_um": [
+     620.0,
+     1100.0
+    ]
+   },
+   "doc_per_field": {
+    "px_per_um": 4.0,
+    "field_px": [
+     440,
+     248
+    ],
+    "field_fov_um": [
+     110.0,
+     62.0
+    ],
+    "doc_mosaic_um2": [
+     1100,
+     1200
+    ]
+   },
+   "verdict": "两个**独立对象**元数据给出的 FOV 完全一致（620×1100 µm）；而文档的 4 px/µm 给出的是**单个 raw 子场**的 110×62 µm，需 ~10×20 个子场才能拼出文档所述 1100×1200 µm² 拼接 FOV ⇒ 两者是**不同层级**（raw 采集 vs 处理后/拼接体素），不是同一层的矛盾。"
+  },
+  "conclusion": {
+   "level_raw": "文档 '4 px/µm'（=0.25 µm/px）= **raw 采集**的每个子场像素（440×248 px/field ⇒ 110×62 µm/field）",
+   "level_processed": "元数据 2.5 µm/px = **处理后 functional_series / field_summaries** 的体素（248×440 px ⇒ 620×1100 µm）",
+   "ratio": 10.0,
+   "ratio_evidence": "实像素尺度扫描峰值出现在 f=2.50（r=0.126），与 2.5 相符；若为 0.25 µm/px 则峰值应出现在 f≈25（实测 r=-0.031）",
+   "misread_risk": "**若把 0.25 µm/px 当成 series 的口径**：① 所有距离/尺度的物理量（感受野尺寸、空间相关长度、ROI/神经域半径、突触-距离关系）**系统性偏小 10×**；② FOV 会被算成 62×110 µm（面积偏小 100×），与 field_summaries 的 620×1100 µm 直接冲突；③ 任何'按物理距离配对/匹配'的对照（如连接概率 vs 距离、dend_len 对照）**口径不可比**。⇒ 纪律：**凡用到空间尺度，必须写明取自哪个对象/字段，并做跨对象 FOV 交叉核对**。"
+  }
+ },
  "literature": {
   "n_rows": 37,
   "by_status": {
@@ -464,16 +703,26 @@
     "declared_bytes": null,
     "exists": true,
     "note": "",
-    "bytes_on_disk": 8623,
-    "sha256": "177ee5019c377533fb0e5c4a791c51dc41c240ee5642fd17e691b18411843fc9",
+    "bytes_on_disk": 9737,
+    "sha256": "29097552006212380666675d8b3f6d84d6acec47096eb0460428ab92ff66bba5",
+    "status": "COMPLETE"
+   },
+   {
+    "key": "m11.grid_alignment",
+    "path": "neural_exploration/data/m11_grid_alignment.json",
+    "declared_bytes": null,
+    "exists": true,
+    "note": "空间口径 10× 差与同格性的实像素判定（RF-M11-B §四）",
+    "bytes_on_disk": 6273,
+    "sha256": "1267da15bdc23e1ee13aa2cd262deac1ad04904d572ae7ad7f164dde854ed78d",
     "status": "COMPLETE"
    }
   ]
  },
  "inventory": {
-  "n_items": 235,
-  "total_bytes": 288476222,
-  "total_MB": 288.476
+  "n_items": 236,
+  "total_bytes": 288483609,
+  "total_MB": 288.484
  },
  "functional_connectomics_release": {
   "evidence": "measured(列举 200：KeyCount=4)",

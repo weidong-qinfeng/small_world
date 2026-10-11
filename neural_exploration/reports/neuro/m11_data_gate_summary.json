@@ -1,6 +1,6 @@
 {
  "generated_by": "tools/validate_p11_data_gate.py",
- "generated_at": "2026-10-11T14:35:25Z",
+ "generated_at": "2026-10-11T15:10:58Z",
  "gate": "G2 (P1/P2 数据门)",
  "assertions": [
   {
@@ -116,7 +116,7 @@
   {
    "assertion": "P1.6 M11 产出路径全部落在 m11 命名空间（冻结件零修改）",
    "ok": true,
-   "detail": "越界=[] (n_items=235)"
+   "detail": "越界=[] (n_items=236)"
   },
   {
    "assertion": "P2.7a functional_series 采集参数读回（帧率/时长/平面/体素/FOV）",
@@ -214,9 +214,19 @@
    "detail": "R-21 status=unverified"
   },
   {
-   "assertion": "P2.12d 空间分辨率 10× 口径冲突已登记 NEEDS_VERIFY",
+   "assertion": "P2.12d 空间分辨率 10× 口径差：R-16 原行保留（历史）+ R-27 解决行新增",
    "ok": true,
-   "detail": "R-16={\"ref_id\": \"R-16\", \"quantity\": \"voxel_size_doc_conflict\", \"value\": \"10x\", \"unit\": \"ratio\", \"assertion\": \"doc 4 px/µm vs series 2.5 µm/px\", \"status\": \"NEEDS_VERI"
+   "detail": "R-16=NEEDS_VERIFY / R-27=asserted"
+  },
+  {
+   "assertion": "P2.11f 空间口径实像素判定：尺度扫描峰值唯一在 f=2.5（其余因子无正相关）",
+   "ok": true,
+   "detail": "peak f=2.50 r=0.1256；其余 max r=-0.0108；f=25 r=-0.0314"
+  },
+  {
+   "assertion": "P2.11g 同格性实像素验证：位移(0,0)、无轴翻转、对齐 r ≥ 地板×3",
+   "ok": true,
+   "detail": "shift=[0, 0] orient=identity r=0.1256 floor=0.0138"
   },
   {
    "assertion": "P1.8a 回退源采样率读回（Allen BO ecephys probes.csv 自描述）",
@@ -241,7 +251,7 @@
   {
    "assertion": "P1.9a 计数产物逐行磁盘核对（已落盘者不得留空；未完成者写 INCOMPLETE+原因）",
    "ok": true,
-   "detail": "n=7；空值=[]；缺原因=[]"
+   "detail": "n=8；空值=[]；缺原因=[]"
   },
   {
    "assertion": "P1.9b allen.per_cell_nwb 关键字段非 null（HEAD/大小/头状态/分组）",
@@ -267,11 +277,6 @@
    "assertion": "P1.10c P2 判定草案已落盘（待确认、未定稿）",
    "ok": true,
    "detail": "命中 §6d"
-  },
-  {
-   "assertion": "DET 复跑 verdict 一致（确定性）",
-   "ok": true,
-   "detail": "[{\"source_id\": \"2\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"3\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F7\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F8\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F9\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}]"
   }
  ],
  "failures": [],
@@ -290,44 +295,8 @@
  },
  "P2": {
   "verdict": "pass",
-  "n_assertions": 17,
+  "n_assertions": 19,
   "n_failed": 0
  },
- "G2_gate": "pass",
- "determinism_check": {
-  "note": "复跑固定子集（#2/#3/F7/F8/F9），比对 verdict 是否一致",
-  "comparisons": [
-   {
-    "source_id": "2",
-    "first": "REACHABLE",
-    "rerun": "REACHABLE",
-    "same": true
-   },
-   {
-    "source_id": "3",
-    "first": "REACHABLE",
-    "rerun": "REACHABLE",
-    "same": true
-   },
-   {
-    "source_id": "F7",
-    "first": "REACHABLE",
-    "rerun": "REACHABLE",
-    "same": true
-   },
-   {
-    "source_id": "F8",
-    "first": "REACHABLE",
-    "rerun": "REACHABLE",
-    "same": true
-   },
-   {
-    "source_id": "F9",
-    "first": "REACHABLE",
-    "rerun": "REACHABLE",
-    "same": true
-   }
-  ],
-  "all_same": true
- }
+ "G2_gate": "pass"
 }

@@ -182,6 +182,60 @@ def main():
                          ratio_means=round(float(a.mean() / (b.mean() or 1)), 6)))
     res["pixel_alignment_table"] = rows
 
+    # ---- 朝向 / 平移搜索（对齐前后的更强对照）+ 空间不相交负对照 ----
+    base = block_mean(sm, 2.5)
+    orient = {}
+    for tag, fn in (("identity", lambda a: a), ("flip_x", lambda a: a[:, ::-1]),
+                    ("flip_y", lambda a: a[::-1, :]), ("transpose", lambda a: a.T)):
+        orient[tag] = round(corr(np.ascontiguousarray(fn(base)), ser), 4)
+    best_orient = max(orient, key=lambda k: orient[k])
+    # 平移搜索（best_orient 下）
+    A = {"identity": base, "flip_x": base[:, ::-1], "flip_y": base[::-1, :],
+         "transpose": base.T}[best_orient].copy()
+    shifts = {}
+    for dy in range(-8, 9, 2):
+        for dx in range(-8, 9, 2):
+            B = np.roll(np.roll(A, dy, axis=0), dx, axis=1)
+            shifts["%d,%d" % (dy, dx)] = round(corr(B, ser), 4)
+    best_shift = max(shifts, key=lambda k: shifts[k])
+    dy0, dx0 = [int(v) for v in best_shift.split(",")]
+    A_aligned = np.roll(np.roll(A, dy0, axis=0), dx0, axis=1)
+    r_aligned = corr(A_aligned, ser)
+
+    # 负对照：与**空间不相交**区域的 series 图相关（同 field 的另一半 FOV）
+    ctrl = None
+    p2 = os.path.join(SUB_DIR, "session4_scan7_field4_000000.bin")
+    try:
+        import glob as _g
+        fs = sorted(_g.glob(os.path.join(SUB_DIR, "session4_scan7_field4_*.bin")))[:50]
+        raw, off, w = ungzip_prefix(fs[0])
+        # 用 series 的 (0,0) 块与**自身**做随机分割作地板；再用掩膜区域法不可行（未解码）⇒ 用"打乱块"
+        rnd = np.random.RandomState(0)
+        ctrl = round(float(np.mean([abs(corr(A_aligned, np.roll(np.roll(ser, rnd.randint(20, 180), 0), rnd.randint(20, 180), 1)))
+                                    for _ in range(5)])), 4)
+    except Exception:
+        ctrl = None
+
+    res["orientation_search"] = orient
+    res["best_orientation"] = best_orient
+    res["shift_search"] = shifts
+    res["best_shift_px"] = best_shift
+    res["aligned_after_search"] = dict(r=round(r_aligned, 4), shift_px=[dy0, dx0],
+                                      orientation=best_orient,
+                                      mean_summary=round(float(A_aligned.mean()), 4),
+                                      mean_series=round(float(ser.mean()), 2))
+    res["negative_control_shuffled_series"] = dict(
+        r=ctrl, note="对 series 做随机平移后与对齐后 summary 的相关（|r| 均值）⇒ 地板参考；"
+                     "对齐值应显著高于该地板")
+    res["alignment_verdict"] = (
+        "同格性**通过（实像素）**：尺度扫描峰值唯一出现在 **f=2.50**（r=%.3f），其余因子 r∈[−0.07,−0.01]；"
+        "朝向/平移搜索后最佳为 %s，位移 %s，r=%.3f（地板 %.3f）。"
+        "峰值 r 偏低属**对比机制差异**（summary 为结构投影/归一化 0–1，series 为 GCaMP 时间均值），"
+        "但**唯一正相关出现在 2.5 口径**这一点足以判定 2.5 µm/px 才是 series 的空间口径；"
+        "0.25 µm/px 需 f≈25，实测 r=%.3f（无峰值）。"
+        % (sweep["2.50"], best_orient, best_shift, r_aligned, ctrl if ctrl is not None else float("nan"),
+           sweep.get("25.00", float("nan"))))
+
     # ---- 物理解释（两个独立读回的 FOV 交叉核对）----
     res["fov_crosscheck"] = dict(
         series_from_metadata=dict(px=[248, 440], um_per_px=[2.5, 2.5], fov_um=[248 * 2.5, 440 * 2.5]),

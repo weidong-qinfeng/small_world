@@ -698,3 +698,44 @@ H4 不可检验。⇒ 建议登记 **`decoded(big-endian int16)`**，并在文�
 - **B3b**：由同源体素序列**构建 dwell/τ 目标带**（复用 M10 冻结估计器，箱宽为其唯一自由度）。
 ⇒ 本节点 `m11_reference.csv` **R-21 仍标 `unverified`**（**不得**由本节点替代 B3b 定稿）；
 B3b 落盘后应**新增行**（R-27+）而非修改 R-21（清单 §0.3 #8 只增不改纪律）。
+
+---
+
+## L29 — ★ 空间口径 10× 差的解决（RF-M11-B §四；**实像素判定，非元数据声明**）
+
+### L29.1 两处口径的出处（逐字可核）
+| 口径 | 出处（文件/字段） | 数值 |
+|---|---|---|
+| **4 px/µm** | `functional_data_technical_documentation_v3.pdf` 正文（已抽文本 `data/m11_raw/microns/pdf_text/…v3.pdf.txt`） | "**4 px/µm** xy resolution (440×248 px/field) to tile a **1100×1200 µm²** FOV at four depths (two planes per depth, 40 µm overlap between coplanar fields)" |
+| **2.5 µm/px** | `functional_series/session4_scan7_field4/attributes.json` → `resolution=[2.5,2.5,10]` + `units=[um,um,um,s]` | 2.5 µm/px（x,y）／10 µm（z） |
+| 1 µm/px | `field_summaries/session_4_scan_7_field_4/attributes.json` → `resolution=[1,1,10]`、`dimensions=[620,1100,1]` | 620 × 1100 µm |
+
+### L29.2 实像素对齐（`tools/verify_m11_grid_alignment.py`，产物 `m11_grid_alignment.json` + `m11_grid_alignment.png`）
+用两个**独立对象**的真实像素（`field_summaries` 1 µm/px 的 200×200 µm 区块 vs
+`functional_series` 200 片/2000 帧的时间平均图）做尺度扫描与对齐搜索：
+
+| 检验 | 结果 |
+|---|---|
+| **尺度扫描** r(f)（f = 降采样因子） | **峰值唯一出现在 f = 2.50（r = +0.126）**；f=1/1.25/1.5/2/3/4/5/8/10/12.5 全为 **−0.07…−0.01**，**f=25 ⇒ −0.031** |
+| 朝向搜索 | identity **0.126** > flip_x 0.034 > transpose 0.002 > flip_y −0.042 ⇒ **无轴翻转** |
+| 平移搜索（±8 px） | 最佳 **位移 (0,0)**、r=0.126 ⇒ **两对象在原点处精确同格** |
+| **负对照**（series 随机平移后与对齐块相关） | **|r| = 0.014**（地板）⇒ 对齐值 0.126 = **地板的 9.0×** |
+| 峰值 r 偏低的原因 | 对比机制不同（summary 是结构投影/归一化 0–1；series 是 GCaMP 时间均值），不是错位 |
+
+### L29.3 物理解释（两个独立读回的 FOV 交叉核对）
+- series：248 px × 2.5 µm = **620 µm**；440 px × 2.5 µm = **1100 µm** ⇒ FOV **620×1100 µm**；
+- `field_summaries`（**另一个对象**）：dims **620×1100** px @ **1 µm/px** ⇒ FOV **620×1100 µm**；
+- 文档的 4 px/µm（=0.25 µm/px）给出的是**单个 raw 子场** 440 px ÷ 4 = **110 µm**、248 ÷ 4 = **62 µm**，
+  需 ~**10 × 20 个子场**（含所述 40 µm 重叠）才能拼出文档的 1100×1200 µm² **拼接 FOV**。
+
+⇒ **结论（以实测为准）**：**两者不是同一层的矛盾，而是两个层级** ——
+**4 px/µm = raw 采集的子场像素**；**2.5 µm/px = 处理后 functional_series / field_summaries 的体素**；
+比值**恰为 10.0**（0.25 × 10 = 2.5），且在两个轴上都精确成立。**没有任何一处"错"**，
+错的是"把 raw 子场的 px/µm 当成 series 的 µm/px"。
+
+### L29.4 用错口径的后果（量化，可复用纪律）
+| 用错方式 | 后果 |
+|---|---|
+| 把 0.25 µm/px 当 series 口径 | ① 一切**距离/尺度**物理量（感受野尺寸、空间相关长度、ROI/神经域半径、连接概率-距离关系）**系统性偏小 10×**；② FOV 被算成 **62×110 µm**（面积偏小 **100×**），与 `field_summaries` 的 620×1100 µm **直接冲突**；③ 任何"按物理距离配对/匹配"的对照（`dend_len`、突触-距离曲线）**口径不可比**；④ 空间下采样/池化窗口选错 ⇒ ROIs 归属错、ΔF/F 混入神经域 |
+| 把 2.5 µm/px 当 raw 子场口径 | raw 子场被算成 1100×620 µm（偏大 100×）⇒ 拼接拓扑（子场数）算错，P4 的层流 FOV 划分错 |
+| **纪律** | **凡使用空间尺度，必须写明取自哪个对象/字段，并做跨对象 FOV 交叉核对**（本轮已把该检查固化为断言 `P2.11f`）。|
