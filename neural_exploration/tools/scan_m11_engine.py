@@ -595,7 +595,8 @@ def t6_off_equivalence(verbose=True) -> dict:
                 else np.exp(rng.normal(np.log(900.0), 0.3, N))).astype(np.float32)
         return pre, post, g, inh.astype(np.int8), dly, bias
 
-    def _run(cls, kw, cfg, T=4000, dens=0.5, frozen=False, gaba=False, frac_slow=0.0):
+    def _run(cls, kw, cfg, T=4000, dens=0.5, frozen=False, gaba=False, frac_slow=0.0,
+             use_ext=True):
         e = cls(200, device="cpu", use_compile=False, verbose=False, **kw)
         if frozen:
             e.configure_refractory(REF_FROZEN)
@@ -604,29 +605,34 @@ def t6_off_equivalence(verbose=True) -> dict:
         e.add_synapses(cfg[0], cfg[1], cfg[2], cfg[4], inhibitory=(cfg[3] > 0), syn_class=cfg[3])
         e.finalize()
         e.set_neuron_heterogeneity(cfg[5])
-        rng = np.random.default_rng(3)
-        n = int(dens * T * 0.05e-3 * 200)
-        st = rng.integers(0, T, n); ne = rng.integers(0, 200, n)
-        gg = rng.uniform(15, 25, n).astype(np.float32)
+        if use_ext:
+            rng = np.random.default_rng(3)
+            n = int(dens * T * 0.05e-3 * 200)
+            st = rng.integers(0, T, n); ne = rng.integers(0, 200, n)
+            gg = rng.uniform(15, 25, n).astype(np.float32)
+        else:
+            st = ne = np.zeros(0, dtype=int); gg = np.zeros(0, dtype=np.float32)
         e.set_external_events(st, ne, gg, n_steps=T)
         e.reset(seed=1)
         e.reset_counts()
         e.run(T, delivery="step", record="counts")
         return e.t_count.detach().cpu().numpy().astype(np.int64)
 
-    for tag, dense, bins, dens in (("sparse_single_delay", False, None, 0.5),
-                                   ("dense_single_delay", True, None, 8.0),
-                                   ("sparse_three_bins", False, np.random.default_rng(7)
-                                    .choice([40, 60, 80], 2000), 0.5),
-                                   ("dense_three_bins", True, np.random.default_rng(7)
-                                    .choice([40, 60, 80], 2000), 8.0)):
+    for tag, dense, bins, dens, use_ext in (
+            ("sparse_single_delay", False, None, 0.5, True),
+            ("dense_single_delay", True, None, 8.0, True),
+            ("sparse_three_bins_noext", False, np.random.default_rng(7)
+             .choice([40, 60, 80], 2000), 0.5, False),
+            ("dense_three_bins_noext", True, np.random.default_rng(7)
+             .choice([40, 60, 80], 2000), 8.0, False)):
         cfg = _net(dense=dense, bins=bins)
-        a = _run(LarvalZFEngine, {"use_abs_slots": True}, cfg, dens=dens)          # M10
-        b = _run(MouseCortexEngine, {"use_abs_slots": True}, cfg, dens=dens, frozen=True)
+        a = _run(LarvalZFEngine, {"use_abs_slots": True}, cfg, dens=dens, use_ext=use_ext)
+        b = _run(MouseCortexEngine, {"use_abs_slots": True}, cfg, dens=dens, frozen=True,
+                 use_ext=use_ext)
         m9 = None
         try:
-            m9 = _run(AdultEngine, {}, cfg, dens=dens)
-        except Exception as ex:  # noqa: BLE001
+            m9 = _run(AdultEngine, {}, cfg, dens=dens, use_ext=use_ext)
+        except Exception:  # noqa: BLE001
             m9 = None
         out[tag] = dict(m10_spk=int(a.sum()), m11_frozen_spk=int(b.sum()),
                         bit_identical=bool(np.array_equal(a, b)),
@@ -635,7 +641,7 @@ def t6_off_equivalence(verbose=True) -> dict:
                         m9_vs_m11_frozen_bit=(bool(np.array_equal(m9, b)) if m9 is not None else None),
                         m9_err=(None if m9 is not None else "IndexError(E-M9-2 已知缺陷)"))
         if verbose:
-            print("  [T6] %-20s M10=%6d M11(frozen)=%6d bit=%s ndiff=%d | M9=%s" % (
+            print("  [T6] %-26s M10=%6d M11(frozen)=%6d bit=%s ndiff=%d | M9=%s" % (
                 tag, out[tag]["m10_spk"], out[tag]["m11_frozen_spk"],
                 out[tag]["bit_identical"], out[tag]["n_neurons_diff"],
                 "ran" if m9 is not None else "ERROR"), flush=True)
@@ -652,41 +658,34 @@ def t6_off_equivalence(verbose=True) -> dict:
             out["fix_vs_m10_gaba_frac0"]["bit_identical"],
             out["fix_vs_m10_gaba_frac0"]["m10_gaba_spk"],
             out["fix_vs_m10_gaba_frac0"]["m11_fix_spk"]), flush=True)
-    # 多延迟档的逐位偏差定位（FP 累加序：单共享环槽 vs 每延迟一槽后求和）
+    # 多延迟档的**隔离诊断**：不含外部事件 ⇒ 纯网络语义（环槽安排 + 核 + 投递）
     cfg = _net(bins=np.random.default_rng(7).choice([40, 60, 80], 2000))
-    a = LarvalZFEngine(200, device="cpu", use_compile=False, verbose=False, use_abs_slots=True)
-    b = MouseCortexEngine(200, device="cpu", use_compile=False, verbose=False, use_abs_slots=True)
-    b.configure_refractory(REF_FROZEN)
-    for e in (a, b):
-        e.add_synapses(cfg[0], cfg[1], cfg[2], cfg[4], inhibitory=(cfg[3] > 0), syn_class=cfg[3])
-        e.finalize()
-        e.set_neuron_heterogeneity(cfg[5])
-        rng = np.random.default_rng(3)
-        n = int(8.0 * 3000 * 0.05e-3 * 200)
-        st = rng.integers(0, 3000, n); ne = rng.integers(0, 200, n)
-        gg = rng.uniform(15, 25, n).astype(np.float32)
-        e.set_external_events(st, ne, gg, n_steps=3000)
-        e.reset(seed=1)
-        e.reset_counts()
-    first = None
-    for s in range(1, 3001):
-        a.run(1, delivery="step", record="counts")
-        b.run(1, delivery="step", record="counts")
-        dv = float((a.t_v - b.t_v).abs().max())
-        if dv > 0:
-            first = dict(step=s - 1, max_abs_dv_mV=dv,
-                         ulp_float32_at_50mV=float(np.finfo(np.float32).eps * 50.0),
-                         spk_a=int(a.t_count.sum().item()), spk_b=int(b.t_count.sum().item()))
-            break
-    out["three_bins_fp_order"] = dict(first_divergence=first,
-                                      note="单一共享环槽（M11）vs 每延迟一槽后求和（M10）："
-                                           "仅当两个延迟档的事件命中同一 (slot, post_off) 时"
-                                           "浮点累加序不同 ⇒ 单 ULP 差异后混沌放大")
+    a = _run(LarvalZFEngine, {"use_abs_slots": True}, cfg, dens=8.0, use_ext=False)
+    b = _run(MouseCortexEngine, {"use_abs_slots": True}, cfg, dens=8.0, frozen=True, use_ext=False)
+    a_ext = _run(LarvalZFEngine, {"use_abs_slots": True}, cfg, dens=8.0, use_ext=True)
+    b_ext = _run(MouseCortexEngine, {"use_abs_slots": True}, cfg, dens=8.0, frozen=True, use_ext=True)
+    out["three_bins_isolation"] = dict(
+        no_ext=dict(m10_spk=int(a.sum()), m11_frozen_spk=int(b.sum()),
+                    bit_identical=bool(np.array_equal(a, b)),
+                    n_neurons_diff=int((a != b).sum())),
+        with_ext=dict(m10_spk=int(a_ext.sum()), m11_frozen_spk=int(b_ext.sum()),
+                      m10_ext_ignored=bool(np.array_equal(a_ext, a)),
+                      note="M10 在**多延迟组**下 `ring_flat is None` ⇒ `ext_active=False` ⇒ "
+                           "**全部外部事件被静默丢弃**（E-M10-2）；M11 单共享环槽 ⇒ 事件正常交付"),
+        note="不含外部事件时，冻结档与 M10 在 3 延迟档下**逐位一致**（4000 步）⇒ 单共享环槽与"
+             "每延迟一槽语义等价；含外部事件时两者不可比（差异来自 E-M10-2，不是 FP 序）")
     if verbose:
-        print("  [T6] 三延迟档 FP 序定位：%s" % (first,), flush=True)
+        print("  [T6] 三延迟档隔离：无 ext bit=%s（%d vs %d）| M10 含 ext 是否忽略事件=%s | "
+              "含 ext 时 M11=%d vs M10=%d" % (
+                  out["three_bins_isolation"]["no_ext"]["bit_identical"],
+                  out["three_bins_isolation"]["no_ext"]["m10_spk"],
+                  out["three_bins_isolation"]["no_ext"]["m11_frozen_spk"],
+                  out["three_bins_isolation"]["with_ext"]["m10_ext_ignored"],
+                  out["three_bins_isolation"]["with_ext"]["m11_frozen_spk"],
+                  out["three_bins_isolation"]["with_ext"]["m10_spk"]), flush=True)
     out["off_equiv_pass"] = bool(out["sparse_single_delay"]["bit_identical"]
                                  and out["dense_single_delay"]["bit_identical"]
-                                 and out["sparse_three_bins"]["bit_identical"])
+                                 and out["sparse_three_bins_noext"]["bit_identical"])
     return out
 
 

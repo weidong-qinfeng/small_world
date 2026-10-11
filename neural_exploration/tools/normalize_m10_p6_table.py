@@ -81,7 +81,50 @@ HEADER = [
     "# chunk 路径在重过引擎门 (e)+(f) 前**不得用于任何判据**（判据一律 delivery=step）",
     "# 缺陷史：D6（四种列数并存、CI 三列无列名）已由本脚本 v2 规范化修复；D7（先改后取指纹）记于 data/m10_p6_table_schema_defect.json。",
     "# CI 来源：tools/validate_p10_tau_bootstrap.py（可复现；B=2000、块 15 帧、种子 0–4 取中位），交叉核对 RF-30 主agent 独立复算。",
+    "# 🔴 **RF-31 纪律**：跨节点传递的 sha256 **必须标注基准**——`file_bytes`（含 128 B npy 头的文件字节）/",
+    "#    `payload`（arr.tobytes()）/ `semantic`（语义等价）。本表 `sha16` 列一律写 `file_bytes=…`；",
+    "#    已两方核对载荷口径的 arm 追加 `; payload=…`。缘由：同一文件两口径哈希不同，曾被误疑为『重复作业覆盖』；",
+    "#    实测系 **hash 基准差异**，两口径均已核对、结论一致（逐位相同）。标注逻辑由本脚本 `label_hashes()` 强制。",
 ]
+
+
+# ---- RF-31 纪律：跨节点传递的 sha256 **必须标注基准**（否则"同值不同哈希"会被误判成数据不一致）----
+#   基准词表：file_bytes（含 128 B npy 头的文件字节）/ payload（arr.tobytes()）/ semantic（语义等价）
+HASH_BASES = ("file_bytes", "payload", "semantic")
+PAYLOAD_OF = {                       # 已由两节点逐文件核对过"载荷口径"的 arm（RF-31 定案）
+    "6b794438e487bddc": "6294245cc83d148e",   # λ×0 零驱动组（M0/M-1/M-4 逐位相同）
+    "8d51b1462a72b561": "c160ec8567e685b3",   # M-6 λ×0
+}
+
+
+def write_table(body):
+    with open(TABLE, "w", newline="", encoding="utf-8") as f:
+        for c in HEADER:
+            f.write(c + "\n")
+        w = csv.writer(f, quoting=csv.QUOTE_MINIMAL)
+        w.writerow(SCHEMA)
+        w.writerows(body)
+
+
+def label_hashes():
+    """把 `sha16` 列里**未标基准**的裸哈希补成 `file_bytes=…`（幂等；已标注则跳过）。"""
+    hdr, body = load_table()
+    i = hdr.index("sha16")
+    n = 0
+    for r in body:
+        v = r[i]
+        if not v or any(bs in v for bs in HASH_BASES):
+            continue
+        key = v.strip()
+        if len(key) == 16 and all(c in "0123456789abcdef" for c in key):
+            r[i] = "file_bytes=%s" % key
+            if key in PAYLOAD_OF:
+                r[i] += "; payload=%s（两口径均已核对、结论一致）" % PAYLOAD_OF[key]
+            n += 1
+    if n:
+        write_table(body)
+    print("[hash 基准标注] 本次补标 %d 行（其余已标注）" % n)
+    return n
 
 
 def load_table():
@@ -208,12 +251,7 @@ def upgrade_v2_to_v3():
         print("  %-11s lo %+6.2f%%  hi %+7.2f%%   %s" % (d["arm"], d["rel_lo"] * 100, d["rel_hi"] * 100,
                                                          "同" if d["category_same"] else "**异**"))
 
-    with open(TABLE, "w", newline="", encoding="utf-8") as f:
-        for c in HEADER:
-            f.write(c + "\n")
-        w = csv.writer(f, quoting=csv.QUOTE_MINIMAL)
-        w.writerow(SCHEMA)
-        w.writerows(out)
+    write_table(out)
     print("[OK] v2 → v3 升级完成（%d 列）；CI 值取自 %s" % (NCOL, os.path.basename(CROSSCHECK)))
 
 
@@ -224,6 +262,7 @@ def main():
     hdr, body = load_table()
     if hdr == SCHEMA:
         print("[INFO] 已是 schema v3 —— 跳过重写，仅做 A/B/C 验证")
+        label_hashes()
         verify()
         return
     if hdr == SCHEMA_V2:
@@ -273,13 +312,7 @@ def main():
         assert len(new) == NCOL, (len(new), new[:3])
         out.append(new)
 
-    with open(TABLE, "w", newline="", encoding="utf-8") as f:
-        for c in HEADER:
-            f.write(c + "\n")
-        w = csv.writer(f, quoting=csv.QUOTE_MINIMAL)
-        w.writerow(SCHEMA)
-        w.writerows(out)
-
+    write_table(out)
     verify()
     print("修复标签统计：", tags)
 

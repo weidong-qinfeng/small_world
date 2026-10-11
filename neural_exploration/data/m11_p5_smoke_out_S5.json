@@ -306,7 +306,7 @@
  },
  "exit_code": 2,
  "generated_by": "tools/validate_p11_resting.py",
- "generated_at": "2026-10-11T21:45:29",
+ "generated_at": "2026-10-11T21:48:22",
  "role": "M11 P5/G1 离线评估（只做分析，不做仿真；不写判据带）",
  "protocol_path": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_smoke_protocol_S5.json",
  "protocol": {
@@ -711,7 +711,7 @@
    "ci_lo": 0.10431367742472604,
    "ci_hi": 0.27588615117474774,
    "status": "unavailable",
-   "reason": "sample_size_gate_unmet: 零驱动臂 seed 数 1 < 3; 基准臂 seed 数 1 < 3; 零驱动臂总脉冲 19.0 < 300.0（相对不确定度 ≈22.9%）；点估计仅作描述性（点估计 R=0.169643（上限 0.1）；CI95(log)=[0.10431367742472604, 0.27588615117474774]；CI95(boot)=[0.09433962264150944, 0.25962500000000005]；零驱动脉冲 19.0；seed 数 零=1/基准=1；逐 seed 比值=[0.16964285714285715]）",
+   "reason": "sample_size_gate_unmet: 零驱动臂 seed 数 1 < 3; 基准臂 seed 数 1 < 3; 零驱动臂总脉冲 19.0 < 300.0（相对不确定度 ≈22.9%）；点估计仅作描述性（点估计 R=0.169643（上限 0.1）；CI95(log)=[0.10431367742472604, 0.27588615117474774]；CI95(boot)=[0.09565057544757034, 0.26168780596350677]；零驱动脉冲 19.0；seed 数 零=1/基准=1；逐 seed 比值=[0.16964285714285715]）",
    "evidence_class": "working_point_precondition",
    "discriminative": null,
    "baseline_value": null,
@@ -728,8 +728,8 @@
    "protocol_dt_ms": 0.05,
    "protocol_bin_ms": 100.0,
    "protocol_smooth_frames": 5,
-   "ci_lo_bootstrap": 0.09433962264150944,
-   "ci_hi_bootstrap": 0.25962500000000005,
+   "ci_lo_bootstrap": 0.09565057544757034,
+   "ci_hi_bootstrap": 0.26168780596350677,
    "per_seed_ratio": [
     0.16964285714285715
    ],
@@ -744,12 +744,12 @@
      0.10431367742472604,
      0.27588615117474774
     ],
-    "n_boot_effective": 4000,
+    "n_boot_effective": 8000,
     "ci95_bootstrap": [
-     0.09433962264150944,
-     0.25962500000000005
+     0.09565057544757034,
+     0.26168780596350677
     ],
-    "ci_upper_rel_diff": 0.05894152753049134,
+    "ci_upper_rel_diff": 0.0514645086416377,
     "ci_upper_conservative": 0.27588615117474774
    }
   },
@@ -1087,7 +1087,7 @@
    "ci_lo": 0.1574421303850687,
    "ci_hi": 0.18786488874080476,
    "status": "unavailable",
-   "reason": "sample_size_gate_unmet: 零驱动臂 seed 数 1 < 3; 基准臂 seed 数 1 < 3；点估计仅作描述性（点估计 R=0.171982（上限 0.1）；CI95(log)=[0.1574421303850687, 0.18786488874080476]；CI95(boot)=[0.1570075816726765, 0.1867634059516826]；零驱动脉冲 577.0；seed 数 零=1/基准=1；逐 seed 比值=[0.17198211624441131]）",
+   "reason": "sample_size_gate_unmet: 零驱动臂 seed 数 1 < 3; 基准臂 seed 数 1 < 3；点估计仅作描述性（点估计 R=0.171982（上限 0.1）；CI95(log)=[0.1574421303850687, 0.18786488874080476]；CI95(boot)=[0.15690905340646188, 0.18691085901961219]；零驱动脉冲 577.0；seed 数 零=1/基准=1；逐 seed 比值=[0.17198211624441131]）",
    "evidence_class": "working_point_precondition",
    "discriminative": null,
    "baseline_value": null,
@@ -1104,8 +1104,8 @@
    "protocol_dt_ms": 0.05,
    "protocol_bin_ms": 100.0,
    "protocol_smooth_frames": 5,
-   "ci_lo_bootstrap": 0.1570075816726765,
-   "ci_hi_bootstrap": 0.1867634059516826,
+   "ci_lo_bootstrap": 0.15690905340646188,
+   "ci_hi_bootstrap": 0.18691085901961219,
    "per_seed_ratio": [
     0.17198211624441131
    ],
@@ -1120,12 +1120,12 @@
      0.1574421303850687,
      0.18786488874080476
     ],
-    "n_boot_effective": 4000,
+    "n_boot_effective": 8000,
     "ci95_bootstrap": [
-     0.1570075816726765,
-     0.1867634059516826
+     0.15690905340646188,
+     0.18691085901961219
     ],
-    "ci_upper_rel_diff": 0.00586316472708147,
+    "ci_upper_rel_diff": 0.005078275816131017,
     "ci_upper_conservative": 0.18786488874080476
    }
   },
@@ -1463,7 +1463,7 @@
    "ci_lo": 0.1615686232354158,
    "ci_hi": 0.1830667843521164,
    "status": "unavailable",
-   "reason": "sample_size_gate_unmet: 零驱动臂 seed 数 1 < 3; 基准臂 seed 数 1 < 3；点估计仅作描述性（点估计 R=0.171982（上限 0.1）；CI95(log)=[0.1615686232354158, 0.1830667843521164]；CI95(boot)=[0.1614984189632938, 0.18269673351503804]；零驱动脉冲 1154.0；seed 数 零=1/基准=1；逐 seed 比值=[0.17198211624441131]）",
+   "reason": "sample_size_gate_unmet: 零驱动臂 seed 数 1 < 3; 基准臂 seed 数 1 < 3；点估计仅作描述性（点估计 R=0.171982（上限 0.1）；CI95(log)=[0.1615686232354158, 0.1830667843521164]；CI95(boot)=[0.16156886976853702, 0.18284263300327855]；零驱动脉冲 1154.0；seed 数 零=1/基准=1；逐 seed 比值=[0.17198211624441131]）",
    "evidence_class": "working_point_precondition",
    "discriminative": null,
    "baseline_value": null,
@@ -1480,8 +1480,8 @@
    "protocol_dt_ms": 0.05,
    "protocol_bin_ms": 100.0,
    "protocol_smooth_frames": 5,
-   "ci_lo_bootstrap": 0.1614984189632938,
-   "ci_hi_bootstrap": 0.18269673351503804,
+   "ci_lo_bootstrap": 0.16156886976853702,
+   "ci_hi_bootstrap": 0.18284263300327855,
    "per_seed_ratio": [
     0.17198211624441131
    ],
@@ -1496,12 +1496,12 @@
      0.1615686232354158,
      0.1830667843521164
     ],
-    "n_boot_effective": 4000,
+    "n_boot_effective": 8000,
     "ci95_bootstrap": [
-     0.1614984189632938,
-     0.18269673351503804
+     0.16156886976853702,
+     0.18284263300327855
     ],
-    "ci_upper_rel_diff": 0.0020213980290744297,
+    "ci_upper_rel_diff": 0.0012244239151910459,
     "ci_upper_conservative": 0.1830667843521164
    }
   },

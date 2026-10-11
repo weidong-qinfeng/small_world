@@ -124,7 +124,7 @@
  },
  "exit_code": 2,
  "generated_by": "tools/validate_p11_resting.py",
- "generated_at": "2026-10-11T21:45:25",
+ "generated_at": "2026-10-11T21:48:22",
  "role": "M11 P5/G1 离线评估（只做分析，不做仿真；不写判据带）",
  "protocol_path": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_smoke_protocol_S4.json",
  "protocol": {
@@ -516,7 +516,7 @@
    "ci_lo": 0.14058794185791615,
    "ci_hi": 0.15910327034068614,
    "status": "unavailable",
-   "reason": "sample_size_gate_unmet: 零驱动臂 seed 数 1 < 3; 基准臂 seed 数 1 < 3；点估计仅作描述性（点估计 R=0.149559（上限 0.1）；CI95(log)=[0.14058794185791615, 0.15910327034068614]；CI95(boot)=[0.1405567718199887, 0.15874733450842235]；零驱动脉冲 1154.0；seed 数 零=1/基准=1；逐 seed 比值=[0.14955935717988594]）",
+   "reason": "sample_size_gate_unmet: 零驱动臂 seed 数 1 < 3; 基准臂 seed 数 1 < 3；点估计仅作描述性（点估计 R=0.149559（上限 0.1）；CI95(log)=[0.14058794185791615, 0.15910327034068614]；CI95(boot)=[0.14059456823878014, 0.15880414331725656]；零驱动脉冲 1154.0；seed 数 零=1/基准=1；逐 seed 比值=[0.14955935717988594]）",
    "evidence_class": "working_point_precondition",
    "discriminative": null,
    "baseline_value": null,
@@ -533,8 +533,8 @@
    "protocol_dt_ms": 0.05,
    "protocol_bin_ms": 100.0,
    "protocol_smooth_frames": 5,
-   "ci_lo_bootstrap": 0.1405567718199887,
-   "ci_hi_bootstrap": 0.15874733450842235,
+   "ci_lo_bootstrap": 0.14059456823878014,
+   "ci_hi_bootstrap": 0.15880414331725656,
    "per_seed_ratio": [
     0.14955935717988594
    ],
@@ -549,12 +549,12 @@
      0.14058794185791615,
      0.15910327034068614
     ],
-    "n_boot_effective": 4000,
+    "n_boot_effective": 8000,
     "ci95_bootstrap": [
-     0.1405567718199887,
-     0.15874733450842235
+     0.14059456823878014,
+     0.15880414331725656
     ],
-    "ci_upper_rel_diff": 0.0022371371217048256,
+    "ci_upper_rel_diff": 0.001880080923472261,
     "ci_upper_conservative": 0.15910327034068614
    }
   },

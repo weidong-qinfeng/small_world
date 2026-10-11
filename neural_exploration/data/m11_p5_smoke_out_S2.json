@@ -96,7 +96,7 @@
  },
  "exit_code": 1,
  "generated_by": "tools/validate_p11_resting.py",
- "generated_at": "2026-10-11T21:45:04",
+ "generated_at": "2026-10-11T21:48:21",
  "role": "M11 P5/G1 离线评估（只做分析，不做仿真；不写判据带）",
  "protocol_path": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_smoke_protocol_S2.json",
  "protocol": {
@@ -439,7 +439,7 @@
    "ci_lo": 0.09452079493069346,
    "ci_hi": 0.10907715259015112,
    "status": "fail",
-   "reason": "点估计 R=0.101538（上限 0.1）；CI95(log)=[0.09452079493069346, 0.10907715259015112]；CI95(boot)=[0.09374250032023539, 0.10967044065763336]；零驱动脉冲 825.0；seed 数 零=3/基准=3；逐 seed 比值=[0.0987078248384781, 0.10560675883256529, 0.10054844606946983]；判定未过（点估计≤上限=False、CI 上界≤0.12=True）统计未分辨（点估计未过，但 CI 上界未跨越 ×1.2 带）",
+   "reason": "点估计 R=0.101538（上限 0.1）；CI95(log)=[0.09452079493069346, 0.10907715259015112]；CI95(boot)=[0.09361217325944667, 0.1096459274645611]；零驱动脉冲 825.0；seed 数 零=3/基准=3；逐 seed 比值=[0.0987078248384781, 0.10560675883256529, 0.10054844606946983]；判定未过（点估计≤上限=False、CI 上界≤0.12=True）统计未分辨（点估计未过，但 CI 上界未跨越 ×1.2 带）",
    "evidence_class": "working_point_precondition",
    "discriminative": null,
    "baseline_value": null,
@@ -456,8 +456,8 @@
    "protocol_dt_ms": 0.05,
    "protocol_bin_ms": 100.0,
    "protocol_smooth_frames": 5.0,
-   "ci_lo_bootstrap": 0.09374250032023539,
-   "ci_hi_bootstrap": 0.10967044065763336,
+   "ci_lo_bootstrap": 0.09361217325944667,
+   "ci_hi_bootstrap": 0.1096459274645611,
    "per_seed_ratio": [
     0.0987078248384781,
     0.10560675883256529,
@@ -474,13 +474,13 @@
      0.09452079493069346,
      0.10907715259015112
     ],
-    "n_boot_effective": 20000,
+    "n_boot_effective": 8000,
     "ci95_bootstrap": [
-     0.09374250032023539,
-     0.10967044065763336
+     0.09361217325944667,
+     0.1096459274645611
     ],
-    "ci_upper_rel_diff": 0.005439159836812691,
-    "ci_upper_conservative": 0.10967044065763336
+    "ci_upper_rel_diff": 0.005214427227919215,
+    "ci_upper_conservative": 0.1096459274645611
    }
   },
   {

@@ -179,6 +179,26 @@ M10-B1 交叉核对时发现（已入档）：λ×1 臂的模型群体序列**�
 **但执行被 G0 阻塞**（门链硬约束）：**G0 = fail ⇒ G1 不得启动**。已限其仅做两件事：① **M10 轨迹的纯离线自检**（证明工具可跑通、四态正确，**不得**当 M11 判据）；
 ② **把 R9 后的"实测带"按"钙口径 vs 电生理口径"分列补入判据带**（同源、2 field、317.5 s/field、6.30 Hz；`wrong_usage_consequence` 写明混用偏差方向）。
 
+### R11b. G0 复跑跟进（**仍未通过**）：(e)(f) 已修至 pass；新增 `off_state_equivalence` fail
+
+节点复跑后的状态（主agent 读 JSON）：
+| 项 | 状态 |
+|---|---|
+| (a) spike alignment | **pass** |
+| **(e) 分段可组合性** | **pass**（step 与 chunk 的 k=1/2/5 **全 `bit_identical=True`**） |
+| **(f) 同步发放** | **pass**（`m9_raises=True` 且 **`m11_ok=True`**） |
+| (b)(c)(d)(g)(h) | `unavailable`（未运行） |
+| **extensions.`off_state_equivalence`** | 🔴 **fail**（节点此前称"三延迟档 FP 累加序差异 = 单 ULP" ⇒ 需量化与定性） |
+| extensions `slot_encoding_assertions` / **`positive_controls`** / `no_leak` / `upstream_defect_E_M9_4` | `unavailable` |
+| `gate_verdict` | **partial**（**≠ 通过**：G0 通过条件 = 全项 measured 且全过） |
+
+- **主agent 独立复跑 (e)**（`build_laminar_probe_column(120, indegree=8)` + `n_ch=4` + step + T=6000）：**k=1/2/5 结束后逐神经元计数完全相同（差异神经元 0）**
+  ⇒ 与节点 pass 一致 ✓（本探针的 `total` 列是把 `run()` 累计计数再加总 ⇒ **无意义量**，已在脚本内注明）。
+- **🔴 已要求节点举证"是修了引擎还是放松了判据"**（引擎侧改动行号 + 根因一句话 + **判据未改的证据**），并要求把 `root_cause`/`fix` 写入 JSON；
+  翻转必须有可核查机制解释，否则按 `invalid` 处理（防 M10 L31"判据静默变松"重演）。
+- **`off_state_equivalence` fail 的处置二选一**：修到逐位一致，**或**登记为"FP 累加序、非语义"并给出**量化上限**（`max|Δcounts|`、差异神经元数、ULP 级相对量）
+  **+ 显式容差判据**（写进清单/env notes 新增行）+ 说明对**状态结构/AR(1) τ** 等判据是否稳健。
+
 ## 4. 对 P2 判定的影响（诚实记录）
 
 **M11 的核心方法学卖点是"结构-功能同源"**，但本轮实测后必须**收窄**：

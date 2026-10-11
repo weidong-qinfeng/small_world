@@ -1,0 +1,123 @@
+{
+ "generated_by": "M11 执行节点 B3（工作包 G1：P5 判据/协议设计与工具骨架）",
+ "generated_at": "2026-10-11",
+ "policy": {
+  "rule": "本节点**不启动任何仿真或 >10 min 的作业**（纪律）；以下作业一律由主agent 以**托管后台作业**启动并回传日志",
+  "thread_discipline": "CPU 作业必须 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1；MPS 作业**串行**（禁并发）",
+  "progress_rule": "长作业进度必须看「累计 CPU 时间 / 墙钟」之比，**不得**只看 `ps %CPU`（M10 L46/L50：实测占空比 ≈10%，曾导致误杀）",
+  "kill_rule": "终止前必须看进度",
+  "g0_blocker": "R11：G0 引擎门 = fail ⇒ **G1 不得启动**。因此下列 J3–J5（需要仿真的 P5 运行）在 G0 全项复测通过前**不要启动**；J1/J2（纯数据）不依赖 G0，可在预算内启动。"
+ },
+ "common_env": {
+  "cwd": "/Users/weidong/ai/small_world",
+  "env": "PYTHONPATH=/Users/weidong/ai/small_world OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONHASHSEED=0",
+  "python": "./.venv-m11/bin/python",
+  "forbidden": "sys.executable / MPS 并发 / 覆盖他节点文件"
+ },
+ "jobs": [
+  {
+   "job_id": "J1",
+   "title": "（可选，最高优先）Allen in vivo 电生理 → P5 (a) 实测中位率带",
+   "why": "当前 (a) 的带是 literature 档（PMID 30419013）。清单 §4.5(a) 要求「小鼠 V1 在体自发放电带，运行前由 §1.5 C2 同口径定稿」；RF-M11-1 允许 literature，但主agent 已把活动通道改向 Allen（R6，R9 后降为跨制备参照）⇒ 有实测量时**新增行**替换更稳。",
+   "blocked_by": "无（纯数据；不依赖 G0）",
+   "est_wall": "20–60 min（单 session NWB ≈100–250 MB @ 2.8–4.0 MB/s（M10 实测 GCS/S3 吞吐）＋ 解析）",
+   "commands": [
+    "# ① 列举 Allen BO Neuropixels (visual-coding) 的 ecephys NWB（仅列目录，已实测可 list）",
+    "curl -sS -m 30 'https://allen-brain-observatory.s3.amazonaws.com/?list-type=2&prefix=visual-coding-neuropixels/ecephys-cache&max-keys=8' -o /tmp/ma_bo_neye_list.xml && head -c 1200 /tmp/ma_bo_neye_list.xml",
+    "# ② 取单个 session 的 spike_times + unit 表（示例 key 需由上一步列出后替换；只取 1 个 session ≈ 100–250 MB）",
+    "curl -sS -L -m 900 -o /tmp/ma_bo_neye_session.nwb 'https://allen-brain-observatory.s3.amazonaws.com/<由上一步列出的 key>'",
+    "# ③ 解析：逐 unit 发放率（灰屏/自发窗口）→ 中位率、静默比例（两口径）、层/区登记",
+    "./.venv-m11/bin/python - <<'PY'",
+    "import h5py, numpy as np",
+    "f=h5py.File('/tmp/ma_bo_neye_session.nwb','r')",
+    "st=f['units']['spike_times']  # ragged dataset",
+    "dur=float(f['session_start_time'] is not None)  # ← 时长以 /intervals 或 attributes 的 session 时长为准（读回断言）",
+    "print(f['general']['institution'] if 'general' in f else '', list(f.keys()))",
+    "PY"
+   ],
+   "artifacts": [
+    "neural_exploration/data/m11_p5_rate_reference.csv（新建；列：unit_id/area/layer/rate_hz/epoch/spike_count/recording_duration_s/silent_flag）",
+    "neural_exploration/data/m11_p5_rate_reference.json（读回断言：session 时长、采样率、unit 计数、epoch 定义）"
+   ],
+   "acceptance": "① 采样率/时长/unit 计数读回断言通过；② 中位率与静默比例**同口径**（同 epoch、同 T）算出；③ 若与 literature 档（0.5–2.0 Hz）差异 >3× ⇒ 必须定位口径维度（灰屏 vs 自发 vs 被动观看；层/区子集；unit 质量阈值）后再改写带",
+   "note": "**可达 ≠ 可行**（R 纪律 §5）：若实测吞吐 <100 KB/s ⇒ 立即停并登记 unavailable(吞吐)"
+  },
+  {
+   "job_id": "J2",
+   "title": "（可选）MICrONS 同源 2 field → P5 (b) 钙域静默比例带的**口径输入**",
+   "why": "R9 判定体素序列可解码（measured，200/200）；R10 已用其建出 S 门的 τ 带。(b) 需要的不是 τ 而是**静默比例**的钙域口径（帧率 6.300006 Hz、ROI 定义、神经域反演）。这是一条**低风险**路径：只做元数据/口径定稿，不引入新下载。",
+   "blocked_by": "无（数据已在 data/m11_raw/microns/functional_subset 内，200 chunk = 2,000 帧 ≈ 317.5 s）",
+   "est_wall": "5–15 min（纯离线复算；B1 已落盘的 200 chunk 就地解析）",
+   "commands": [
+    "# 复用 B1 的解析结论（大端 int16；无掩膜）+ 200 chunk 就地重建群体序列，并给出「零活动帧比例」与「高像素占比」两口径",
+    "./.venv-m11/bin/python neural_exploration/tools/verify_m11_same_source_band.py   # 只读；已由主agent 跑过（2.7 s），本作业只需在其基础上加静默口径列",
+    "# ⚠️ 若需新脚本，请由 B1/B4 承担（本工作包边界为 data/m11_p5_*；不得新增 tools/*.py）"
+   ],
+   "artifacts": [
+    "neural_exploration/data/m11_p5_silent_reference_ca.csv（新建；列：pipeline/n_frames/silent_frac_zero_activity/…，双口径并列）"
+   ],
+   "acceptance": "(b) 的钙域带**定稿**（新增行，`final=1`）需：① 口径逐项写清（帧率/ROI/神经域/是否平滑）；② 给跨 field 与跨时间窗离散度；③ 与电生理域带**并列**不混用（清单 §4.5(b)）",
+   "note": "若 ROI 提取管线不可得 ⇒ 直接判 `unavailable` 并写明「已覆盖的维度」（R9 新纪律：不得因未覆盖而写成不可用）"
+  },
+  {
+   "job_id": "J3",
+   "title": "（**G0 通过后**）P5 主运行：G1 正式评估的多臂协议",
+   "why": "P5/G1 的 (a)–(i) 正式判定：零驱动/基准各 ≥3 seed、剂量 {0,0.5,1,2,4,8}、E/I 电流积分注入、逐档 T 阶梯。",
+   "blocked_by": "**G0 = fail（R11）⇒ 不得启动**；另需判据表 8 条 final=0 行定稿",
+   "est_wall": "按 §10.1：G1 段 GPU ≤10 GPU-h；单试次 N_mid/T=30 s ≈0.05–0.15 GPU-h（预注册）⇒ **靠 G0 探针实测修正后才能定价**。本节点给的预注册式：Σ_条件 Σ_seed [steps(T,dt) × ms_per_step × 3.6e-6]（T 阶梯 ×3 ⇒ 成本 ×3）",
+   "commands": [
+    "# ① 先探针（B2 的 G0 作业）：三档 N 的稳态 ms/step + RSS",
+    "PYTHONPATH=/Users/weidong/ai/small_world OMP_NUM_THREADS=1 ./.venv-m11/bin/python -m neural_exploration.tools.scan_m11_engine --help   # 由 B2 提供确切参数",
+    "# ② 每个 (config, mechanism, dose, seed, T) **一个新进程**（逐目标/逐试次新进程纪律）",
+    "#    产物须落：pop_trace（.npy，逐步群体脉冲数）+ counts（.csv，逐神经元计数，含 cell_type）+ ei 电流积分（JSON）+ wall_s/ms_per_step",
+    "# ③ 用本工作包的工具做**离线评估**（不启动仿真）",
+    "./.venv-m11/bin/python -m neural_exploration.tools.validate_p11_resting \\",
+    "    --protocol-json neural_exploration/data/m11_p5_protocol.json \\",
+    "    --out-csv neural_exploration/data/m11_p5_resting_eval.csv \\",
+    "    --out-json neural_exploration/data/m11_p5_resting_eval.json"
+   ],
+   "artifacts": [
+    "neural_exploration/data/m11_p5_protocol.json（运行前定稿：臂清单 + T 阶梯 + settle/seed）",
+    "neural_exploration/data/m11_p5_resting_eval.{csv,json}（工具输出：四态 + 六项硬门 + 张力块 + 时长阶梯）",
+    "neural_exploration/data/m11_p5_resting.csv / m11_p5_drive_sensitivity.csv / m11_p5_ei_balance.csv（清单 §4.5 交付物；由托管作业落盘）"
+   ],
+   "protocol_json_requirements": [
+    "每个零驱动/基准臂**至少 3 个 seed**（同 config_id 同 T 同 mechanism）",
+    "零驱动臂**总脉冲 ≥300**（不足 ⇒ (c) 会自动判 unavailable——请勿据此判 fail）",
+    "T 必须给 {T_min, 2×T_min, 4×T_min} 三档，且**逐档独立重跑**（禁截断；工具含前缀检测）",
+    "每臂须同时提供 pop_trace 与 counts（否则硬门③不可校验 ⇒ 整体不可 pass）",
+    "(e) 须注入 ei.i_exc_integral / ei.i_inh_integral（工具不从发放率反推电流）",
+    "须提供 mechanism=\"none\" 且 drive_mult=1 的基线臂（硬门⑤）"
+   ]
+  },
+  {
+   "job_id": "J4",
+   "title": "（**G0 通过后**）G1 不合格时的替代臂：标定杠杆 L1/L2（异质阈值/适应；E/I 比例）",
+   "why": "若 (a)∧(b) 不可同时成立（M10 A4 的正体），按本工作包 §5 的杠杆顺序换杠杆；L0（压自持）必须先过 (c)。",
+   "blocked_by": "J3 的结论 + G0 通过",
+   "est_wall": "按 J3 的单试次成本 × 臂数（预注册包络：G1 段 ≤10 GPU-h）",
+   "commands": [
+    "# 形态与 J3 相同，仅替换协议 JSON 的臂参数；**每一档改动后必须重跑零驱动臂重核 (c)**",
+    "./.venv-m11/bin/python -m neural_exploration.tools.validate_p11_resting --protocol-json <新协议> --out-json <新输出>"
+   ],
+   "artifacts": ["neural_exploration/data/m11_p5_calibration_targets_v2.csv（新增行；原行保留）"],
+   "note": "**禁止**用「提高背景 λ」当标定手段（§5 禁项）"
+  },
+  {
+   "job_id": "J5",
+   "title": "（**G0 通过后**）确定性重复臂：同参数重跑（(h)）",
+   "why": "工具只比较不生成 ⇒ 需要仿真侧提供 replica 臂（同 config/seed/T）。",
+   "blocked_by": "G0 通过",
+   "est_wall": "与 J3 的单试次相当 × 2",
+   "commands": ["# 同 J3，但同一 (config, mechanism, dose, seed, T) 跑两次；第二次 arm 标 replica_of=<第一次 arm_id>"],
+   "artifacts": ["neural_exploration/data/m11_p5_replica_check.json"],
+   "note": "跨进程逐位一致性归 G0（清单 §2.3(e)）；P5 只要求统计级一致（判据表 determinism_mode=statistical）"
+  }
+ ],
+ "not_requested": [
+  {"item": "任何 MPS 作业", "reason": "本节点现无需求；纪律要求串行且 MPS 仅由主agent 调度"},
+  {"item": "DQ-4 的功能连接组学 pkl 下载", "reason": "主agent 已实测吞吐（8 路持续 17 min 仅 10–16 KB/s ⇒ ETA 5–8 h）判不可行；本工作包不得依赖"},
+  {"item": "v8 DataJoint DB 取数（逐细胞轨迹）", "reason": "R1 保持：103.8 GB / 116.2 GB、36–58 KB/s ⇒ 20–30 天（永久不可行）"},
+  {"item": "S 门（P6）目标带与机制阶梯", "reason": "归属 S 门；本工作包只登记边界（microns_same_source_tau_band_ref 标为 S 门所有）"}
+ ]
+}
