@@ -562,15 +562,29 @@ def cmd_func_subset(args):
                     for blk in iter(lambda: fh.read(1 << 20), b""):
                         h.update(blk)
                 sha = h.hexdigest()
+            # **根因修复（主 agent 复核发现）**：只看 http_code+bytes 会把"curl 超时留下的半成品"
+            # 记成 REACHABLE ⇒ 必须同时要求 curl_exit == 0；并就地做 gzip 完整性预检
+            partial = False
+            if code in (200, 206) and n > 0:
+                try:
+                    import gzip as _gz
+                    _b = open(dst, "rb").read() if os.path.exists(dst) else b""
+                    _off = _b.find(b"\x1f\x8b\x08", 0, 64)
+                    _raw = _gz.decompress(_b[_off:]) if _off >= 0 else None
+                    if _raw is None or len(_raw) != args.raw_chunk_bytes:
+                        partial = True
+                except Exception:
+                    partial = True
+            ok = (code in (200, 206)) and n > 0 and rc == 0 and not partial
             return dict(idx=i, t_chunk=tc, url=url, http_code=code, bytes=n, sha256=sha, content_type=ct,
                         time_total_s=round(t, 3), retrieved_at=utcnow(),
                         local_path=os.path.relpath(dst, os.path.dirname(ROOT)),
-                        verdict="REACHABLE" if (code in (200, 206) and n > 0) else "BLOCKED",
-                        note="curl_exit=%s" % rc)
+                        verdict="REACHABLE" if ok else "BLOCKED",
+                        note="curl_exit=%s%s" % (rc, "; PARTIAL(解压/尺寸不符，需重取)" if partial else ""))
 
         with ThreadPoolExecutor(max_workers=args.jobs) as ex:
             for r in ex.map(fetch, range(args.n_chunks)):
-                if r["http_code"] in (200, 206) and r["bytes"] > 0:
+                if r["verdict"] == "REACHABLE":
                     total += r["bytes"]
                 w.writerow(r)
                 f.flush()

@@ -398,7 +398,7 @@ def main():
     # ---- 原始 BigTIFF 地面真值（独立于 precomputed 分片的"像不像图像"标定）----
     gt = None
     local_tif = args.tiff_local or os.path.join(RAW, "microns", "functional", "tif_frames_probe.bin")
-    if os.path.exists(local_tif) and os.path.getsize(local_tif) > 218240 * 3:
+    if os.path.exists(local_tif) and os.path.getsize(local_tif) >= 218240 * 2:
         b = open(local_tif, "rb").read()
         nfr = len(b) // 218240
         frames = np.frombuffer(b[:nfr * 218240], dtype="<u2").reshape(nfr, 440, 248)
@@ -409,8 +409,10 @@ def main():
                   lat_x=round(m["lat_x"], 4), lat_y=round(m["lat_y"], 4), frame=round(m["frame"], 4),
                   p1=m["p1"], p50=m["p50"], p99=m["p99"], vmin=m["vmin"], vmax=m["vmax"],
                   n_nan=m["n_nan"], n_inf=m["n_inf"],
-                  note="**独立地面真值**（与 precomputed 分片不同的 scan）：原始 TIFF 帧本身就是高相关图像 "
-                       "⇒ 证明 lat≈0.8 才是本模态的正常水平（判据阈值 0.2 由此锚定，非自证）")
+                  partial_prefix=True,
+                  note="**独立地面真值**（与 precomputed 分片**不同的 scan**、未压缩）：原始 TIFF 帧本身即高相关图像 "
+                       "⇒ 证明 lat≈0.8 才是本模态的正常水平（判据阈值 0.2 由此锚定，非自证）；"
+                       "本文件为 Range 前缀（帧数少，仅作量级锚，不作判据带）")
         log("TIFF 地面真值（本地）：%d 帧 lat_x=%.3f lat_y=%.3f frame=%.3f"
             % (nfr, gt["lat_x"], gt["lat_y"], gt["frame"]))
     elif args.with_tiff_groundtruth:

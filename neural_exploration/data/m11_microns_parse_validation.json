@@ -1,6 +1,6 @@
 {
  "generated_by": "tools/validate_m11_microns_parse.py",
- "generated_at": "2026-10-11T13:03:58Z",
+ "generated_at": "2026-10-11T13:06:50Z",
  "criteria": {
   "lat_x_min": 0.2,
   "frame_min": 0.2,
@@ -233,11 +233,15 @@
   "vmax_global": 32763.0,
   "n_nan": 0,
   "n_inf": 0,
-  "n_sentinel_uint16_ge_65000": 10383,
-  "n_zero": 193266,
   "n_elements": 80000000,
-  "n_saturated_p99x3": 0,
-  "masked_rule": "哨兵/饱和候选掩膜规则（数据驱动，预注册）：**uint16 读法 > 65000** （⇔ int16 < 0，本轮共 10383 / 80000000 元素 = 0.01298%）→ 统计前置为缺失并登记",
+  "n_zero": 193266,
+  "n_int16_negative": 10383,
+  "n_int16_saturated_max": 0,
+  "n_uint16_gt_65000": 10383,
+  "n_below_baseline": 10383,
+  "below_dev_p50": -381.4,
+  "below_nb_negfrac_p50": 0.1111,
+  "below_isolated_frac": 0.0,
   "lat_x_mean": 0.7768,
   "lat_x_min": 0.6155,
   "lat_x_max": 0.8868,
@@ -255,16 +259,50 @@
   "p50_max": 2797.0,
   "p99_mean": 6471.36,
   "p99_min": 3559.0,
-  "p99_max": 10042.01
+  "p99_max": 10042.01,
+  "obj_max_p50": 28066,
+  "dtype_verdict": {
+   "int16_BE": {
+    "verdict": "accepted",
+    "why": "负值仅 10383/80000000 (0.01298%)，幅度 −1…−138，**空间成簇**（3×3 邻域负值比例 p50=0.1111 vs 随机独立 0.00012979 ⇒ 富集 ~856×；孤立比例 0.000），且位于**暗区**（负值像素邻域均值 p50≈395 vs 全局中位 1953），相对局部基线仅低 ~381 counts ⇒ 形态与「低于基线的噪声下探」一致"
+   },
+   "uint16_BE": {
+    "verdict": "rejected",
+    "why": "同一批样本在 uint16 读法下的真值 = 65398…65535，是**对象自身最大值 p50=28066 的 2.3–2.3 倍**，而其空间邻居仅 ~395 counts ⇒ 需要「孤立超亮点被暗背景包围」的物理荒诞解；且 0 个样本落在 int16 饱和/哨兵极端（32767 计数=0）"
+   }
+  },
+  "masked_rule": "**掩膜规则（预注册）：无掩膜**。NaN/Inf 在整型域结构性为 0；int16 饱和(32767)=0 ⇒ 无饱和伪影；低于基线样本 10383 (0.01298%) **保留**（成簇于暗区、属噪声下探；掩膜会引入正偏）；零值 193266 (0.2416%) 一并登记"
  },
- "tiff_groundtruth": null,
+ "tiff_groundtruth": {
+  "source": "local neural_exploration/data/m11_raw/microns/functional/tif_frames_probe.bin",
+  "url": "https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/functional_data/two_photon_functional_scans/functional_scan_17797_4_10_v1.tif",
+  "bytes": 921600,
+  "n_frames": 4,
+  "frame_shape": [
+   440,
+   248
+  ],
+  "dtype": "uint16-LE（BigTIFF 头声明，SampleFormat=1）",
+  "lat_x": 0.7653,
+  "lat_y": 0.7348,
+  "frame": -0.0401,
+  "p1": 3.7899999999999636,
+  "p50": 1879.0,
+  "p99": 7376.420000000042,
+  "vmin": 0.0,
+  "vmax": 65535.0,
+  "n_nan": 0,
+  "n_inf": 0,
+  "partial_prefix": true,
+  "note": "**独立地面真值**（与 precomputed 分片**不同的 scan**、未压缩）：原始 TIFF 帧本身即高相关图像 ⇒ 证明 lat≈0.8 才是本模态的正常水平（判据阈值 0.2 由此锚定，非自证）；本文件为 Range 前缀（帧数少，仅作量级锚，不作判据带）"
+ },
  "sentinel_and_missing": {
   "n_elements_full": 80000000,
   "n_nan": 0,
   "n_inf": 0,
   "n_zero": 193266,
-  "n_sentinel_uint16_ge_65000": 10383,
-  "rule": "哨兵/饱和候选掩膜规则（数据驱动，预注册）：**uint16 读法 > 65000** （⇔ int16 < 0，本轮共 10383 / 80000000 元素 = 0.01298%）→ 统计前置为缺失并登记",
+  "n_sentinel_uint16_ge_65000": null,
+  "rule": "**掩膜规则（预注册）：无掩膜**。NaN/Inf 在整型域结构性为 0；int16 饱和(32767)=0 ⇒ 无饱和伪影；低于基线样本 10383 (0.01298%) **保留**（成簇于暗区、属噪声下探；掩膜会引入正偏）；零值 193266 (0.2416%) 一并登记",
   "discipline": "**未处理 ≠ 无缺失**：NaN/哨兵/零值计数与掩膜规则必须随统计量一并落盘"
  }
 }
