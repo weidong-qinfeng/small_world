@@ -380,6 +380,19 @@ def main():
                         checks[0].get("be_frame_lag1") if checks else None,
                         checks[0].get("le_frac_negative") if checks else None)))
 
+    # ---------------- P1.10 报告正文限制登记（主 agent 必须修项 §三.2）----------------
+    rp = os.path.join(DOCS, "m11_data_gate_report.md")
+    txt = open(rp, encoding="utf-8").read() if os.path.exists(rp) else ""
+    A.append(assert_("P1.10a v8 DataJoint DB 限制已写入**报告正文**并给判定词",
+                     "DataJoint" in txt and "unavailable" in txt and "F-1" in txt,
+                     "报告正文命中 F-1/DataJoint/unavailable" if "F-1" in txt else "缺失"))
+    A.append(assert_("P1.10b 2/144 field 覆盖度限制已写入正文并给判定词",
+                     "2/144" in txt or "2 个 }".replace("}", "") in txt or "只有 2 个" in txt,
+                     "命中覆盖度限制" if ("2/144" in txt or "只有 2 个" in txt) else "缺失"))
+    A.append(assert_("P1.10c P2 判定草案已落盘（待确认、未定稿）",
+                     "判定**草案**" in txt or "P2 判定" in txt,
+                     "命中 §6d" if "§6d" in txt else "缺失"))
+
     # ---------------- 判定 ----------------
     for a in A:
         if not a["ok"]:

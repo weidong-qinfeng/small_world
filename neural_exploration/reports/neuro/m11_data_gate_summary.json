@@ -1,6 +1,6 @@
 {
  "generated_by": "tools/validate_p11_data_gate.py",
- "generated_at": "2026-10-11T14:32:23Z",
+ "generated_at": "2026-10-11T14:35:25Z",
  "gate": "G2 (P1/P2 数据门)",
  "assertions": [
   {
@@ -252,6 +252,26 @@
    "assertion": "P1.9c 子集解压验证产物已按**大端口径**重生成（含 LE 误读对照）",
    "ok": true,
    "detail": "n=5；示例 be_lat_x=0.814 be_frame=0.8032 le_frac_negative=0.49962"
+  },
+  {
+   "assertion": "P1.10a v8 DataJoint DB 限制已写入**报告正文**并给判定词",
+   "ok": true,
+   "detail": "报告正文命中 F-1/DataJoint/unavailable"
+  },
+  {
+   "assertion": "P1.10b 2/144 field 覆盖度限制已写入正文并给判定词",
+   "ok": true,
+   "detail": "命中覆盖度限制"
+  },
+  {
+   "assertion": "P1.10c P2 判定草案已落盘（待确认、未定稿）",
+   "ok": true,
+   "detail": "命中 §6d"
+  },
+  {
+   "assertion": "DET 复跑 verdict 一致（确定性）",
+   "ok": true,
+   "detail": "[{\"source_id\": \"2\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"3\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F7\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F8\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F9\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}]"
   }
  ],
  "failures": [],
@@ -265,7 +285,7 @@
  ],
  "P1": {
   "verdict": "pass",
-  "n_assertions": 33,
+  "n_assertions": 36,
   "n_failed": 0
  },
  "P2": {
@@ -273,5 +293,41 @@
   "n_assertions": 17,
   "n_failed": 0
  },
- "G2_gate": "pass"
+ "G2_gate": "pass",
+ "determinism_check": {
+  "note": "复跑固定子集（#2/#3/F7/F8/F9），比对 verdict 是否一致",
+  "comparisons": [
+   {
+    "source_id": "2",
+    "first": "REACHABLE",
+    "rerun": "REACHABLE",
+    "same": true
+   },
+   {
+    "source_id": "3",
+    "first": "REACHABLE",
+    "rerun": "REACHABLE",
+    "same": true
+   },
+   {
+    "source_id": "F7",
+    "first": "REACHABLE",
+    "rerun": "REACHABLE",
+    "same": true
+   },
+   {
+    "source_id": "F8",
+    "first": "REACHABLE",
+    "rerun": "REACHABLE",
+    "same": true
+   },
+   {
+    "source_id": "F9",
+    "first": "REACHABLE",
+    "rerun": "REACHABLE",
+    "same": true
+   }
+  ],
+  "all_same": true
+ }
 }

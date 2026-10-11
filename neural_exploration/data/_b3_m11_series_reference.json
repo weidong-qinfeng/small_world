@@ -22,12 +22,12 @@
   "self_proof": {
     "sentinels": {
       "neg16": 10383,
-      "u16gt": 622888,
-      "both": 1976,
-      "u16gt_not_neg": 620912,
+      "u16gt": 10383,
+      "both": 10383,
+      "u16gt_not_neg": 0,
       "total": 80000000,
       "ratio_of_total": 0.0001297875,
-      "equiv_int16_neg_iff_u16gt65000": false
+      "equiv_int16_neg_iff_u16gt65000": true
     },
     "global_min_int16": -138,
     "structure": {
@@ -48,6 +48,26 @@
         "p50_min": -250.0,
         "p50_max": 8.0,
         "n_prod": 79600000
+      }
+    },
+    "structure_per_object": {
+      "px_h": {
+        "median": 0.39271221396404266,
+        "min": 0.2485789151166981,
+        "max": 0.5061918043691032,
+        "n": 200
+      },
+      "px_v": {
+        "median": 0.38479645115581695,
+        "min": 0.23731381330298498,
+        "max": 0.49151595533835607,
+        "n": 200
+      },
+      "ft": {
+        "median": 0.7850043713941603,
+        "min": 0.6138438010782061,
+        "max": 0.8889417265400491,
+        "n": 200
       }
     }
   },
@@ -761,11 +781,11 @@
     "TAU_MIN_FRAMES": 300,
     "MIN_FRAMES_BIC": 500
   },
-  "wallclock_s": 23.481939792633057,
-  "cpu_s": 23.180594,
+  "wallclock_s": 24.31637692451477,
+  "cpu_s": 24.291896,
   "determinism": "gzip 确定性 + HMM seed=0 + 无随机采样 ⇒ 可复跑逐位一致",
   "artifacts_sha256_file_bytes": {
-    "_b3_m11_series_reference.json": "608eccb6d96c7fc45e35f003d697df3352882b1d1324530723a28a87813d3e6e",
+    "_b3_m11_series_reference.json": "ee1086c53a860f4301becf852fccfff25d07748471628fd635bf4905bcdc530f",
     "_b3_m11_series_reference.csv": "6b83a031ab4994bfeb54f40224f631ce013c6a24438da66feb2002dd2a80e90d"
   }
 }

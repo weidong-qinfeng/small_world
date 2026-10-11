@@ -4,6 +4,7 @@
  "engine_version": "m11e-1.0-4slot+laminar-delay-pack+slowvar",
  "criteria": {
   "a_spike_time_alignment": {
+   "reference": "解析闭式（与引擎同一 Euler 递推）首发放步 + 链式延迟语义 + M9 冻结内核（稀疏链逐位）",
    "status": "pass",
    "note": "解析（Euler 离散闭式）首发放步误差 ≤1 步 + 链式延迟语义 + M9 稀疏逐位",
    "detail": {
@@ -39,6 +40,7 @@
    }
   },
   "b_state_fraction": {
+   "reference": "M10 修正内核（同网络/同事件表/同 seed，机制全关 + REF_FROZEN 档）",
    "status": "pass",
    "note": "静默比差 <1pp 且发放率分布 KS p>0.05（在 3 档目标密度下）",
    "detail": [
@@ -66,6 +68,7 @@
    ]
   },
   "c_mechanism_metrics": {
+   "reference": "逐类电导积分的闭式重算（由 spike 时刻 + 边表 + 逐类 τ 独立算出，含外部事件）",
    "status": "pass",
    "note": "逐类电导积分：引擎累积（动态）vs 闭式（由 spike 时刻+边表独立算出）≤2%",
    "detail": {
@@ -91,6 +94,7 @@
    }
   },
   "d_determinism": {
+   "reference": "同引擎同参数重跑 + 分段（k 扫描）+ 跨进程（3 新进程）逐位",
    "status": "pass",
    "note": "同引擎同参数重跑 + 分段/跨进程逐位（(e)(h) 更严）",
    "detail": {
@@ -111,6 +115,7 @@
    }
   },
   "e_segment_composability": {
+   "reference": "同一配置仅改分段策略 k（1/2/5 与 3/10 扩展扫描）× step/chunk 两路径",
    "status": "pass",
    "note": "k=1/2/5 总脉冲与逐神经元计数逐位相同（step/chunk 两口径）；反例臂必现差异",
    "detail": {
@@ -164,6 +169,7 @@
    }
   },
   "f_synchronous_firing": {
+   "reference": "M9 冻结内核（判别对照：同步发放必抛 IndexError）+ 逐类落槽的独立期望",
    "status": "pass",
    "note": "M9 抛错 / M11 正常；且逐类环槽残量与独立重算一致（≤2%）",
    "detail": {
@@ -199,6 +205,7 @@
    }
   },
   "g_target_density": {
+   "reference": "Allen ephys 密度锚（口径受限）+ 2 档灵敏度点，被测对象同上（M10 修正内核）",
    "status": "pass",
    "note": "3 档密度（含 Allen 中位带；口径受限）下的 (a)–(c) 类对齐复测；MICrONS 钙域密度锚 = unavailable（B1 L11.3/L11.5 未决）⇒ 如实登记、不计 fail",
    "detail": {
@@ -221,6 +228,7 @@
    }
   },
   "h_cross_process": {
+   "reference": "3 个全新进程（显式 venv 解释器）逐位 SHA-256",
    "status": "pass",
    "note": "3 个全新进程 × 2 档（on / off_frozen）→ 脉冲总数与逐神经元计数逐位相同",
    "detail": {
@@ -230,9 +238,9 @@
      "spk_total": 244,
      "sha256": "3d7a2b56707a29d3c3369610206697419437cd9f815fa7130c227b8f3a2e8df8",
      "pids": [
-      39669,
-      39670,
-      39684
+      40260,
+      40276,
+      40277
      ]
     },
     "off_frozen": {
@@ -241,9 +249,9 @@
      "spk_total": 3730,
      "sha256": "c29dd7a0ee3a7f74f4064db92cb28c859345a11cbbd1285460949abcc6dd41ea",
      "pids": [
-      39694,
-      39701,
-      39711
+      40278,
+      40288,
+      40289
      ]
     }
    }
@@ -362,8 +370,8 @@
      "spk_total": 244.0,
      "counts_sum": 244.0,
      "rel_diff_count_vs_total": 0.0,
-     "wall_s": 1.9675175419999995,
-     "wall_from_ms_per_step_s": 1.9675175419999995
+     "wall_s": 1.8490706669999994,
+     "wall_from_ms_per_step_s": 1.8490706669999994
     },
     "core_readback": {
      "core_key": "nc4_slow1_semantic_fix",
@@ -533,7 +541,7 @@
    }
   },
   "upstream_defect_E_M9_4": {
-   "status": "registered",
+   "status": "informational",
    "note": "冻结件点核（非 gaba 路径）的不应期门实读 `t_ahp`、AHP 电导实读 `t_cool`；M10 的 `gaba_split=True` 路径参数序正确 ⇒ **同一内核两条路径语义不同**。M11 默认采用文档语义（REF_FIX），并保留 REF_FROZEN 供逐位等价与量级量化。",
    "detail": {
     "single_neuron_ISI": {
@@ -632,36 +640,64 @@
     "rows": [
      {
       "seg": 0,
-      "rss_mb": 189.83,
+      "rss_mb": 188.0,
       "ar_buf_numel": 4096
      },
      {
       "seg": 1,
-      "rss_mb": 190.06,
+      "rss_mb": 188.44,
       "ar_buf_numel": 4096
      },
      {
       "seg": 2,
-      "rss_mb": 190.25,
+      "rss_mb": 188.62,
       "ar_buf_numel": 4096
      },
      {
       "seg": 3,
-      "rss_mb": 190.25,
+      "rss_mb": 188.84,
       "ar_buf_numel": 4096
      },
      {
       "seg": 4,
-      "rss_mb": 190.47,
+      "rss_mb": 188.88,
       "ar_buf_numel": 4096
      }
     ],
-    "rss_growth_mb": 0.6399999999999864,
+    "rss_growth_mb": 0.8799999999999955,
     "ar_buf_numel_last": 4096,
     "crit_pass": true,
     "note": "禁以动态规模为缓存键（M9 真 bug）；`_ar_buf` 必须保持**单一**增长缓冲"
    }
   }
+ },
+ "gate_pass_condition": "pass ⟺ 全部判据项 {crit.a..crit.h, ext.off_state_equivalence, ext.slot_encoding_assertions, ext.positive_controls} 均 `pass`（无 `fail`、无 `unavailable`）；存在 `unavailable` ⇒ `incomplete`（**不得**写成 pass 或 partial）；存在 `fail` ⇒ `fail`",
+ "criterion_states": {
+  "crit.a_spike_time_alignment": "pass",
+  "crit.b_state_fraction": "pass",
+  "crit.c_mechanism_metrics": "pass",
+  "crit.d_determinism": "pass",
+  "crit.e_segment_composability": "pass",
+  "crit.f_synchronous_firing": "pass",
+  "crit.g_target_density": "pass",
+  "crit.h_cross_process": "pass",
+  "ext.off_state_equivalence": "pass",
+  "ext.slot_encoding_assertions": "pass",
+  "ext.positive_controls": "pass"
+ },
+ "criterion_counts": {
+  "n_total": 11,
+  "n_measured": 11,
+  "n_pass": 11,
+  "n_fail": 0,
+  "n_unavailable": 0
+ },
+ "evidence": {
+  "alignment_json_sha256": "9fd96953e4fa976590f292560bb6fb1b",
+  "engine_src_sha256": "84b5759db16253060b4791c3fc444960",
+  "tool_sha256": "b7bb88b53e9ba373d29c0187a30796b5",
+  "minrepro": "/Users/weidong/ai/small_world/neural_exploration/data/m11_minrepro_delivery.json",
+  "stale_guard": "本 summary 由本轮实跑生成；若与 `criterion_states` 不一致，以本文件为准（旧快照的 (e) step/（f) m11_ok 值见 RF-M11-F 引用，已作废）"
  },
  "gate_verdict": "pass",
  "note": "四态：pass/fail/invalid/unavailable；未运行项一律 unavailable，不计 fail",

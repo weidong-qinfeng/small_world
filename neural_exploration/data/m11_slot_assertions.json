@@ -42,8 +42,8 @@
   "spk_total": 244.0,
   "counts_sum": 244.0,
   "rel_diff_count_vs_total": 0.0,
-  "wall_s": 1.9675175419999995,
-  "wall_from_ms_per_step_s": 1.9675175419999995
+  "wall_s": 1.8490706669999994,
+  "wall_from_ms_per_step_s": 1.8490706669999994
  },
  "core_readback": {
   "core_key": "nc4_slow1_semantic_fix",

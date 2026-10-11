@@ -423,3 +423,18 @@ P0（31k, T=10 s, dose{0,1,4}, seed 0 ⇒ **3 run / 0.10 GPU-h / 5–10 min**，
 
 **其它采信**：掩膜定稿 `no_mask(retain_and_log)`（`final=1`；原 provenance/note 逐字保留于"修订记录"段 + notes L24.1 登记 —— **这是全表唯一一处按裁决就地改 value 的行**，性质是"未决冲突的裁定"而非判据带调参，**处置正确**）；
 J2 预留 key 命名**对称化**（新增 `silent_frac_calcium_band_lo/hi` 与 rate 侧对称）；判据表 **101 行**（measured 14 / literature 18 / derived 54 / **unavailable 14** / literature_unverified 1；`final=0` **16 行**）；冒烟 S1–S6 全过（`criteria_per_unit=[10]`、门 = `c∧e∧张力`、`--check-targets` 101/101 一致）。
+
+## 3r. R22（收尾）：P2 **上调为 pass** + DQ-7 批准 + 两条主agent 指令被纠正
+
+**P2 判定上调**（采信 B1，54 断言 0 失败）：**结构 `measured` ✅ / 功能体素 `decoded(big-endian int16)` / 功能覆盖 `partial`(2/144 field) / 逐细胞轨迹 `unavailable`**。
+⇒ **相对我此前记的 `partial_pass` 上调**，理由：① **R9 反转**（体素序列可解码，经 BigTIFF 地面真值锚 + 两独立实现互证）；② 采样率需求已由**完整**的自描述表满足。
+
+**DQ-7 批准**：**接受 `probes.csv`（26,954 B 完整）作为采样率需求的满足**（**spike 30,000.3 Hz / LFP 2,500.03 Hz**，332 probe、325 有 LFP ⇒ `m11_reference.csv` **R-23/R-24 asserted**）；
+**不再续传 NWB、不尝试 DANDI**（实测 `api.brain-map.org` **1.6–16 KB/s**、DANDI **7,237 B/s**、bossdb **16 KB/s** ⇒ 三者均不可自取）⇒ 逐细胞通道登记**永久性 `unavailable`** 并写入 **M12 交接缺口**。
+**DQ-6 判 `unavailable（吞吐限制）`**：`units.csv` 在 **1,720,320 / 51,439,189 B（3.3%）停滞** ⇒ 已中止；其行数只可标 `derived`、**不得作计数带**。
+
+**🔴 两条主agent 指令被节点纠正（接受并撤回）**：
+1. **R3 里"用 h5py 读回 `/general` 采样率/units/电极表"撤回**：`head_sparse.nwb` 是**稀疏文件**（表观 **91,560,414 B**，**真实仅前 44,695,552 B**，其余是洞）⇒ **不是完整 NWB**，`/general` 落在洞内（`not a group / bad symbol table node signature`）。节点的替代（读真实前缀：`nwb_version=NWB-1.0.5`、11 根键、`Sweep_10 = CurrentClampSeries`）**正确**。
+   ⇒ **新纪律：稀疏文件必须三处标注**（表观大小 / 真实前缀 / 洞的位置）——属"双估计器必须一致"的**表观 vs 真实**版本。
+2. **我 §二 引用的 `frac_negative_int16=0.4993–0.4996` 来自修正前的小端产物** ⇒ 该推理链前提是小端、**换大端后结论反转**（即 R9 反转内容）。节点重生成该文件并**并列标出判决性读法**（`be_lat_x 0.814` / `be_frame_lag1 0.803` / `p50 1953` vs `le_*` 误读对照）**处置正确**。
+3. 另更正：功能子集**实为 200/200**（我此前的"137"是下载中途数）。

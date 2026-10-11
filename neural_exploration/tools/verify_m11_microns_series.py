@@ -97,6 +97,12 @@ class CorrAcc:
         return float(cov / math.sqrt(vx * vy))
 
 
+def _r_single(x, y):
+    x = np.asarray(x, np.float64).ravel(); y = np.asarray(y, np.float64).ravel()
+    d = math.sqrt(x.var() * y.var())
+    return float(((x * y).mean() - x.mean() * y.mean()) / d) if d > 0 else float("nan")
+
+
 def bin_series(values_per_frame: np.ndarray, bin_frames: int, fps: float = FPS):
     """按**整数帧**成箱（mean），返回 (binned, dt_bin_s)。
 
@@ -241,7 +247,9 @@ def main(argv=None) -> int:
                 #    用 [...,0] 会**切掉帧轴**（本节点实测踩坑：只剩 1/10 帧、哨兵计数少 10×）
                 mat = arr.reshape(shape).squeeze().astype(np.int16)     # → (200,200,10)
                 arrs = mat
-                u = mat.view(">u2")                                    # **同字节序**的无符号读法
+                # ⚠️ mat 已 astype(np.int16)（本机小端）⇒ 必须按**本机** uint16 视图读；
+                #    写成 mat.view(">u2") 会再做一次字节序交换（本节点实测踩坑，已修）
+                u = mat.view(np.uint16)                                # int16 → uint16（mod 65536）
                 neg = mat < 0
                 gt = u > 65000
                 sentinels["neg16"] += int(neg.sum())
@@ -274,8 +282,17 @@ def main(argv=None) -> int:
           (sentinels["neg16"], sentinels["total"], 100.0 * sentinels["ratio_of_total"],
            sentinels["u16gt"], sentinels["u16gt_not_neg"],
            "**等价**" if sentinels["equiv_int16_neg_iff_u16gt65000"] else "**不等价**"))
-    print("        全局 int16 最小值 = %d（负值全 ≥ −535 才能与 uint16>65000 等价）" % gmin)
+    _equiv_ok = (gmin is not None and gmin >= -535)
+    print("        全局 int16 最小值 = %d ⇒ 判据等价性的**充分条件**（min ≥ −535）：%s"
+          % (gmin, "成立" if _equiv_ok else "不成立"))
+    print("        （两式恒等**不成立**：int16<0 含 [−32768,−536]；uint16>65000 ⇔ int16∈[−535,−1]。"
+          "本数据集因 min=%d 而**恰好重合**）" % gmin)
 
+    per_obj = {">": dict(px_h=[], px_v=[], ft=[]), "<": dict(px_h=[], px_v=[], ft=[])}
+    for a_ in arrays:
+        per_obj[">"]["px_h"].append(_r_single(a_[:, :-1, :], a_[:, 1:, :]))
+        per_obj[">"]["px_v"].append(_r_single(a_[:-1, :, :], a_[1:, :, :]))
+        per_obj[">"]["ft"].append(_r_single(a_[..., :-1], a_[..., 1:]))
     print("\n[③ 字节序对照] 同一批对象的**结构指标**（相邻像素/相邻帧 Pearson r）：")
     print("  %-8s %-22s %-22s %s" % ("字节序", "横向相邻像素", "纵向相邻像素", "相邻帧"))
     st = {}
@@ -401,6 +418,54 @@ def main(argv=None) -> int:
                  ("%.3f" % ar["tau_unsmoothed_s"]) if ar.get("tau_unsmoothed_s") else "n/a",
                  ("%.3f" % ql) if ql else "n/a"))
 
+    per_obj_summary = {k: dict(median=float(np.median(v)), min=float(np.min(v)), max=float(np.max(v)), n=len(v))
+                       for k, v in per_obj[">"].items()}
+    print("  [逐对象区间] 横向 r: 中位 %.3f（%.3f–%.3f）｜纵向 %.3f（%.3f–%.3f）｜相邻帧 %.3f（%.3f–%.3f）"
+          % (per_obj_summary["px_h"]["median"], per_obj_summary["px_h"]["min"], per_obj_summary["px_h"]["max"],
+             per_obj_summary["px_v"]["median"], per_obj_summary["px_v"]["min"], per_obj_summary["px_v"]["max"],
+             per_obj_summary["ft"]["median"], per_obj_summary["ft"]["min"], per_obj_summary["ft"]["max"]))
+
+    # ---------------- 对照：该 τ 是否只是**块结构伪影**（L51.3 阳性对照思路的镜像用法）----------------
+    # 若把 200 个 chunk 随机重排（保留块内形态、摧毁真实长程次序）后 τ 几乎不变，
+    # 则该 τ **不能与块结构区分** ⇒ 不得当作自发慢状态的目标带。
+    nch, nblk = arrays[0].shape[-1], len(arrays)
+    blocks = trace_mean.reshape(nblk, nch)
+    rng = np.random.default_rng(0)
+    sur_bs = blocks[rng.permutation(nblk)].reshape(-1)                       # 块序重排
+    within = np.array([rng.permutation(nch) for _ in range(nblk)])
+    sur_ws = np.take_along_axis(blocks, within, axis=1).reshape(-1)          # 块内帧序重排
+    white = rng.normal(size=trace_mean.size)                                 # 白噪零对照
+    controls = {}
+    for nm, tr in (("real_argv_order", trace_mean), ("block_shuffled", sur_bs),
+                   ("within_block_shuffled", sur_ws), ("white_noise_null", white)):
+        cb = build_band(tr, 6, "ctrl_bin6_%s" % nm, nm, a.fps)
+        # 同时报未平滑口径的 lag-1 相关（块伪影最直接的表征）
+        cb["lag1_autocorr_of_binned"] = float(np.corrcoef(
+            bin_series(tr, 6, a.fps)[0][:-1], bin_series(tr, 6, a.fps)[0][1:])[0, 1])
+        controls[nm] = dict(tau_smoothed_s=cb["AR1"].get("tau_s"), phi_smoothed=cb["AR1"].get("phi_smoothed"),
+                            tau_unsmoothed_s=cb["AR1"].get("tau_unsmoothed_s"),
+                            phi_unsmoothed=cb["AR1"].get("phi_unsmoothed"),
+                            lag1_autocorr_binned=cb["lag1_autocorr_of_binned"],
+                            Q_dwell_low_s=((cb["Q_method"].get("dwell", {}) or {}).get("low", {}) or {}).get("median_s"))
+    rt = controls["real_argv_order"]["tau_smoothed_s"]
+    bt = controls["block_shuffled"]["tau_smoothed_s"]
+    rel = abs(bt - rt) / rt if (rt and bt) else None
+    controls["_verdict"] = dict(
+        real_tau_s=rt, block_shuffled_tau_s=bt, rel_diff=rel,
+        indistinguishable=bool(rel is not None and rel <= 0.25),
+        text=("该 τ 与『块序随机重排』对照值相差 %.1f%% ⇒ **不能与块结构区分**，"
+              "不得作为自发慢状态目标带" % (100 * rel) if (rel is not None and rel <= 0.25)
+              else "该 τ 与块序重排对照可区分（差 %.1f%%）" % (100 * rel if rel is not None else float('nan'))))
+    print("\n=== 对照（band=bin6，spatial_mean_dfF）===")
+    for k in ("real_argv_order", "block_shuffled", "within_block_shuffled", "white_noise_null"):
+        c = controls[k]
+        print("  %-22s τ_平滑=%9s s  φ_平滑=%-8s τ_未平滑=%9s s  Q_dwell低=%s s"
+              % (k, ("%.3f" % c["tau_smoothed_s"]) if c["tau_smoothed_s"] else "n/a",
+                 ("%.4f" % c["phi_smoothed"]) if c["phi_smoothed"] is not None else "n/a",
+                 ("%.3f" % c["tau_unsmoothed_s"]) if c["tau_unsmoothed_s"] else "n/a",
+                 ("%.3f" % c["Q_dwell_low_s"]) if c["Q_dwell_low_s"] else "n/a"))
+    print("  ⇒ %s" % controls["_verdict"]["text"])
+
     payload = dict(
         task="M11-B3b 独立复核：MICrONS 功能体素序列解码 + 同源成像目标带",
         independence="本工具未参照 M11-B1 实现；解码路径独立写就并自证；下游估计器复用 M10 冻结口径",
@@ -411,11 +476,13 @@ def main(argv=None) -> int:
                  decode_path="20B >5I 头(ndim=4 + 4 dims) → gzip@offset20 → >i2 → reshape"),
         fps=a.fps, frame_dt_s=1.0 / a.fps, b4_target_bin_s=B4_BIN_S,
         total_frames=int(n_frames), total_seconds=float(n_frames / a.fps),
-        self_proof=dict(sentinels=sentinels, global_min_int16=gmin, structure=st),
+        self_proof=dict(sentinels=sentinels, global_min_int16=gmin, structure=st,
+                        structure_per_object=per_obj_summary),
         traces=dict(spatial_mean_dfF=dict(mean=float(trace_mean.mean()), sd=float(trace_mean.std())),
                     active_fraction_p99=dict(mean=float(trace_frac.mean()), thr_hi=thr_hi),
                     n_voxels_valid=int(valid.sum()), n_voxels_ever_sentinel=int(ever_sent.sum())),
         contiguity=contig,
+        controls=controls,
         bands=bands,
         gates=dict(MIN_FRAMES_VALID=MIN_FRAMES_VALID, MIN_FRAMES_SHAPE=MIN_FRAMES_SHAPE,
                    TAU_MIN_FRAMES=TAU_MIN_FRAMES, MIN_FRAMES_BIC=MIN_FRAMES_BIC),
