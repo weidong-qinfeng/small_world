@@ -56,6 +56,15 @@ REPORT_DIR = os.path.join(PROJECT_ROOT, "neural_exploration", "reports", "neuro"
 DOCS_DIR = os.path.join(PROJECT_ROOT, "neural_exploration", "docs")
 PY = os.path.join(PROJECT_ROOT, ".venv-m9", "bin", "python")
 DUAL_TOL = 0.02
+
+# R32「参照的双重资格」（主agent 2026-10-11）：参照须同时 **①可比**（同口径且该工况语义良定义）与
+# **②可信**（自身不带已知未处置缺陷）；任一不成立 ⇒ 判 `invalid` 而非 `fail`；
+# **「与带缺陷参照对齐」不得作为正确性证据**（= 「可复现 ≠ 正确」的参照侧对偶）。
+R32 = ("**R32「参照的双重资格」声明（主agent 2026-10-11）**：本判据的参照（M10 冻结内核）"
+       "**自身带已登记的上游缺陷**（E-M9-4 形参序、E-M10-1 步模式索引、E-M10-2 多延迟档丢事件）"
+       "⇒ 本条的 `pass` **仅证明「M11 机制关闭时与冻结件逐位一致（无回归）」**，"
+       "**不得被引用为「M11 内核正确」或「生理正确」的证据**。"
+       "（参照须同时 ①可比 ②可信；任一不成立 ⇒ 判 `invalid` 而非 `fail`。）")
 CPU_N = 400
 
 
@@ -1333,7 +1342,20 @@ def write_params_csv(res: dict, path: str) -> None:
         ("probe_indegree", 20, "夹具柱突触前数/神经元"),
         ("probe_density_events_hz", 2.0, "夹具外部事件率（Hz/神经元）"),
         ("cpu_interp", "./.venv-m9/bin/python", "引擎侧解释器（清单 §0.10 L5：引擎复用 .venv-m9）"),
-        ("gpu_h_per_trial_formula", "ms_per_step × N_steps × 3.6e-6", "单试次 GPU-h（禁用段 0 预热值）"),
+        # ⚠️ **E-M11-2（主agent R33 量纲自检发现）**：原式因子错 ×12.96。
+        #   量纲恒等式：**1 GPU-h = 3,600 s = 3.6e6 ms** ⇒ 正确因子 = 1/3.6e6 = **2.7778e-7**。
+        #   校验算例：600,000 步 × 1.1362 ms/step ⇒ 错式 2.4542 GPU-h vs 对式 **0.1894 GPU-h**（比值 12.960）。
+        #   影响面（本节点已审计）：错因子**只出现在本登记字符串**，未进入任何计算
+        #   （`_m11_proc_worker` 用 `ms×steps/1e3/3600` = 正确换算；`m11_engine_probe.csv` 的数值不受影响）。
+        #   **append-only 纪律**：旧行**原值逐字保留**，新增 `_v2` 行为有效式。
+        ("gpu_h_per_trial_formula", "ms_per_step × N_steps × 3.6e-6",
+         "【已作废，原值逐字保留】单试次 GPU-h；**因子错 ×12.96**（把 1 GPU-h 当 277,778 ms=4.63 min）"
+         "——见 E-M11-2 / 主agent R33 与下一行 `_v2`"),
+        ("gpu_h_per_trial_formula_v2", "ms_per_step × N_steps × 2.7778e-7",
+         "**有效式**（取代上一行，旧行原值保留）：量纲恒等式 **1 GPU-h = 3,600 s = 3.6e6 ms** ⇒ 因子 = 1/3.6e6"
+         " = 2.7778e-7；校验算例 600,000 步 × 1.1362 ms/step ⇒ **0.1894 GPU-h**（错式给 2.4542，比值 12.960）；"
+         "更正指针：**E-M11-2 / 主agent R33**（2026-10-11）；审计结论：错因子未进入任何计算，"
+         "仅本登记字符串失真"),
     ]
     with open(path, "w", newline="") as f:
         w = csv.writer(f, lineterminator="\n")
@@ -1642,6 +1664,24 @@ def _flip_log(crit: dict, ext: dict) -> list:
     return out
 
 
+def _load_brian2_reference() -> dict:
+    """读回 Brian2 独立参照臂产物（不存在 ⇒ unavailable）。"""
+    path = os.path.join(DATA_DIR, "m11_brian2_reference.json")
+    try:
+        with open(path) as f:
+            d = json.load(f)
+        return dict(source=os.path.basename(path), sha256=_sha256(path),
+                    role=d.get("role"), params_summary=dict(
+                        G_EXT=d["params"]["G_EXT"], LAM_HZ=d["params"]["LAM_HZ"],
+                        T_STEPS=d["params"]["T_STEPS"],
+                        brian2_method=d["params"].get("brian2_method")),
+                    fix_arm=d["arms"]["fix"], frozen_arm=d["arms"]["frozen"],
+                    subthreshold_arm=d.get("subthreshold_arm"),
+                    conclusion=d.get("conclusion"))
+    except Exception:  # noqa: BLE001
+        return dict(status="unavailable", note="未运行独立参照臂（可选增强）")
+
+
 def _load_density_diag() -> dict:
     """读回 (b)/(g) 的参照诊断（低密度档最小复现 + 量化）。"""
     path = os.path.join(DATA_DIR, "m11_density_reference_diag.json")
@@ -1804,8 +1844,11 @@ def build_summary(res: dict) -> dict:
                           "**0.000 pp / KS p=1.000**（脉冲总数逐位相同）⇒ (b) 的失败 = "
                           "**invalid（参照无效）**，不是引擎缺陷、也不是标定问题；修正参照后 = `pass`"),
         on_path_activity_stats=_on_stats,
-        scope_note=("(b) 是**引擎对齐**判据（M11 vs M10 同配置逐位），**不是**生理标定判据；"
+        r32_reference_double_qualification=R32,
+        scope_note=(R32 + " "
+                    "(b) 是**引擎对齐**判据（M11 vs M10 同配置逐位），**不是**生理标定判据；"
                     "'网络静默比是否与 MICrONS/Allen 数据一致'属 G1/P5 标定，不在 G0 内。"
+                    + R32 + " "
                     "**判据名实对齐声明**：本判据实际检验的是"
                     "「机制全关 ⇒ 与 M10 逐位一致（关闭态等价）」，**不是**「目标密度下活动统计对齐」——"
                     "后者按门链分工由 **G1/P5** 承担（B3 的 (a)(b) 判据带 + 六条硬门），"
@@ -1877,6 +1920,10 @@ def build_summary(res: dict) -> dict:
                     "（Allen 分位 / MICrONS 钙域 unavailable）不受影响。"),
         fix=("与 (b) 同一操作：参照臂改为单延迟档；判据未改。**由 (b) 继承**已在 "
              "`detail.inheritance_note` 显式写出。"),
+        r32_reference_double_qualification=R32,
+        scope_note=(R32 + " (g) 由 (b) 继承 ⇒ 同一参照、同一限定：其 `pass` 仅证明"
+                    "「目标密度下引擎自身与冻结件无回归」，**不证明活动统计对生理正确**"
+                    "（后者归 G1/P5 判据带）。"),
         detail=dict(density_anchored_points=t5.get("density_anchored_points"),
                     anchors=t5.get("anchors", {}).get("allen"),
                     inherited_from_b=bool(t5.get("points")),
@@ -1934,6 +1981,16 @@ def build_summary(res: dict) -> dict:
             detail=t11),
         no_leak=dict(**st(t12.get("crit_pass"), bool(t12), "分段 RSS 增长有界 + 单一 arange 缓冲"),
                      detail=t12),
+        # **独立参照臂（可选增强；主agent R32/④）**：不进门判定
+        independent_reference_brian2=dict(
+            **st(True, True, "可选增强：Brian2 跨生态统计级对照（**不作为 G0 判据**）"),
+            not_a_gate_criterion=True,
+            excluded_from_gate_verdict=True,
+            reason=("(b) 的参照（M10 冻结内核）自身带已登记缺陷（R32：参照须 ①可比 ②可信）⇒ "
+                    "本臂提供一个**不带缺陷**的独立实现方向；但跨生态的 v 离散化方案不同 ⇒ "
+                    "**只可作统计级参考**，不得按「逐位」读，也**不得**作为「M11 内核正确」或"
+                    "「生理正确」的证据"),
+            detail=_load_brian2_reference()),
     )
     # ---- G0 通过条件（主agent RF-M11-F 第 4 条：不允许"两项 fail + 其余未跑 ⇒ partial"的模糊表述）----
     judge_keys = ["crit." + k for k in crit] + ["ext.off_state_equivalence",

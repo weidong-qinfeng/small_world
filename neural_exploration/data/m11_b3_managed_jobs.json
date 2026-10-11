@@ -1,6 +1,6 @@
 {
  "generated_by": "M11 执行节点 B3（工作包 G1：P5 判据/协议设计与工具骨架）",
- "generated_at": "2026-10-11（R34 解释器口径更正）",
+ "generated_at": "2026-10-11（R43 双口径重定价：判据口径 = step；占位符落实为 tools/run_m11_p5_arms.py）",
  "policy": {
   "rule": "本节点**不启动任何仿真或 >10 min 的作业**（纪律）；以下作业一律由主agent 以**托管后台作业**启动并回传日志",
   "thread_discipline": "CPU 作业必须 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1；MPS 作业**串行**（禁并发）",
@@ -89,7 +89,7 @@
     "PYTHONPATH=/Users/weidong/ai/small_world OMP_NUM_THREADS=1 ./.venv-m9/bin/python -m neural_exploration.tools.scan_m11_engine --help   # 由 B2 提供确切参数",
     "# ② 每个 (config, mechanism, dose, seed, T) **一个新进程**；**引擎侧一律 ./.venv-m9/bin/python**（R34：用 .venv-m11 会 `No module named torch`）",
     "PYTHONPATH=/Users/weidong/ai/small_world OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONHASHSEED=0 \\",
-    "  ./.venv-m9/bin/python <B2 的 P5 跑臂生产者> --N 8192 --T-ms <T> --dose <d> --seed <s> --settle-ms <settle> \\",
+    "  ./.venv-m9/bin/python tools/run_m11_p5_arms.py --N 8192 --T-ms <T> --dose <d> --seed <s> --settle-ms <settle> \\",
     "  --out-pop    neural_exploration/data/m11_p5_runs/p1_8192_T<T>ms_d<d>_s<s>_poptrace.npy \\",
     "  --out-counts neural_exploration/data/m11_p5_runs/p1_8192_T<T>ms_d<d>_s<s>_counts.csv \\",
     "  --out-json   neural_exploration/data/m11_p5_runs/p1_8192_T<T>ms_d<d>_s<s>.json",
@@ -100,7 +100,9 @@
     "./.venv-m11/bin/python -m neural_exploration.tools.validate_p11_resting \\",
     "    --protocol-json neural_exploration/data/m11_p5_protocol.json \\",
     "    --out-csv neural_exploration/data/m11_p5_resting_eval.csv \\",
-    "    --out-json neural_exploration/data/m11_p5_resting_eval.json"
+    "    --out-json neural_exploration/data/m11_p5_resting_eval.json",
+    "# 【R43】口径与档位：--delivery step（判据口径，默认）；chunk 仅在 E 段两端点孪生臂逐位一致后可用于**生产**",
+    "#        N 档与口径均属 P5 协议，改动须显式登记并在该档重验 (a)(b) 同时可达"
    ],
    "artifacts": [
     "neural_exploration/data/m11_p5_protocol.json（运行前定稿：臂清单 + T 阶梯 + settle/seed）",
@@ -117,7 +119,9 @@
     "**必须写入 python/numpy/torch 版本**（`\"engine\": {\"python\": ..., \"numpy\": ..., \"torch\": ...}`）⇒ 评估器会把 protocol 段原样回写，自动留痕（R34 §三）",
     "**必须登记 N 档**（★方案 = N=8,192；档位属 P5 协议的一部分）"
    ],
-   "interpreter": "**两段两种口径**：① 引擎侧（探针 + 跑臂生产者）= ./.venv-m9/bin/python；② 离线评估器 = ./.venv-m11/bin/python"
+   "interpreter": "**两段两种口径**：① 引擎侧（探针 + 跑臂生产者）= ./.venv-m9/bin/python；② 离线评估器 = ./.venv-m11/bin/python",
+   "producer_script": "tools/run_m11_p5_arms.py（R43 落实）",
+   "judgment_caliber": "step（R43）；chunk 仅生产口径且有前置条件"
   },
   {
    "job_id": "J4",
@@ -127,14 +131,18 @@
    "est_wall": "按 J3 的单试次成本 × 臂数（预注册包络：G1 段 ≤10 GPU-h）",
    "commands": [
     "# 形态与 J3 相同（**引擎侧一律 ./.venv-m9**），仅替换协议 JSON 的臂参数；**每一档改动后必须重跑零驱动臂重核 (c)**",
-    "PYTHONPATH=/Users/weidong/ai/small_world OMP_NUM_THREADS=1 ./.venv-m9/bin/python <B2 的 P5 跑臂生产者> ...   # 引擎侧",
-    "./.venv-m11/bin/python -m neural_exploration.tools.validate_p11_resting --protocol-json <新协议> --out-json <新输出>   # 评估器侧"
+    "PYTHONPATH=/Users/weidong/ai/small_world OMP_NUM_THREADS=1 ./.venv-m9/bin/python tools/run_m11_p5_arms.py ...   # 引擎侧",
+    "./.venv-m11/bin/python -m neural_exploration.tools.validate_p11_resting --protocol-json <新协议> --out-json <新输出>   # 评估器侧",
+    "# 【R43】口径与档位：--delivery step（判据口径，默认）；chunk 仅在 E 段两端点孪生臂逐位一致后可用于**生产**",
+    "#        N 档与口径均属 P5 协议，改动须显式登记并在该档重验 (a)(b) 同时可达"
    ],
    "artifacts": [
     "neural_exploration/data/m11_p5_calibration_targets_v2.csv（新增行；原行保留）"
    ],
    "note": "**禁止**用「提高背景 λ」当标定手段（§5 禁项）",
-   "interpreter": "引擎侧 = ./.venv-m9/bin/python；评估器侧 = ./.venv-m11/bin/python"
+   "interpreter": "引擎侧 = ./.venv-m9/bin/python；评估器侧 = ./.venv-m11/bin/python",
+   "producer_script": "tools/run_m11_p5_arms.py（R43 落实）",
+   "judgment_caliber": "step（R43）；chunk 仅生产口径且有前置条件"
   },
   {
    "job_id": "J5",
@@ -143,13 +151,17 @@
    "blocked_by": "G0 通过",
    "est_wall": "与 J3 的单试次相当 × 2",
    "commands": [
-    "# 同 J3，但同一 (config, mechanism, dose, seed, T) 跑两次（**引擎侧一律 ./.venv-m9**）；第二次 arm 标 replica_of=<第一次 arm_id>"
+    "# 同 J3，但同一 (config, mechanism, dose, seed, T) 跑两次（**引擎侧一律 ./.venv-m9**）；第二次 arm 标 replica_of=<第一次 arm_id>",
+    "# 【R43】口径与档位：--delivery step（判据口径，默认）；chunk 仅在 E 段两端点孪生臂逐位一致后可用于**生产**",
+    "#        N 档与口径均属 P5 协议，改动须显式登记并在该档重验 (a)(b) 同时可达"
    ],
    "artifacts": [
     "neural_exploration/data/m11_p5_replica_check.json"
    ],
    "note": "跨进程逐位一致性归 G0（清单 §2.3(e)）；P5 只要求统计级一致（判据表 determinism_mode=statistical）",
-   "interpreter": "引擎侧 = ./.venv-m9/bin/python（**逐位一致断言只能在同一解释器+同一 numpy 版本内比**，R34 §三）"
+   "interpreter": "引擎侧 = ./.venv-m9/bin/python（**逐位一致断言只能在同一解释器+同一 numpy 版本内比**，R34 §三）",
+   "producer_script": "tools/run_m11_p5_arms.py（R43 落实）",
+   "judgment_caliber": "step（R43）；chunk 仅生产口径且有前置条件"
   },
   {
    "job_id": "J6",
@@ -197,35 +209,37 @@
   }
  ],
  "probe_plan": {
-  "principle": "先探针 → 裁决 → 再烧（清单 §0.9 纪律 7）；三档可逐档裁决，任一档 hard_failures 非空即停",
-  "P0_minimal_probe": {
+  "principle": "先探针 → 裁决 → 再烧；**判据口径 = step**（R43）",
+  "P0": {
    "runs": 3,
-   "spec": "N=31k, T=10 s, dose {0,1,4}, seed 0",
-   "est_gpu_h": 0.1,
-   "est_wall": "≈5–10 min",
-   "decides": "实测 ms/step 与 RSS；零驱动臂 10 s 内脉冲数 ⇒ 定 T_min（>=300 ⇒ T_min=10 s；300>S0>=75 ⇒ 20 s；S0<75 ⇒ 40 s）"
+   "spec": "N=31k, T=10 s, dose{0,1,4}, seed0, --delivery step",
+   "gh_step": 0.9479,
+   "wall_min": 57,
+   "decides": "实测 step ms/step + RSS；零驱动臂 10 s 脉冲数 ⇒ 定 T_min（≥300⇒10 s）"
   },
-  "P1_dose_sweep": {
-   "runs": 6,
-   "spec": "N=31k, T=T_min, dose {0,0.5,1,2,4,8}, seed 0",
-   "est_gpu_h": "0.20（T_min=10 s）/ 0.40（20 s）",
-   "est_wall": "≈12–30 min",
-   "decides": "(a)(b)(c)(d) 首读 + 张力三点（n_both_in_band + 两条 Spearman）⇒ 若已见「无一剂量同时落带且单调对立」⇒ 提前换杠杆"
+  "P0_prime_R43": {
+   "runs": 3,
+   "spec": "N=8,192, T=10 s, dose{0,1,4}, seed0, --delivery step",
+   "gh_step": "0.24–1.0（按档因子未实测）",
+   "why": "**N=8,192 的 step 口径 ms/step 无实测 ⇒ 唯一正确的定价替换点**（两个候选档因子差 2.20×）"
   },
-  "P2_duration_ladder": {
+  "E_twin_arms_R43": {
+   "runs": 4,
+   "spec": "剂量网格两端（dose=0、dose=max）各一对 step/chunk（N/Т_min/seed 固定）",
+   "gh_chunk": 0.8764,
+   "gate": "两对均须 pop_trace 逐位相同（sha256 相同）；任一不等 ⇒ 全网格退回 step 并重定价"
+  },
+  "P1": {
+   "runs": 5,
+   "spec": "N 待定档, T=T_min, 5 档, seed0",
+   "gh_step": "1.5798 @31k",
+   "decides": "(a)(b)(c)(d) 首读 + 张力三点"
+  },
+  "P2": {
    "runs": 9,
-   "spec": "N=31k, T={T_min,2T_min,4T_min}, dose {0,1,4}, seed 0",
-   "est_gpu_h": "0.30（T_min=10 s）",
-   "est_wall": "≈18–30 min",
-   "decides": "硬门④ 机器校验 + 漂移量（对照 A12 更正后的 +1.4% 受控口径）"
-  },
-  "probe_total": {
-   "runs": 18,
-   "est_gpu_h": 0.6,
-   "est_wall": "≈35–60 min"
-  },
-  "if_Tmin_rises_to_20s": {
-   "escalation": "阶梯 {20,40,80} s 使正式矩阵升到 ≈13.2–13.6 GPU-h（超 <=10 包络）⇒ 预注册降档菜单待裁决：N1 剂量减到 5 档（推荐，≈11.8）／N2 T 用 {20,40}+10 s 作描述性／N3 包络临时提到 14 GPU-h"
+   "spec": "N 待定档, T{10,20,40}, dose{0,1,4}, seed0",
+   "gh_step": "6.4544 @31k",
+   "decides": "硬门④ 机器校验 + 漂移量"
   },
   "incremental_log_spec": {
    "dir": "neural_exploration/data/m11_p5_runs/",
@@ -239,6 +253,9 @@
    "run_id": "{stage}_{N}_{T}ms_d{dose}_s{seed}",
    "progress_one_liner": "ls -t neural_exploration/data/m11_p5_runs/*.done | head -1 （mtime = 最近完成）；ls .../*.done | wc -l（已完成数）",
    "starvation_check": "以累计 CPU/墙钟比判（M10 L46/L50：ps %CPU 不可信，曾实测占空比 10%）"
+  },
+  "if_Tmin_rises_to_20s": {
+   "escalation": "阶梯 {20,40,80} ⇒ 每 (dose,seed) = 410k+810k+1,610k = 2,830,000 步（×1.98）⇒ 按 §13.6 重算并重新裁决"
   }
  },
  "interpreter_caliber_R34": {
@@ -319,5 +336,151 @@
   "old_engine_side_run_comment_verbatim": "# ② 每个 (config, mechanism, dose, seed, T) **一个新进程**（逐目标/逐试次新进程纪律）",
   "pointer": "更正依据 = **主agent R34（2026-10-11，实测能力矩阵）**；本节点已独立复验（三 venv 的 numpy/torch/h5py/pytest）",
   "preserved_elsewhere": "design 文档 §8 的旧 `PY=./.venv-m11/bin/python` 行**逐字保留**并在其下追加【R34】标记；§12 给出更正后的逐档命令"
+ },
+ "r43_caliber_repricing": {
+  "judgment_caliber": "step = 5.4163 ms/step @N=31,000（B2 孪生臂实测，wall 180.7 s）",
+  "production_caliber_conditional": "chunk = 2.0955 ms/step @同点（ndiff=0、pop_trace 逐位相同）",
+  "ratios": {
+   "step/chunk": 2.585,
+   "step/old_1.1362": 4.767,
+   "chunk/old_1.1362": 1.844,
+   "note": "旧 1.1362 = chunk + 1/4 事件率 ⇒ chunk/old 的 1.844 来自事件率（不是投递口径）"
+  },
+  "steps_include_settle": "steps = settle/dt + T/dt（settle 500 ms ⇒ 10,000 步）；T=10 s→210,000 / 20 s→410,000 / 40 s→810,000（B2 生产者实测单 run 210,000 ✅）",
+  "per_run_wall_step_min": {
+   "T=10s": 19.0,
+   "T=20s": 37.0,
+   "T=40s": 73.1,
+   "note": "⚠️ T≥20 s 每 run >10 min ⇒ 一律托管作业"
+  },
+  "segment_table": [
+   {
+    "seg": "P0 探针",
+    "runs": 3,
+    "steps": 630000,
+    "gh_step": 0.9479,
+    "gh_chunk": 0.3667
+   },
+   {
+    "seg": "P1 探针（5 档）",
+    "runs": 5,
+    "steps": 1050000,
+    "gh_step": 1.5798,
+    "gh_chunk": 0.6112
+   },
+   {
+    "seg": "P2 探针（T 三档 × dose{0,1,4}）",
+    "runs": 9,
+    "steps": 4290000,
+    "gh_step": 6.4544,
+    "gh_chunk": 2.4971
+   },
+   {
+    "seg": "B 杠杆（★单档 T_min，4 轮×5 档）",
+    "runs": 20,
+    "steps": 4200000,
+    "gh_step": 6.319,
+    "gh_chunk": 2.4447
+   },
+   {
+    "seg": "C 正式矩阵（5 档×3 seed×3 T）",
+    "runs": 45,
+    "steps": 21450000,
+    "gh_step": 32.2721,
+    "gh_chunk": 12.4857
+   },
+   {
+    "seg": "D 确定性（2 重复×3 T）",
+    "runs": 6,
+    "steps": 2860000,
+    "gh_step": 4.3029,
+    "gh_chunk": 1.6648
+   },
+   {
+    "seg": "E 孪生臂校核（剂量两端点各一对 step/chunk）",
+    "runs": 4,
+    "steps": 840000,
+    "gh_step": null,
+    "gh_chunk": 0.8764,
+    "note": "chunk 路线的前置成本；全 step 方案不需"
+   }
+  ],
+  "totals": {
+   "runs": 86,
+   "steps": 34480000,
+   "gh_step": 51.8761,
+   "gh_chunk_incl_E": 20.0702
+  },
+  "envelope_answer": "**≤10 GPU-h 包络不成立**：step @31k = 51.876（+419%）；chunk @31k（含 E）= 20.947（+109%）⇒ §11 的 ★（6.174）作废",
+  "n8192_sensitivity_unverified": {
+   "status": "step 口径无实测 ⇒ unverified；不得默认比例外推",
+   "candidates": {
+    "0.25（B2 估）": {
+     "gh_step": 12.969,
+     "gh_chunk": 5.018
+    },
+    "0.2643（线性 N 比）": {
+     "gh_step": 13.709,
+     "gh_chunk": 5.304
+    },
+    "0.5822（旧表同口径比值，仅 chunk 口径内可比）": {
+     "gh_step": 30.202,
+     "gh_chunk": 11.685
+    }
+   },
+   "replacement_point": "先跑 P0′=N=8,192/step/3 run（估 0.24–1.0 GPU-h）⇒ 实测替换后再给 C 段定稿价；拿到之前 C 段不得启动"
+  },
+  "constraints_R43": [
+   "判据口径 = **step**（默认，不因省算力改变）；**chunk 仅作生产口径**，前提 = 剂量网格**两端各一对** step/chunk 孪生臂且 pop_trace **逐位相同**；任一对不逐位 ⇒ **全网格退回 step 并重定价**（不得只换那一格）",
+   "T_min 定档：S0 ≥ 300 ⇒ 10 s，否则 20/40 s；上抬后阶梯 {20,40,80} ⇒ 每 (dose,seed) 2,830,000 步（×1.98）⇒ 须重算",
+   "**档位（N）与口径（step/chunk）都是 P5 协议的一部分** ⇒ 改档/改口径必须显式登记；且在任何档上都要重新验证 (a)(b) 两带是否同时可达"
+  ],
+  "recommendation": "**先跑 P0′（8k, step, 3 run）+ E 段（两端点孪生臂）**（合计 <2 GPU-h），用实测钉住'档因子'与'口径可比性'，再在 A（提高包络）/B（chunk 生产+step 判据）之间裁决",
+  "producer_path": "**tools/run_m11_p5_arms.py**（B2 已交付并端到端自检通过；替换文档中的占位符 `<B2 的 P5 跑臂生产者>`）",
+  "old_probe_plan_verbatim": {
+   "principle": "先探针 → 裁决 → 再烧（清单 §0.9 纪律 7）；三档可逐档裁决，任一档 hard_failures 非空即停",
+   "P0_minimal_probe": {
+    "runs": 3,
+    "spec": "N=31k, T=10 s, dose {0,1,4}, seed 0",
+    "est_gpu_h": 0.1,
+    "est_wall": "≈5–10 min",
+    "decides": "实测 ms/step 与 RSS；零驱动臂 10 s 内脉冲数 ⇒ 定 T_min（>=300 ⇒ T_min=10 s；300>S0>=75 ⇒ 20 s；S0<75 ⇒ 40 s）"
+   },
+   "P1_dose_sweep": {
+    "runs": 6,
+    "spec": "N=31k, T=T_min, dose {0,0.5,1,2,4,8}, seed 0",
+    "est_gpu_h": "0.20（T_min=10 s）/ 0.40（20 s）",
+    "est_wall": "≈12–30 min",
+    "decides": "(a)(b)(c)(d) 首读 + 张力三点（n_both_in_band + 两条 Spearman）⇒ 若已见「无一剂量同时落带且单调对立」⇒ 提前换杠杆"
+   },
+   "P2_duration_ladder": {
+    "runs": 9,
+    "spec": "N=31k, T={T_min,2T_min,4T_min}, dose {0,1,4}, seed 0",
+    "est_gpu_h": "0.30（T_min=10 s）",
+    "est_wall": "≈18–30 min",
+    "decides": "硬门④ 机器校验 + 漂移量（对照 A12 更正后的 +1.4% 受控口径）"
+   },
+   "probe_total": {
+    "runs": 18,
+    "est_gpu_h": 0.6,
+    "est_wall": "≈35–60 min"
+   },
+   "if_Tmin_rises_to_20s": {
+    "escalation": "阶梯 {20,40,80} s 使正式矩阵升到 ≈13.2–13.6 GPU-h（超 <=10 包络）⇒ 预注册降档菜单待裁决：N1 剂量减到 5 档（推荐，≈11.8）／N2 T 用 {20,40}+10 s 作描述性／N3 包络临时提到 14 GPU-h"
+   },
+   "incremental_log_spec": {
+    "dir": "neural_exploration/data/m11_p5_runs/",
+    "per_run_files": [
+     "<run_id>.json（完成即写：status/ms_per_step_steady/n_spikes/rate_median/silent_frac/wall_s/pid/host/device）",
+     "<run_id>.done（mtime = 完成时刻）",
+     "<run_id>.fail（含 stderr 尾部；不计入分母，四态 invalid）",
+     "<run_id>_poptrace.npy",
+     "<run_id>_counts.csv（含 cell_type）"
+    ],
+    "run_id": "{stage}_{N}_{T}ms_d{dose}_s{seed}",
+    "progress_one_liner": "ls -t neural_exploration/data/m11_p5_runs/*.done | head -1 （mtime = 最近完成）；ls .../*.done | wc -l（已完成数）",
+    "starvation_check": "以累计 CPU/墙钟比判（M10 L46/L50：ps %CPU 不可信，曾实测占空比 10%）"
+   }
+  }
  }
 }

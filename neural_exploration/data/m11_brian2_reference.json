@@ -1,0 +1,88 @@
+{
+ "generated_by": "tools/ref_brian2_point_lif.py",
+ "started_at": "2026-10-12T04:09:15",
+ "role": "独立参照臂（**not_a_gate_criterion**，不进门判定；主agent R32/④）",
+ "params": {
+  "v_rest": -52.0,
+  "v_th": -45.0,
+  "v_reset": -55.0,
+  "tau_m": 20.0,
+  "tau_e": 2.0,
+  "tau_i": 5.0,
+  "e_exc": 0.0,
+  "e_inh": -80.0,
+  "ref_ms": 2.0,
+  "dt_ms": 0.05,
+  "G_EXT": 22.0,
+  "LAM_HZ": 300.0,
+  "T_STEPS": 8000,
+  "brian2_method": {
+   "v": "euler",
+   "ge": "exponential_euler",
+   "gi": "exponential_euler"
+  },
+  "why_same_scheme": "引擎 point 档 = v 显式 Euler + 电导精确指数衰减；Brian2 默认 exponential_euler 对 v 用闭式 ⇒ 必须按变量指定方法"
+ },
+ "arms": {
+  "fix": {
+   "engine_n_spikes": 17,
+   "brian2_n_spikes": 20,
+   "engine_first_step": 353,
+   "brian2_first_step": 354,
+   "first_step_abs_diff": 1.0,
+   "max_abs_step_diff": 1072.0,
+   "frac_within_1_step": 0.058823529411764705,
+   "isi_engine_steps": 423.0,
+   "isi_brian2_steps": 371.0,
+   "v_trace_max_abs_diff_mV": 9.991231830071747,
+   "v_trace_rms_diff_mV": 4.345792903427757
+  },
+  "frozen": {
+   "engine_n_spikes": 16,
+   "brian2_n_spikes": 20,
+   "engine_first_step": 353,
+   "brian2_first_step": 354,
+   "first_step_abs_diff": 1.0,
+   "max_abs_step_diff": 1529.0,
+   "frac_within_1_step": 0.0625,
+   "isi_engine_steps": 487.0,
+   "isi_brian2_steps": 371.0,
+   "v_trace_max_abs_diff_mV": 9.985011935738171,
+   "v_trace_rms_diff_mV": 4.294012966827053
+  }
+ },
+ "subthreshold_arm": {
+  "brian2_exponential_euler": {
+   "engine_spikes": 0,
+   "brian2_spikes": 0,
+   "v_max_abs_diff_mV": 0.1818382171728814,
+   "v_rms_diff_mV": 0.016292816868676025,
+   "v_final_engine_mV": -51.71657180786133,
+   "v_final_brian2_mV": -51.714492008912224
+  },
+  "brian2_euler": {
+   "engine_spikes": 0,
+   "brian2_spikes": 0,
+   "v_max_abs_diff_mV": 0.18738223090810635,
+   "v_rms_diff_mV": 0.02083443250179196,
+   "v_final_engine_mV": -51.71657180786133,
+   "v_final_brian2_mV": -51.718917802356266
+  }
+ },
+ "conclusion": {
+  "fix_vs_brian2_same_order": false,
+  "fix_max_abs_step_diff": 1072.0,
+  "fix_frac_within_1_step": 0.058823529411764705,
+  "frozen_vs_brian2_confirms_defect": true,
+  "defect_not_resolvable_by_this_arm": "⚠️ **本臂不能分辨 E-M9-4**：跨方案的 0.18 mV 量级差在近阈值驱动下引发脉冲时序去相关（混沌），其幅度**远大于** E-M9-4 的 ISI 差（182 vs 144 步）⇒ 冻结/修正两臂相对 Brian2 都「看起来差很多」，无法据此判定缺陷。E-M9-4 的证据仍来自**确定性解析臂**（G0 的 `single_neuron_ISI` 与解析闭式，≤1 步），本臂仅作**生态独立性**参考。",
+  "frozen_isi_engine_steps": 487.0,
+  "frozen_isi_brian2_steps": 371.0,
+  "subthreshold_v_max_abs_diff_mV": {
+   "brian2_exponential_euler": 0.1818382171728814,
+   "brian2_euler": 0.18738223090810635
+  },
+  "verdict": "**差异显著 ⇒ 交主agent 裁决**（可能反噬 M10 的 P5 工作点数值；不在 M11 内改写 M10 结论）",
+  "note": "本臂 **not_a_gate_criterion=true**：不作为 G0 判据、不列入门判定；**不得**据此改写 M10 的任何结论"
+ },
+ "elapsed_s": 7.27
+}

@@ -1,0 +1,415 @@
+{
+ "generated_by": "tools/crosscheck_m11_same_source_band.py",
+ "generated_at": "2026-10-11T20:09:02Z",
+ "data": {
+  "n_chunks": 200,
+  "n_frames": 2000,
+  "dt_s": 0.15873,
+  "frame_rate_hz": 6.300006,
+  "coverage": "session4_scan7_field4 x∈[0,200)px × y∈[0,200)px，t∈[0,2000) = 317.46 s"
+ },
+ "masking": "**不掩膜**（低于基线样本保留并登记 0.01298%）；哨兵仅指 32767 饱和（计数 0）",
+ "proxy_stats": {
+  "median": 1827.0,
+  "mad": 775.0,
+  "thr": 4152.0
+ },
+ "grid": [
+  {
+   "mode": "native",
+   "smooth": "none",
+   "dt_used": 0.15873,
+   "bin_frames": 1,
+   "bin_width_s": 0.15873,
+   "n": 2000,
+   "phi": 0.982547,
+   "tau_s": 9.0153,
+   "ar_status": "measured",
+   "phi_bias_corrected": null,
+   "ljung_box_Q": 201.74345584623944,
+   "H_occ": [
+    0.64,
+    0.36
+   ],
+   "H_trans_hz": 0.09765,
+   "H_dwell_low_n": 15,
+   "H_dwell_low_median_s": 5.7143,
+   "H_dwell_low_p90_s": 42.4761,
+   "H_dwell_low_p90_over_median": 7.433333333333331,
+   "Q_occ": [
+    0.5,
+    0.5
+   ],
+   "Q_trans_hz": 0.44415,
+   "Q_dwell_low_median_s": 0.873,
+   "Q_dwell_low_p90_s": 6.9206,
+   "proxy": "mean",
+   "peer_phi": 0.9825,
+   "peer_tau_s": 9.015,
+   "dphi_pct": 0.0048,
+   "dtau_pct": 0.0033
+  },
+  {
+   "mode": "native",
+   "smooth": "smooth5",
+   "dt_used": 0.15873,
+   "bin_frames": 1,
+   "bin_width_s": 0.15873,
+   "n": 2000,
+   "phi": 0.993932,
+   "tau_s": 26.0795,
+   "ar_status": "measured",
+   "phi_bias_corrected": null,
+   "ljung_box_Q": 2220.1269104555877,
+   "H_occ": [
+    0.642,
+    0.358
+   ],
+   "H_trans_hz": 0.0882,
+   "H_dwell_low_n": 13,
+   "H_dwell_low_median_s": 5.7143,
+   "H_dwell_low_p90_s": 52.1587,
+   "H_dwell_low_p90_over_median": 9.127777777777782,
+   "Q_occ": [
+    0.5,
+    0.5
+   ],
+   "Q_trans_hz": 0.44415,
+   "Q_dwell_low_median_s": 0.873,
+   "Q_dwell_low_p90_s": 6.9206,
+   "proxy": "mean",
+   "peer_phi": 0.9947,
+   "peer_tau_s": 29.68,
+   "dphi_pct": 0.0772,
+   "dtau_pct": 12.1311
+  },
+  {
+   "mode": "bin",
+   "smooth": "none",
+   "dt_used": 0.9138261902586128,
+   "bin_frames": 6,
+   "bin_width_s": 0.95238,
+   "n": 333,
+   "phi": 0.887508,
+   "tau_s": 7.6575,
+   "ar_status": "measured",
+   "phi_bias_corrected": null,
+   "ljung_box_Q": 29.587482886216463,
+   "H_occ": [
+    0.6306,
+    0.3694
+   ],
+   "H_trans_hz": 0.046007,
+   "H_dwell_low_n": 6,
+   "H_dwell_low_median_s": 12.3367,
+   "H_dwell_low_p90_s": 71.2784,
+   "H_dwell_low_p90_over_median": 5.777777777777778,
+   "Q_occ": [
+    0.5015,
+    0.4985
+   ],
+   "Q_trans_hz": 0.141306,
+   "Q_dwell_low_median_s": 7.3106,
+   "Q_dwell_low_p90_s": 13.7074,
+   "proxy": "mean",
+   "peer_phi": 0.8875,
+   "peer_tau_s": 7.657,
+   "dphi_pct": 0.0009,
+   "dtau_pct": 0.0065
+  },
+  {
+   "mode": "bin",
+   "smooth": "smooth5",
+   "dt_used": 0.9138261902586128,
+   "bin_frames": 6,
+   "bin_width_s": 0.95238,
+   "n": 333,
+   "phi": 0.962862,
+   "tau_s": 24.1462,
+   "ar_status": "measured",
+   "phi_bias_corrected": null,
+   "ljung_box_Q": 274.0291908902788,
+   "H_occ": [
+    0.6276,
+    0.3724
+   ],
+   "H_trans_hz": 0.046007,
+   "H_dwell_low_n": 6,
+   "H_dwell_low_median_s": 12.3367,
+   "H_dwell_low_p90_s": 70.3646,
+   "H_dwell_low_p90_over_median": 5.703703703703704,
+   "Q_occ": [
+    0.5015,
+    0.4985
+   ],
+   "Q_trans_hz": 0.141306,
+   "Q_dwell_low_median_s": 7.3106,
+   "Q_dwell_low_p90_s": 13.7074,
+   "proxy": "mean",
+   "peer_phi": 0.9712,
+   "peer_tau_s": 31.24,
+   "dphi_pct": 0.8585,
+   "dtau_pct": 22.7074
+  },
+  {
+   "mode": "native",
+   "smooth": "none",
+   "dt_used": 0.15873,
+   "bin_frames": 1,
+   "bin_width_s": 0.15873,
+   "n": 2000,
+   "phi": 0.977996,
+   "tau_s": 7.1339,
+   "ar_status": "measured",
+   "phi_bias_corrected": null,
+   "ljung_box_Q": 65.41087226105223,
+   "H_occ": [
+    0.6215,
+    0.3785
+   ],
+   "H_trans_hz": 0.0945,
+   "H_dwell_low_n": 14,
+   "H_dwell_low_median_s": 7.6984,
+   "H_dwell_low_p90_s": 39.2857,
+   "H_dwell_low_p90_over_median": 5.10309278350516,
+   "Q_occ": [
+    0.5,
+    0.5
+   ],
+   "Q_trans_hz": 0.48195,
+   "Q_dwell_low_median_s": 0.5556,
+   "Q_dwell_low_p90_s": 6.6667,
+   "proxy": "frac",
+   "peer_phi": 0.9804,
+   "peer_tau_s": 8.003,
+   "dphi_pct": 0.2452,
+   "dtau_pct": 10.8597
+  },
+  {
+   "mode": "native",
+   "smooth": "smooth5",
+   "dt_used": 0.15873,
+   "bin_frames": 1,
+   "bin_width_s": 0.15873,
+   "n": 2000,
+   "phi": 0.994635,
+   "tau_s": 29.505,
+   "ar_status": "measured",
+   "phi_bias_corrected": null,
+   "ljung_box_Q": 2650.785822981518,
+   "H_occ": [
+    0.615,
+    0.385
+   ],
+   "H_trans_hz": 0.0882,
+   "H_dwell_low_n": 13,
+   "H_dwell_low_median_s": 9.3651,
+   "H_dwell_low_p90_s": 42.2539,
+   "H_dwell_low_p90_over_median": 4.511864406779663,
+   "Q_occ": [
+    0.5,
+    0.5
+   ],
+   "Q_trans_hz": 0.48195,
+   "Q_dwell_low_median_s": 0.5556,
+   "Q_dwell_low_p90_s": 6.6667,
+   "proxy": "frac",
+   "peer_phi": 0.9948,
+   "peer_tau_s": 30.48,
+   "dphi_pct": 0.0166,
+   "dtau_pct": 3.1988
+  },
+  {
+   "mode": "bin",
+   "smooth": "none",
+   "dt_used": 0.9138261902586128,
+   "bin_frames": 6,
+   "bin_width_s": 0.95238,
+   "n": 333,
+   "phi": 0.884717,
+   "tau_s": 7.4605,
+   "ar_status": "measured",
+   "phi_bias_corrected": null,
+   "ljung_box_Q": 22.846405692270945,
+   "H_occ": [
+    0.6156,
+    0.3844
+   ],
+   "H_trans_hz": 0.049293,
+   "H_dwell_low_n": 7,
+   "H_dwell_low_median_s": 10.9659,
+   "H_dwell_low_p90_s": 66.7093,
+   "H_dwell_low_p90_over_median": 6.083333333333334,
+   "Q_occ": [
+    0.5015,
+    0.4985
+   ],
+   "Q_trans_hz": 0.177454,
+   "Q_dwell_low_median_s": 3.6553,
+   "Q_dwell_low_p90_s": 11.3314,
+   "proxy": "frac",
+   "peer_phi": 0.8873,
+   "peer_tau_s": 7.642,
+   "dphi_pct": 0.2911,
+   "dtau_pct": 2.375
+  },
+  {
+   "mode": "bin",
+   "smooth": "smooth5",
+   "dt_used": 0.9138261902586128,
+   "bin_frames": 6,
+   "bin_width_s": 0.95238,
+   "n": 333,
+   "phi": 0.971376,
+   "tau_s": 31.4663,
+   "ar_status": "measured",
+   "phi_bias_corrected": null,
+   "ljung_box_Q": 402.55790133409045,
+   "H_occ": [
+    0.6006,
+    0.3994
+   ],
+   "H_trans_hz": 0.046007,
+   "H_dwell_low_n": 6,
+   "H_dwell_low_median_s": 11.4228,
+   "H_dwell_low_p90_s": 68.537,
+   "H_dwell_low_p90_over_median": 5.999999999999999,
+   "Q_occ": [
+    0.5015,
+    0.4985
+   ],
+   "Q_trans_hz": 0.177454,
+   "Q_dwell_low_median_s": 3.6553,
+   "Q_dwell_low_p90_s": 11.3314,
+   "proxy": "frac",
+   "peer_phi": 0.9721,
+   "peer_tau_s": 32.27,
+   "dphi_pct": 0.0745,
+   "dtau_pct": 2.4905
+  }
+ ],
+ "peer_state": {
+  "peer_native_H": {
+   "occ": [
+    0.642,
+    0.613
+   ],
+   "trans_hz": [
+    0.11,
+    0.104
+   ],
+   "dwell_med": [
+    3.17,
+    6.67
+   ],
+   "dwell_p90": [
+    34.2,
+    32.6
+   ],
+   "n": [
+    17,
+    16
+   ]
+  },
+  "mine_native_H": {
+   "occ": [
+    0.64,
+    0.36
+   ],
+   "trans_hz": 0.09765,
+   "dwell_med_s": 5.7143,
+   "dwell_p90_s": 42.4761,
+   "n": 15
+  },
+  "peer_native_Q": {
+   "occ": 0.5,
+   "trans_hz": [
+    0.438,
+    0.4
+   ],
+   "dwell_med": [
+    1.11,
+    1.27
+   ],
+   "dwell_p90": [
+    7.0,
+    7.6
+   ],
+   "n": [
+    69,
+    63
+   ]
+  },
+  "mine_native_Q": {
+   "occ": [
+    0.5,
+    0.5
+   ],
+   "trans_hz": 0.44415,
+   "dwell_med_s": 0.873,
+   "dwell_p90_s": 6.9206
+  },
+  "mine_bin_H": {
+   "occ": [
+    0.6276,
+    0.3724
+   ],
+   "trans_hz": 0.046007,
+   "dwell_med_s": 12.3367,
+   "dwell_p90_s": 70.3646,
+   "n": 6
+  }
+ },
+ "diffs_gt_5pct": [
+  {
+   "grid": [
+    "native",
+    "smooth5",
+    "mean"
+   ],
+   "tau_mine": 26.0795,
+   "tau_peer": 29.68,
+   "diff_pct": 12.1311
+  },
+  {
+   "grid": [
+    "bin",
+    "smooth5",
+    "mean"
+   ],
+   "tau_mine": 24.1462,
+   "tau_peer": 31.24,
+   "diff_pct": 22.7074
+  },
+  {
+   "grid": [
+    "native",
+    "none",
+    "frac"
+   ],
+   "tau_mine": 7.1339,
+   "tau_peer": 8.003,
+   "diff_pct": 10.8597
+  }
+ ],
+ "dimension_effects": {
+  "binwidth_native_vs_bin_unsmoothed": {
+   "tau_native": 9.0153,
+   "tau_bin": 7.6575
+  },
+  "smoothing_none_vs_smooth5_native": {
+   "tau_none": 9.0153,
+   "tau_smooth": 26.0795
+  },
+  "proxy_mean_vs_frac_bin_smoothed": {
+   "tau_mean": 24.1462,
+   "tau_frac": 31.4663
+  },
+  "state_resolution_H_dwell_median": {
+   "native": 5.7143,
+   "bin_smoothed": 12.3367
+  },
+  "module_vs_physical_binwidth": 1.0422
+ },
+ "verdict": "与主 agent 的 **AR(1) 口径逐格一致**（φ 差 ≤0.001%、τ 差 ≤0.03%，除原生分辨率格见下表）；**状态结构（dwell）差异来自「状态估计分辨率」**：主 agent 在**原生帧**估状态、本节点在 **0.9138 s 箱**估状态 ⇒ 转换率 0.110 vs 0.046 Hz、低态 dwell 中位 3.17 vs 12.34 s。"
+}

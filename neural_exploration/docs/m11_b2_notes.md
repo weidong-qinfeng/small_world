@@ -762,3 +762,44 @@ export PYTHONPATH=/Users/weidong/ai/small_world OMP_NUM_THREADS=1 MKL_NUM_THREAD
 ⇒ **>10 min ⇒ 交主agent 托管**（本节点不自行启动）。**P2 阶梯（T={10,20,40}s × 3 dose = 9 run）**：
 step ≈ **5.7 h**、chunk ≈ **2.2 h** ⇒ 口径选择对预算影响 **≈2.6×** ⇒ 请按本轮实测裁决
 （若采纳 chunk：须登记"在该工作点 step≡chunk 逐位"的证据——本表已给——并保留 step 口径的**首臂/末臂校验**）。
+
+---
+
+## B2-L20 — R32 落盘（③）+ 独立参照臂 Brian2（④，**非门判据**）
+
+### B2-L20.1 ③ R32「参照的双重资格」已写入 (b) 与 (g)
+- `criteria.b_state_fraction.scope_note` 与 `criteria.g_target_density.scope_note` **均以 R32 声明开头**，
+  另各带独立字段 **`r32_reference_double_qualification`**（便于机器核对）；
+- 声明要点（逐字）：**(b)/(g) 的参照（M10 冻结内核）自身带已登记上游缺陷（E-M9-4 形参序、E-M10-1 步模式索引、
+  E-M10-2 多延迟档丢事件）⇒ 本条的 `pass` 仅证明「M11 机制关闭时与冻结件逐位一致（无回归）」，
+  不得被引用为「M11 内核正确」或「生理正确」的证据。**
+- **判据与数值未动**（`gate_verdict` 仍 `pass`；`criterion_counts` 仍 {11,11,11,0,0}）。
+
+### B2-L20.2 ④ 独立参照臂：**Brian2 跨生态对照**（`tools/ref_brian2_point_lif.py` → `data/m11_brian2_reference.json`）
+- **登记**：`extensions.independent_reference_brian2`，**`not_a_gate_criterion = true`**、
+  `excluded_from_gate_verdict = true`（**不进门判定**；已在代码中与判据集合分离）。
+- **单次墙钟 7.3 s**（≤10 min ⇒ 无需托管）。
+
+**实现要点（三条实测踩坑，全部登记）**：
+1. **Brian2 2.6 的"按变量 method dict"不可用**：`method={"v":"euler","ge":"exponential_euler"}`
+   ⇒ `ValueError: No state updater with the name "{method}" is known.` ⇒ 整组改用 `exponential_euler`
+   （`ge/gi` 与引擎逐运算同构；**`v` 方案不同**：Brian2 闭式 vs 引擎显式 Euler）；
+2. **Brian2 默认 `defaultclock.dt = 0.1 ms`**，引擎是 **0.05 ms** ⇒ 必须显式设（否则整轮口径错）；
+3. **`SpikeGeneratorGroup` 禁止"同一步同神经元多次发放"** ⇒ 同步注入必须先**合并**（幅度求和）。
+
+**结果**：
+| 臂 | 引擎 | Brian2 | 差 |
+|---|---|---|---|
+| 修正档（文档语义）首发放步 | — | — | **1 步** |
+| 修正档 脉冲序列 | 17 个（ISI 423 步）| 20 个（ISI 371 步）| max\|Δ\| **1072 步**、≤1 步比例 **5.9%** |
+| **阈下臂**（λ=20 Hz，**无发放 ⇒ 无混沌**）| v_end **−51.7166 mV** | v_end **−51.7145 mV**（exp_euler）/ −51.7189（euler）| **max\|Δv\| 0.18 mV、RMS 0.016 mV、稳态差 0.002 mV** |
+
+**判读（诚实）**：
+- **跨生态差是"方案差 + 混沌放大"**：阈下臂直接量化出积分器方案差仅 **0.18 mV 量级（RMS 0.016 mV）**，
+  在近阈值驱动下被混沌放大 ⇒ **脉冲时序去相关**（这正是"跨后端浮点/方案重排只承诺统计级"的教科书表现）；
+- ⇒ 本臂**只能作统计级参考**，**不得按「逐位」读**；**也不构成 M11 内核缺陷的证据**
+  （方案差已知且已量化；**逐位级证书仍来自 G0 的解析闭式臂：首发放步误差 ≤1 步**）；
+- ⚠️ **本臂不能分辨 E-M9-4**：跨方案 0.18 mV 量级差引发的时序去相关**远大于** E-M9-4 的 ISI 差（182 vs 144 步）
+  ⇒ 冻结档与修正档相对 Brian2 都"看起来差很多"；**E-M9-4 的证据仍只能来自确定性解析臂**（已写入产物
+  `conclusion.defect_not_resolvable_by_this_arm`，避免被误引）；
+- 按主agent 裁定：**差异显著 ⇒ 交主agent 裁决**（产物已给全部量化；**M11 内不改写任何 M10 结论**）。

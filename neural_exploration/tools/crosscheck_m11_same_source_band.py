@@ -149,9 +149,13 @@ def run_variant(fs, x, mode, smooth, dt_s):
     return dict(
         mode=mode, smooth=smooth, dt_used=dt_used,
         bin_frames=b, bin_width_s=round(b * dt_s, 5), n=int(series.size),
-        phi=round(float(ar["phi"]), 6), tau_s=(round(float(ar["tau_s"]), 4) if ar["tau_s"] else None),
-        phi_bias_corrected=round(float(ar["phi_bias_corrected"]), 6),
-        ljung_box_Q=(round(lb_q(ser), 3) if ser.size > 12 else None),
+        phi=round(float(ar.get("phi") or 0), 6),
+        tau_s=(round(float(ar["tau_s"]), 4) if ar.get("tau_s") else None),
+        ar_status=ar.get("status"),
+        phi_bias_corrected=(round(float(ar.get("phi_bias_corrected")), 6)
+                            if ar.get("phi_bias_corrected") is not None else None),
+        ljung_box_Q=((ar.get("ljung_box") or {}).get("Q") if ar.get("ljung_box") else
+                     (round(lb_q(ser), 3) if ser.size > 12 else None)),
         H_occ=[round(float((h["state"] == 0).mean()), 4), round(float((h["state"] == 1).mean()), 4)],
         H_trans_hz=round(sw / (series.size * dt_used), 6),
         H_dwell_low_n=((dw.get("low") or {}).get("n")),
@@ -228,7 +232,7 @@ def main():
                proxy_stats=pstat, grid=rows, peer_state=state_cmp,
                diffs_gt_5pct=attribution, dimension_effects=effects,
                verdict=("与主 agent 的 **AR(1) 口径逐格一致**（φ 差 ≤0.001%、τ 差 ≤0.03%，除原生分辨率格见下表）；"
-                        "**状态结构（dwell）差异来自"状态估计分辨率"**：主 agent 在**原生帧**估状态、"
+                        "**状态结构（dwell）差异来自「状态估计分辨率」**：主 agent 在**原生帧**估状态、"
                         "本节点在 **0.9138 s 箱**估状态 ⇒ 转换率 0.110 vs 0.046 Hz、低态 dwell 中位 3.17 vs 12.34 s。"))
     with open(OUT_CSV, "w", newline="", encoding="utf-8") as f:
         f.write("# M11 同源目标带交叉核对（generated_by=tools/crosscheck_m11_same_source_band.py；"

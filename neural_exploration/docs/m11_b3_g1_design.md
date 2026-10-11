@@ -488,6 +488,8 @@ $EVA -m neural_exploration.tools.validate_p11_resting \
      --out-json neural_exploration/data/m11_p5_resting_eval.json
 ```
 
+- 【R43 更正（2026-10-11）】**本节（§12.5）命令里的占位符 `<B2 的 P5 跑臂生产者>` 已落实为 `tools/run_m11_p5_arms.py`**；
+  **占位行逐字保留于上，未删除**；可运行版命令见 **§13.7**；另本节的 `--T-ms <T_min>` 步数须**计入 settle 10,000 步**（§13.1）。
 - **进度（mtime 口径，同 §10.3）**：`ls -t neural_exploration/data/m11_p5_runs/*.done | head -1`（mtime = 最近完成）；`ls .../*.done | wc -l`（已完成数）。
 - **禁止**（R34 追加）：**用 `.venv-m11` 跑任何 `import torch` 的脚本**；**用评估器侧结果支撑/推翻「逐位」结论**。
 
@@ -499,3 +501,116 @@ $EVA -m neural_exploration.tools.validate_p11_resting \
 - 但**登记**：`data/m11_engine_params.csv` 目前**未记录**产生 ms/step 的 `device`/`interpreter`/`dtype` 字段（仅记 `cpu_interp`）
   ⇒ 建议 B2 在 append-only 修正 E-M11-2 时**一并补行**（`ms_per_step` 的 `device=mps`、`interp=./.venv-m9/bin/python`、`torch=2.8.0`），
   使该锚**自带口径**（否则未来换解释器/换 torch 版本后无法判断基准是否可比）。
+
+---
+
+## §13 R43 双口径重定价（**判据口径 = step**；**纯台面算术，未跑仿真**）
+
+> **为什么 §11 作废**：§11/R21/R36 用的 `1.1362 ms/step`（N=31k）经 B2 明确其口径 = **`chunk` 投递 + 1/4 事件率**
+> ⇒ **与判据口径（`step`）不可互引**。B2 实测同种子/同网/同事件表的孪生臂（N=31,000, dose=1）：
+> **`step` = 5.4163 ms/step（wall 180.7 s）** vs **`chunk` = 2.0955（111.7 s）**，该点 **`ndiff=0`、`pop_trace` 逐位相同**。
+> **§11 的全部数字逐字保留**（不删）；本节为准。**旧占位符** `<B2 的 P5 跑臂生产者>` 已落实为 **`tools/run_m11_p5_arms.py`**（§12.5 的占位行保留未删；可运行命令见 §13.6）。
+
+### §13.1 口径与步数（**含 settle** —— §11 表格的隐藏缺口）
+
+| 项 | 值 | 说明 |
+|---|---|---|
+| **判据口径（默认，不因省算力改变）** | **`step` = 5.4163 ms/step @N=31,000** | B2 孪生臂实测 |
+| 生产口径（**有条件**） | `chunk` = 2.0955 ms/step @N=31,000 | 仅当 §13.5 的两端点孪生臂校核通过 |
+| 口径比 | **step/chunk = 2.585×**；step/旧 1.1362 = **4.767×** | 旧值还叠了 1/4 事件率 ⇒ chunk/旧 = **1.844×**（**这一项来自事件率，不是投递口径**） |
+| **settle 步数** | 500 ms / 0.05 ms = **10,000 步**（**必须计入每 run**） | B2 生产者实测单 run **210,000 步 = 10,000 settle + 200,000 测量** ✅ |
+| 单 run 步数（含 settle） | T=10 s → **210,000**；T=20 s → **410,000**；T=40 s → **810,000** | `steps = settle/dt + T/dt` |
+| 单 run 墙钟（step） | T=10 s ≈**19.0 min**；T=20 s ≈**37.0 min**；T=40 s ≈**73.1 min** | ⚠️ **T≥20 s 的每个 run 都 >10 min ⇒ 一律托管作业**（纪律） |
+| 单 run 墙钟（chunk） | 7.3 / 14.3 / 28.3 min | — |
+
+> **❗§11 的自纠（第二条）**：§11.2/§11.3 的步数表**只算测量窗、未计 settle** ⇒ T=10 s 少 **5.0%**、T=20 s 少 **2.5%**、T=40 s 少 **1.25%**。§11 表格逐字保留，本节全部含 settle。
+> **P0 单段核对**：本节点算得 **0.9479 GPU-h = 56.9 min**，与主agent 的 **≈0.95 GPU-h / ≈57 min** **一致 ✅**。
+
+### §13.2 逐段逐臂（★方案结构：5 档、B 单档 T_min、D 独立）
+
+| 段 | 组成（arm × T × seed） | 步数 | **step** GPU-h | **chunk** GPU-h |
+|---|---|---|---|---|
+| **P0 探针** | 3 run：T=10 s × dose{0,1,4} × seed0 | 630,000 | **0.9479** | 0.3667 |
+| **P1 探针** | 5 run：T=T_min × 5 档 × seed0 | 1,050,000 | **1.5798** | 0.6112 |
+| **P2 探针** | 9 run：T{10,20,40} × dose{0,1,4} × seed0 | 4,290,000 | **6.4544** | 2.4971 |
+| **B 杠杆**（★单档搜索） | 4 轮 × 5 档 × 1 T_min × seed0 = **20 run** | 4,200,000 | **6.3190** | 2.4447 |
+| **C 正式矩阵** | 5 档 × 3 seed × T{10,20,40} = **45 run** | 21,450,000 | **32.2721** | 12.4857 |
+| **D 确定性** | 2 重复 × 3 T = **6 run** | 2,860,000 | **4.3029** | 1.6648 |
+| **E 孪生臂校核**（R43 新增硬前提） | 剂量网格两端各 1 对 step/chunk（dose=0 与 dose=max，T_min，seed0）= **4 run** | 840,000（分口径计价） | 见下 | 见下 |
+| **合计** | **86 run** | **34,480,000** | **51.8761** | **20.0702** |
+
+- **E 段分口径计价**：每对 = step 臂 210,000×5.4163 = 0.3160 + chunk 臂 210,000×2.0955 = 0.1222 = **0.4382 GPU-h**；两端点 = **0.8764 GPU-h**（已含在"chunk 合计"口径下的成本里；step 合计不含 E，因为**全 step 生产的方案不需要孪生臂**）。
+- **6 档变体（未砍 8×）**：39,820,000 步 ⇒ **step 59.910** / chunk 23.179 GPU-h。
+
+### §13.3 **明确回答：≤10 GPU-h 包络**
+
+> **🔴 在判据口径 `step` 下，本 G1 计划在 N=31,000 **不成立**：合计 51.876 GPU-h ⇒ 超包络 **419%（5.19×）**。**
+> **即便改用 `chunk` 生产口径**（且在双端点孪生臂验证通过、加 E 段 0.8764 后）⇒ **20.947 GPU-h ⇒ 仍超包络 109%（2.09×）**。
+> ⇒ **单靠"换口径"或"换档"都不足以回包络**；§11 的 ★ 方案（6.174 GPU-h）**彻底作废**。
+
+### §13.4 N=8,192 档：**step 口径无实测 ⇒ `unverified`**（不得按比例默认外推）
+
+主agent 预判 8k 是唯一回包络的路（B2 称 `--n 8192` 成本约 **1/4**）。**但两个候选因子差 2.20×**，故**必须实测**：
+
+| 候选档因子 | 依据 | step 合计 | chunk 合计 |
+|---|---|---|---|
+| 0.25 | B2「约 1/4」 | **12.969** ❌ +30% | **5.018** ✅ |
+| **0.2643** | 线性 N 比（8192/31000） | **13.709** ❌ +37% | **5.304** ✅ |
+| 0.5822 | 旧表同口径比值（0.6615/1.1362，**同为 chunk 口径⇒仅口径内可比**） | **30.202** ❌ | 11.685 ❌ |
+
+⇒ **标记 `unverified`**：8k 的 **step** ms/step **无实测** ⇒ **不得默认 1/4 或 0.5822**。
+**替换点（唯一正确做法）**：跑 **P0′ = 3 run @N=8,192 的 step 口径探针**（成本 = P0 × 档因子，估 0.24–1.0 GPU-h，**必须先测**）⇒ 用实测值替换后再给正式矩阵的**定稿价**；在拿到之前 **C 段不得启动**（与"先探针后裁决"一致）。
+
+### §13.5 R43 的两条预注册约束（并入本方案）
+
+1. **判据口径 = `step`（默认，不因省算力改变）；`chunk` 仅作生产口径**，且**前提**是：
+   **剂量网格两端（`dose=0` 与 `dose=max`）各跑一对 step/chunk 孪生臂，并断言 `pop_trace` 逐位相同**
+   —— **E-M10-1 的失效恰是口径相关的（"可复现 ≠ 正确"），单点等价不足以外推整网格**；
+   **任一对不逐位 ⇒ 全网格退回 `step` 并重定价**（**不得只换不一致的那一格**）。→ 即 §13.2 的 **E 段（0.8764 GPU-h）是 chunk 路线的前置成本**。
+2. **T_min 定档规则不变**：P0 零驱动臂 10 s 内脉冲数 `S0 ≥ 300 ⇒ T_min = 10 s`；否则 20 s / 40 s。
+   **若 T_min 上抬，按 §10.2/§13.6 重算**（每 run 步数 +settle：T=20 s → 410,000、T=40 s → 810,000；
+   阶梯 {20,40,80} ⇒ 每 (dose,seed) = 410k+810k+1,610k = **2,830,000 步**，比 {10,20,40} 的 1,430,000 步 **×1.98**）。
+
+### §13.6 建议（二选一，请主agent 裁决；**均需先测 8k 的 step ms/step**）
+
+| 方案 | 内容 | step 口径成本 | 评 |
+|---|---|---|---|
+| **A 提高 G1 包络** | 保留完整计划（B 4 轮 + D 独立），N=8,192（**待实测档因子**） | **≈12.97–30.20**（取决于实测因子） | 最稳；但**须把 §10.1 的 ≤10 GPU-h 预注册上限正式改写**（NG 门三态裁决 + 新增行） |
+| **B 采用 chunk 生产 + step 判据** | 先跑 **E 段孪生臂（两端点，0.8764）**；通过后 N=8,192 下 chunk 生产；判据仍由 step 口径的端点孪生臂背书 | chunk **≈5.02–11.69**（取决于实测因子） | **唯一有余量的路**；但**依赖两端点逐位一致**（任一不一致 ⇒ 退回 step 并重定价） |
+| **C（最小化，仅作参考）** | P0 + B **1 轮** + C 45 run，D 并入 P0 | 8,192×0.25 ⇒ **8.70** ✅ / ×0.2643 ⇒ **9.20** ✅ / ×0.5822 ⇒ 20.26 ❌ | 勉强进包络但**零余量**、且 B 只 1 轮（杠杆搜索几乎不可能收敛）⇒ **不推荐单独采用** |
+
+**本节点建议**：**先跑 P0′（8,192, step, 3 run）+ E 段孪生臂（两端点）**，用两个实测值同时钉住"档因子"与"口径可比性"，**再**在 A/B 之间裁决 —— 这两个探针合计不足 **2 GPU-h**，却能避免把 30–52 GPU-h 的计划押在未实测的因子上。
+
+### §13.7 可运行命令（占位符已落实为 **`tools/run_m11_p5_arms.py`**）
+
+```bash
+cd /Users/weidong/ai/small_world
+export PYTHONPATH=/Users/weidong/ai/small_world OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONHASHSEED=0
+ENG=./.venv-m9/bin/python      # ★ 引擎侧（R34）：torch 2.8.0 / numpy 1.26.4
+EVA=./.venv-m11/bin/python     #   评估器侧：numpy 2.0.2（与生产者不同解释器 ⇒ 不做 BIT 断言）
+RUN=tools/run_m11_p5_arms.py   # ★ R43：占位符 <B2 的 P5 跑臂生产者> 的落实
+
+# P0′（建议新增）：N=8,192 的 **step 口径**定价探针（3 run）
+for d in 0 1 4; do
+  $ENG $RUN --n 8192 --T-ms 10000 --dose $d --seed 0 --settle-ms 500 --delivery step \
+    --out-pop    neural_exploration/data/m11_p5_runs/p0p_8192_T10000ms_d${d}_s0_poptrace.npy \
+    --out-counts neural_exploration/data/m11_p5_runs/p0p_8192_T10000ms_d${d}_s0_counts.csv \
+    --out-json   neural_exploration/data/m11_p5_runs/p0p_8192_T10000ms_d${d}_s0.json
+done
+
+# E 段孪生臂（chunk 路线的前置）：剂量网格两端各一对 step/chunk
+for d in 0 <dose_max>; do for del in step chunk; do
+  $ENG $RUN --n 8192 --T-ms <T_min> --dose $d --seed 0 --settle-ms 500 --delivery $del \
+    --out-json neural_exploration/data/m11_p5_runs/e_8192_T<T_min>ms_d${d}_s0_${del}.json \
+    --out-pop  neural_exploration/data/m11_p5_runs/e_8192_T<T_min>ms_d${d}_s0_${del}_poptrace.npy
+done; done
+# 断言：同一 (dose,T,seed) 的 step 与 chunk 的 pop_trace **逐位相同**（sha256 相同）；任一不等 ⇒ 全网格退回 step
+
+# 离线评估（评估器侧）
+$EVA -m neural_exploration.tools.validate_p11_resting --protocol-json neural_exploration/data/m11_p5_protocol.json \
+     --out-csv neural_exploration/data/m11_p5_resting_eval.csv --out-json neural_exploration/data/m11_p5_resting_eval.json
+```
+
+- **登记要求（R43 §5）**：**档位（N）与口径（step/chunk）都是 P5 协议的一部分** ⇒ 改档/改口径**都必须显式登记**；
+  且**在任何档上都必须重新验证 (a)(b) 两带是否同时可达**（工作点随 N 变）。
+- **进度（mtime 口径）**：`ls -t neural_exploration/data/m11_p5_runs/*.done | head -1`；`ls .../*.done | wc -l`。

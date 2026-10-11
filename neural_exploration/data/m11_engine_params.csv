@@ -18,4 +18,5 @@ dual_estimator_tol,0.02,双估计器一致性硬门（相对差 ≤2%）
 probe_indegree,20,夹具柱突触前数/神经元
 probe_density_events_hz,2.0,夹具外部事件率（Hz/神经元）
 cpu_interp,./.venv-m9/bin/python,引擎侧解释器（清单 §0.10 L5：引擎复用 .venv-m9）
-gpu_h_per_trial_formula,ms_per_step × N_steps × 3.6e-6,单试次 GPU-h（禁用段 0 预热值）
+gpu_h_per_trial_formula,ms_per_step × N_steps × 3.6e-6,"【已作废，原值逐字保留】单试次 GPU-h；**因子错 ×12.96**（把 1 GPU-h 当 277,778 ms=4.63 min）——见 E-M11-2 / 主agent R33 与下一行 `_v2`"
+gpu_h_per_trial_formula_v2,ms_per_step × N_steps × 2.7778e-7,"**有效式**（取代上一行，旧行原值保留）：量纲恒等式 **1 GPU-h = 3,600 s = 3.6e6 ms** ⇒ 因子 = 1/3.6e6 = 2.7778e-7；校验算例 600,000 步 × 1.1362 ms/step ⇒ **0.1894 GPU-h**（错式给 2.4542，比值 12.960）；更正指针：**E-M11-2 / 主agent R33**（2026-10-11）；审计结论：错因子未进入任何计算，仅本登记字符串失真"

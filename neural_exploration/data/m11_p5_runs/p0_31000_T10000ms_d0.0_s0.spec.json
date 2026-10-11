@@ -1,0 +1,23 @@
+{
+ "run_id": "p0_31000_T10000ms_d0.0_s0",
+ "stage": "p0",
+ "config_id": "p5_p0",
+ "T_ms": 10000.0,
+ "drive_mult": 0.0,
+ "seed": 0,
+ "role": "zero_drive",
+ "mechanism": "none",
+ "settle_ms": 500.0,
+ "drive_rate_hz": 8.0,
+ "device": "mps",
+ "indegree": 20,
+ "gmax_scale": 1.0,
+ "bias_scale": 1.0,
+ "net_seed": 0,
+ "delay_bins": [
+  40,
+  60,
+  80
+ ],
+ "n_neuron": 31000
+}
