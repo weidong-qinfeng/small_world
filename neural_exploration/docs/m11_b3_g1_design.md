@@ -189,6 +189,9 @@ M10 A4 的正体是「(a) 中位率 ∧ (b) 静默 同时成立」未达成，�
 cd /Users/weidong/ai/small_world
 export PYTHONPATH=/Users/weidong/ai/small_world OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONHASHSEED=0
 PY=./.venv-m11/bin/python
+#【R34 更正（2026-10-11）】以上 PY 为**评估器侧**解释器（本节全部命令 = 离线评估/冒烟，只 import numpy ⇒ 正确）。
+#  **引擎侧**（任何 import torch／跑仿真，含 P5 跑臂生产者）必须改用 ./.venv-m9/bin/python —— 见 §12。
+#  旧的单值写法**逐字保留**于上一行，未删除；更正指针指向主agent R34。
 
 # 判据表自检（CSV⟺JSON 互查 + provenance 完整性 + 代理行后果齐全）
 $PY -m neural_exploration.tools.validate_p11_resting --check-targets
@@ -407,3 +410,92 @@ data/m11_p5_runs/
 2. **任何档上都要重验 (a)(b) 是否同时可达**（工作点随 N 变）：本方案下 **P0/P1 的 (a)(b) 首读即在 8,192** ⇒ 探针与 C 段**同档**，不存在"探针在 31k、定稿在 8k"的口径断层。
 3. **若 8,192 档 (a)∧(b) 不可达而 31k 可达**（回退分支，预算对照）：31k 下 **N1 + B 单档 4 轮 = 10.605（+6%）**；**N1 + B 单档 3 轮 = 10.289（+3%）**；**N1 + B 单档 2 轮 = 9.973 ✅**；**N1 + B 单档 3 轮 + D 并入 A（重复臂复用探针） = 9.405 ✅** ⇒ 兜底可达包络，但需再削一轮 B 或复用 D。
 4. **探针段是否要改档**：**要**（见 2）——探针的职责含"定 `T_min`"与"(a)(b)(c) 首读"，两者都依赖 N；探针在 31k 而 C 在 8,192 会使 `T_min` 决策（零驱动臂 ≥300 脉冲）**不可传递**。
+
+---
+
+## §12 R34 更正：**解释器口径** + 更正后的逐档命令
+
+> **被动对象**：本文档 §8（`PY=./.venv-m11/bin/python`）与 §10/§11 的命令面、以及 `data/m11_b3_managed_jobs.json` 的
+> `common_env.python` 与 J3 的「逐 run 新进程」一行 —— 它们**未区分引擎侧与评估器侧**。
+> **更正依据**：主agent **R34**（2026-10-11，实测能力矩阵）⇒ **旧写法逐字保留**（§8 已就地加【R34】标记；jobs JSON 的旧值存入 `r34_correction_note.old_values_verbatim`）。
+
+### §12.1 能力矩阵（主agent 实测 + **本节点独立复验**，逐项一致）
+
+| venv | python | torch | pytest | h5py | numpy |
+|---|---|---|---|---|---|
+| **`.venv-m9`** | 3.9.6 | **2.8.0（MPS）** | **8.4.2** | MISSING | **1.26.4** |
+| `.venv-m10` | 3.9.6 | MISSING | MISSING | 3.14.0 | 2.0.2 |
+| **`.venv-m11`** | 3.9.6 | **MISSING** | MISSING | 3.14.0 | 2.0.2 |
+
+（本节点用 `./<venv>/bin/python -c "import ..."` 逐项复算：`.venv-m11` 的 `torch` **MISSING** ✅、`.venv-m9` 的 `numpy 1.26.4` / `torch 2.8.0` / `pytest 8.4.2` ✅）
+
+### §12.2 两条口径（**不得混用**）
+
+| 角色 | 解释器 | 依据 |
+|---|---|---|
+| **引擎侧**（生产臂：任何 `import torch`、跑仿真，**含 P5 跑臂生产者**） | **`./.venv-m9/bin/python`** | `data/m11_engine_params.csv::cpu_interp` + 清单 §0.10 L5（引擎复用 `.venv-m9`）；**用 `.venv-m11` 会立即 `No module named torch`** |
+| **评估器侧**（`validate_p11_resting.py`，本项目交付） | `./.venv-m11/bin/python` | 只需 numpy（m11: 2.0.2）⇒ **可留在 `.venv-m11`**，但**必须显式标注「评估器与生产者使用不同解释器」** |
+| 数据侧（取数/参考带，h5py） | `./.venv-m11/bin/python`（`.venv-m10` 等价） | B1 数据门既有口径 |
+
+### §12.3 ⚠️ numpy 版本偏斜（1.26.4 vs 2.0.2）⇒ 「逐位/BIT」结论的解释器维度
+
+- **传输**：跨 venv 传 `pop_trace.npy` / `counts.csv` **格式兼容**（可读）。
+- **断言**：**「逐位一致 / BIT」类断言只在「同一解释器 **且** 同一 numpy 版本」内才可比**
+  ⇒ **评估器侧的数值结果不得用于支持或推翻任何「逐位」结论**（**第四律「口径一致才可比」的解释器维度**）。
+- **受影响的具体场合**：工具的 **`(h)` 确定性判据**、任何 `bit_identical` 断言、**G0 的 (e) 分段可组合性 / 跨进程逐位断言**
+  ⇒ 这些必须由**引擎侧生产者**（`.venv-m9`）给出；评估器只做**统计级**核对（`determinism_mode=statistical` 已在判据表定稿，二者一致）。
+- **留痕方式（不改工具）**：评估器会把 protocol-json 原样回写进输出的 `protocol` 段
+  ⇒ 只要在 `m11_p5_protocol.json` 里写 `"engine": {"python": ..., "numpy": ..., "torch": ...}`，版本口径**自动留痕**。
+
+### §12.4 逐臂 JSON 追加字段（R34 §四）
+
+每臂 JSON 除 `host`/`device` 外，**必须追加**：`python` / `numpy` / `torch` 版本（已要求 B2 在生产者里落）。
+完整必需字段：`host, device, python, numpy, torch, wall_s, ms_per_step_steady, settle_ms, event_seed, spikes_total, ei{i_exc_integral, i_inh_integral}`。
+
+### §12.5 更正后的逐档命令（探针 P0/P1/P2；引擎侧）
+
+```bash
+cd /Users/weidong/ai/small_world
+export PYTHONPATH=/Users/weidong/ai/small_world OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONHASHSEED=0
+ENG=./.venv-m9/bin/python          # ★ 引擎侧（R34）：torch 2.8.0 / numpy 1.26.4 / pytest 8.4.2
+EVA=./.venv-m11/bin/python         #   评估器侧：numpy 2.0.2（与生产者不同解释器 ⇒ 不做 BIT 断言）
+
+# ---- P0 最小探针：N=8,192（★N4 方案），T=10 s，dose{0,1,4}，seed 0（3 run）----
+for d in 0 1 4; do
+  $ENG <B2 的 P5 跑臂生产者> --N 8192 --T-ms 10000 --dose $d --seed 0 --settle-ms <settle> \
+    --out-pop    neural_exploration/data/m11_p5_runs/p0_8192_T10000ms_d${d}_s0_poptrace.npy \
+    --out-counts neural_exploration/data/m11_p5_runs/p0_8192_T10000ms_d${d}_s0_counts.csv \
+    --out-json   neural_exploration/data/m11_p5_runs/p0_8192_T10000ms_d${d}_s0.json
+  # 每臂 JSON 必含 host/device/python/numpy/torch + wall_s/ms_per_step_steady/settle_ms/event_seed/ei
+done
+
+# ---- P1 剂量全扫：N=8,192，T=T_min，dose{0,0.5,1,2,4}（★N1 的 5 档），seed 0 ----
+for d in 0 0.5 1 2 4; do
+  $ENG <B2 的 P5 跑臂生产者> --N 8192 --T-ms <T_min> --dose $d --seed 0 --settle-ms <settle> \
+    --out-json neural_exploration/data/m11_p5_runs/p1_8192_T<T_min>ms_d${d}_s0.json  # (+ pop/counts 同 P0)
+done
+
+# ---- P2 时长阶梯：N=8,192，T={T_min,2T_min,4T_min}，dose{0,1,4}，seed 0（9 run）----
+for T in <T_min> <2T_min> <4T_min>; do for d in 0 1 4; do
+  $ENG <B2 的 P5 跑臂生产者> --N 8192 --T-ms $T --dose $d --seed 0 --settle-ms <settle> \
+    --out-json neural_exploration/data/m11_p5_runs/p2_8192_T${T}ms_d${d}_s0.json
+done; done
+
+# ---- 离线评估（**评估器侧**；不启动仿真）----
+$EVA -m neural_exploration.tools.validate_p11_resting \
+     --protocol-json neural_exploration/data/m11_p5_protocol.json \
+     --out-csv  neural_exploration/data/m11_p5_resting_eval.csv \
+     --out-json neural_exploration/data/m11_p5_resting_eval.json
+```
+
+- **进度（mtime 口径，同 §10.3）**：`ls -t neural_exploration/data/m11_p5_runs/*.done | head -1`（mtime = 最近完成）；`ls .../*.done | wc -l`（已完成数）。
+- **禁止**（R34 追加）：**用 `.venv-m11` 跑任何 `import torch` 的脚本**；**用评估器侧结果支撑/推翻「逐位」结论**。
+
+### §12.6 附带结论：**实测 ms/step 必然出自引擎侧解释器**（因此 §11 的重定价口径正确）
+
+- 前提（主agent/B2 声明）：§11.1 的 ms/step（`0.6615 @8,192` / `1.1362 @31,000`）是**稳态、MPS、禁用段 0 预热**的测量值。
+- 推理（**逻辑必然，非假设**）：**MPS 需要 torch**，而**只有 `.venv-m9` 有 torch（2.8.0）**（§12.1 三 venv 复验：`m10/m11` 均 `MISSING`）
+  ⇒ 该 ms/step **只能**在 `./.venv-m9/bin/python` 下测得 ⇒ **与 R34 的引擎侧口径一致**，§11 的预算重算**无需换基准**。
+- 但**登记**：`data/m11_engine_params.csv` 目前**未记录**产生 ms/step 的 `device`/`interpreter`/`dtype` 字段（仅记 `cpu_interp`）
+  ⇒ 建议 B2 在 append-only 修正 E-M11-2 时**一并补行**（`ms_per_step` 的 `device=mps`、`interp=./.venv-m9/bin/python`、`torch=2.8.0`），
+  使该锚**自带口径**（否则未来换解释器/换 torch 版本后无法判断基准是否可比）。

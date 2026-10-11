@@ -1,6 +1,6 @@
 {
  "generated_by": "M11 执行节点 B3（工作包 G1：P5 判据/协议设计与工具骨架）",
- "generated_at": "2026-10-11（掩膜裁决 + J2 归 B1 + 探针级方案）",
+ "generated_at": "2026-10-11（R34 解释器口径更正）",
  "policy": {
   "rule": "本节点**不启动任何仿真或 >10 min 的作业**（纪律）；以下作业一律由主agent 以**托管后台作业**启动并回传日志",
   "thread_discipline": "CPU 作业必须 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1；MPS 作业**串行**（禁并发）",
@@ -11,8 +11,10 @@
  "common_env": {
   "cwd": "/Users/weidong/ai/small_world",
   "env": "PYTHONPATH=/Users/weidong/ai/small_world OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONHASHSEED=0",
-  "python": "./.venv-m11/bin/python",
-  "forbidden": "sys.executable / MPS 并发 / 覆盖他节点文件"
+  "python_engine_side": "./.venv-m9/bin/python",
+  "python_evaluator_side": "./.venv-m11/bin/python",
+  "python_data_side": "./.venv-m11/bin/python",
+  "forbidden": "sys.executable / MPS 并发 / 覆盖他节点文件 / **用 .venv-m11 跑任何 import torch 的脚本**（R34）"
  },
  "jobs": [
   {
@@ -44,7 +46,8 @@
    "status_2026_10_11": "**judged_unavailable（吞吐限制）—— 由主agent 裁决 §二.2，不再作为待启动作业**",
    "measured_throughput": "本机对 S3 实测 **10–17 KB/s**（与 DQ-4 同因）；单个 ecephys NWB 100–250 MB ⇒ **ETA 1.6–7 h ⇒ 不可行**",
    "replacement_decision": "(a) 的带**保留 literature 档**（0.5–2.0 Hz，PMID 30419013 全文已核；已补写限制：该文档为**建模论文对实测的转述、非原测、只覆盖 L4 回路**）",
-   "future_resume_plan": "换网络/换时段 + **Range 续传**（复用 `tools/verify_m11_downloads.py` 的 exists+getsize+sha256 断点校验）+ **先探吞吐再决定**；若将来取得实测带 ⇒ 在 `m11_p5_targets.csv` **新增行**替换（旧行保留）"
+   "future_resume_plan": "换网络/换时段 + **Range 续传**（复用 `tools/verify_m11_downloads.py` 的 exists+getsize+sha256 断点校验）+ **先探吞吐再决定**；若将来取得实测带 ⇒ 在 `m11_p5_targets.csv` **新增行**替换（旧行保留）",
+   "interpreter": "data_side（h5py）⇒ ./.venv-m11/bin/python（.venv-m10 等价）；**不涉 torch**"
   },
   {
    "job_id": "J2",
@@ -72,7 +75,8 @@
     "microns_functional_calcium_crossfield_dispersion"
    ],
    "acceptance_in_table": "见 m11_p5_targets.csv::j2_reserved_keys_and_acceptance（5 条验收条件 a–e）",
-   "owner": "M11-B1（主agent 已直接派给 B1；本节点不动 J2）"
+   "owner": "M11-B1（主agent 已直接派给 B1；本节点不动 J2）",
+   "interpreter": "data_side ⇒ ./.venv-m11/bin/python（执行归 B1）"
   },
   {
    "job_id": "J3",
@@ -81,11 +85,18 @@
    "blocked_by": "**G0 = fail（R11）⇒ 不得启动**；另需判据表 8 条 final=0 行定稿",
    "est_wall": "按 §10.1：G1 段 GPU ≤10 GPU-h；单试次 N_mid/T=30 s ≈0.05–0.15 GPU-h（预注册）⇒ **靠 G0 探针实测修正后才能定价**。本节点给的预注册式：Σ_条件 Σ_seed [steps(T,dt) × ms_per_step × 3.6e-6]（T 阶梯 ×3 ⇒ 成本 ×3）",
    "commands": [
-    "# ① 先探针（B2 的 G0 作业）：三档 N 的稳态 ms/step + RSS",
-    "PYTHONPATH=/Users/weidong/ai/small_world OMP_NUM_THREADS=1 ./.venv-m11/bin/python -m neural_exploration.tools.scan_m11_engine --help   # 由 B2 提供确切参数",
-    "# ② 每个 (config, mechanism, dose, seed, T) **一个新进程**（逐目标/逐试次新进程纪律）",
-    "#    产物须落：pop_trace（.npy，逐步群体脉冲数）+ counts（.csv，逐神经元计数，含 cell_type）+ ei 电流积分（JSON）+ wall_s/ms_per_step",
-    "# ③ 用本工作包的工具做**离线评估**（不启动仿真）",
+    "# ① 先探针（B2 的 G0 作业）：三档 N 的稳态 ms/step + RSS —— **引擎侧，必须 .venv-m9**（R34）",
+    "PYTHONPATH=/Users/weidong/ai/small_world OMP_NUM_THREADS=1 ./.venv-m9/bin/python -m neural_exploration.tools.scan_m11_engine --help   # 由 B2 提供确切参数",
+    "# ② 每个 (config, mechanism, dose, seed, T) **一个新进程**；**引擎侧一律 ./.venv-m9/bin/python**（R34：用 .venv-m11 会 `No module named torch`）",
+    "PYTHONPATH=/Users/weidong/ai/small_world OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONHASHSEED=0 \\",
+    "  ./.venv-m9/bin/python <B2 的 P5 跑臂生产者> --N 8192 --T-ms <T> --dose <d> --seed <s> --settle-ms <settle> \\",
+    "  --out-pop    neural_exploration/data/m11_p5_runs/p1_8192_T<T>ms_d<d>_s<s>_poptrace.npy \\",
+    "  --out-counts neural_exploration/data/m11_p5_runs/p1_8192_T<T>ms_d<d>_s<s>_counts.csv \\",
+    "  --out-json   neural_exploration/data/m11_p5_runs/p1_8192_T<T>ms_d<d>_s<s>.json",
+    "#    每臂 JSON **必须含**：host/device + **python/numpy/torch 版本**（R34 §四）+ wall_s/ms_per_step_steady + settle_ms + 事件表 seed + ei(i_exc_integral/i_inh_integral)",
+    "# ③ 用本工作包的工具做**离线评估**（不启动仿真）—— **评估器侧，./.venv-m11 即可**（numpy-only）",
+    "#    ⚠️ 评估器与生产者**使用不同解释器**（.venv-m11 vs .venv-m9；numpy 2.0.2 vs 1.26.4）",
+    "#    ⇒ 评估器结果**不得**用于支持或推翻任何「逐位/BIT」结论（R34 §三；第四律的解释器维度）",
     "./.venv-m11/bin/python -m neural_exploration.tools.validate_p11_resting \\",
     "    --protocol-json neural_exploration/data/m11_p5_protocol.json \\",
     "    --out-csv neural_exploration/data/m11_p5_resting_eval.csv \\",
@@ -102,8 +113,11 @@
     "T 必须给 {T_min, 2×T_min, 4×T_min} 三档，且**逐档独立重跑**（禁截断；工具含前缀检测）",
     "每臂须同时提供 pop_trace 与 counts（否则硬门③不可校验 ⇒ 整体不可 pass）",
     "(e) 须注入 ei.i_exc_integral / ei.i_inh_integral（工具不从发放率反推电流）",
-    "须提供 mechanism=\"none\" 且 drive_mult=1 的基线臂（硬门⑤）"
-   ]
+    "须提供 mechanism=\"none\" 且 drive_mult=1 的基线臂（硬门⑤）",
+    "**必须写入 python/numpy/torch 版本**（`\"engine\": {\"python\": ..., \"numpy\": ..., \"torch\": ...}`）⇒ 评估器会把 protocol 段原样回写，自动留痕（R34 §三）",
+    "**必须登记 N 档**（★方案 = N=8,192；档位属 P5 协议的一部分）"
+   ],
+   "interpreter": "**两段两种口径**：① 引擎侧（探针 + 跑臂生产者）= ./.venv-m9/bin/python；② 离线评估器 = ./.venv-m11/bin/python"
   },
   {
    "job_id": "J4",
@@ -112,13 +126,15 @@
    "blocked_by": "J3 的结论 + G0 通过",
    "est_wall": "按 J3 的单试次成本 × 臂数（预注册包络：G1 段 ≤10 GPU-h）",
    "commands": [
-    "# 形态与 J3 相同，仅替换协议 JSON 的臂参数；**每一档改动后必须重跑零驱动臂重核 (c)**",
-    "./.venv-m11/bin/python -m neural_exploration.tools.validate_p11_resting --protocol-json <新协议> --out-json <新输出>"
+    "# 形态与 J3 相同（**引擎侧一律 ./.venv-m9**），仅替换协议 JSON 的臂参数；**每一档改动后必须重跑零驱动臂重核 (c)**",
+    "PYTHONPATH=/Users/weidong/ai/small_world OMP_NUM_THREADS=1 ./.venv-m9/bin/python <B2 的 P5 跑臂生产者> ...   # 引擎侧",
+    "./.venv-m11/bin/python -m neural_exploration.tools.validate_p11_resting --protocol-json <新协议> --out-json <新输出>   # 评估器侧"
    ],
    "artifacts": [
     "neural_exploration/data/m11_p5_calibration_targets_v2.csv（新增行；原行保留）"
    ],
-   "note": "**禁止**用「提高背景 λ」当标定手段（§5 禁项）"
+   "note": "**禁止**用「提高背景 λ」当标定手段（§5 禁项）",
+   "interpreter": "引擎侧 = ./.venv-m9/bin/python；评估器侧 = ./.venv-m11/bin/python"
   },
   {
    "job_id": "J5",
@@ -127,12 +143,13 @@
    "blocked_by": "G0 通过",
    "est_wall": "与 J3 的单试次相当 × 2",
    "commands": [
-    "# 同 J3，但同一 (config, mechanism, dose, seed, T) 跑两次；第二次 arm 标 replica_of=<第一次 arm_id>"
+    "# 同 J3，但同一 (config, mechanism, dose, seed, T) 跑两次（**引擎侧一律 ./.venv-m9**）；第二次 arm 标 replica_of=<第一次 arm_id>"
    ],
    "artifacts": [
     "neural_exploration/data/m11_p5_replica_check.json"
    ],
-   "note": "跨进程逐位一致性归 G0（清单 §2.3(e)）；P5 只要求统计级一致（判据表 determinism_mode=statistical）"
+   "note": "跨进程逐位一致性归 G0（清单 §2.3(e)）；P5 只要求统计级一致（判据表 determinism_mode=statistical）",
+   "interpreter": "引擎侧 = ./.venv-m9/bin/python（**逐位一致断言只能在同一解释器+同一 numpy 版本内比**，R34 §三）"
   },
   {
    "job_id": "J6",
@@ -145,7 +162,7 @@
     "curl -sS -m 30 -r 0-999999 -o /tmp/ma_f5_probe.bin -w '%{http_code}|%{size_download}|%{speed_download}\\n' \\",
     "  'https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/functional_data/functional_series/session5_scan3_field1/0/0/0/0'",
     "# ① 若吞吐 ≥0.4 MB/s ⇒ 复用 B1 的取数工具（本节点不新增 tools/*.py），落盘到独立子目录避免覆盖 field4",
-    "./.venv-m11/bin/python neural_exploration/tools/fetch_m11_microns.py --func-subset --series session5_scan3_field1 \\",
+    "./.venv-m11/bin/python neural_exploration/tools/fetch_m11_microns.py --func-subset --series session5_scan3_field1 \\   # data_side（R34：取数不涉 torch ⇒ 无需 .venv-m9）",
     "  --out neural_exploration/data/m11_p5_raw_field2_manifest.csv --jobs 3   # ← 确切参数由 B1 确认（--series 是否已支持）"
    ],
    "artifacts": [
@@ -153,7 +170,8 @@
     "neural_exploration/data/m11_p5_crossfield_dispersion.json（跨 field 的 τ/dwell/占用离散度）"
    ],
    "acceptance": "两 field 各自建带并给离散度；差异 >5% 须定位到具体口径维度（箱宽/平滑/代理定义/阈值/帧率换算）——沿用 R10 §3e 的要求",
-   "note": "**本节点不自行启动**（>10 min 托管纪律）；且 `--series` 参数是否存在需 B1 确认 ⇒ 我把它列为**待裁决 + 依赖 B1**"
+   "note": "**本节点不自行启动**（>10 min 托管纪律）；且 `--series` 参数是否存在需 B1 确认 ⇒ 我把它列为**待裁决 + 依赖 B1**",
+   "interpreter": "data_side ⇒ ./.venv-m11/bin/python（curl 取数 + h5py/numpy；**不涉 torch**）"
   }
  ],
  "not_requested": [
@@ -222,5 +240,84 @@
    "progress_one_liner": "ls -t neural_exploration/data/m11_p5_runs/*.done | head -1 （mtime = 最近完成）；ls .../*.done | wc -l（已完成数）",
    "starvation_check": "以累计 CPU/墙钟比判（M10 L46/L50：ps %CPU 不可信，曾实测占空比 10%）"
   }
+ },
+ "interpreter_caliber_R34": {
+  "rule": "**两条口径，不得混用**（主agent R34 实测能力矩阵；本节点已独立复验）",
+  "matrix_independently_reverified_by_B3": {
+   "python": "3.9.6（三 venv 同）",
+   ".venv-m9": {
+    "torch": "2.8.0（MPS）",
+    "pytest": "8.4.2",
+    "h5py": "MISSING",
+    "numpy": "1.26.4"
+   },
+   ".venv-m10": {
+    "torch": "MISSING",
+    "pytest": "MISSING",
+    "h5py": "3.14.0",
+    "numpy": "2.0.2"
+   },
+   ".venv-m11": {
+    "torch": "MISSING",
+    "pytest": "MISSING",
+    "h5py": "3.14.0",
+    "numpy": "2.0.2"
+   }
+  },
+  "roles": {
+   "engine_side（生产臂：任何 import torch／跑仿真，含 P5 跑臂）": {
+    "python": "./.venv-m9/bin/python",
+    "依据": "data/m11_engine_params.csv::cpu_interp = ./.venv-m9/bin/python + 清单 §0.10 L5（引擎复用 .venv-m9）",
+    "fail_mode": "用 .venv-m11 ⇒ 立即 `No module named torch`（主agent 亲测，本节点复验 torch MISSING）"
+   },
+   "evaluator_side（离线评估器 validate_p11_resting.py）": {
+    "python": "./.venv-m11/bin/python",
+    "why_ok": "只需 numpy（已实测 m11: numpy 2.0.2）",
+    "status": "**可留在 .venv-m11**，但必须显式标注「评估器与生产者使用不同解释器」"
+   },
+   "data_side（取数/参考带：h5py/pypdf 等）": {
+    "python": "./.venv-m11/bin/python（h5py 3.14.0；与 B1 数据门口径一致；.venv-m10 等价）"
+   }
+  },
+  "numpy_skew_rule": {
+   "fact": "numpy 1.26.4（.venv-m9）vs 2.0.2（.venv-m10/.venv-m11）",
+   "transfer": "跨 venv 传 pop_trace.npy / counts.csv **格式兼容**（可读）",
+   "assertion_rule": "**「逐位一致 / BIT」类断言只在「同一解释器 + 同一 numpy 版本」内才可比** ⇒ **评估器侧的数值结果不得用于支持或推翻任何「逐位」结论**（第四律「口径一致才可比」的**解释器维度**）",
+   "where_it_bites": "工具的 (h) 确定性判据与任何 `bit_identical` 断言；G0 的 (e) 分段可组合性/跨进程逐位断言 —— 均须由**引擎侧**生产者给出，评估器只做统计级核对"
+  },
+  "per_arm_json_required_fields": [
+   "host",
+   "device",
+   "python",
+   "numpy",
+   "torch",
+   "wall_s",
+   "ms_per_step_steady",
+   "settle_ms",
+   "event_seed",
+   "spikes_total",
+   "ei（i_exc_integral/i_inh_integral）"
+  ],
+  "protocol_json_echo": "评估器会把 protocol-json 的字段原样回写进输出的 `protocol` 段 ⇒ **在 `m11_p5_protocol.json` 里写入 python/numpy/torch 版本即可自动留痕**（无需改动 validate_p11_resting.py）",
+  "r34_pointer": "主agent R34（2026-10-11）"
+ },
+ "r34_correction_note": {
+  "what_changed": "`common_env.python` 由单值改为**按角色三分**；引擎侧命令由 `.venv-m11` 更正为 **`.venv-m9`**；J3 的「逐 run 新进程」一行补足**引擎侧解释器**与逐臂 JSON 版本字段",
+  "old_values_verbatim（逐字保留）": {
+   "common_env": {
+    "cwd": "/Users/weidong/ai/small_world",
+    "env": "PYTHONPATH=/Users/weidong/ai/small_world OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONHASHSEED=0",
+    "python": "./.venv-m11/bin/python",
+    "forbidden": "sys.executable / MPS 并发 / 覆盖他节点文件"
+   },
+   "engine_side_command_lines": [
+    "./.venv-m11/bin/python neural_exploration/tools/verify_m11_same_source_band.py   # 只读；已由主agent 跑过（2.7 s），本作业只需在其基础上加静默口径列",
+    "PYTHONPATH=/Users/weidong/ai/small_world OMP_NUM_THREADS=1 ./.venv-m11/bin/python -m neural_exploration.tools.scan_m11_engine --help   # 由 B2 提供确切参数",
+    "./.venv-m11/bin/python neural_exploration/tools/fetch_m11_microns.py --func-subset --series session5_scan3_field1 \\"
+   ]
+  },
+  "old_engine_side_run_comment_verbatim": "# ② 每个 (config, mechanism, dose, seed, T) **一个新进程**（逐目标/逐试次新进程纪律）",
+  "pointer": "更正依据 = **主agent R34（2026-10-11，实测能力矩阵）**；本节点已独立复验（三 venv 的 numpy/torch/h5py/pytest）",
+  "preserved_elsewhere": "design 文档 §8 的旧 `PY=./.venv-m11/bin/python` 行**逐字保留**并在其下追加【R34】标记；§12 给出更正后的逐档命令"
  }
 }

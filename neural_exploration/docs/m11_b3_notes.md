@@ -361,3 +361,37 @@ P2 = 9 run = 3 剂量 × 3 档 T = **4.2M 步** ⇒ 按 0.6 ms/step 应为 **0.7
 13. **"预注册假设"必须标注为假设并给替换点**：§9.2 用 0.6 ms/step 是**清单预注册值**，但报告里写成"落在包络内"的结论 ⇒ 一旦实测到来结论翻转。**正确写法**应是"在预注册假设下 ≈8.87；**实测后以 §11 为准**"（本节点补做的正是后者）。
 14. **分段预算必须逐段互检总数**：本次两处漏项（我的 P2 漏乘、主agent 漏 B/D）都能被"**逐段列出步数并求和**"一步抓住 ⇒ 与"双估计器一致"同族：**总步数（Σ段）与总 GPU-h（Σ/3.6e6）必须双向核对**。
 15. **换算因子的自检方式**：用**同一个算例同时代两种因子**并看比值是否等于已知的单位比值（12.96）——比逐项推导更快发现量纲错（本次 30 秒定位）。
+
+## L26 — R34 更正：**解释器口径**（我此前把引擎侧命令写成 `.venv-m11`，是错的）
+
+### L26.1 事实（主agent 实测 + **本节点独立复验**，逐项一致）
+| venv | python | torch | pytest | h5py | numpy |
+|---|---|---|---|---|---|
+| **`.venv-m9`** | 3.9.6 | **2.8.0（MPS）** | **8.4.2** | MISSING | **1.26.4** |
+| `.venv-m10` | 3.9.6 | MISSING | MISSING | 3.14.0 | 2.0.2 |
+| **`.venv-m11`** | 3.9.6 | **MISSING** | MISSING | 3.14.0 | 2.0.2 |
+
+复验命令：`./<venv>/bin/python -c "import sys,numpy,torch,h5py,pytest"`（逐项打印版本/MISSING）⇒ `.venv-m11` 的 torch **MISSING**、`.venv-m9` 的 torch **2.8.0** ✅。
+
+### L26.2 我的错误与更正
+- **错在哪**：本文档 **L1「命令前缀」** 与 `m11_b3_g1_managed_jobs.json::common_env.python` 把**单一解释器**写成 `.venv-m11`；
+  J3 的「每个 (config,mechanism,dose,seed,T) 新进程」一行是**引擎侧**（生产臂）⇒ 用 `.venv-m11` 会**立即 `No module named torch`**。
+  **根因**：我把"本节点一直在用的解释器"（评估器/数据侧确实用 m11）**外推**到引擎侧 —— 属**跨口径外推**，与第四律同一家族（口径维度 = 解释器）。
+- **更正**：
+  - **引擎侧（任何 `import torch`／跑仿真，含 P5 跑臂生产者）⇒ `./.venv-m9/bin/python`**（依据 `data/m11_engine_params.csv::cpu_interp` + 清单 §0.10 L5）；
+  - **评估器侧（`validate_p11_resting.py`）⇒ 可留在 `./.venv-m11`**（numpy-only），但**必须显式标注"评估器与生产者使用不同解释器"**；
+  - 数据侧 ⇒ `./.venv-m11`（h5py 3.14.0；`.venv-m10` 等价）。
+- **落盘**：`jobs JSON` 的 `common_env` 改为**按角色三分**（`python_engine_side`/`python_evaluator_side`/`python_data_side`）+ 新增 `interpreter_caliber_R34` 块；
+  **旧值逐字保留**在 `r34_correction_note.old_values_verbatim`（含旧 `common_env` 与三条被更正的命令行 + 旧注释）；
+  design 文档 §8 的旧 `PY=./.venv-m11/bin/python` 行**逐字保留**并就地追加【R34】标记；**§12** 给出更正后的逐档命令（P0/P1/P2，含 `ENG`/`EVA` 两个变量）与 §12.3–§12.5。
+
+### L26.3 ⚠️ numpy 偏斜 ⇒ 「逐位/BIT」结论的**解释器维度**
+- `numpy 1.26.4`（.venv-m9）vs `2.0.2`（.venv-m11/.venv-m10）：`pop_trace.npy`/`counts.csv` **格式兼容可读**；
+- **但「逐位一致 / BIT」类断言只在"同一解释器 + 同一 numpy 版本"内才可比** ⇒ **评估器侧的数值结果不得用于支持或推翻任何「逐位」结论**（第四律「口径一致才可比」的**解释器维度**）；
+- **受影响场合**：工具的 `(h)` 确定性判据、任何 `bit_identical`、**G0 的 (e) 分段可组合性 / 跨进程逐位** ⇒ 一律由**引擎侧生产者**给出，评估器只做统计级核对（与判据表 `determinism_mode=statistical` 一致）。
+- **留痕（不改工具）**：评估器把 protocol-json 原样回写进输出 `protocol` 段 ⇒ 在 `m11_p5_protocol.json` 写 `engine.python/numpy/torch` 即自动留痕。
+- **每臂 JSON 追加**：`host/device` 之外必须含 `python`/`numpy`/`torch`（R34 §四）。
+
+### L26.4 教训
+16. **"我一直在用"不是口径依据**：解释器/依赖版本与"物理档、T/settle、估计器实现"同级，**必须按角色逐项声明并实测**（本次用 30 秒的三 venv 复验即定案）。
+17. **BIT 类断言的适用域必须显式收窄**：跨解释器/跨 numpy 版本**不是"差不多"，而是"不可比"** ⇒ 这类断言应在设计与 NOTES 里写明**只由哪一侧给出**（本次：引擎侧）。

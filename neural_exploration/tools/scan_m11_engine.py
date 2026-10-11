@@ -1672,7 +1672,26 @@ def _load_matrix_summary() -> dict:
     try:
         with open(path) as f:
             d = json.load(f)
-        return dict(source=os.path.basename(path), sha256=_sha256(path), **d["summary"])
+        # **只读产物、只加字段**（RF-M11-L §四：补字段不改判据）：把"矩阵说明"补全为自足文本 ——
+        # 协议 + 逐格结果（压缩）+ 轴向彙总 + 结论 + (e) 缺陷档最小复现，读者无需打开别的文件。
+        grid = d.get("grid", [])
+        return dict(source=os.path.basename(path), sha256=_sha256(path),
+                    protocol=d.get("protocol"),
+                    n_cells=len(grid),
+                    cells_compact=[dict(density=g.get("density"), delay=g.get("delay"),
+                                        e1b=g.get("e1b"), ext_abs_index=g.get("ext_abs_index"),
+                                        k=g.get("k"), ndiff=g.get("n_neurons_diff"),
+                                        bit=g.get("bit_identical"))
+                                   for g in grid],
+                    per_axis_rollup=[
+                        dict(density=g["density"], delay=g["delay"], e1b=g["e1b"],
+                             ext_abs_index=g["ext_abs_index"], k=g["k"],
+                             bit_identical=g["bit_identical"],
+                             n_neurons_diff=g["n_neurons_diff"])
+                        for g in grid if g.get("k") == max(d.get("protocol", {}).get("k_list", [1]))],
+                    mr_e_minimal_repro=d.get("mr_e_index"),
+                    mr_f_minimal_repro=d.get("mr_f"),
+                    **d["summary"])
     except Exception:  # noqa: BLE001
         return dict(status="unavailable", note="未运行配置交叉矩阵（--which cpu 不自动跑它）")
 

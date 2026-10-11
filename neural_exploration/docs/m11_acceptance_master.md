@@ -822,3 +822,18 @@ B3b 另指出**被比对记录内部不一致**（`A=[[0.9798,0.0202],[0.0375,0.
 **⑥ J2-B2（N=75,909 × T=120 s，≈1 GPU-h）—— 裁决：暂缓**。理由：① **MPS 是稀缺资源且必须串行**，而**关键路径 = P5 生产者 → P0/P1/P2**；
 ② 包络刚被实测击穿（+69%）⇒ **在 ★ 菜单定档与生产者就位之前烧 1 GPU-h 全规模档，不符合"先探针后裁决"**。
 ⇒ 待 **P0 探针出数 + ★ 档位登记**后再排。**B2 已确认此刻无作业在跑、无 MPS 占用** ✓
+
+## 3ag. R37：B3 的 R34 更正 + re-pricing 交付 **验收 pass**（含两项独立加固）
+
+**① R34 解释器口径更正 —— 验收 pass，且**留痕方式正确**：`m11_b3_g1_design.md` §8 旧行**逐字保留** + 就地追加三条 `#【R34 更正…】`（grep 命中 L192–194）；
+jobs JSON 旧 `common_env` 与**三条被更正的命令行 + 旧注释**逐字存入 `r34_correction_note.old_values_verbatim`，`pointer = 主agent R34`；
+新 `common_env` 拆为 `python_engine_side = ./.venv-m9/bin/python` 与 `python_evaluator_side = ./.venv-m11/bin/python`，`forbidden` 追加「用 .venv-m11 跑任何 `import torch` 的脚本」✓
+⇒ **"先改清单/旧值逐字保留 + 更正指针"的纪律在节点侧被正确执行**。
+其**根因自述**（"把'我一直用的解释器'外推为全角色口径 = 第四律『口径一致才可比』的解释器维度，同一家族"）**采信**。
+**② 能力矩阵（`torch/pytest/numpy/h5py` × 三 venv）由 B3 独立复验，与我 R34 的实测逐项一致** ✓（`.venv-m11` 实测 `ModuleNotFoundError: No module named 'torch'`）⇒ **两个独立实现/两次独立实测一致**。
+**③ 🟢 附带结论（对预算的**逻辑加固**，采信并记录）**：§11 的 `0.6615/1.1362 ms/step` 是 **MPS** 稳态值，而 **MPS 需要 torch、只有 `.venv-m9` 有 torch** ⇒ 该 ms/step **只能**在 `./.venv-m9/bin/python` 下测得 ⇒ **R36 的重定价基准与解释器口径自洽，预算不需换基准**。（此为"口径一致才可比"的正向应用：**先证明基准的来源唯一，再据此声称可比**。）
+**④ B3 提出的补登要求 —— 采纳并转 B2**：`data/m11_engine_params.csv` 目前**未记** ms/step 的 `device`/`interp`/`torch` 字段（只有 `cpu_interp` L20；错式公式在 L21）
+⇒ **B2 在 append-only 修 E-M11-2 时须一并补行**（否则换解释器/换 torch 版本后基准不可比）。**已转达**（并入 E-M11-2 指令）。
+**⑤ 留痕机制（采纳）**：评估器把 protocol-json 原样回写进输出 `protocol` 段 ⇒ **在 `m11_p5_protocol.json` 写 `engine.{python,numpy,torch}` 即自动留痕**，无需改工具 ✓
+**⑥ 预算结论不变**：A 1.8937 + B 6.1740 + C 7.9534 + D 0.8837 = **16.905 GPU-h（+69%）**；**★N4+N1+B 单档 = 6.174（余量 38%）** 仍是建议档；B3 的更正后逐档命令（`ENG=./.venv-m9/bin/python` / `EVA=./.venv-m11/bin/python`）**采信**，其中生产者位置仍留 `<B2 的 P5 跑臂生产者>` 占位 ⇒ **再次印证生产者是本阶段唯一硬缺口**。
+**⑦ 未动已判定产物**：`validate_p11_resting.py`（`a74c6abb92cf4c98`）与 `m11_p5_targets.csv`（`bb72205181b76831`）**哈希未变** ✓

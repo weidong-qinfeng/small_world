@@ -330,6 +330,1225 @@
     "compose_matrix": {
      "source": "m11_compose_matrix.json",
      "sha256": "4c2f8a7bff1c0e1e94a7deee22b3f344",
+     "protocol": {
+      "n": 200,
+      "indegree": 8,
+      "T": 3000,
+      "steps_per_generation": "T",
+      "k_list": [
+       1,
+       2,
+       5,
+       10
+      ],
+      "densities_hz_per_neuron": [
+       0.5,
+       2.0,
+       8.0
+      ],
+      "delay_sets": {
+       "one_bin": [
+        40
+       ],
+       "three_bins": [
+        40,
+        60,
+        80
+       ]
+      },
+      "e1b": {
+       "off": 2,
+       "on": 4
+      },
+      "event_seed": 11,
+      "net_seed": 0,
+      "delivery": "step",
+      "count_rule": "取**最终 t_count**（协议累计），不得把各段返回值相加"
+     },
+     "n_cells": 96,
+     "cells_compact": [
+      {
+       "density": "low",
+       "delay": "one_bin",
+       "e1b": "off",
+       "ext_abs_index": true,
+       "k": 1,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "low",
+       "delay": "one_bin",
+       "e1b": "off",
+       "ext_abs_index": true,
+       "k": 2,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "low",
+       "delay": "one_bin",
+       "e1b": "off",
+       "ext_abs_index": true,
+       "k": 5,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "low",
+       "delay": "one_bin",
+       "e1b": "off",
+       "ext_abs_index": true,
+       "k": 10,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "low",
+       "delay": "one_bin",
+       "e1b": "off",
+       "ext_abs_index": false,
+       "k": 1,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "low",
+       "delay": "one_bin",
+       "e1b": "off",
+       "ext_abs_index": false,
+       "k": 2,
+       "ndiff": 2,
+       "bit": false
+      },
+      {
+       "density": "low",
+       "delay": "one_bin",
+       "e1b": "off",
+       "ext_abs_index": false,
+       "k": 5,
+       "ndiff": 7,
+       "bit": false
+      },
+      {
+       "density": "low",
+       "delay": "one_bin",
+       "e1b": "off",
+       "ext_abs_index": false,
+       "k": 10,
+       "ndiff": 22,
+       "bit": false
+      },
+      {
+       "density": "low",
+       "delay": "one_bin",
+       "e1b": "on",
+       "ext_abs_index": true,
+       "k": 1,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "low",
+       "delay": "one_bin",
+       "e1b": "on",
+       "ext_abs_index": true,
+       "k": 2,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "low",
+       "delay": "one_bin",
+       "e1b": "on",
+       "ext_abs_index": true,
+       "k": 5,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "low",
+       "delay": "one_bin",
+       "e1b": "on",
+       "ext_abs_index": true,
+       "k": 10,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "low",
+       "delay": "one_bin",
+       "e1b": "on",
+       "ext_abs_index": false,
+       "k": 1,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "low",
+       "delay": "one_bin",
+       "e1b": "on",
+       "ext_abs_index": false,
+       "k": 2,
+       "ndiff": 2,
+       "bit": false
+      },
+      {
+       "density": "low",
+       "delay": "one_bin",
+       "e1b": "on",
+       "ext_abs_index": false,
+       "k": 5,
+       "ndiff": 7,
+       "bit": false
+      },
+      {
+       "density": "low",
+       "delay": "one_bin",
+       "e1b": "on",
+       "ext_abs_index": false,
+       "k": 10,
+       "ndiff": 24,
+       "bit": false
+      },
+      {
+       "density": "low",
+       "delay": "three_bins",
+       "e1b": "off",
+       "ext_abs_index": true,
+       "k": 1,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "low",
+       "delay": "three_bins",
+       "e1b": "off",
+       "ext_abs_index": true,
+       "k": 2,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "low",
+       "delay": "three_bins",
+       "e1b": "off",
+       "ext_abs_index": true,
+       "k": 5,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "low",
+       "delay": "three_bins",
+       "e1b": "off",
+       "ext_abs_index": true,
+       "k": 10,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "low",
+       "delay": "three_bins",
+       "e1b": "off",
+       "ext_abs_index": false,
+       "k": 1,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "low",
+       "delay": "three_bins",
+       "e1b": "off",
+       "ext_abs_index": false,
+       "k": 2,
+       "ndiff": 2,
+       "bit": false
+      },
+      {
+       "density": "low",
+       "delay": "three_bins",
+       "e1b": "off",
+       "ext_abs_index": false,
+       "k": 5,
+       "ndiff": 12,
+       "bit": false
+      },
+      {
+       "density": "low",
+       "delay": "three_bins",
+       "e1b": "off",
+       "ext_abs_index": false,
+       "k": 10,
+       "ndiff": 31,
+       "bit": false
+      },
+      {
+       "density": "low",
+       "delay": "three_bins",
+       "e1b": "on",
+       "ext_abs_index": true,
+       "k": 1,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "low",
+       "delay": "three_bins",
+       "e1b": "on",
+       "ext_abs_index": true,
+       "k": 2,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "low",
+       "delay": "three_bins",
+       "e1b": "on",
+       "ext_abs_index": true,
+       "k": 5,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "low",
+       "delay": "three_bins",
+       "e1b": "on",
+       "ext_abs_index": true,
+       "k": 10,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "low",
+       "delay": "three_bins",
+       "e1b": "on",
+       "ext_abs_index": false,
+       "k": 1,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "low",
+       "delay": "three_bins",
+       "e1b": "on",
+       "ext_abs_index": false,
+       "k": 2,
+       "ndiff": 2,
+       "bit": false
+      },
+      {
+       "density": "low",
+       "delay": "three_bins",
+       "e1b": "on",
+       "ext_abs_index": false,
+       "k": 5,
+       "ndiff": 12,
+       "bit": false
+      },
+      {
+       "density": "low",
+       "delay": "three_bins",
+       "e1b": "on",
+       "ext_abs_index": false,
+       "k": 10,
+       "ndiff": 34,
+       "bit": false
+      },
+      {
+       "density": "mid",
+       "delay": "one_bin",
+       "e1b": "off",
+       "ext_abs_index": true,
+       "k": 1,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "mid",
+       "delay": "one_bin",
+       "e1b": "off",
+       "ext_abs_index": true,
+       "k": 2,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "mid",
+       "delay": "one_bin",
+       "e1b": "off",
+       "ext_abs_index": true,
+       "k": 5,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "mid",
+       "delay": "one_bin",
+       "e1b": "off",
+       "ext_abs_index": true,
+       "k": 10,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "mid",
+       "delay": "one_bin",
+       "e1b": "off",
+       "ext_abs_index": false,
+       "k": 1,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "mid",
+       "delay": "one_bin",
+       "e1b": "off",
+       "ext_abs_index": false,
+       "k": 2,
+       "ndiff": 13,
+       "bit": false
+      },
+      {
+       "density": "mid",
+       "delay": "one_bin",
+       "e1b": "off",
+       "ext_abs_index": false,
+       "k": 5,
+       "ndiff": 24,
+       "bit": false
+      },
+      {
+       "density": "mid",
+       "delay": "one_bin",
+       "e1b": "off",
+       "ext_abs_index": false,
+       "k": 10,
+       "ndiff": 26,
+       "bit": false
+      },
+      {
+       "density": "mid",
+       "delay": "one_bin",
+       "e1b": "on",
+       "ext_abs_index": true,
+       "k": 1,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "mid",
+       "delay": "one_bin",
+       "e1b": "on",
+       "ext_abs_index": true,
+       "k": 2,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "mid",
+       "delay": "one_bin",
+       "e1b": "on",
+       "ext_abs_index": true,
+       "k": 5,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "mid",
+       "delay": "one_bin",
+       "e1b": "on",
+       "ext_abs_index": true,
+       "k": 10,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "mid",
+       "delay": "one_bin",
+       "e1b": "on",
+       "ext_abs_index": false,
+       "k": 1,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "mid",
+       "delay": "one_bin",
+       "e1b": "on",
+       "ext_abs_index": false,
+       "k": 2,
+       "ndiff": 11,
+       "bit": false
+      },
+      {
+       "density": "mid",
+       "delay": "one_bin",
+       "e1b": "on",
+       "ext_abs_index": false,
+       "k": 5,
+       "ndiff": 20,
+       "bit": false
+      },
+      {
+       "density": "mid",
+       "delay": "one_bin",
+       "e1b": "on",
+       "ext_abs_index": false,
+       "k": 10,
+       "ndiff": 22,
+       "bit": false
+      },
+      {
+       "density": "mid",
+       "delay": "three_bins",
+       "e1b": "off",
+       "ext_abs_index": true,
+       "k": 1,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "mid",
+       "delay": "three_bins",
+       "e1b": "off",
+       "ext_abs_index": true,
+       "k": 2,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "mid",
+       "delay": "three_bins",
+       "e1b": "off",
+       "ext_abs_index": true,
+       "k": 5,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "mid",
+       "delay": "three_bins",
+       "e1b": "off",
+       "ext_abs_index": true,
+       "k": 10,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "mid",
+       "delay": "three_bins",
+       "e1b": "off",
+       "ext_abs_index": false,
+       "k": 1,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "mid",
+       "delay": "three_bins",
+       "e1b": "off",
+       "ext_abs_index": false,
+       "k": 2,
+       "ndiff": 14,
+       "bit": false
+      },
+      {
+       "density": "mid",
+       "delay": "three_bins",
+       "e1b": "off",
+       "ext_abs_index": false,
+       "k": 5,
+       "ndiff": 24,
+       "bit": false
+      },
+      {
+       "density": "mid",
+       "delay": "three_bins",
+       "e1b": "off",
+       "ext_abs_index": false,
+       "k": 10,
+       "ndiff": 22,
+       "bit": false
+      },
+      {
+       "density": "mid",
+       "delay": "three_bins",
+       "e1b": "on",
+       "ext_abs_index": true,
+       "k": 1,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "mid",
+       "delay": "three_bins",
+       "e1b": "on",
+       "ext_abs_index": true,
+       "k": 2,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "mid",
+       "delay": "three_bins",
+       "e1b": "on",
+       "ext_abs_index": true,
+       "k": 5,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "mid",
+       "delay": "three_bins",
+       "e1b": "on",
+       "ext_abs_index": true,
+       "k": 10,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "mid",
+       "delay": "three_bins",
+       "e1b": "on",
+       "ext_abs_index": false,
+       "k": 1,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "mid",
+       "delay": "three_bins",
+       "e1b": "on",
+       "ext_abs_index": false,
+       "k": 2,
+       "ndiff": 11,
+       "bit": false
+      },
+      {
+       "density": "mid",
+       "delay": "three_bins",
+       "e1b": "on",
+       "ext_abs_index": false,
+       "k": 5,
+       "ndiff": 21,
+       "bit": false
+      },
+      {
+       "density": "mid",
+       "delay": "three_bins",
+       "e1b": "on",
+       "ext_abs_index": false,
+       "k": 10,
+       "ndiff": 21,
+       "bit": false
+      },
+      {
+       "density": "high",
+       "delay": "one_bin",
+       "e1b": "off",
+       "ext_abs_index": true,
+       "k": 1,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "high",
+       "delay": "one_bin",
+       "e1b": "off",
+       "ext_abs_index": true,
+       "k": 2,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "high",
+       "delay": "one_bin",
+       "e1b": "off",
+       "ext_abs_index": true,
+       "k": 5,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "high",
+       "delay": "one_bin",
+       "e1b": "off",
+       "ext_abs_index": true,
+       "k": 10,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "high",
+       "delay": "one_bin",
+       "e1b": "off",
+       "ext_abs_index": false,
+       "k": 1,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "high",
+       "delay": "one_bin",
+       "e1b": "off",
+       "ext_abs_index": false,
+       "k": 2,
+       "ndiff": 28,
+       "bit": false
+      },
+      {
+       "density": "high",
+       "delay": "one_bin",
+       "e1b": "off",
+       "ext_abs_index": false,
+       "k": 5,
+       "ndiff": 70,
+       "bit": false
+      },
+      {
+       "density": "high",
+       "delay": "one_bin",
+       "e1b": "off",
+       "ext_abs_index": false,
+       "k": 10,
+       "ndiff": 65,
+       "bit": false
+      },
+      {
+       "density": "high",
+       "delay": "one_bin",
+       "e1b": "on",
+       "ext_abs_index": true,
+       "k": 1,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "high",
+       "delay": "one_bin",
+       "e1b": "on",
+       "ext_abs_index": true,
+       "k": 2,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "high",
+       "delay": "one_bin",
+       "e1b": "on",
+       "ext_abs_index": true,
+       "k": 5,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "high",
+       "delay": "one_bin",
+       "e1b": "on",
+       "ext_abs_index": true,
+       "k": 10,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "high",
+       "delay": "one_bin",
+       "e1b": "on",
+       "ext_abs_index": false,
+       "k": 1,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "high",
+       "delay": "one_bin",
+       "e1b": "on",
+       "ext_abs_index": false,
+       "k": 2,
+       "ndiff": 27,
+       "bit": false
+      },
+      {
+       "density": "high",
+       "delay": "one_bin",
+       "e1b": "on",
+       "ext_abs_index": false,
+       "k": 5,
+       "ndiff": 59,
+       "bit": false
+      },
+      {
+       "density": "high",
+       "delay": "one_bin",
+       "e1b": "on",
+       "ext_abs_index": false,
+       "k": 10,
+       "ndiff": 67,
+       "bit": false
+      },
+      {
+       "density": "high",
+       "delay": "three_bins",
+       "e1b": "off",
+       "ext_abs_index": true,
+       "k": 1,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "high",
+       "delay": "three_bins",
+       "e1b": "off",
+       "ext_abs_index": true,
+       "k": 2,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "high",
+       "delay": "three_bins",
+       "e1b": "off",
+       "ext_abs_index": true,
+       "k": 5,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "high",
+       "delay": "three_bins",
+       "e1b": "off",
+       "ext_abs_index": true,
+       "k": 10,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "high",
+       "delay": "three_bins",
+       "e1b": "off",
+       "ext_abs_index": false,
+       "k": 1,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "high",
+       "delay": "three_bins",
+       "e1b": "off",
+       "ext_abs_index": false,
+       "k": 2,
+       "ndiff": 33,
+       "bit": false
+      },
+      {
+       "density": "high",
+       "delay": "three_bins",
+       "e1b": "off",
+       "ext_abs_index": false,
+       "k": 5,
+       "ndiff": 61,
+       "bit": false
+      },
+      {
+       "density": "high",
+       "delay": "three_bins",
+       "e1b": "off",
+       "ext_abs_index": false,
+       "k": 10,
+       "ndiff": 64,
+       "bit": false
+      },
+      {
+       "density": "high",
+       "delay": "three_bins",
+       "e1b": "on",
+       "ext_abs_index": true,
+       "k": 1,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "high",
+       "delay": "three_bins",
+       "e1b": "on",
+       "ext_abs_index": true,
+       "k": 2,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "high",
+       "delay": "three_bins",
+       "e1b": "on",
+       "ext_abs_index": true,
+       "k": 5,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "high",
+       "delay": "three_bins",
+       "e1b": "on",
+       "ext_abs_index": true,
+       "k": 10,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "high",
+       "delay": "three_bins",
+       "e1b": "on",
+       "ext_abs_index": false,
+       "k": 1,
+       "ndiff": 0,
+       "bit": true
+      },
+      {
+       "density": "high",
+       "delay": "three_bins",
+       "e1b": "on",
+       "ext_abs_index": false,
+       "k": 2,
+       "ndiff": 26,
+       "bit": false
+      },
+      {
+       "density": "high",
+       "delay": "three_bins",
+       "e1b": "on",
+       "ext_abs_index": false,
+       "k": 5,
+       "ndiff": 57,
+       "bit": false
+      },
+      {
+       "density": "high",
+       "delay": "three_bins",
+       "e1b": "on",
+       "ext_abs_index": false,
+       "k": 10,
+       "ndiff": 66,
+       "bit": false
+      }
+     ],
+     "per_axis_rollup": [
+      {
+       "density": "low",
+       "delay": "one_bin",
+       "e1b": "off",
+       "ext_abs_index": true,
+       "k": 10,
+       "bit_identical": true,
+       "n_neurons_diff": 0
+      },
+      {
+       "density": "low",
+       "delay": "one_bin",
+       "e1b": "off",
+       "ext_abs_index": false,
+       "k": 10,
+       "bit_identical": false,
+       "n_neurons_diff": 22
+      },
+      {
+       "density": "low",
+       "delay": "one_bin",
+       "e1b": "on",
+       "ext_abs_index": true,
+       "k": 10,
+       "bit_identical": true,
+       "n_neurons_diff": 0
+      },
+      {
+       "density": "low",
+       "delay": "one_bin",
+       "e1b": "on",
+       "ext_abs_index": false,
+       "k": 10,
+       "bit_identical": false,
+       "n_neurons_diff": 24
+      },
+      {
+       "density": "low",
+       "delay": "three_bins",
+       "e1b": "off",
+       "ext_abs_index": true,
+       "k": 10,
+       "bit_identical": true,
+       "n_neurons_diff": 0
+      },
+      {
+       "density": "low",
+       "delay": "three_bins",
+       "e1b": "off",
+       "ext_abs_index": false,
+       "k": 10,
+       "bit_identical": false,
+       "n_neurons_diff": 31
+      },
+      {
+       "density": "low",
+       "delay": "three_bins",
+       "e1b": "on",
+       "ext_abs_index": true,
+       "k": 10,
+       "bit_identical": true,
+       "n_neurons_diff": 0
+      },
+      {
+       "density": "low",
+       "delay": "three_bins",
+       "e1b": "on",
+       "ext_abs_index": false,
+       "k": 10,
+       "bit_identical": false,
+       "n_neurons_diff": 34
+      },
+      {
+       "density": "mid",
+       "delay": "one_bin",
+       "e1b": "off",
+       "ext_abs_index": true,
+       "k": 10,
+       "bit_identical": true,
+       "n_neurons_diff": 0
+      },
+      {
+       "density": "mid",
+       "delay": "one_bin",
+       "e1b": "off",
+       "ext_abs_index": false,
+       "k": 10,
+       "bit_identical": false,
+       "n_neurons_diff": 26
+      },
+      {
+       "density": "mid",
+       "delay": "one_bin",
+       "e1b": "on",
+       "ext_abs_index": true,
+       "k": 10,
+       "bit_identical": true,
+       "n_neurons_diff": 0
+      },
+      {
+       "density": "mid",
+       "delay": "one_bin",
+       "e1b": "on",
+       "ext_abs_index": false,
+       "k": 10,
+       "bit_identical": false,
+       "n_neurons_diff": 22
+      },
+      {
+       "density": "mid",
+       "delay": "three_bins",
+       "e1b": "off",
+       "ext_abs_index": true,
+       "k": 10,
+       "bit_identical": true,
+       "n_neurons_diff": 0
+      },
+      {
+       "density": "mid",
+       "delay": "three_bins",
+       "e1b": "off",
+       "ext_abs_index": false,
+       "k": 10,
+       "bit_identical": false,
+       "n_neurons_diff": 22
+      },
+      {
+       "density": "mid",
+       "delay": "three_bins",
+       "e1b": "on",
+       "ext_abs_index": true,
+       "k": 10,
+       "bit_identical": true,
+       "n_neurons_diff": 0
+      },
+      {
+       "density": "mid",
+       "delay": "three_bins",
+       "e1b": "on",
+       "ext_abs_index": false,
+       "k": 10,
+       "bit_identical": false,
+       "n_neurons_diff": 21
+      },
+      {
+       "density": "high",
+       "delay": "one_bin",
+       "e1b": "off",
+       "ext_abs_index": true,
+       "k": 10,
+       "bit_identical": true,
+       "n_neurons_diff": 0
+      },
+      {
+       "density": "high",
+       "delay": "one_bin",
+       "e1b": "off",
+       "ext_abs_index": false,
+       "k": 10,
+       "bit_identical": false,
+       "n_neurons_diff": 65
+      },
+      {
+       "density": "high",
+       "delay": "one_bin",
+       "e1b": "on",
+       "ext_abs_index": true,
+       "k": 10,
+       "bit_identical": true,
+       "n_neurons_diff": 0
+      },
+      {
+       "density": "high",
+       "delay": "one_bin",
+       "e1b": "on",
+       "ext_abs_index": false,
+       "k": 10,
+       "bit_identical": false,
+       "n_neurons_diff": 67
+      },
+      {
+       "density": "high",
+       "delay": "three_bins",
+       "e1b": "off",
+       "ext_abs_index": true,
+       "k": 10,
+       "bit_identical": true,
+       "n_neurons_diff": 0
+      },
+      {
+       "density": "high",
+       "delay": "three_bins",
+       "e1b": "off",
+       "ext_abs_index": false,
+       "k": 10,
+       "bit_identical": false,
+       "n_neurons_diff": 64
+      },
+      {
+       "density": "high",
+       "delay": "three_bins",
+       "e1b": "on",
+       "ext_abs_index": true,
+       "k": 10,
+       "bit_identical": true,
+       "n_neurons_diff": 0
+      },
+      {
+       "density": "high",
+       "delay": "three_bins",
+       "e1b": "on",
+       "ext_abs_index": false,
+       "k": 10,
+       "bit_identical": false,
+       "n_neurons_diff": 66
+      }
+     ],
+     "mr_e_minimal_repro": {
+      "fix_ext1": {
+       "pass_all": true,
+       "per_k": {
+        "1": [
+         31,
+         0
+        ],
+        "2": [
+         31,
+         0
+        ],
+        "5": [
+         31,
+         0
+        ],
+        "10": [
+         31,
+         0
+        ]
+       }
+      },
+      "fix_ext0": {
+       "pass_all": true,
+       "per_k": {
+        "1": [
+         26,
+         0
+        ],
+        "2": [
+         26,
+         0
+        ],
+        "5": [
+         26,
+         0
+        ],
+        "10": [
+         26,
+         0
+        ]
+       }
+      },
+      "frozen_behavior_ext1": {
+       "pass_all": false,
+       "per_k": {
+        "1": [
+         31,
+         0
+        ],
+        "2": [
+         32,
+         5
+        ],
+        "5": [
+         32,
+         8
+        ],
+        "10": [
+         29,
+         6
+        ]
+       }
+      },
+      "frozen_behavior_ext0": {
+       "pass_all": true,
+       "per_k": {
+        "1": [
+         26,
+         0
+        ],
+        "2": [
+         26,
+         0
+        ],
+        "5": [
+         26,
+         0
+        ],
+        "10": [
+         26,
+         0
+        ]
+       }
+      }
+     },
+     "mr_f_minimal_repro": {
+      "input": {
+       "n_neurons": 4,
+       "n_ch": 2,
+       "edges": "pre=[0], post=[1], gmax=[10.0], delay=[40], syn_class=[2]"
+      },
+      "raised": true,
+      "error": "ValueError: E1b 关闭态但存在 syn_class>1 的边 ⇒ 拒绝（会静默丢类）",
+      "raising_line": "File \"/Users/weidong/ai/small_world/neural_exploration/src/mouse_cortex_engine.py\", line 450, in _finalize_no_ring",
+      "top_frame": "  File \"/Users/weidong/ai/small_world/neural_exploration/src/mouse_cortex_engine.py\", line 450, in _finalize_no_ring",
+      "is_kernel_defect": false,
+      "interpretation": "被**配置级守卫**在 finalize 阶段拒绝（四态纪律：该臂 = `invalid`，既非 pass 亦非 fail）；这是 M10 L21 静默失效的对应防护"
+     },
      "all_fixed_pass": true,
      "fail_by_axis": {
       "ext_abs_index_False": true,
@@ -1258,9 +2477,9 @@
   "n_unavailable": 0
  },
  "evidence": {
-  "alignment_json_sha256": "62ae3d068dc824c1dd7e1e7c16d374b1",
+  "alignment_json_sha256": "f0598e847f3a229ced5298d9f21149bd",
   "engine_src_sha256": "6feb61291ad336e8048b1411c2169252",
-  "tool_sha256": "94e18db111219a704b4df9a35d719fe1",
+  "tool_sha256": "7583e6c8ae56b4ebf20368aa306b2bd0",
   "minrepro": "/Users/weidong/ai/small_world/neural_exploration/data/m11_minrepro_delivery.json",
   "stale_guard": "本 summary 由本轮实跑生成；若与 `criterion_states` 不一致，以本文件为准（旧快照的 (e) step/（f) m11_ok 值见 RF-M11-F 引用，已作废）"
  },
