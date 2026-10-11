@@ -140,14 +140,16 @@ def main():
     args = ap.parse_args()
     fs = load_frozen()
 
-    pop, n_sent, n_tot, n_files = build_pop_series(mask_sentinel=True)
+    # **RF-M11-E §二 定稿**：int16-BE 直读 + **低于基线样本保留并登记**（不掩膜）；
+    # "哨兵"仅指 32767 饱和（实测计数 0）⇒ 主口径 = **不掩膜**，掩膜版仅作稳健性对照。
+    pop, n_sent, n_tot, n_files = build_pop_series(mask_sentinel=False)
     rows = []
-    main_row = run(fs, pop, "session4_scan7_field4 x[0,200)y[0,200) 全 2000 帧（哨兵掩膜）")
+    main_row = run(fs, pop, "session4_scan7_field4 x[0,200)y[0,200) 全 2000 帧（**不掩膜**，低于基线样本保留）")
     rows.append(main_row)
 
     # 稳健性：口径/切分/掩膜对照（容差来源）
     variants = {
-        "mask_off": lambda: build_pop_series(mask_sentinel=False)[0],
+        "mask_on（低于基线剔除）": lambda: build_pop_series(mask_sentinel=True)[0],
         "t_first_half": lambda: pop[:1000],
         "t_second_half": lambda: pop[1000:],
         "x_left_half": lambda: build_pop_series(True, region=(0, 200, 0, 100))[0],
@@ -169,10 +171,16 @@ def main():
                  "该 field 全长 40,000 帧/105.8 min，本轮只用已落盘的前 2,000 帧",
         frame_rate_hz=FRAME_RATE, frame_interval_s=FRAME_INTERVAL,
         n_frames=N_FRAMES, n_chunks=n_files,
-        sentinel=dict(rule="int16 < 0（⇔ uint16 > 65000；实测 min=−138 故两者等价）",
-                      n_sentinel=n_sent, n_elements_total=n_tot,
-                      frac=round(n_sent / max(1, n_tot), 8),
-                      note="**统计前置缺失并登记**（未处理 ≠ 无缺失）"),
+        sentinel=dict(
+            rule="**无掩膜**（RF-M11-E §二 定稿）：int16-BE 直读 + 低于基线样本**保留并登记**；"
+                 "\"哨兵\"一词仅指 **32767 饱和**（实测计数 **0**）",
+            n_below_baseline=n_sent, n_elements_total=n_tot,
+            frac_below_baseline=round(n_sent / max(1, n_tot), 8),
+            n_saturated_32767=0,
+            evidence="低于基线样本**空间成簇**（3×3 邻域负值比例 p50=0.111 vs 随机 1.3e-4 ⇒ ~860× 富集；"
+                     "孤立比例 0.000）且位于**暗区**（邻域均值≈395 vs 全局中位 1953），仅低局部基线 ~381 counts "
+                     "⇒ 属噪声下探而非哨兵；按 uint16 读其真值将是对象最大值的 ~2.3 倍 ⇒ 物理荒诞",
+            note="**保留 + 登记** = 定稿；掩膜版仅作稳健性对照（比值见 tolerance_sources.mask_on_off）"),
         primary=main_row,
         robustness=rows[1:],
         tolerance_sources=dict(
@@ -195,9 +203,9 @@ def main():
             if r.get("label") == tag:
                 return r.get(key)
         return None
-    band["tolerance_sources"]["mask_on_off"] = (
-        round(main_row["low_dwell_median_s_module"] / get("mask_off", "low_dwell_median_s_module"), 4)
-        if get("mask_off", "low_dwell_median_s_module") else None)
+    band["tolerance_sources"]["mask_off_over_on"] = (
+        round(main_row["low_dwell_median_s_module"] / get("mask_on（低于基线剔除）", "low_dwell_median_s_module"), 4)
+        if get("mask_on（低于基线剔除）", "low_dwell_median_s_module") else None)
     band["tolerance_sources"]["time_half_spread"] = spread(
         [get("t_first_half", "low_dwell_median_s_module"), get("t_second_half", "low_dwell_median_s_module")])
     band["tolerance_sources"]["spatial_half_spread"] = spread(

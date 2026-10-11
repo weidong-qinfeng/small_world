@@ -841,3 +841,39 @@ step ≈ **5.7 h**、chunk ≈ **2.2 h** ⇒ 口径选择对预算影响 **≈2.
 主agent 的指令写"顺带在 `docs/m11_b2_notes.md` 追加一条 **B2-L17**"，但本文件 **B2-L17 已被占用**
 （J1 E-M9-4 影响量级表，见其正文），L18/L19/L20 亦已占用 ⇒ 本条按顺序落为 **B2-L21**，
 内容即主agent 要求的"量纲自检纪律 + 本例"。**不改动已落盘的 L17–L20**（append-only）。
+
+---
+
+## B2-L22 — R34 解释器口径落实（生产者侧）：**守卫 + 逐臂留痕 + 自查回报**
+
+### B2-L22.1 版本三元组（本节点实测，逐项与 R34 §12.1 一致）
+| 解释器 | python | torch | numpy | pytest | brian2 | h5py |
+|---|---|---|---|---|---|---|
+| **`./.venv-m9/bin/python`（引擎侧）** | 3.9.6 | **2.8.0（MPS）** | **1.26.4** | 8.4.2 | 2.6.0 | MISSING |
+| `./.venv-m11/bin/python`（评估器侧） | 3.9.6 | **MISSING** | **2.0.2** | **MISSING** | MISSING | 3.14.0 |
+
+⇒ **引擎侧 = `.venv-m9`**（唯一有 torch）；**评估器侧 = `.venv-m11`**（只需 numpy）。
+**numpy 偏斜纪律（R34 §12.3）**已写进生产者产出的 protocol JSON：
+`engine_interpreters.numpy_skew_discipline = "评估器侧数值不得用于支持或推翻任何逐位/BIT 结论；逐位类断言只在「同解释器 + 同 numpy」内可比。"`
+
+### B2-L22.2 新增**解释器口径守卫**（`tools/run_m11_p5_arms.py::interpreter_guard`）
+- 启动即校验 `import torch`；失败 ⇒ **显式 `SystemExit`**（附可操作提示），**不再让调用者看到裸的
+  `No module named torch`**。实测（故意用错解释器）：
+  ```
+  [解释器口径错误 R34] 引擎侧必须用 ./.venv-m9/bin/python（…唯一具备 torch 2.8.0+MPS…）运行本工具
+  （当前 sys.executable=…/.venv-m11/bin/python，import torch 失败：No module named 'torch'）
+  ⇒ 严禁用 .venv-m11 跑任何 import torch 的脚本。
+  ```
+- 每臂 JSON 追加 **`interpreter` 三元组**（`executable/python/numpy/torch/role`），与既有
+  `host/device/python/numpy/torch` 并存。实测产物：
+  `{"executable": "…/.venv-m9/bin/python", "python": "3.9.6", "numpy": "1.26.4", "torch": "2.8.0", "role": "engine"}`。
+- plan 模式的 protocol JSON 追加 **`engine_interpreters`**（引擎侧 vs 评估器侧 + 偏斜纪律），
+  满足"若另有离线汇总步骤，可分开解释器但**必须显式标注**"。
+
+### B2-L22.3 自查回报（本轮实测）
+- **生产者自检（引擎侧 `.venv-m9`，CPU，N=1000/T=1 s）**：`[DONE] … spk=393 ei_ratio=2.1012
+  ms/step=0.1393 wall=3.18s` ⇒ 与早前同臂（spk=393、ei_ratio=2.1012）**逐位一致**（跨进程确定性）；
+- **`pytest test_mouse_cortex_smoke.py`（`.venv-m9`）**：**11 passed in 7.12s**
+  （主agent 独立复跑 11 passed in 8.10s ⇒ 一致 ✓）；
+- **`.venv-m11` 跑 pytest**：`No module named pytest`（该 venv 无 pytest，符合 R34）；
+- **纪律**：主agent 正在用本生产者跑 P0（MPS）⇒ 本节点的验证臂一律 **`--device cpu`**，**未起任何 MPS 作业**。

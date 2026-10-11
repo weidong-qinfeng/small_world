@@ -1101,3 +1101,17 @@ MPS 独占（B1 的 J3/J2-a/J4 为网络受限，不冲突）。进度按 `ls -t
 而生产者的 `--help` 我实测列出的是 `--plan/--arm/--make-plan/--out-dir/--out-json/--n/--T-ms/--settle-ms/--doses/--dose/--seed/--delivery/...` ⇒ **`--out-pop`/`--out-counts` 是否存在未确认**。
 ⇒ **在启动 P0′/E 段之前必须先核对**（若不存在，改用 `--out-dir` 让产物按名落盘）—— **不得按未核对的命令行启动作业**（否则失败会浪费一整轮）。
 （**这与 R39/R34/R45 同族：动手前先核对对象的真实接口/状态。**）
+
+## 3ap. R47：R34 生产者侧落实**验收 pass**（守卫 + 双侧留痕 + 版本三元组）+ 采信其分母纪律
+
+**① 验收 pass**：`tools/run_m11_p5_arms.py` 新增 **`interpreter_guard()`** —— 启动即校验 `import torch`，失败则**显式 `SystemExit` + 可操作提示**（我实测：用 `.venv-m11` 调用时确实给出
+"[解释器口径错误 R34] 引擎侧必须用 ./.venv-m9/bin/python（唯一具备 torch 2.8.0+MPS）…"），**不再暴露裸的 `No module named torch`** ✓
+⇒ **这比"文档里写一句"强得多**：**口径由代码强制，而不是靠人记得**（**"纪律的代码化"是本项目最有效的防复发手段**，与 B2 先前把 `assert_composable_for_segmentation()` 写成守卫同理）。
+**② 双侧留痕齐备**：每臂 JSON 新增 `interpreter` 子对象（`executable/python/numpy/torch/role`，实测 `…/.venv-m9/bin/python` + `numpy 1.26.4` + `torch 2.8.0` + `role=engine`）✓；
+protocol JSON 新增 **`engine_interpreters`**，并列记录两侧解释器与三元组，并**把 R34 §12.3 的 numpy 偏斜纪律写进产物**（`numpy_skew_discipline` = "评估器侧（numpy 2.0.2）数值**不得**用于支持或推翻「逐位/BIT」结论"）✓
+⇒ **"分开解释器必须显式标注"由产物自身携带** ⇒ 下游引用者不会误读 ✓
+**③ 环境真相表（本次实测，与我 R34 一致）**：`.venv-m9` = python 3.9.6 / **torch 2.8.0(MPS)** / **numpy 1.26.4** / pytest 8.4.2 / **brian2 2.6.0** / h5py MISSING；
+`.venv-m11` = python 3.9.6 / torch **MISSING** / **numpy 2.0.2** / pytest **MISSING** / h5py 3.14.0 ✓（**brian2 装在 `.venv-m9` 属环境改动，已登记**）
+**④ 采信其"分母纪律"**：B2 本轮**所有验证臂一律 `--device cpu`**，因为**我的 P0 正占用 MPS**（它看到 PID 43857/43861/43862 后**主动不碰**）✓
+⇒ **这正是 MPS 串行纪律的正确执行**：**在别人占用稀缺设备时，把自己的验证降到 CPU 而不是排队抢用** —— **"不抢资源"比"抢到资源"更符合协作纪律**。
+**⑤ 确定性再确认**：生产者 CPU 自检同臂 **`spk=393`、`ei_ratio=2.1012` 逐位一致**（跨进程）✓；`pytest` 在 `.venv-m9` **11 passed in 7.12s**（我此前复跑 11 passed in 8.10s ⇒ 两次一致）✓；`.venv-m11` 跑 pytest ⇒ `No module named pytest`（**符合 R34 预期**）✓

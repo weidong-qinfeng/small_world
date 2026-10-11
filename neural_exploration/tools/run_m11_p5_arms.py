@@ -62,6 +62,37 @@ NET_DEFAULTS = dict(indegree=20, gmax_scale=1.0, bias_scale=1.0, delay_bins=(40,
                     bias_log_mean=230.0, bias_log_sigma=0.30, indeg_fixture=20)
 
 
+ENGINE_HINT = ("./.venv-m9/bin/python（R34 §12.2：**唯一**具备 torch 2.8.0+MPS 的解释器；"
+                ".venv-m11 只有 h5py，无 torch）")
+
+
+def interpreter_guard(role: str = "engine") -> dict:
+    """**解释器口径守卫（R34）**：引擎侧必须能 import torch；否则**显式报错**（不静默、不降级）。
+
+    返回并留痕解释器三元组（python/numpy/torch），供产物与 protocol JSON 记录：
+      - 引擎侧（本工具） ⇒ 必须 `./.venv-m9/bin/python`；
+      - 评估器侧（`validate_p11_resting.py`） ⇒ `./.venv-m11/bin/python`（只需 numpy，**不得**跑仿真）。
+    """
+    import sys as _sys
+    tri = dict(executable=_sys.executable, python=_sys.version.split()[0], role=role)
+    try:
+        import numpy as _np
+        tri["numpy"] = _np.__version__
+    except Exception:  # noqa: BLE001
+        tri["numpy"] = "MISSING"
+    try:
+        import torch as _t
+        tri["torch"] = _t.__version__
+    except Exception as ex:  # noqa: BLE001
+        tri["torch"] = "MISSING"
+        if role == "engine":
+            raise SystemExit(
+                "[解释器口径错误 R34] 引擎侧必须用 %s 运行本工具（当前 sys.executable=%s，"
+                "import torch 失败：%s）⇒ 严禁用 .venv-m11 跑任何 import torch 的脚本。"
+                % (ENGINE_HINT, _sys.executable, ex))
+    return tri
+
+
 def rss_mb() -> float:
     return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / (1024.0 * 1024.0)
 
@@ -177,6 +208,7 @@ def run_one(spec: dict, out_dir: str) -> dict:
         sha256_of_trace=sha, n_steps_meas=n_meas, n_steps_settle=n_settle,
         delivery=delivery,
         engine_version=str(eng.version), n_ch=int(eng.n_ch),
+        interpreter=spec.get("interpreter"),
         drive_rate_hz=rate0, drive_rate_hz_eff=rate0 * dose,
         n_events=int(st.size), rss_mb=round(rss_mb(), 1),
         pid=os.getpid(), finished_at=time.strftime("%Y-%m-%dT%H:%M:%S"),
@@ -204,6 +236,7 @@ def arm_spec_from_cli(args, run_id: str) -> dict:
 
 
 def run_arm_main(args) -> int:
+    interpreter_guard("engine")          # R34：引擎侧必须能 import torch
     out_dir = args.out_dir
     os.makedirs(out_dir, exist_ok=True)
     if args.arm:
@@ -213,6 +246,7 @@ def run_arm_main(args) -> int:
         rid = args.run_id or "%s_%s_T%dms_d%s_s%s" % (args.stage, args.n, int(args.T_ms),
                                                       args.dose, args.seed)
         spec = arm_spec_from_cli(args, rid)
+    spec["interpreter"] = interpreter_guard("engine")
     run_id = str(spec["run_id"])
     done = os.path.join(out_dir, f"{run_id}.done")
     fail = os.path.join(out_dir, f"{run_id}.fail")
@@ -245,6 +279,15 @@ def write_protocol(plan: dict, arms: list, out_dir: str, plan_id: str) -> str:
         estimator=str(plan.get("estimator", "per_neuron")),
         n_neuron=int(plan["n_neuron"]),
         drive_rate_hz=float(plan.get("drive_rate_hz", 8.0)),
+        engine_interpreters=dict(
+            engine=dict(executable=PY_ENGINE,
+                        python=(arms[0].get("python") if arms else None),
+                        numpy=(arms[0].get("numpy") if arms else None),
+                        torch=(arms[0].get("torch") if arms else None)),
+            evaluator=dict(executable="./.venv-m11/bin/python", role="只评估、不仿真"),
+            numpy_skew_discipline=("numpy 偏斜（.venv-m9 = 1.26.4 vs .venv-m11 = 2.0.2）⇒ "
+                                   "**评估器侧数值不得用于支持或推翻任何「逐位/BIT」结论**；"
+                                   "逐位类断言只在「同解释器 + 同 numpy」内可比（R34 §12.3）")),
         engine=dict(python=PY_ENGINE, engine_version=arms[0]["engine_version"] if arms else None,
                     torch=arms[0]["torch"] if arms else None,
                     numpy=arms[0]["numpy"] if arms else None, device=arms[0]["device"] if arms else None),
