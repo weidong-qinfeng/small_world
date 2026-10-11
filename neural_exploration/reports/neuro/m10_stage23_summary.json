@@ -945,5 +945,29 @@
    "gpu_h": 1.3,
    "cpu_h": 5.0
   }
+ },
+ "RF22_final": {
+  "stage3_verdict": "P5/G1 = 通过（含统计加固与限定）；P6 = not passed（❌ 反证，定稿）—— 已由主agent 验收（acceptance_master §3.1, commit 54df65f）",
+  "tau_column_added": "docs/m10_stage3_report.md §10（12 行判决表 + n_frames + 四态 + 可判性声明）",
+  "tau_criterion_status": "unavailable（n_frames=131<300，RF-21(1) 短记录门）⇒ τ 值仅描述性",
+  "internal_consistency": "四条 measured 臂全部通过（L40 律③）",
+  "c4_status": "unavailable（本轮无慢变量轨迹；save_slow_to 已就位，不代填）",
+  "deferred_not_run": [
+   "m10_m9_reeval 同口径重跑",
+   "M-6 定稿（≥3 seed×T≥120 s）",
+   "GABA 消融+慢变量三档",
+   "阶梯 T=60 s 修正档重跑（被 T=120 s 取代）"
+  ],
+  "lesson_L46_QoS_starvation": {
+   "finding": "ps %CPU 98–100% 但累计 CPU 仅 4:35/墙钟 2102 s ⇒ 占空比 ≈10%",
+   "cause": "macOS ps %CPU 是近期采样；后台/脱离会话进程可能落入低 QoS 类",
+   "disciplines": [
+    "看\"累计 CPU 时间/墙钟\"比而非 %CPU",
+    "比值≪1 先怀疑调度饥饿",
+    "终止前必须看进度"
+   ],
+   "correction": "本节点此前\"进程被反复重启\"的部分报告应归因于 QoS 饥饿（已更正登记）"
+  },
+  "M11_input": "M-6 教训（τ_rec=26 s 仍未产生回路尺度慢状态）已入 M11 的 S 门候选纪律"
  }
 }
