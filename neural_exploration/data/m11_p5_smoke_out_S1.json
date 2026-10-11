@@ -91,7 +91,7 @@
  },
  "exit_code": 3,
  "generated_by": "tools/validate_p11_resting.py",
- "generated_at": "2026-10-11T22:07:31",
+ "generated_at": "2026-10-11T22:30:18",
  "role": "M11 P5/G1 离线评估（只做分析，不做仿真；不写判据带）",
  "protocol_path": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_smoke_protocol_S1.json",
  "protocol": {
