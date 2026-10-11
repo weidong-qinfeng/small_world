@@ -64,6 +64,17 @@
 
 ## §3 限制登记（**必须随 P1/P2 结论一并引用**）
 
+### §3.0 P2 功能侧的**两条核心限制**（主 agent 要求写入正文，逐条给判定词）
+
+| # | 限制 | 判定词 | 后果 |
+|---|---|---|---|
+| **F-1** | **MICrONS 逐细胞 ΔF/F 与 ROI 轨迹只存在于 v8 DataJoint MySQL**（103,798,314,496 B docker tar / 116,199,864,342 B SQL dump；无 REST/API 通道，CAVE 表 API 实测 404/503） | **`unavailable`**（**不是** 0、**不是** 未命中） | **逐细胞口径的钙域参考量（率分布 / 相关 / dwell / OSI）本轮不可用**；替代路径 = 144 field ROI 掩膜自建 ROI 提取（`field_seg_masks` 已实测可达且与 series 同格） |
+| **F-2** | **144 个 field 中只有 2 个有 `functional_series` 体素序列**（`session4_scan7_field4` / `session5_scan3_field1`；6.300006 Hz / 40,000 时间点 / 6,349.2 s / FOV 620×1100 µm / voxel 2.5×2.5×10 µm），其余 142 个 field 仅有网格属性与掩膜 info | **`partial`**（元数据 measured；体素覆盖 2/144） | ⇒ **"全脑活动金标准"在本里程碑**退化为"**2 个 field 的体素序列（可解码）+ 144 个 field 的元数据/掩膜**"；**不**声称"全 FOV/全脑活动统计" |
+| F-3 | v8 DB 内还有**全部 field 的扫描级 `fps/nframes/nfields`、瞳孔与跑道同步量** | `unavailable` | 整卷体积率与行为同步口径未测（清单 §1.7 回退） |
+
+> 说明（避免误读）：**体素序列本身是可解码的**（大端 int16；见 §2「体素解码证据」），
+> 因此 F-2 的性质是"**只有 2 个 field 可算**"，而非"数据不可用"；**逐细胞**层面的缺口是 F-1。
+
 1. **两项口径待核（会直接改变钙域判据）**：
    ① `functional_series` 的 `dataType=int16` 与实际字节行为（int16 解均值≈−105.7/49.96% 为负 vs uint16 解均值≈32,637）
    **两解均自洽**；② 技术文档写 **4 px/µm** 而 series `resolution` 写 **2.5 µm/px**（**相差 10×**），
@@ -95,6 +106,26 @@
 7. **本工作包未产出**：实测级调谐/dwell/等价协议 CSV（见 §1 未交付项）。
 
 ---
+
+## §3.5 优先级①（Allen NWB 抽取与读回）的实测状态与吞吐
+
+| 通道 | 实测吞吐 | 结论 |
+|---|---|---|
+| `api.brain-map.org`（per-cell NWB 91.56 MB） | **1.6–16 KB/s** | 剩余 46.9 MB 需 **50 min – 8 h** ⇒ **不可自取**；已到 **44,695,552 / 91,560,414 B**（**INCOMPLETE**，可 `curl -C -` 续传） |
+| DANDI 000021（最小 asset **71,781,159 B**，`sub-703279277_..._ecephys.nwb`，URL 已登记） | **7,237 B/s** | 71.8 MB ≈ **2.8 h** ⇒ **不可自取**（DQ-7 托管候选） |
+| `bossdb-open-data`（MICrONS） | 194–349 KB/s → **16 KB/s** | 功能子集已取满；后续 ≥50 MB 未自启 |
+| Allen BO `ecephys-cache`（表） | 完整件均已取 | `probes.csv/sessions.csv` **完整**；`units/channels` 前缀 |
+
+**NWB 读回到底拿到了什么（据 44.7 MB **真实**前缀；注意 `head_sparse.nwb` 的 91,560,414 B 是**稀疏表观大小**，仅前 44,695,552 B 为真实数据）**：
+- ✅ 可读：`nwb_version = NWB-1.0.5`、`file_create_date`、根组 **11 键**（`acquisition/analysis/epochs/general/processing/stimulus/…`）、
+  **`acquisition/timeseries/Sweep_10`**：`ancestry=[TimeSeries, PatchClampSeries, **CurrentClampSeries**]`、
+  `help="Voltage recorded from cell during current-clamp recording"` ⇒ **traces 结构成立**；
+- ❌ 不可读（落在前缀之外的洞）：`/general/extracellular_ephys`（电极表）、`/acquisition` 的**采样率**、`session_id/subject`
+  ⇒ 判定词 **`unavailable`（原因：前缀外字节未取；网络 1.6–16 KB/s）**；
+- ✅ **但§四.1 的实质要求（采样率 + units 结构）已由自描述表满足**：`probes.csv`（**完整**）⇒
+  **spike 30,000.3 Hz / LFP 2,500.03 Hz**（332 probe、均值 29,909.6 / 2,492.5、325 有 LFP）；
+  `units.csv` 27 列 schema（`firing_rate/snr/isi_violations/presence_ratio/quality/…`）；
+  units 行数**仅派生外推** ≈ **136,720**（`derived`：1 MB 前缀 2,787 行 × 51,439,189/1,048,576 ⇒ **不得作计数带**，精确值需 DQ-6）。
 
 ## §4 复跑命令（全部必须显式用项目 venv 解释器）
 
@@ -201,6 +232,18 @@ $PY neural_exploration/tools/validate_p11_data_gate.py --determinism-check
 | §四 NaN/哨兵登记 | ✅ **NaN/Inf = 0**（整型域）；主 agent 的 106 NaN / |x|>1e30 = **float 误读副产物**；低于基线 0.013% **成簇于暗区 ⇒ 非哨兵、无掩膜** | 同上 + `m11_reference.csv` R-13/R-14 |
 | 6.30 Hz 作为读回断言值 | ✅ 落 `m11_reference.csv` **R-01 `asserted`**，判定器 `P2.12a` 强制核对 | `data/m11_reference.csv` |
 
+## §6d P2 判定**草案**（**待主 agent 确认，未定稿**）
+
+| 通道 | 判定草案 | 依据 |
+|---|---|---|
+| **结构** | **`measured` ✅** | em/seg/seg_m1300 自描述 info（11 scales、8×8×40 nm、EM 体积 **1.2861 mm³**、bbox 1.70×1.44×0.52 mm、chunk 128×128×32 raw）+ shard 有界实测 + 对象级 Range 206 |
+| **功能（体素序列）** | **`decoded(big-endian int16)`**（**非** `format_unverified`） | 结构门 pass：lat_x **0.814** / 帧轴 lag1 **0.803** / p50 **1953**；独立地面真值（原始 TIFF lat_x 0.767）；**B3b 独立复现同一解码** |
+| **功能（覆盖度）** | **`partial`**：仅 **2/144 field** 有体素序列 | 见 §3.0 F-2 |
+| **功能（逐细胞）** | **`unavailable`**：ΔF/F/ROI 轨迹仅存于 v8 DataJoint DB | 见 §3.0 F-1 |
+| **活动金标准（P14 口径）** | 现实可为：**"2 个 field 的钙域统计 + 144 个 field 的元数据/掩膜 + Allen BO 电生理带（30 kHz/2.5 kHz + units schema）"**；**不**声称全脑/全 FOV 统计 | 上述三者合并 |
+
+**M12 交接缺口（草案）**：① v8 DataJoint DB 未取（逐细胞口径）；② `units.csv` 全量未取（精确 units 计数）；③ 142/144 field 无体素序列；④ NWB 头读回的电极表/采样率（若需与 NWB 逐字对齐）。
+
 ## §7 结论与下一步建议
 
 1. **G2 判定 = pass（附 §3 限制）**：51 清单源 + 17 补测源逐行实测；结构与功能**同源**路径落盘；
@@ -210,4 +253,5 @@ $PY neural_exploration/tools/validate_p11_data_gate.py --determinism-check
 3. **未启动**（遵守门链）：G0 引擎门、G1 生理门、S 机制门、P7–P14 —— 且 RF-M11-2..6 未落盘。
 4. **交主 agent 的六个决策**：DQ-1（DB 取数 vs 场级重建）/ DQ-2（NWB 全量续传托管作业）/
    DQ-3（21 条冲突项落清单）/ **DQ-4**（功能连接组学两表 ≈496 MB —— 决定 P2 能否全过）/
-   **DQ-5**（把大端读法/完整性门/6.30 Hz 写入清单读取约定）/ **DQ-6**（`units.csv` 51.4 MB + `channels.csv` 6.6 MB 是否托管取）。
+   **DQ-5**（把大端读法/完整性门/6.30 Hz 写入清单读取约定）/ **DQ-6**（`units.csv` 51.4 MB + `channels.csv` 6.6 MB 是否托管取）/
+   **DQ-7**（NWB 读回：`brain-map` 剩 46.9 MB 或 DANDI 最小 asset 71.8 MB —— 现网络 1.6–16 KB/s 与 7.2 KB/s ⇒ 需托管，或改由 `probes.csv` 自描述表满足采样率需求）。
