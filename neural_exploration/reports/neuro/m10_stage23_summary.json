@@ -1267,5 +1267,55 @@
       ],
       "point_in_ci": true
     }
-  ]
+  ],
+  "RF30_final": {
+    "source": "主agent 离线独立复算（RF-30 指令正文）；本节点用固化实现 tools/validate_p10_tau_bootstrap.py 交叉核对",
+    "tau_criterion_status": "fail（带 CI 的定量判定）——7/8 臂 CI 上界 1.74–4.25 s ≪ 窗下界 9.4 s；M-4 λ×4 unavailable",
+    "assertions": {
+      "A_point_estimate_matches_table": "8/8 臂 ≤1e-4 s（L40 律①）",
+      "B_point_estimate_matches_RF30": "φ ≤5e-4、τ ≤5e-3：OK",
+      "C_verdict_matches_RF30": "OK（类别级比对：fail 7 / unavailable 1；CI 边界最大相对差 lo 1.4%、fail 臂 hi 1.4%）",
+      "D_stability": "同臂多种子×多块长 CI 极差见 rows[*].ci_across_seeds 与 per_block"
+    },
+    "verdict_category_agreement": "8/8 臂（fail 7 / unavailable 1）",
+    "numeric_agreement": "7/8 臂 CI 边界相对差 ≤1.4%；唯一 >10% 者为 M-4 λ×4 上界（829.5 vs 986.1，−15.9%）",
+    "divergence_cause": "M-4 λ×4 φ≈0.89 逼近 1 ⇒ τ=−dt/lnφ 强非线性、分布重尾；本实现该臂上界跨种子极差 [629.90, 982.09] s、跨块长 298.9/829.5/1393.4 s，RF-30 的 986.1 距极差上端仅 0.4% ⇒ 同一分布下的抽样散布，非方法分歧；且两方均判 unavailable、均按 RF-28 仅描述性 ⇒ 不影响判决",
+    "gap_in_se_convention": "RF-30 的 φ/τ/gap 列用**点估计**（与本实现点估计逐位一致，gap 8/8 吻合 ±0.2 SE）；本报告 §9.2d 的 φ 列用**自助中位** ⇒ 同 sd 下 SE 数不同（如 M-1 λ×1 8.5 vs 9.6）。表中已分列 tau_gap_in_se（点估计口径）与 tau_gap_in_se_bootmed（自助中位口径），差值可达 1.8×",
+    "robustness": {
+      "blocks": [
+        10,
+        15,
+        20
+      ],
+      "n_seeds": 5,
+      "fail_arms_hi95_range_s": [
+        1.71,
+        4.33
+      ],
+      "verdict_invariant": "判定类别对块长与种子全档不变"
+    },
+    "no_T275_needed": true,
+    "saved_estimate": "~1.5 h 算力",
+    "precise_wording_applied": {
+      "gate3": "c1∧c2∧c3 通过、c4 unavailable ⇒ 部分可判（3/4）——不得写成 ✅ 通过（四态纪律）",
+      "M-4_lam4": "仅进'描述性/假设生成'栏，不进任何 pass/fail 汇总（RF-28 四限定 + RF-30 CI 跨越）"
+    }
+  },
+  "RF30_process_defect_D8": "RF-29 的块自助法为离线一次性脚本、**只落盘 JSON 未落盘代码** ⇒ 按 L40 律② 当时不可复现（RF-30 要求'用你的实现复算'时才暴露）。已固化为 tools/validate_p10_tau_bootstrap.py（参数化 B/块长/种子；复用 frame_series 避免第二口径；内建 4 条断言）。",
+  "M11_input_quantitative": {
+    "phi_gate_for_window": "φ ≥ 0.9074（对应 τ = 9.4 s）",
+    "observed_phi": {
+      "point_estimate_range": [
+        0.5611,
+        0.6734
+      ],
+      "boot_median_range": [
+        0.5164,
+        0.7421
+      ]
+    },
+    "gap": "距门限 4–9 个标准误",
+    "conclusion": "缺口不是'调参不足'而是'结构缺失'（缺回路级慢变量）；与 M11 §4.1 上移候选集 C-4/C-5/C-6/C-7 一致",
+    "warning": "M-6 λ×4 的 τ 与其突触级 τ_rec=26 s 无关 ⇒ 突触级慢常数不自动传播成回路级慢尺度"
+  }
 }

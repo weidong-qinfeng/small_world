@@ -1,0 +1,95 @@
+{
+ "generated_by": "tools/demo_m11_microns_decode.py",
+ "generated_at": "2026-10-11T13:28:56Z",
+ "file": "neural_exploration/data/m11_raw/microns/functional_subset/session4_scan7_field4_000000.bin",
+ "header_dims": [
+  200,
+  200,
+  1,
+  10
+ ],
+ "gzip_offset": 20,
+ "raw_bytes": 800000,
+ "battery": {
+  "little-endian int16（我/主 agent 首版读法）": {
+   "t(帧轴)": {
+    "lag1": 0.0003,
+    "lag2": -0.0009,
+    "lag3": -0.0007,
+    "lag4": -0.0003,
+    "lag5": -0.0035,
+    "lag6": 0.0028
+   },
+   "y(轴1)": {
+    "lag1": 0.0013,
+    "lag2": -0.0005,
+    "lag3": -0.0007,
+    "lag4": 0.0003,
+    "lag5": 0.0004,
+    "lag6": -0.0014
+   },
+   "x(轴2)": {
+    "lag1": -0.0011,
+    "lag2": -0.0005,
+    "lag3": -0.0,
+    "lag4": 0.0025,
+    "lag5": -0.0004,
+    "lag6": 0.0004
+   },
+   "unique_values": 8971,
+   "max_value_freq": 401,
+   "max_freq_frac": 0.001002,
+   "zero_frac": 0.001002,
+   "min": -32768,
+   "max": 32584,
+   "p50": 0.0,
+   "lat_x_corr": -0.0011,
+   "lat_y_corr": 0.0013,
+   "frame_lag1": 0.0003
+  },
+  "BIG-endian int16（本轮判决性读法）": {
+   "t(帧轴)": {
+    "lag1": 0.8032,
+    "lag2": 0.7827,
+    "lag3": 0.7606,
+    "lag4": 0.7427,
+    "lag5": 0.7249,
+    "lag6": 0.709
+   },
+   "y(轴1)": {
+    "lag1": 0.801,
+    "lag2": 0.6542,
+    "lag3": 0.5715,
+    "lag4": 0.5163,
+    "lag5": 0.4839,
+    "lag6": 0.4677
+   },
+   "x(轴2)": {
+    "lag1": 0.814,
+    "lag2": 0.6756,
+    "lag3": 0.5934,
+    "lag4": 0.5308,
+    "lag5": 0.4887,
+    "lag6": 0.4639
+   },
+   "unique_values": 8971,
+   "max_value_freq": 401,
+   "max_freq_frac": 0.001002,
+   "zero_frac": 0.001002,
+   "min": -41,
+   "max": 29796,
+   "p50": 1953.0,
+   "lat_x_corr": 0.814,
+   "lat_y_corr": 0.801,
+   "frame_lag1": 0.8032
+  }
+ },
+ "verdict": {
+  "winner": ">i2（大端 int16）",
+  "loser": "<i2（小端 int16）",
+  "why": "元数据只声明 dataType=int16，未声明字节序；本数据集为 N5/BossDB（Java）惯例 ⇒ 大端。小端读法把 (hi,lo) 对调 ⇒ 强空间/时间结构被打散为准随机序列，这正是「逐轴自相关≈0、近似均匀、p50=0」的成因（不是「格式不可解」）。",
+  "criteria": "lat_x≥0.2 ∧ 相邻帧 lag1≥0.2 ∧ 非全 0 ∧ 无 NaN/Inf ∧ 声明域 ∧ 非退化",
+  "ground_truth": "同数据集原始未压缩 BigTIFF（另一 scan，Range 6 帧）：lat_x=0.767 lat_y=0.735 p50=1879（见 m11_microns_parse_validation.json）"
+ },
+ "plot": "neural_exploration/reports/neuro/m11_microns_decode_proof.png"
+}

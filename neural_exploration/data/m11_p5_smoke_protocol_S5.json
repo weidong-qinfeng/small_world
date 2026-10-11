@@ -1,0 +1,31 @@
+{
+ "_comment": "M11-B3 冒烟测试 S5：时长阶梯 —— 用 M10 T=120 s 轨迹**截断**出 T=2 s / T=60 s（zero 与 base 各一对），用于测硬门④的机械行为。预期：工具检测到「短臂轨迹是长臂轨迹的逐位前缀」⇒ ladder 判 invalid（阶梯必须逐档独立重跑，settle/初值/RNG 语义不满足）。这正是本夹具的用途：**证明截断不能冒充协议时长阶梯**。附带的实测事实已登记入 docs/m11_b3_notes.md（L8）：截断下 R(T) 稳定（0.1696/0.1720/0.1720），而 M10 A12 的独立重跑为 0.0980/0.1082/0.1720 ⇒ 时长漂移来自**协议（重初始化+settle+RNG）**而非窗口长度。",
+ "protocol_id": "m11_b3_smoke_S5_duration_ladder_truncation",
+ "fixture_kind": "smoke_only(M10 trace truncations; 故意构造为截断阶梯以测守卫)",
+ "dt_ms": 0.05,
+ "settle_ms": 500.0,
+ "bin_ms": 100.0,
+ "smooth_frames": 5,
+ "n_neuron": 250,
+ "estimator": "per_neuron",
+ "arms": [
+  {"arm_id": "L_T2s_zero", "config_id": "LADDER_M0", "T_ms": 2000.0, "role": "zero_drive",
+   "mechanism": "none", "drive_mult": 0.0, "seed": 0, "n_neuron": 250,
+   "pop_trace": "neural_exploration/data/m11_p5_smoke_ladder_T2s_zero.npy"},
+  {"arm_id": "L_T2s_base", "config_id": "LADDER_M0", "T_ms": 2000.0, "role": "baseline",
+   "mechanism": "none", "drive_mult": 1.0, "seed": 0, "n_neuron": 250,
+   "pop_trace": "neural_exploration/data/m11_p5_smoke_ladder_T2s_base.npy"},
+  {"arm_id": "L_T60s_zero", "config_id": "LADDER_M0", "T_ms": 60000.0, "role": "zero_drive",
+   "mechanism": "none", "drive_mult": 0.0, "seed": 0, "n_neuron": 250,
+   "pop_trace": "neural_exploration/data/m11_p5_smoke_ladder_T60s_zero.npy"},
+  {"arm_id": "L_T60s_base", "config_id": "LADDER_M0", "T_ms": 60000.0, "role": "baseline",
+   "mechanism": "none", "drive_mult": 1.0, "seed": 0, "n_neuron": 250,
+   "pop_trace": "neural_exploration/data/m11_p5_smoke_ladder_T60s_base.npy"},
+  {"arm_id": "L_T120s_zero", "config_id": "LADDER_M0", "T_ms": 120000.0, "role": "zero_drive",
+   "mechanism": "none", "drive_mult": 0.0, "seed": 0, "n_neuron": 250,
+   "pop_trace": "neural_exploration/data/m10_p6_poptraces/poptrace_M0_lamx0.0_n250.npy"},
+  {"arm_id": "L_T120s_base", "config_id": "LADDER_M0", "T_ms": 120000.0, "role": "baseline",
+   "mechanism": "none", "drive_mult": 1.0, "seed": 0, "n_neuron": 250,
+   "pop_trace": "neural_exploration/data/m10_p6_poptraces/poptrace_M0_lamx1.0_n250.npy"}
+ ]
+}

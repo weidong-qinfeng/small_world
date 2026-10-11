@@ -29,6 +29,7 @@
 """
 import csv
 import json
+import os
 import shutil
 import sys
 from pathlib import Path
@@ -117,7 +118,7 @@ def verify():
     """A/B/C 三条断言（幂等）。返回 data 行。"""
     h, b = load_table()
     assert h == SCHEMA, "header != schema v2: %s" % h
-    print("[OK] A. 表头 ncol=%d == 27（schema v2）" % len(h))
+    print("[OK] A. 表头 ncol=%d == %d（schema v3）" % (len(h), NCOL))
     print("[OK]    CI 具名列 =", [c for c in h if c in CI_COLS])
     bad = [i + 1 for i, r in enumerate(b) if len(r) != NCOL]
     print("[%s] B. 行数=%d，列数不一致行数=%d" % ("OK" if not bad else "FAIL", len(b), len(bad)))
@@ -166,7 +167,7 @@ def upgrade_v2_to_v3():
 
     hdr, body = load_table()
     assert hdr == SCHEMA_V2, "upgrade 需要 v2 表头，实际 %d 列" % len(hdr)
-    out = []
+    out, drift = [], []
     for r in body:
         new = r + [""] * (NCOL - len(r))
         if r[23]:                                   # 该行有 CI ⇒ 需要升级
@@ -174,11 +175,19 @@ def upgrade_v2_to_v3():
             key = (r[0], lam)
             src = cmap[key]
             pb = src["per_block"]
-            assert abs(float(r[24]) - src["ci95_s"][0]) <= 1e-9, "v2 lo 与工具输出不一致：%s" % (key,)
-            assert abs(float(r[25]) - src["ci95_s"][1]) <= 1e-9, "v2 hi 与工具输出不一致：%s" % (key,)
+            # v2 = RF-29 单种子；v3 = 多种子中位 ⇒ 同一 CI 的两个**独立估计**，
+            # 按 L40 律③ 应一致：量化漂移，并断言**判定类别不变**（实质不变式）。
+            v2_lo, v2_hi = float(r[24]), float(r[25])
+            v3_lo, v3_hi = src["ci95_s"][0], src["ci95_s"][1]
+            v2_cat = (r[3].split("（")[0] if "（" in r[3] else r[3]).strip()
+            v3_cat = src["verdict"].split("(")[0].strip()
+            drift.append(dict(arm="%s λ×%g" % key, v2_single_seed=[v2_lo, v2_hi], v3_multiseed=[v3_lo, v3_hi],
+                              rel_lo=(v3_lo - v2_lo) / v2_lo, rel_hi=(v3_hi - v2_hi) / v2_hi,
+                              v2_category=v2_cat, v3_category=v3_cat, category_same=(v2_cat == v3_cat)))
+            assert v2_cat == v3_cat, "换用多种子 CI 后判定类别改变：%s（%s → %s）" % (key, v2_cat, v3_cat)
             new[23] = repr(src["boot_med_tau"])          # tau_median_boot_s（多种子中位）
-            new[24] = repr(src["ci95_s"][0])             # tau_lo95_s
-            new[25] = repr(src["ci95_s"][1])             # tau_hi95_s
+            new[24] = repr(v3_lo)                        # tau_lo95_s
+            new[25] = repr(v3_hi)                        # tau_hi95_s
             new[26] = repr(src["gap_in_se_pointphi"])    # 与 RF-30 同口径
             new[27] = repr(src["gap_in_se_bootmedphi"])
             new[28] = repr(pb["10"]["hi_med"]) if "10" in pb else ""
@@ -187,10 +196,17 @@ def upgrade_v2_to_v3():
             new[31] = ci_source
             # RF-30 定稿：τ 主判据以 CI 判定；点估计仍标仅描述性（n<300）
             new[3] = "measured（n_frames=%s；τ 主判据见 tau_criterion_status，点估计因 n<300 仅描述性）" % r[2]
-            new[5] = src["verdict"].replace("unavailable(", "unavailable（").replace("fail(", "fail（").rstrip(")")
-            new[5] = new[5] + "）" if not new[5].endswith("）") else new[5]
+            v = src["verdict"].replace("unavailable(", "unavailable（").replace("fail(", "fail（")
+            if v.endswith(")"):                 # 全角化收尾括号，避免 "s)）" 混排
+                v = v[:-1] + "）"
+            new[5] = v
         assert len(new) == NCOL, len(new)
         out.append(new)
+
+    print("[口径漂移 v2(单种子) → v3(多种子中位)] 判定类别 8/8 不变；CI 边界相对差：")
+    for d in drift:
+        print("  %-11s lo %+6.2f%%  hi %+7.2f%%   %s" % (d["arm"], d["rel_lo"] * 100, d["rel_hi"] * 100,
+                                                         "同" if d["category_same"] else "**异**"))
 
     with open(TABLE, "w", newline="", encoding="utf-8") as f:
         for c in HEADER:

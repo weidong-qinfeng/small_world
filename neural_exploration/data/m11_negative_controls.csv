@@ -1,0 +1,10 @@
+arm,target,expected,observed,verdict
+guard_syn_class_dropped,编码路径守卫（M10 L21 复刻）,严格守卫必须抛错,raised=None,fail
+syn_class_dropped_unguarded,逐类槽断言可证伪性,槽内边数 ≠ 注册类边数（断言必须失败）,edge=None slot=None,fail
+relative_slot_control_step,分段可组合性反例臂（相对步号坐标）,必须**不**逐位一致（否则判据不可证伪）,bit=False ndiff=11 rel=-0.57803%,pass
+relative_slot_control_chunk,分段可组合性反例臂（相对步号坐标）,必须**不**逐位一致（否则判据不可证伪）,bit=False ndiff=11 rel=-0.57803%,pass
+m9_sync_delivery_defect,(f) 同步发放判别（M9 冻结内核）,M9 必须抛错（E-M9-2 判别）,m9_raises=True,pass
+positive_control_E1b,逐机制阳性对照,开/关可测地不同（逐位）+ 参数真的进表达式,pass=None,MECHANISM_NOT_IMPLEMENTED
+positive_control_E2b,逐机制阳性对照,开/关可测地不同（逐位）+ 参数真的进表达式,pass=None,MECHANISM_NOT_IMPLEMENTED
+positive_control_E3b,逐机制阳性对照,开/关可测地不同（逐位）+ 参数真的进表达式,pass=None,MECHANISM_NOT_IMPLEMENTED
+m9_dense_unavailable,(b)/(g) 密集工况 M9 对照,M9 在密集/多发放工况失效 ⇒ 该对照 unavailable（不得算 fail）,m9_raises=True,pass

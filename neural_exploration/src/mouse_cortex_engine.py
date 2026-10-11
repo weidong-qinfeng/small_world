@@ -208,7 +208,7 @@ class MouseCortexEngine(LarvalZFEngine):
     def __init__(self, n_neuron: int, device: str = "mps", dtype=None,
                  use_compile: bool = False, verbose: bool = True,
                  compile_mode: str = "default", use_abs_slots: bool = True,
-                 strict_syn_class: bool = True):
+                 strict_syn_class: bool = True, ext_abs_index: bool = True):
         super().__init__(n_neuron, device=device, dtype=dtype, use_compile=use_compile,
                          verbose=verbose, compile_mode=compile_mode,
                          use_abs_slots=use_abs_slots)
@@ -239,6 +239,9 @@ class MouseCortexEngine(LarvalZFEngine):
 
         # ---- 不应期/AHP 语义档（上游缺陷登记 E-M9-4）----
         self.refractory_form = REF_FIX
+
+        # ---- E4c：外部事件表按绝对步号索引（修正冻结件分段重放缺陷）----
+        self.ext_abs_index = bool(ext_abs_index)
 
         # ---- 双估计器 / 积分累积 ----
         self._tr_on = False
@@ -698,13 +701,19 @@ class MouseCortexEngine(LarvalZFEngine):
                 ev0.zero_(); ev1.zero_()
                 if nc4:
                     ev2.zero_(); ev3.zero_()
-                if ext_active and not chunk_mode and s < ext_n_steps:
-                    ea = int(ext_off[s]); eb = int(ext_off[s + 1])
-                    if eb > ea:
-                        ring.index_put_(
-                            (ext_neuron[ea:eb] + ext_slot[ea:eb],),
-                            ext_amp[ea:eb] * (self._gmod_step if mod_slow else mod_scale),
-                            accumulate=True)
+                if ext_active and not chunk_mode:
+                    # **E4c（本节点的修正）**：外部事件表按**绝对步号**索引。
+                    # 冻结件（M9/M10）在逐步模式下用**局部步号**索引 `ext_off[s]`
+                    # ⇒ 分段调用时每段都会**重放**前段的事件（分段不可组合的真因之一，
+                    # 见 docs/m11_b2_notes.md E-M10-1）。`ext_abs_index=False` 可复现冻结行为。
+                    _eid = (abs0 + s) if self.ext_abs_index else s
+                    if _eid < ext_n_steps:
+                        ea = int(ext_off[_eid]); eb = int(ext_off[_eid + 1])
+                        if eb > ea:
+                            ring.index_put_(
+                                (ext_neuron[ea:eb] + ext_slot[ea:eb],),
+                                ext_amp[ea:eb] * (self._gmod_step if mod_slow else mod_scale),
+                                accumulate=True)
                 if chunk_mode:
                     rec_rows_v[rec_ptr].copy_(spk)
                     rec_ptr += 1

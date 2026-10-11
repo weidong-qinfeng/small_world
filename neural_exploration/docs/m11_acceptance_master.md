@@ -133,6 +133,25 @@ M10-B1 交叉核对时发现（已入档）：λ×1 臂的模型群体序列**�
    证明**低于基线的样本是真数据**（uint16 读法要求"孤立超亮点被 395 背景包围"的物理荒诞解）⇒ **定稿为"无掩膜，保留并登记"；
    "哨兵"仅指 32767 饱和（实测计数 0）**。主agent 旧表述标废。
 
+## 3g. G0 引擎门**验收裁定 = fail**（R11）：两项**真缺陷、均为对 M10 的回归**
+
+节点 M11-B2 交付 `reports/neuro/m11_g0_engine_summary.json`；主agent **直接读 `detail` 复核**（不采信自述）：
+
+| 判据 | 状态 | 实测（主agent 从 detail 核出） |
+|---|---|---|
+| **(e) 分段可组合性** | **fail** | **`step` 口径**：k=1 total 173 **逐位一致 ✓**；**k=2 total 172、11 个神经元计数不同 ✗**；**k=5 total 165、28 个不同 ✗**。`chunk` 口径 k=1/2/5 全逐位一致 ✓。反例臂 `use_abs_slots=False` **非一致**（rel_diff −0.578%）⇒ **判据可证伪 ✓** |
+| **(f) 同步发放判别** | **fail** | `m9_raises=True`（预期）；**`m11_ok=False`** ⇒ 新引擎 `m11_fix`/`m11_frozen` 至少一个出错。**但 `slot_check` 逐类环槽残量与独立重算一致**（observed == expected：**E 11 / PV 23 / SST 37 / VIP 47**，rel_diff 全 0，`all_within_2pct=true` ⇒ **四类槽编码本身正确**） |
+| (a)(b)(c)(d)(g)(h) | `unavailable` | **本轮未运行**（如实标注，未代填 ✓） |
+| extensions：`slot_encoding_assertions` / `positive_controls` / `off_state_equivalence` / `no_leak` / `upstream_defect_E_M9_4` | `unavailable` | **本轮未运行**（**这是施工令点名的硬条款**） |
+| **`gate_verdict`** | **fail** | — |
+
+**裁定依据（关键对照）**：**M10 内核在同判据下 (e) 为 0.0% 逐位一致、(f) 通过**（M10 的 E5-FIX 正是为"同一步多神经元发放"而修）
+⇒ **两项 fail 都是 M11 扩展引入的回归，不是继承缺陷**。共同点在**投递路径**（`n_ch=4` ⇒ 槽宽 4N、`post_off = post + N·cls`）；
+`step` fail 而 `chunk` pass ⇒ 指向"两条路径的索引算术不同源"。主agent 已要求节点**先写最小复现并打印交付边索引与落槽位置**（M10 抓 L17 的方式）。
+
+**处置**：修 (e)(f) + **各加回归测试**；补跑 (a)–(d)(g)(h) 与全部 extensions；**G0 通过条件须为"全项 measured 且全过"**（不接受"两项 fail + 其余未跑"的 partial 表述）。
+**门链后果**：**G0 = fail ⇒ M11 的 G1/S 不得启动**，M11-B3 的 G1 工作**停在设计/工具态**（该约束已在 RF-M11-F 中重申）。
+
 ## 4. 对 P2 判定的影响（诚实记录）
 
 **M11 的核心方法学卖点是"结构-功能同源"**，但本轮实测后必须**收窄**：

@@ -202,7 +202,7 @@ class TargetsTable:
 class Arm:
     __slots__ = ("arm_id", "config_id", "T_ms", "settle_ms", "role", "mechanism", "drive_mult",
                  "seed", "replica_of", "n_neuron", "pop_trace_path", "counts_path", "agg", "ei",
-                 "wall_s", "ms_per_step", "device", "raw")
+                 "wall_s", "ms_per_step", "device", "raw", "trace", "counts", "cell_type")
 
     def __init__(self, d: Dict[str, Any], base_dir: str, default_n: Optional[int]):
         self.raw = d
@@ -289,7 +289,8 @@ def load_counts(path: str) -> Tuple[np.ndarray, Optional[np.ndarray]]:
 # ===========================================================================
 # 单臂指标（两个独立估计器并列；每个量都注明 estimator 与 protocol）
 # ===========================================================================
-def arm_metrics(arm: Arm, dt_ms: float, bin_ms: float, silent_thr_hz: float) -> Dict[str, Any]:
+def arm_metrics(arm: Arm, dt_ms: float, bin_ms: float, silent_thr_hz: float,
+                rel_tol: float = 0.02) -> Dict[str, Any]:
     m: Dict[str, Any] = {"arm_id": arm.arm_id, "checks": [], "hard_fail": []}
     T_s = arm.T_ms / 1000.0
     m["T_s"] = T_s
@@ -320,10 +321,9 @@ def arm_metrics(arm: Arm, dt_ms: float, bin_ms: float, silent_thr_hz: float) -> 
         nb = tr.size // b
         if nb >= 4:
             m_ = tr[:nb * b].reshape(nb, b).sum(axis=1)
-            m["bin_spikes"] = m_
             if arm.n_neuron:
-                m["bin_rate_hz"] = m_ / (b * dt_ms * 1e-3) / arm.n_neuron
-                m["trace_bin_median_rate_hz"] = float(np.median(m["bin_rate_hz"]))
+                m["bin_rate_hz_median"] = float(np.median(m_ / (b * dt_ms * 1e-3) / arm.n_neuron))
+                m["trace_bin_median_rate_hz"] = m["bin_rate_hz_median"]
             m["silent_bin_frac"] = float(np.mean(m_ == 0))
             m["n_bins"] = int(nb)
 
@@ -343,7 +343,9 @@ def arm_metrics(arm: Arm, dt_ms: float, bin_ms: float, silent_thr_hz: float) -> 
         elif float(c.min()) < 0.0:
             m["hard_fail"].append("counts_negative: 逐神经元计数出现负值（不合理 ⇒ 记录损坏）")
         rate = c / T_s
-        m["per_neuron_rate_hz"] = rate
+        m["rate_summary_hz"] = {"median": float(np.median(rate)), "mean": float(rate.mean()),
+                               "p5": float(np.percentile(rate, 5)), "p95": float(np.percentile(rate, 95)),
+                               "max": float(rate.max()), "min": float(rate.min())}
         m["rate_median_hz"] = float(np.median(rate))
         m["rate_mean_hz"] = float(rate.mean())
         m["rate_p95_hz"] = float(np.percentile(rate, 95))
@@ -379,10 +381,17 @@ def arm_metrics(arm: Arm, dt_ms: float, bin_ms: float, silent_thr_hz: float) -> 
                 a, b_ = est[keys[i]], est[keys[j]]
                 den = max(abs(a), abs(b_), 1e-12)
                 m["estimator_rel_diffs"][f"{keys[i]}__vs__{keys[j]}"] = float(abs(a - b_) / den)
+        m["estimator_gate"] = "checkable"
+        for k, v in m["estimator_rel_diffs"].items():
+            if v > rel_tol:
+                m["hard_fail"].append(
+                    f"double_estimator_mismatch[{k}]: 相对差 {v:.4f} > {rel_tol} "
+                    f"（同一物理量的两个独立估计器不一致 ⇒ 硬门③ 失败；M10 历史事故 ×1.3004/×1.15/43× 的同族）")
     else:
-        m["hard_fail"].append(
-            "double_estimator_unavailable: 仅有 %d 个独立估计器（%s）⇒ 无法做硬门③"
-            % (len(est), ",".join(m["estimators_available"]) or "none"))
+        # 只有 1 个估计器 ⇒ 硬门③**无法校验**（不是"违规"）⇒ 该臂标 unavailable 并阻断 pass
+        m["estimator_gate"] = "unavailable_single_estimator"
+        m["estimator_gate_note"] = ("仅有 %d 个独立估计器（%s）⇒ 硬门③不可校验"
+                                    % (len(est), ",".join(m["estimators_available"]) or "none"))
 
     # ---- 量纲自检（A10）：率×T=计数（对每个可用估计器）----
     if arm.n_neuron:
@@ -507,6 +516,7 @@ class Evaluator:
             self.arms.append(Arm(d, base_dir, default_n))
         self.rows: List[Dict[str, Any]] = []
         self.hard_failures: List[str] = []
+        self.estimator_gate_unmet: List[str] = []
         self.arm_metrics: Dict[str, Dict[str, Any]] = {}
         self.duration_ladder: Dict[str, Any] = {}
         self.tension: Dict[str, Any] = {}
@@ -542,10 +552,14 @@ class Evaluator:
 
     # ---------------- 主流程 ----------------
     def run(self) -> Dict[str, Any]:
+        rel_tol = float(self.tt.num("double_estimator_rel_tol") or 0.02)
         for a in self.arms:
-            self.arm_metrics[a.arm_id] = arm_metrics(a, self.dt_ms, self.bin_ms, self.silent_thr_hz)
+            self.arm_metrics[a.arm_id] = arm_metrics(a, self.dt_ms, self.bin_ms, self.silent_thr_hz, rel_tol)
             for hf in self.arm_metrics[a.arm_id]["hard_fail"]:
                 self.hard_failures.append(f"{a.arm_id}: {hf}")
+            if self.arm_metrics[a.arm_id].get("estimator_gate") == "unavailable_single_estimator":
+                self.estimator_gate_unmet.append(
+                    f"{a.arm_id}: {self.arm_metrics[a.arm_id].get('estimator_gate_note')}")
         units = sorted({(a.config_id, a.T_ms, a.mechanism) for a in self.arms},
                        key=lambda t: (t[0], t[1], t[2]))
         for (cfg, T_ms, mech) in units:
@@ -678,18 +692,23 @@ class Evaluator:
         min_seeds = int(self.tt.num("protocol_seeds_min_per_arm") or 3)
         min_spk = float(self.tt.num("selfsustain_zero_drive_min_spikes") or 300)
         tol_ci = float(self.tt.num("selfsustain_ci_crosscheck_rel_tol") or 0.25)
-        Z = [self.arm_metrics[a.arm_id].get("counts_sum") if self.arm_metrics[a.arm_id].get("counts_sum") is not None
-             else self.arm_metrics[a.arm_id].get("trace_sum") for a in zero_arms]
-        B = [self.arm_metrics[a.arm_id].get("counts_sum") if self.arm_metrics[a.arm_id].get("counts_sum") is not None
-             else self.arm_metrics[a.arm_id].get("trace_sum") for a in base_arms]
+        def spk(a: Arm) -> Optional[float]:
+            m = self.arm_metrics[a.arm_id]
+            for k in ("counts_sum", "trace_sum", "agg_spk_total"):
+                if m.get(k) is not None:
+                    return float(m[k])
+            return None
+        Z = [spk(a) for a in zero_arms]
+        B = [spk(a) for a in base_arms]
         Z = [float(x) for x in Z if x is not None]
         B = [float(x) for x in B if x is not None]
         nz = len({a.seed for a in zero_arms if a.seed is not None})
         nb = len({a.seed for a in base_arms if a.seed is not None})
-        ci = selfsustain_ci(Z, B) if (Z and B) else {}
+        ci = selfsustain_ci(Z, B, n_boot=int(self.args.n_boot)) if (Z and B) else {}
         R = ci.get("ratio_pooled")
-        r = (f"点估计 R={R:.6g}（上限 {lim}）；CI95={ci.get('ci95_lognormal')}；"
-             f"零驱动脉冲 {ci.get('zero_spikes')}；seed 数 零={nz}/基准={nb}") if R is not None else "臂缺失或基准臂 0 脉冲"
+        r = (f"点估计 R={R:.6g}（上限 {lim}）；CI95(log)={ci.get('ci95_lognormal')}；"
+             f"CI95(boot)={ci.get('ci95_bootstrap')}；零驱动脉冲 {ci.get('zero_spikes')}；"
+             f"seed 数 零={nz}/基准={nb}；逐 seed 比值={ci.get('per_seed_ratio')}") if R is not None else "臂缺失或基准臂 0 脉冲"
         # ---- 硬门① 样本量门 ----
         gate_fail = []
         if not zero_arms or not base_arms:
@@ -698,9 +717,10 @@ class Evaluator:
             gate_fail.append(f"零驱动臂 seed 数 {nz} < {min_seeds}")
         if nb < min_seeds:
             gate_fail.append(f"基准臂 seed 数 {nb} < {min_seeds}")
-        if ci.get("zero_spikes", 0.0) < min_spk:
-            gate_fail.append(f"零驱动臂总脉冲 {ci.get('zero_spikes')} < {min_spk}"
-                             f"（相对不确定度 ≈{100/math.sqrt(max(ci.get('zero_spikes',1),1)):.1f}%）")
+        zs = ci.get("zero_spikes")
+        if zs is None or float(zs) < min_spk:
+            gate_fail.append(f"零驱动臂总脉冲 {zs} < {min_spk}"
+                             f"（相对不确定度 ≈{100.0/math.sqrt(max(float(zs or 0), 1.0)):.1f}%）")
         # ---- 硬门② 两 CI 法一致性 ----
         ci_disagree = (ci.get("ci_upper_rel_diff") is not None and ci["ci_upper_rel_diff"] > tol_ci)
         if gate_fail:
@@ -1015,14 +1035,21 @@ class Evaluator:
                     first_pos = pos[0] if pos else None
                     rec = {"status": "ok" if (sa_ == "ok" and sb_ == "ok") else "unavailable",
                            "reason": "" if (sa_ == "ok" and sb_ == "ok") else
-                                     "(a) 或 (b) 的带未定稿 ⇒ 张力只能定性",
+                                     "(a) 或 (b) 的带未定稿 ⇒ 张力只能定性（n_both_in_band 此时恒为 0，不构成张力证据）",
                            "points": pts, "n_points": len(pts),
-                           "n_both_in_band": int(n_both),
+                           "n_both_in_band": (int(n_both) if (sa_ == "ok" and sb_ == "ok") else None),
                            "spearman_drive_vs_rate": rho, "spearman_drive_vs_silent": rho_s,
                            "first_drive_with_median_rate_gt0": first_pos,
+                           # 与带无关的定性事实：驱动↑ 时 中位率↑ / 静默↓ 是否单调对立
+                           "qualitative_monotone_opposition": bool(
+                               rho is not None and rho_s is not None and rho >= 0.8
+                               and (rho_max is not None and rho_s <= rho_max)),
+                           # 结构性张力**只在两条带都已定稿时**才可判 True（否则 n_both 恒 0，是构造性结论）
                            "structural_tension": bool(
-                               n_both == 0 and first_pos is not None and rho is not None and rho_s is not None
+                               sa_ == "ok" and sb_ == "ok" and n_both == 0 and first_pos is not None
+                               and rho is not None and rho_s is not None
                                and rho >= 0.8 and (rho_max is not None and rho_s <= rho_max)),
+                           "structural_tension_pending_bands": True if (sa_ != "ok" or sb_ != "ok") else False,
                            }
                     if rec["structural_tension"]:
                         rec["consequence"] = ("存在的剂量点各自能落带、但**无一剂量同时满足 (a)∧(b)**，"
@@ -1074,10 +1101,14 @@ class Evaluator:
                                      " ⇒ 不得判 pass（未测 ≠ 未命中）")
         if not baseline_ok and g1 == "pass":
             g1, why = "unavailable", "硬门⑤：缺「无机制基线臂」的同一判据值 ⇒ 判别性未登记，整体不得判 pass"
+        if self.estimator_gate_unmet and g1 == "pass":
+            g1, why = "unavailable", ("硬门③：部分臂只有单一估计器 ⇒ 双估计器一致性**不可校验** "
+                                      f"（{len(self.estimator_gate_unmet)} 个臂）⇒ 不得判 pass")
         counts = {s: sum(1 for r in self.rows if r["status"] == s) for s in STATES}
         return {"verdict_G1": g1, "verdict_reason": why, "gate_conditions": gate,
                 "criterion_status": crit_status, "state_counts": counts,
                 "hard_failures": self.hard_failures,
+                "estimator_gate_unmet": self.estimator_gate_unmet,
                 "non_discriminative_criteria": non_disc,
                 "baseline_arm_registered": bool(baseline_ok),
                 "duration_ladder": self.duration_ladder, "tension": self.tension,

@@ -1,0 +1,25 @@
+{
+ "_comment": "M11-B3 冒烟测试 S4：与 S3 完全同构，但把 M0 基准臂的 counts 换成 **被人为放大 1.15×** 的夹具（M10 历史事故的倍数）。预期：硬门③（counts 求和 vs pop_trace 求和相对差 ≤2%）**硬失败** ⇒ 整轮 invalid、exit=2（而不是 fail、更不是 pass）。",
+ "protocol_id": "m11_b3_smoke_S4_double_estimator_violation",
+ "fixture_kind": "smoke_only(M10 traces + perturbed SYNTHETIC counts; 故意制造硬门③违规)",
+ "dt_ms": 0.05,
+ "settle_ms": 500.0,
+ "bin_ms": 100.0,
+ "smooth_frames": 5,
+ "n_neuron": 250,
+ "estimator": "per_neuron",
+ "arms": [
+  {"arm_id": "M0_zero", "config_id": "M10_M0_T120s", "T_ms": 120000.0, "role": "zero_drive",
+   "mechanism": "none", "drive_mult": 0.0, "seed": 0, "n_neuron": 250,
+   "pop_trace": "neural_exploration/data/m10_p6_poptraces/poptrace_M0_lamx0.0_n250.npy",
+   "counts": "neural_exploration/data/m11_p5_smoke_counts_M0_lamx0.0_zero.csv"},
+  {"arm_id": "M0_base_X1p15", "config_id": "M10_M0_T120s", "T_ms": 120000.0, "role": "baseline",
+   "mechanism": "none", "drive_mult": 1.0, "seed": 0, "n_neuron": 250,
+   "pop_trace": "neural_exploration/data/m10_p6_poptraces/poptrace_M0_lamx1.0_n250.npy",
+   "counts": "neural_exploration/data/m11_p5_smoke_counts_M0_lamx1.0_base_x1p15.csv"},
+  {"arm_id": "M0_dose4", "config_id": "M10_M0_T120s", "T_ms": 120000.0, "role": "dose",
+   "mechanism": "none", "drive_mult": 4.0, "seed": 0, "n_neuron": 250,
+   "pop_trace": "neural_exploration/data/m10_p6_poptraces/poptrace_M0_lamx4.0_n250.npy",
+   "counts": "neural_exploration/data/m11_p5_smoke_counts_M0_lamx4.0_dose4.csv"}
+ ]
+}

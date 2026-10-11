@@ -145,29 +145,41 @@ def t1_analytic(verbose=True) -> dict:
                 keys.get("err_vs_discrete_steps", float("nan") or 0.0),
                 keys.get("err_vs_discrete_ms", float("nan") or 0.0)), flush=True)
     # ---- 链式传播（延迟语义 + M9 稀疏逐位） ----
+    # 延迟=1 采用 M10 T1 的构造（**实测每步 ≤1 发放** ⇒ M9 投递公式恰好正确，可作参照）；
+    # 延迟=40（生理档）会出现的同步发放 ⇒ 触发 E-M9-2（M9 缺陷），仅作描述性对照。
     K = 8
     chain = {}
-    for name, cls, kw in (("m9_adult", AdultEngine, {}),
-                          ("m11_fix", MouseCortexEngine, {}),
-                          ("m11_frozen", MouseCortexEngine, {"frozen": True})):
-        e = cls(K, device="cpu", use_compile=False, verbose=False)
-        if name == "m11_frozen":
-            e.configure_refractory(REF_FROZEN)
-        e.add_synapses(np.arange(K - 1), np.arange(1, K), np.full(K - 1, 2.0e3, dtype=np.float32),
-                       np.full(K - 1, 40, dtype=np.int32),
-                       inhibitory=np.zeros(K - 1, dtype=bool),
-                       syn_class=np.zeros(K - 1, dtype=np.int8))
-        e.finalize()
-        b = np.zeros(K, dtype=np.float32)
-        b[0] = 5000.0
-        e.set_neuron_heterogeneity(b)
-        e.reset(seed=0)
-        e.reset_counts()
-        r = e.run(600, delivery="step", record="counts")
-        chain[name] = dict(spk=int(r["spk_total"]),
-                           counts=e.t_count.detach().cpu().numpy().astype(np.int64).tolist())
-    bit_m9 = (chain["m9_adult"]["counts"] == chain["m11_frozen"]["counts"])
-    out["chain"] = dict(per_arm=chain, m9_vs_m11_frozen_bit_identical=bool(bit_m9),
+    for dly in (1, 40):
+        for name, cls, frozen in (("m9_adult", AdultEngine, False),
+                                  ("m11_frozen", MouseCortexEngine, True),
+                                  ("m11_fix", MouseCortexEngine, False)):
+            e = cls(K, device="cpu", use_compile=False, verbose=False)
+            if frozen:
+                e.configure_refractory(REF_FROZEN)
+            e.add_synapses(np.arange(K - 1), np.arange(1, K),
+                           np.full(K - 1, 2.0e3, dtype=np.float32),
+                           np.full(K - 1, int(dly), dtype=np.int32),
+                           inhibitory=np.zeros(K - 1, dtype=bool),
+                           syn_class=np.zeros(K - 1, dtype=np.int8))
+            e.finalize()
+            b = np.zeros(K, dtype=np.float32)
+            b[0] = 5000.0
+            e.set_neuron_heterogeneity(b)
+            e.reset(seed=0)
+            e.reset_counts()
+            r = e.run(400, delivery="step", record="full")
+            st = r["spikes"][0] if r["spikes"] is not None else np.array([], dtype=int)
+            per = np.bincount(st, minlength=400) if st.size else np.zeros(1, dtype=int)
+            chain["delay%d_%s" % (dly, name)] = dict(
+                spk=int(st.size), max_spk_per_step=int(per.max()),
+                counts=e.t_count.detach().cpu().numpy().astype(np.int64).tolist())
+    armA = (chain["delay1_m9_adult"]["counts"] == chain["delay1_m11_frozen"]["counts"])
+    out["chain"] = dict(per_arm=chain, m9_vs_m11_frozen_bit_identical=bool(armA),
+                        armA_sparse_regime=bool(chain["delay1_m9_adult"]["max_spk_per_step"] <= 1),
+                        dense_arm_m9_note=("延迟=40 档出现每步 2 个发放 ⇒ 触发 E-M9-2，"
+                                           "M9 与 M11 相差 %d 个脉冲（描述性，不作 fail）"
+                                           % (chain["delay40_m9_adult"]["spk"]
+                                              - chain["delay40_m11_frozen"]["spk"])),
                         note="链式（每步 ≤1 发放）⇒ M9 投递公式恰好正确；此臂验证 '非投递语义不动'")
     e = MouseCortexEngine(K, device="cpu", use_compile=False, verbose=False)
     e.add_synapses(np.arange(K - 1), np.arange(1, K), np.full(K - 1, 2.0e3, dtype=np.float32),
@@ -189,8 +201,7 @@ def t1_analytic(verbose=True) -> dict:
                                      and steps[i + 1] - steps[i] >= 40 for i in range(K - 1)))
     errs = [abs(v["err_vs_discrete_steps"]) for v in out.values()
             if isinstance(v, dict) and v.get("err_vs_discrete_steps") is not None]
-    out["crit_a_pass"] = bool(bit_m9 and out["chain_monotone"]
-                              and errs and max(errs) <= 1.0)
+    out["crit_a_pass"] = bool(armA and out["chain_monotone"] and errs and max(errs) <= 1.0)
     out["crit_a_note"] = ("判据 (a)：解析（与引擎同一 Euler 递推的闭式）首发放步误差 ≤1 步（0.05 ms < "
                           "0.1 ms 容差）；链式传播逐级 ≥delay 步；稀疏链 M9≡M11(frozen) 逐位一致")
     return out
@@ -1263,11 +1274,11 @@ def make_plot(res: dict, path: str) -> str:
             ax.annotate("%.3f" % z["steady_ms_per_step"], (z["n"], z["steady_ms_per_step"]),
                         fontsize=7)
     ax.set_xscale("log")
-    ax.set_title("三档 N 稳态 ms/step（device=%s）" % res.get("t10", {}).get("device", "?"))
+    ax.set_title("3-tier N steady ms/step (device=%s)" % res.get("t10", {}).get("device", "?"))
     ax.set_xlabel("N"); ax.set_ylabel("ms/step")
     if rows:
         ax.legend()
-    fig.suptitle("M11 G0 引擎门（P3）对齐实测 —— (e)/(g)/(h) + 三档墙钟", fontsize=11)
+    fig.suptitle("M11 G0 engine gate (P3): (e)/(g)/(h) + 3-tier wall clock", fontsize=11)
     fig.tight_layout()
     fig.savefig(path, dpi=110)
     plt.close(fig)
@@ -1279,10 +1290,17 @@ def build_summary(res: dict) -> dict:
         res.get("t4", {}), res.get("t5", {})
     t6, t7, t8, t9 = res.get("t6", {}), res.get("t7", {}), res.get("t8", {}), res.get("t9", {})
     t10, t11, t12 = res.get("t10", {}), res.get("t11", {}), res.get("t12", {})
+
+    def st(cond, ran, note):
+        """四态：pass / fail / unavailable（未运行≠未命中，不得算 fail）。"""
+        if not ran:
+            return dict(status="unavailable", note=note + "（本轮未运行）")
+        return dict(status=("pass" if cond else "fail"), note=note)
+
     crit = {}
     crit["a_spike_time_alignment"] = dict(
-        status=("pass" if t1.get("crit_a_pass") else "fail"),
-        note="解析（Euler 离散闭式）对照 + 链式延迟语义 + M9 稀疏逐位",
+        **st(t1.get("crit_a_pass"), bool(t1),
+             "解析（Euler 离散闭式）首发放步误差 ≤1 步 + 链式延迟语义 + M9 稀疏逐位"),
         detail=dict(chain_m9_vs_m11_frozen=t1.get("chain", {}).get(
             "m9_vs_m11_frozen_bit_identical"),
             chain_monotone=t1.get("chain_monotone"),
@@ -1291,75 +1309,79 @@ def build_summary(res: dict) -> dict:
                          for k, v in t1.items() if isinstance(v, dict) and k.startswith("I_")}))
     pb = [p.get("crit_b_pass") for p in t5.get("points", [])]
     crit["b_state_fraction"] = dict(
-        status=("pass" if (pb and all(pb)) else ("fail" if pb else "unavailable")),
-        note="静默比差 <1pp 且发放率分布 KS p>0.05（在 3 档目标密度下）",
+        **st(bool(pb) and all(pb), bool(pb),
+             "静默比差 <1pp 且发放率分布 KS p>0.05（在 3 档目标密度下）"),
         detail=[dict(target_hz=p.get("target_hz"), achieved_hz=p.get("achieved_hz"),
                      silent_diff_pp=p.get("silent_diff_pp"),
                      ks_p=p.get("ks_off_vs_m10", {}).get("p"),
                      bit_identical=p.get("off_vs_m10_bit_identical"))
                 for p in t5.get("points", [])])
     crit["c_mechanism_metrics"] = dict(
-        status=("pass" if t7.get("dual_estimator_pass") else "fail"),
-        note="逐类电导积分：引擎累积（动态）vs 闭式（由 spike 时刻+边表独立算出）≤2%",
+        **st(t7.get("dual_estimator_pass"), bool(t7),
+             "逐类电导积分：引擎累积（动态）vs 闭式（由 spike 时刻+边表独立算出）≤2%"),
         detail=dict(integral_rel_diff=t7.get("integral_rel_diff"),
                     accumulated=t7.get("integrals_accumulated"),
                     closed_form=t7.get("integrals_closed_form")))
     crit["d_determinism"] = dict(
-        status=("pass" if t9.get("sparse", {}).get("bit_identical") else "fail"),
-        note="同引擎同参数重跑 + 分段/跨进程逐位（(e)(h) 更严）",
+        **st(t9.get("sparse", {}).get("bit_identical"), bool(t9),
+             "同引擎同参数重跑 + 分段/跨进程逐位（(e)(h) 更严）"),
         detail=dict(sparse_step_chunk=t9.get("sparse"), dense=t9.get("dense")))
     crit["e_segment_composability"] = dict(
-        status=("pass" if t3.get("crit_e_pass") else "fail"),
-        note="k=1/2/5 总脉冲与逐神经元计数逐位相同（step/chunk 两口径）；反例臂必现差异",
+        **st(t3.get("crit_e_pass"), bool(t3),
+             "k=1/2/5 总脉冲与逐神经元计数逐位相同（step/chunk 两口径）；反例臂必现差异"),
         detail=dict(step=t3.get("step"), chunk=t3.get("chunk"),
                     control_falsifiable=t3.get("control_falsifiable")))
     crit["f_synchronous_firing"] = dict(
-        status=("pass" if t2.get("crit_f_pass") else "fail"),
-        note="M9 抛错 / M11 正常；且逐类环槽残量与独立重算一致（≤2%）",
+        **st(t2.get("crit_f_pass"), bool(t2),
+             "M9 抛错 / M11 正常；且逐类环槽残量与独立重算一致（≤2%）"),
         detail=dict(m9_raises=t2.get("m9_raises"), m11_ok=t2.get("m11_ok"),
                     slot_check=t2.get("slot_check")))
     crit["g_target_density"] = dict(
-        status=("pass" if t5.get("crit_g_pass") else "unavailable"),
-        note="3 档密度（含 Allen 中位带；口径受限）下的 (a)–(c) 类对齐复测；"
-             "MICrONS 钙域密度锚 = unavailable（B1 L11.3/L11.5 未决）",
+        **st(t5.get("crit_g_pass"), bool(t5.get("points")),
+             "3 档密度（含 Allen 中位带；口径受限）下的 (a)–(c) 类对齐复测；"
+             "MICrONS 钙域密度锚 = unavailable（B1 L11.3/L11.5 未决）⇒ 如实登记、不计 fail"),
         detail=dict(density_anchored_points=t5.get("density_anchored_points"),
                     anchors=t5.get("anchors", {}).get("allen")))
     crit["h_cross_process"] = dict(
-        status=("pass" if t4.get("crit_h_pass") else "fail"),
-        note="3 个全新进程 × 2 档（on / off_frozen）→ 脉冲总数与逐神经元计数逐位相同",
+        **st(t4.get("crit_h_pass"), bool(t4),
+             "3 个全新进程 × 2 档（on / off_frozen）→ 脉冲总数与逐神经元计数逐位相同"),
         detail={a: {k: v for k, v in t4.get(a, {}).items() if k != "runs"}
                 for a in ("on", "off_frozen")})
     ext = dict(
         off_state_equivalence=dict(
-            status=("pass" if t6.get("off_equiv_pass") else "fail"),
-            note="新机制全关 + REF_FROZEN ⇒ 与 M9/M10 逐位一致（单延迟档稀疏/密集）；"
-                 "三延迟档 FP 累加序差异已定位到单 ULP",
-            detail={k: v for k, v in t6.items()
-                    if k not in ("three_bins_fp_order",)}),
+            **st(t6.get("off_equiv_pass"), bool(t6),
+                 "新机制全关 + REF_FROZEN ⇒ 与 M9/M10 逐位一致（单延迟档稀疏/密集）；"
+                 "三延迟档 FP 累加序差异已定位到单 ULP"),
+            detail={k: v for k, v in t6.items() if k != "three_bins_fp_order"},
+            fp_order=t6.get("three_bins_fp_order")),
         slot_encoding_assertions=dict(
-            status=("pass" if t7.get("crit_slot_pass") else "fail"),
-            note="逐类边数（两条独立实现）== 逐类槽内边数；g_* 读回一致；慢状态非零；"
-                 "负对照（丢 syn_class）被拦截且断言可证伪",
+            **st(t7.get("crit_slot_pass"), bool(t7),
+                 "逐类边数（两条独立实现）== 逐类槽内边数；g_* 读回一致；慢状态非零；"
+                 "负对照（丢 syn_class）被拦截且断言可证伪"),
             detail=t7),
         positive_controls=dict(
-            status=("pass" if t8.get("all_mechanisms_have_positive_control") else "fail"),
-            note="E1b/E2b/E3b 逐一：开关可测地不同 + 参数确在表达式内（否则 "
-                 "MECHANISM_NOT_IMPLEMENTED）",
+            **st(t8.get("all_mechanisms_have_positive_control"), bool(t8),
+                 "E1b/E2b/E3b 逐一：开关可测地不同 + 参数确在表达式内（否则 "
+                 "MECHANISM_NOT_IMPLEMENTED）"),
             detail=t8),
         upstream_defect_E_M9_4=dict(
-            status="registered",
-            note=t11.get("conclusion"), detail=t11),
-        no_leak=dict(status=("pass" if t12.get("crit_pass") else "fail"), detail=t12),
+            status=("registered" if t11 else "unavailable"),
+            note=(t11.get("conclusion") or "本轮未运行"), detail=t11),
+        no_leak=dict(**st(t12.get("crit_pass"), bool(t12), "分段 RSS 增长有界 + 单一 arange 缓冲"),
+                     detail=t12),
     )
     states = [crit[k]["status"] for k in crit] + [ext["off_state_equivalence"]["status"],
                                                  ext["slot_encoding_assertions"]["status"],
                                                  ext["positive_controls"]["status"]]
-    verdict = "pass" if all(s == "pass" for s in states) else (
-        "partial" if any(s == "pass" for s in states) else "fail")
+    ran = [s for s in states if s != "unavailable"]
+    verdict = ("pass" if states and all(s == "pass" for s in states)
+               else ("partial" if any(s == "pass" for s in states)
+                     else ("unavailable" if not ran else "fail")))
     return dict(generated_by="tools/scan_m11_engine.py", gate="G0/P3",
                 engine_version="m11e-1.0-4slot+laminar-delay-pack+slowvar",
                 criteria=crit, extensions=ext,
                 gate_verdict=verdict,
+                note="四态：pass/fail/invalid/unavailable；未运行项一律 unavailable，不计 fail",
                 probe=dict(rows=t10.get("rows", []), device=t10.get("device"),
                            two_comp=t10.get("two_comp")))
 

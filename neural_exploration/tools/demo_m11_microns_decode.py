@@ -56,7 +56,7 @@ def load(t_chunk=0):
     nd = struct.unpack_from(">I", blob, 0)[0]
     dims = struct.unpack_from(">%dI" % nd, blob, 4)
     raw = gzip.decompress(blob[off:])
-    return p, dims, off, raw
+    return p, dims, off, raw, nd
 
 
 def battery(a_flat, nt=10, ny=200, nx=200):
@@ -97,10 +97,12 @@ def main():
     ap.add_argument("--chunk", type=int, default=0)
     args = ap.parse_args()
 
-    path, dims, off, raw = load(args.chunk)
+    path, dims, off, raw, nd = load(args.chunk)
     print("file      : %s" % os.path.relpath(path, os.path.dirname(ROOT)))
-    print("header    : %d dims %s（大端 uint32）；gzip 起始偏移 %d" % (dims[0], dims[1:], off))
-    print("raw bytes : %d（== %d*%d*%d*%d*2）" % (len(raw), dims[1], dims[2], dims[3], dims[4]))
+    x, y, z, t = (list(dims) + [1, 1, 1, 1])[:4]
+    print("header    : num_dims=%d, dims(x,y,z,t)=%s（大端 uint32，共 %d B）；gzip 起始偏移 %d"
+          % (nd, tuple(dims), off, off))
+    print("raw bytes : %d（== %d*%d*%d*%d*2 int16）" % (len(raw), x, y, z, t))
     print()
     res = {}
     print("=== 你的同一套检验：小端（LE）vs 大端（BE）===")
