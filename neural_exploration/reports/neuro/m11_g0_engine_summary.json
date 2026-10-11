@@ -45,23 +45,23 @@
     {
      "target_hz": 0.5,
      "achieved_hz": 0.475,
-     "silent_diff_pp": 14.000000000000002,
-     "ks_p": 0.0006828973106786729,
-     "bit_identical": false
+     "silent_diff_pp": 0.0,
+     "ks_p": 0.0,
+     "bit_identical": true
     },
     {
      "target_hz": 2.0,
      "achieved_hz": 1.95,
-     "silent_diff_pp": 2.9999999999999973,
-     "ks_p": 0.5111457417605447,
-     "bit_identical": false
+     "silent_diff_pp": 0.0,
+     "ks_p": 0.0,
+     "bit_identical": true
     },
     {
      "target_hz": 17.412999876622898,
      "achieved_hz": 17.924999999999997,
-     "silent_diff_pp": 0.2500000000000002,
-     "ks_p": 0.9999999999763176,
-     "bit_identical": false
+     "silent_diff_pp": 0.0,
+     "ks_p": 0.0,
+     "bit_identical": true
     }
    ]
   },
@@ -202,9 +202,7 @@
    "status": "fail",
    "note": "3 档密度（含 Allen 中位带；口径受限）下的 (a)–(c) 类对齐复测；MICrONS 钙域密度锚 = unavailable（B1 L11.3/L11.5 未决）⇒ 如实登记、不计 fail",
    "detail": {
-    "density_anchored_points": [
-     17.412999876622898
-    ],
+    "density_anchored_points": [],
     "anchors": {
      "n": 1808,
      "min": 1.98491464867011,

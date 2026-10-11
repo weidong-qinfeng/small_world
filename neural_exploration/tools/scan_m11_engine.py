@@ -81,7 +81,12 @@ def ks_2samp(a, b) -> dict:
     D = float(np.max(np.abs(cdf_a - cdf_b)))
     en = math.sqrt(na * nb / (na + nb))
     lam = (en + 0.12 + 0.11 / en) * D
-    p = 2.0 * sum((-1) ** (k - 1) * math.exp(-2.0 * k * k * lam * lam) for k in range(1, 101))
+    if lam <= 1e-12:
+        # D=0（两分布逐点相同）⇒ 渐近级数在 λ→0 处数值振荡（Σ(-1)^{k-1} 部分和交替于 0/1）
+        # ⇒ 必须显式返回 p=1（本节点首版在此返回 0.0，会把"完全一致"误报为"显著不同"）
+        return dict(D=0.0, p=1.0, na=int(na), nb=int(nb),
+                    method="kolmogorov_asymptotic(D=0 -> p=1)")
+    p = 2.0 * sum((-1) ** (k - 1) * math.exp(-2.0 * k * k * lam * lam) for k in range(1, 401))
     return dict(D=D, p=float(min(1.0, max(0.0, p))), na=int(na), nb=int(nb),
                 method="kolmogorov_asymptotic")
 

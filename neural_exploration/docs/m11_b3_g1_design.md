@@ -13,7 +13,7 @@
 
 | # | 文件 | 说明 |
 |---|---|---|
-| 1 | `data/m11_p5_targets.csv`（**80 行**） | **判据带 / 协议常数唯一定稿表**，逐行 provenance（PMID/DOI/数据文件::字段/清单行） |
+| 1 | `data/m11_p5_targets.csv`（**94 行**） | **判据带 / 协议常数唯一定稿表**，逐行 provenance（PMID/DOI/数据文件::字段/清单行）；**只允许新增行**，`unavailable→measured` 升级一律走新增行 |
 | 2 | `data/m11_p5_targets.json` | 同一内容的机器可读版 + provenance ledger（本轮文献核读原文摘录、实测复算、冲突登记、未定稿带清单） |
 | 3 | `tools/validate_p11_resting.py` | **P5/G1 离线评估器**（只做分析，不做仿真）：接受注入的群体轨迹 / 逐神经元计数 / 聚合读数，输出 (a)–(i) + **四态** + 六项硬门 |
 | 4 | `docs/m11_b3_g1_design.md`（本文） | 判据表、协议、标定杠杆顺序、统计方案、张力识别、时长依赖处置、失败/反证路径 |
@@ -27,15 +27,18 @@
 
 ## §2 判据表（`data/m11_p5_targets.csv`）——覆盖与可用性
 
-**逐行 provenance 覆盖：80/80 行非空**（工具 `--check-targets` 机械校验：缺 provenance 即报错）。
+**逐行 provenance 覆盖：94/94 行非空**（工具 `--check-targets` 机械校验：缺 provenance 即报错）。
+
+> **修订轨迹（只允许新增行）**：72 行（首版，主agent 初审）→ **80 行**（R9/R10/R11 到位后）→ **94 行**（初审反馈后：口径分列 + 样本范围 + 哨兵 + 掩膜冲突 + Allen 参照）。
+> 旧行的 `value / value_kind / evidence_level / provenance` **一律逐字保留**；仅两行的 `final` 由 1 置 0 并追加「R9 后状态」指针（`microns_activity_channel`、`rate_median_hz_measured_in_vivo_band`），已在 notes L11/L16 登记。
 
 | 证据级别 | 行数 | 代表键 | 来源 |
 |---|---|---|---|
-| `literature` | **17** | `rate_median_hz_lo/hi`（0.5 / 2.0 Hz）、`rate_median_hz_exc_*`、`rate_median_hz_inh_*`、`silent_frac_ca_active_per_wave_pct`(12%)、`unresponsive_neurons_pct_all_areas`(23%)、`proxy_steriade1993_upstate_duration_s`(0.8–1.5 s)、`proxy_sanzeni2020_isn`、`proxy_wehr2003_balanced_inhibition`、`proxy_monier2008_ei_diversity`、`proxy_buzsaki2014_lognormal_rates` 等 | PMID 30419013/40205214/19706480/31844315/8340806/11017176/32598278/14647382/17507551/18215425/24569488（**11 篇本轮逐条核读**：数值在摘要或 OA 全文中可见者才标 `literature`） |
-| `derived` | **48** | 全部门限/网格/口径常数（`selfsustain_ratio_max`=0.10、`selfsustain_ci_upper_factor`=1.2、`selfsustain_zero_drive_min_spikes`=300、`protocol_T_ladder_ratios`、`ei_ratio_lo/hi`=0.5/3.0、`calibration_tradeoff_requires_a_and_b`、`tension_detect_required` 等）+ R9/R10/R11 的门链与纪律登记行 | 清单 §4.5/§0.9 草案行 + RF-M11-3 裁决行 + R9/R10/R11 + `data/m10_calibration_targets.csv::字段` + `src/larval_zf_circuit.py::字段`（**均为设计选择/实测派生/裁决登记，不是文献值**） |
-| `measured` | **6** | `frame_rate_hz_microns_functional`=6.300006 Hz、`microns_activity_channel_voxel_series`（R9 可解码）、`microns_same_source_tau_band_ref`=8.003–9.015 s（R10，**归属 S 门**）、`proxy_allen_celltypes_avg_firing_rate_median_all`=17.4130、`..._visp`=17.6338、`proxy_allen_celltypes_rate_lt_0p5_frac_visp`=0.0000 | `data/m11_microns_protocol.json::protocol.functional_series[0].frame_rate_hz`；`data/m11_reference.csv::R-01/R-10..R-14`；`data/_mainagent_m11_same_source_band.csv::frame_mean\|native\|unsmoothed`；`data/m11_allen_celltypes_metadata.csv::ef__avg_firing_rate`（n=1808 / VISp n=1490，本节点独立复算） |
-| `literature_unverified` | **1** | `n_neuron_gear_full`=75909 | 清单 §0.9 标注「Nature 2025 摘要」⇒ **实测该摘要只给 'around 75,000'**（冲突 L6） |
-| `unavailable` | **8** | `rate_median_hz_measured_in_vivo_band`、`silent_frac_lo/hi`、`silent_frac_ephys_lo/hi`、`ei_ratio_measured`、`single_trial_wall_s_max`、`microns_activity_channel_percell` | B1 未交付项 + R1（逐细胞 only-in-DB，**R9 保持**）+ `m11_reference.csv::R-21`（仍 unverified）+ G0 探针未回 |
+| `literature` | **18** | `rate_median_hz_lo/hi`、**`rate_median_hz_literature_spike_band`**（电生理口径命名行）、`rate_median_hz_exc_*`、`rate_median_hz_inh_*`、`silent_frac_ca_active_per_wave_pct`(12%)、`unresponsive_neurons_pct_all_areas`(23%)、`proxy_steriade1993_upstate_duration_s`(0.8–1.5 s)、`proxy_sanzeni2020_isn`、`proxy_wehr2003_balanced_inhibition`、`proxy_monier2008_ei_diversity`、`proxy_buzsaki2014_lognormal_rates` 等 | PMID 30419013/40205214/19706480/31844315/8340806/11017176/32598278/14647382/17507551/18215425/24569488（**11 篇本轮逐条核读**） |
+| `derived` | **52** | 全部门限/网格/口径常数 + **`calcium_caliber_nyquist_ceiling_hz`(3.150003 Hz)** / **`calcium_caliber_resolvable_floor_hz`(0.00315 Hz)** / **`calcium_vs_spike_caliber_gap`** + R9/R10/R11 门链与纪律登记 | 清单 §4.5/§0.9 草案行 + RF-M11-3 + R9/R10/R11 + `m10_calibration_targets.csv::字段` + **由 measured 帧率/样本范围推出的结构界** |
+| `measured` | **11** | `frame_rate_hz_microns_functional`(6.300006 Hz)、`microns_activity_channel_voxel_series`、`microns_same_source_tau_band_ref`(8.003–9.015 s，**归属 S 门**)、**`microns_functional_calcium_sample_scope`**(2 field/2,000 帧/317.46 s)、**`microns_functional_sentinel_count`**(10,383) / **`_fraction`**(0.01298%)、**`microns_sentinel_mask_policy`**(未决冲突)、**`microns_calcium_measured_population_anchors`**、3 条 Allen in vitro `proxy_*` | `m11_microns_protocol.json::frame_rate_hz`；`m11_reference.csv::R-01/R-10..R-14/R-18`；`_mainagent_m11_same_source_band.csv`；`m11_allen_celltypes_metadata.csv::ef__avg_firing_rate`（本节点独立复算） |
+| `literature_unverified` | **1** | `n_neuron_gear_full`=75909 | 清单 §0.9（摘要只给 'around 75,000'，冲突 L6） |
+| `unavailable` | **12** | **(a) 电生理实测带**、**(a) 钙口径带 lo/hi**、`silent_frac_lo/hi`、`silent_frac_ephys_lo/hi`、`ei_ratio_measured`、`single_trial_wall_s_max`、`microns_activity_channel`（原行）、`microns_activity_channel_percell`、`allen_bo_neuropixels_spike_rate_band` | B1 未交付项 + R1（逐细胞 only-in-DB）+ `R-21` unverified + G0 探针未回 + Allen NWP 仅目录 |
 
 **`final=0`（未定稿 ⇒ 依赖它的子判据强制 `unavailable`）：8 行** ——
 `(a)` 的**实测**带、`(b)` 的钙域/电生理域两个带、`(e)` 的实测量、`(g)` 的墙钟上限。

@@ -1,11 +1,12 @@
 {
  "generated_by": "M11 执行节点 B3（工作包 G1：P5 判据/协议设计与工具骨架）——逐行 provenance，无一行凭印象",
- "generated_at": "2026-10-11（含 R9/R10/R11 到位后的更正）",
+ "generated_at": "2026-10-11（初审反馈后：**R9 口径分列升级，按「新增行 + 保留原行」纪律**）",
+ "revision_note": "首版 72 行 → R9/R10/R11 到位后 80 行 → 主agent 初审反馈后 **94 行**（新增：口径分列 3 组 + 哨兵/样本范围 5 行 + 掩膜未决冲突 1 行 + Allen 参照 2 行 + R9/R10/R11 登记 5 行）。**旧行的 value/evidence_level/provenance 一律逐字保留**；`unavailable → measured` 的升级一律走新增行。",
  "role": "M11 G1（P5 生理工作点门）判据带 + 协议常数；运行前定稿，不事后调；只允许新增行",
  "file": "data/m11_p5_targets.csv",
  "hash_basis": {
-  "csv_sha256_file_bytes": "600a515df55550e6c661c826522c2c65bbfd4b470409450f89e31b9567d8f3b3",
-  "rows_payload_sha256": "6839c710705b33abbf12fdc2e5b29d46f3fe31b546c9cfb00db299e8616b7c36",
+  "csv_sha256_file_bytes": "033fd5064f8a21265c5e2a1e3158bf3bc4c8771919d0b7808619ad4eb2593686",
+  "rows_payload_sha256": "7cd531a3b8415298a60f9cbe333ec9712d59ece7197465ce7b198312ff33c460",
   "payload_definition": "csv 行按 key 排序的 canonical JSON（sort_keys=True, separators=(',',':')）",
   "note": "跨节点比对 sha256 时必须声明基准（file_bytes / payload / semantic）——主agent 纪律 §6-3"
  },
@@ -29,6 +30,43 @@
   "final": "1=已定稿可用于四态判定；0=未定稿 ⇒ 依赖它的子判据必须判 unavailable（不得判 pass/fail）",
   "wrong_usage_consequence": "跨制备/跨物种/跨口径代理行与易误用行填写：给出量化后果"
  },
+ "caliber_split": {
+  "why": "主agent 初审反馈要求：**钙口径与电生理口径必须分列**（MICrONS 序列是钙活动量，不是峰电位率）",
+  "rows": {
+   "electrophysiology_spike_band": [
+    "rate_median_hz_literature_spike_band",
+    "rate_median_hz_lo",
+    "rate_median_hz_hi",
+    "rate_median_hz_exc_lo",
+    "rate_median_hz_exc_hi",
+    "rate_median_hz_inh_lo",
+    "rate_median_hz_inh_hi"
+   ],
+   "calcium_band": [
+    "rate_median_hz_measured_calcium_band_lo",
+    "rate_median_hz_measured_calcium_band_hi"
+   ],
+   "calcium_structural_bounds": [
+    "calcium_caliber_nyquist_ceiling_hz",
+    "calcium_caliber_resolvable_floor_hz"
+   ],
+   "cross_caliber_gap": [
+    "calcium_vs_spike_caliber_gap"
+   ],
+   "allen_2p_cross_preparation_reference": [
+    "allen_2p_role_in_m11",
+    "unresponsive_neurons_pct_all_areas",
+    "allen_bo_neuropixels_spike_rate_band"
+   ],
+   "sample_scope_and_mask": [
+    "microns_functional_calcium_sample_scope",
+    "microns_functional_sentinel_count",
+    "microns_functional_sentinel_fraction",
+    "microns_sentinel_mask_policy"
+   ]
+  },
+  "honest_status": "钙口径带本身仍 **unavailable**：R9 使数据**可解码**，但「ROI 掩膜 × 帧序列 → 逐 ROI ΔF/F → 事件检测 → 事件率中位」这条管线尚未建立（`m11_reference.csv::R-21` unverified）⇒ **可解码 ≠ 已重建出率口径**。已测的钙域「率」只有**群体状态转换率**（0.104–0.438 Hz，见 microns_calcium_measured_population_anchors），它不是逐细胞率，**不得**用作 P5 (a)。"
+ },
  "provenance_ledger": {
   "literature_verified_this_round": [
    {
@@ -37,7 +75,7 @@
     "pmcid": "PMC6258373",
     "value_read": "spontaneous rates 0.5-1.0 Hz (excitatory) / 1.5-2.0 Hz (inhibitory)；all-LIF 底三四分位无自发发放 vs biophysical 半数或更少",
     "where": "OA 全文（Europe PMC fullTextXML）",
-    "used_for": "(a) 中位率带主锚（literature）+ 类级带（E/I）+ 静默量级档"
+    "used_for": "(a) 电生理口径文献带主锚 + 类级带 + 静默量级档"
    },
    {
     "pmid": "40205214",
@@ -51,7 +89,7 @@
     "doi": "10.1073/pnas.0907660106",
     "value_read": "'reaching 12% of active neurons per wave in adults'；'approximately 0.5 Hz in adults'",
     "where": "摘要",
-    "used_for": "(b) 钙域口径锚（每波招募口径，非长窗零计数）"
+    "used_for": "钙域口径锚（每波招募口径，非长窗零计数；亦为 cross-caliber gap 的文献依据）"
    },
    {
     "pmid": "31844315",
@@ -59,7 +97,7 @@
     "pmcid": "PMC6948932",
     "value_read": "'In total, 77% of neurons were responsive to at least one of the visual stimuli'（⇒23% 未响应）",
     "where": "OA 全文",
-    "used_for": "(b)「不可直接使用」的代理（口径=对刺激可靠响应）"
+    "used_for": "Allen 2p 跨制备参照（口径=对刺激可靠响应）"
    },
    {
     "pmid": "8340806",
@@ -73,7 +111,7 @@
     "doi": "10.1038/79848",
     "value_read": "'slices of ferret neocortex maintained in vitro generate this slow (<1 Hz) rhythm'；'the slow (0.1-0.5 Hz) oscillation'（摘要未出现 0.3-3 s）",
     "where": "摘要",
-    "used_for": "冲突 L5 的证据（清单 §1.5 C3 的误引）"
+    "used_for": "冲突 L5 的证据"
    },
    {
     "pmid": "32598278",
@@ -100,77 +138,87 @@
    {
     "pmid": "18215425",
     "doi": "10.1016/j.jneumeth.2007.11.008",
-    "value_read": "'a high level of diversity ... (from linear to non-linear) ... (from push-pull to synchronous) between stimulus-driven excitation (E) and inhibition (I)'（麻醉猫 V1）",
+    "value_read": "'a high level of diversity ... between stimulus-driven excitation (E) and inhibition (I)'（麻醉猫 V1）",
     "where": "摘要",
     "used_for": "(e) 带不得过窄的依据"
    },
    {
     "pmid": "24569488",
     "doi": "10.1038/nrn3687",
-    "value_read": "'the distribution of numerous parameters is in fact strongly skewed with a heavy tail, suggesting that skewed (typically lognormal) distributions'",
+    "value_read": "'strongly skewed with a heavy tail, suggesting that skewed (typically lognormal) distributions'",
     "where": "摘要",
-    "used_for": "主统计量取中位率 + 对数正态 CI 近似的依据"
+    "used_for": "主统计量取中位率 + 对数正态 CI 近似"
    }
   ],
   "measured_local_recompute": [
    {
     "file": "data/m11_allen_celltypes_metadata.csv",
     "field": "ef__avg_firing_rate",
-    "recompute": "n=1808 中位 17.4130 Hz（numpy 与 statistics.median 一致）；VISp（structure_parent__acronym==VISp）n=1490 中位 17.6338 Hz、L2/3 19.8220、L4 16.7383、L5 19.3125；spiny 12.9067 vs aspiny 34.1246；frac<0.5Hz=0.0000、frac<5Hz=0.0195",
-    "note": "与主agent 独立复算 17.4130 一致（B1 报告曾写 17.438 ⇒ 双估计器纪律已纠正）；in vitro 电流钳 ⇒ 跨制备代理，禁止用作 (a)/(b) 带"
+    "recompute": "n=1808 中位 17.4130 Hz；VISp n=1490 中位 17.6338 Hz、L2/3 19.8220、L4 16.7383、L5 19.3125；spiny 12.9067 vs aspiny 34.1246；frac<0.5Hz=0.0000、frac<5Hz=0.0195",
+    "note": "与主agent 独立复算一致；in vitro 电流钳 ⇒ 跨制备代理，禁止用作 (a)/(b) 带"
    },
    {
     "file": "data/m11_microns_protocol.json",
     "field": "protocol.functional_series[0].frame_rate_hz",
-    "recompute": "6.300006 Hz（B1 读回断言）",
-    "note": "与 data/m11_reference.csv::R-01 一致"
+    "recompute": "6.300006 Hz（B1 读回断言；data/m11_reference.csv::R-01 同值）",
+    "note": "钙口径 Nyquist 上界 3.150003 Hz 的来源；序列本身已由 R9 判可解码"
+   },
+   {
+    "file": "data/_mainagent_m11_same_source_band.csv",
+    "field": "frame_mean|native|unsmoothed 等 8 行",
+    "recompute": "τ 8.003–9.015 s（n=2000，未平滑原生帧）；Q 法占用 0.500 / 转换 0.438–0.400 Hz / 低态 dwell 1.11–1.27 s；H 法占用 0.613–0.642 / 转换 0.104–0.110 Hz / 低态 dwell 3.17–6.67 s",
+    "note": "R10 主agent 探针产物；**归属 S 门**（P5 内引用为越界）"
    },
    {
     "file": "data/m10_p5_gate1_ci.json",
     "field": "per_seed_ratio / ratio_pooled / se_log / ci95",
-    "recompute": "R=0.1015384615、se_log=0.0365403631、逐 seed 比值 0.0987078/0.1056068/0.1005484 与本工具**逐位一致**；CI95 末端相对差 1.3e-6（M10 用 z=1.96，本工具用精确分位 1.959963984540054）",
-    "note": "M10 只读；仅作工具校验（冒烟 S2），**不是** M11 判据"
-   }
-  ],
-  "microns_m10_reference_crosscheck": [
-   {
-    "file": "data/m10_p6_poptraces/poptrace_M0_lamx0.0_n250.npy + poptrace_M0_lamx1.0_n250.npy",
-    "recompute": "1154/6710 = 0.1719836 ⇒ 与 docs/m10_acceptance_master.md §4.3 记录的 T=120 s 自持比 **0.1720** 一致",
-    "note": "工具在 M10 冻结轨迹上复现了 M10 的公开记录值（工具正确性证据）；M10 数值不得作为 M11 判据"
+    "recompute": "R=0.1015384615、se_log=0.0365403631、逐 seed 比值与本工具**逐位一致**；CI95 末端相对差 1.3e-6（M10 用 z=1.96）",
+    "note": "M10 只读；仅作工具校验（冒烟 S2）"
    }
   ],
   "mainagent_rulings_incorporated": [
    {
     "id": "R9",
-    "content": "MICrONS 功能体素序列**可解码**（大端 int16；200/200 对象通过）⇒ R2 的 format_unverified 被反转；掩膜规则=无掩膜；新增纪律「判不可解码前必须覆盖 dtype×字节序×排列×差分编码」",
-    "effect_on_this_table": "本表首版按 R2 写 `microns_activity_channel=unavailable` ⇒ **已更正**为 `microns_activity_channel_voxel_series=measured` + `microns_activity_channel_percell=unavailable`（R1 保持）"
+    "content": "MICrONS 功能体素序列**可解码**（大端 int16；200/200 通过；掩膜规则争议见下）；新增纪律「判不可解码前必须覆盖 dtype×字节序×排列×差分编码」",
+    "effect": "`microns_activity_channel`（原行，保留）→ 新增 `microns_activity_channel_voxel_series=measured` + `microns_activity_channel_percell=unavailable`（R1 保持）；口径分列 3 组新增"
    },
    {
     "id": "R10",
-    "content": "主agent 独立建出同源目标带：原生帧未平滑 τ ≈ **8–9 s**（frame_mean 9.015 s / high_pixel_frac 8.003 s；n=2000）；S 门目标尺度定为 8–9 s 量级；Allen 2p 降为跨制备参照",
-    "effect_on_this_table": "新增 `microns_same_source_tau_band_ref`（measured，**归属 S 门**，P5 越界使用受禁）+ `allen_2p_role_downgraded`"
+    "content": "同源目标带 τ ≈ 8–9 s（原生帧未平滑）；Allen 2p 降为跨制备参照",
+    "effect": "新增 `microns_same_source_tau_band_ref`（measured，标注**归属 S 门**）+ `allen_2p_role_in_m11` + `microns_calcium_measured_population_anchors`"
    },
    {
     "id": "R11",
-    "content": "G0 引擎门验收裁定 = **fail**（(e) 分段可组合性 fail、(f) 同步发放判别 fail；均为 M11 扩展引入的回归）⇒ **G1/S 不得启动；M11-B3 的 G1 工作停在设计/工具态**",
-    "effect_on_this_table": "新增 `g0_engine_gate_status_fail` + `g1_start_precondition_all`；本工作包的全部判定在 G0 复测全过之前**不得发布**"
+    "content": "G0 引擎门 = **fail** ⇒ **G1/S 不得启动**；M11-B3 的 G1 工作停在设计/工具态",
+    "effect": "新增 `g0_engine_gate_status_fail` + `g1_start_precondition_all`；本工作包判定在 G0 全项复测前不得发布"
+   },
+   {
+    "id": "B3 初审反馈（2026-10-11）",
+    "content": "① 口径必须分列（钙 vs 电生理）② 样本范围写进 note（2 field / 2,000 帧 ≈317 s）③ 哨兵掩膜前置并登记（10,383/80,000,000 = 0.01298%）④ Allen 2p 作参照也要分列 ⑤ 升级一律新增行、不就地改旧行",
+    "effect": "本轮新增 13 行（口径分列 3 + 结构界 2 + 样本范围/哨兵 3 + 掩膜冲突 1 + Allen 参照 2 + 钙域群体锚 1 + 越界/边界 1），旧行逐字保留"
    }
   ],
   "checklist_and_doc_conflicts": [
    {
     "id": "L5",
-    "conflict": "清单 §1.5 C3 把 PMID 11017176 作为「小鼠皮层 up/down 态 dwell 0.3–3 s 量级」的依据；实测该文为雪貂皮层切片 in vitro、摘要给 0.1–0.5 Hz、未出现 0.3–3 s（物种/制备/数值三重不符）",
-    "proposed_fix": "改用 PMID 8340806（猫在体、up 态 0.8–1.5 s、0.3–0.4 Hz；摘要已核）作量级锚并显式标注跨物种/跨麻醉；按「先改清单再改代码」由主agent 落清单。**注：R10 已用同源 MICrONS 数据自建 8–9 s 带，本冲突对 S 门的影响已被 R10 覆盖，但清单文字仍需更正**"
+    "conflict": "清单 §1.5 C3 以 PMID 11017176 作为「小鼠皮层 up/down dwell 0.3–3 s」依据；实测该文为雪貂切片 in vitro、0.1–0.5 Hz、无 0.3–3 s",
+    "proposed_fix": "改用 PMID 8340806（猫在体 up 态 0.8–1.5 s，摘要已核）并标注跨物种/跨麻醉（R10 已覆盖 S 门，但清单文字仍需更正）"
    },
    {
     "id": "L6",
-    "conflict": "清单 §0.9 记 MICrONS 功能神经元数 75,909（标注出处「Nature 2025 摘要」）；实测该摘要只给 'around 75,000'",
-    "proposed_fix": "精确值改标 literature_unverified（本表已如此），或补全 75,909 的出处（正文/表格/SI）"
+    "conflict": "清单 §0.9 的 N_full=75,909 标注出处「Nature 2025 摘要」，实测摘要只给 'around 75,000'",
+    "proposed_fix": "改标 literature_unverified（已如此）或补出处"
    },
    {
     "id": "L7",
-    "conflict": "docs/m11_acceptance_master.md §4「对 P2 判定的影响」仍写「功能侧：体素序列 format_unverified（R2）」与「活动通道改由 Allen NWB 承担」，**与同文档 §3d 的 R9 反转自相矛盾**（同一文件内旧段未同步）",
-    "proposed_fix": "请主agent 在 §4 加「（已被 R9 反转，见 §3d）」标注；本节点不修改非本工作包文件（冻结/他节点产物）"
+    "conflict": "docs/m11_acceptance_master.md §4 仍写「体素序列 format_unverified（R2）」，与同文档 §3d 的 R9 反转自相矛盾",
+    "proposed_fix": "§4 加「（已被 R9 反转，见 §3d）」标注；本节点不改他节点/主agent 文件"
+   },
+   {
+    "id": "L16（新）",
+    "conflict": "**哨兵掩膜处置未决**：主agent 最新指令要求 `uint16>65000 ⇔ int16<0` 前置为缺失；同文档 §3f-3 + `data/m11_reference.csv::R-14`（B1，主agent 已采信）定稿为**无掩膜、保留并登记**（空间成簇 p50=0.111 vs 随机 ≈0.000129 ⇒ ~860× 富集）",
+    "impact_bound": "两侧对**计数**一致（10,383 / 80,000,000 = 0.01298%）⇒ 对 (a)/(b) 比例/中位数类统计的影响**≤0.0130 个百分点**（低于任何合理带宽）⇒ **不阻塞 G1**；但对空间成簇类判据（P14）可能更重要",
+    "proposed_fix": "由主agent 裁决（或两侧各自复算给差异）；本表 `microns_sentinel_mask_policy` 标 `unresolved_conflict` + `final=0`"
    }
   ],
   "bands_not_finalized": [
@@ -180,7 +228,20 @@
    "silent_frac_ephys_lo",
    "silent_frac_ephys_hi",
    "ei_ratio_measured",
-   "single_trial_wall_s_max"
+   "single_trial_wall_s_max",
+   "rate_median_hz_measured_calcium_band_lo",
+   "rate_median_hz_measured_calcium_band_hi",
+   "microns_sentinel_mask_policy",
+   "allen_bo_neuropixels_spike_rate_band",
+   "microns_activity_channel"
+  ],
+  "bands_now_measured": [
+   "rate_median_hz_literature_spike_band（literature 档，口径命名行）",
+   "calcium_caliber_nyquist_ceiling_hz（derived，源自 measured 帧率）",
+   "calcium_caliber_resolvable_floor_hz（derived，源自 measured 样本范围）",
+   "microns_functional_calcium_sample_scope / _sentinel_count / _sentinel_fraction（measured）",
+   "microns_calcium_measured_population_anchors（measured；归属 S 门）",
+   "microns_activity_channel_voxel_series（measured，R9）"
   ]
  },
  "rows": [
@@ -410,9 +471,9 @@
    "value_kind": "unavailable",
    "unit": "Hz",
    "evidence_level": "unavailable",
-   "provenance": "docs/m11_data_gate_report.md §1（m11_tuning_reference.csv / m11_dwell_reference.csv 未交付）+ data/m11_reference.csv::R-21（dwell_tau_reference_band = unverified，未定稿）+ R1（逐细胞轨迹 only-in-DB）+ docs/m11_acceptance_master.md R3（Allen in vivo NWB 仅目录 569 对象未下载）",
-   "note": "实测量通道仍未取得：逐细胞轨迹 only-in-DB（R1）；体素序列虽已可解码（R9/R-10..R-14）但**逐细胞/逐 ROI 的发放率参考量尚未重建**（R-21 仍 unverified；无 ROI 提取管线）；Allen in vivo NWB 未下载 ⇒ 实测带当前不可得，上面的 literature 档为临时锚",
-   "wrong_usage_consequence": "把 literature 档写成 measured ⇒ 违反 RF-M11-1 的证据级别纪律；把「体素可解码（R9）」误读为「发放率实测带已可得」⇒ 越界（可解码 ≠ 已重建出率口径）",
+   "provenance": "docs/m11_data_gate_report.md §1（m11_tuning_reference.csv/m11_dwell_reference.csv 未交付）+ docs/m11_acceptance_master.md R1/R2/R3",
+   "note": "实测量通道未取得：MICrONS 活动侧 unavailable（R1/R2）、Allen in vivo NWB 仅目录 569 对象未下载（R3 仅批准解析已有 per-cell NWB = 电流钳 in vitro）⇒ **实测带当前不可得**；上两行 literature 档为临时锚 **【R9 后状态（本节点 2026-10-11 追加）】** R9 判定体素序列**可解码**；但本行判 `unavailable` 的**理由仍然成立且更精确**：逐细胞轨迹 only-in-DB（R1 保持）+ 逐 ROI 的**发放率/钙事件率**参考量尚未重建（`m11_reference.csv::R-21` 仍 unverified）⇒ 实测带仍不可得。口径分列见新增行 `rate_median_hz_literature_spike_band` / `rate_median_hz_measured_calcium_band_lo|hi` 与 `calcium_vs_spike_caliber_gap`。按纪律：本行 value / evidence_level 逐字保留，仅 note 追加此指针。",
+   "wrong_usage_consequence": "把 literature 档写成 measured ⇒ 违反 RF-M11-1 的证据级别纪律",
    "final": "0"
   },
   {
@@ -856,6 +917,17 @@
    "final": "1"
   },
   {
+   "key": "microns_activity_channel",
+   "value": "unavailable",
+   "value_kind": "unavailable",
+   "unit": "",
+   "evidence_level": "unavailable",
+   "provenance": "docs/m11_acceptance_master.md R1（逐细胞轨迹仅存于 v8 DataJoint DB：103.8 GB 镜像/116.2 GB dump，吞吐 36–58 KB/s ⇒ 20–30 天）+ R2（体素序列 format_unverified：逐轴 lag1–6 自相关 ≈0）",
+   "note": "**永久性数据限制**（非未测、非未命中）；活动通道改由 Allen 承担（R6） **【R9 后状态（本节点 2026-10-11 追加）】** 本行的 R2 依据（`format_unverified`）已被 **R9** 推翻（体素序列可解码，见 `data/m11_reference.csv::R-10..R-14`）⇒ 现行结论见**新增行** `microns_activity_channel_voxel_series` 与 `microns_activity_channel_percell`。**本行按「新增行 + 保留原行」纪律恢复原文本（value/value_kind/evidence_level/provenance 逐字取自 commit 5cf62d5），仅 `final` 置 0 并加此指针。**",
+   "wrong_usage_consequence": "把「同源结构-功能」写成成立 ⇒ 违反 R6 第 5 条（结构同源仅就结构侧成立）",
+   "final": "0"
+  },
+  {
    "key": "microns_activity_channel_voxel_series",
    "value": "measured",
    "value_kind": "enum",
@@ -1063,6 +1135,149 @@
    "note": "(a)/(b) 的每一次报告必须同时给出 estimator（逐神经元 vs 群体轨迹）与口径定义（静默 = 计数==0 还是 rate<阈值），跨轮比较前核对",
    "wrong_usage_consequence": "只报数值不报估计器/口径 ⇒ 重演 M10 的 ×1.3004/×1.15/43× 与 0.92 vs 0.51 的静默口径混淆",
    "final": "1"
+  },
+  {
+   "key": "rate_median_hz_literature_spike_band",
+   "value": "0.5|2.0",
+   "value_kind": "list",
+   "unit": "Hz",
+   "evidence_level": "literature",
+   "provenance": "PMID 30419013 / DOI 10.1371/journal.pcbi.1006535（PMC6258373 OA 全文：'The spontaneous rates were 0.5-1.0 Hz for excitatory and 1.5-2.0 Hz for inhibitory cells'）——与 rate_median_hz_lo/hi 同源同值",
+   "note": "**口径分列行（主agent 2026-10-11 要求）**：本行命名并锁定**电生理口径（spike rate）**的文献档；值同 rate_median_hz_lo/hi（0.5–2.0 Hz）与类级行 exc 0.5–1.0 / inh 1.5–2.0。与**钙口径**行 `rate_median_hz_measured_calcium_band_lo|hi` 必须**并列报告、不得混用**。",
+   "wrong_usage_consequence": "与钙口径混用 ⇒ 见 `calcium_vs_spike_caliber_gap`（方向：中位率低估 + 静默比例高估）",
+   "final": "1"
+  },
+  {
+   "key": "rate_median_hz_measured_calcium_band_lo",
+   "value": "unavailable",
+   "value_kind": "unavailable",
+   "unit": "Hz",
+   "evidence_level": "unavailable",
+   "provenance": "docs/m11_acceptance_master.md R9（体素序列判 measured，可解码）+ data/m11_reference.csv::R-10/R-11/R-12/R-13/R-14 + data/m11_reference.csv::R-18（掩膜与 series 同格 ⇒ 同口径 ROI 可算）——但**逐 ROI 钙事件率尚未重建**",
+   "note": "**钙口径带（下界）：当前判 unavailable（未重建 ≠ 未命中）**。R9 后数据**可解码（measured）**，但 (a) 的钙口径带还需要这条管线：`field_seg_masks（ROI 掩膜）× functional_series（2,000 帧）→ 逐 ROI ΔF/F → 事件检测 → 事件率中位/T`。该管线尚未建立（B1 未交付 `m11_tuning_reference.csv`；`m11_reference.csv::R-21` 仍 unverified）⇒ 不得用未重建的口径做判据（清单 §0.7 #9）。定稿路径 = 托管作业 J2（5–15 min 离线），定稿后**新增行**并保留本行。",
+   "wrong_usage_consequence": "把 R9 的「可解码」当成「钙口径带已可得」⇒ 用未重建的口径判 (a)（未测被当成已测）；把钙活动量当峰电位率 ⇒ 见 calcium_vs_spike_caliber_gap",
+   "final": "0"
+  },
+  {
+   "key": "rate_median_hz_measured_calcium_band_hi",
+   "value": "unavailable",
+   "value_kind": "unavailable",
+   "unit": "Hz",
+   "evidence_level": "unavailable",
+   "provenance": "同上（R9 + data/m11_reference.csv::R-10..R-14/R-18）",
+   "note": "钙口径带（上界）：同上（逐 ROI 钙事件率未重建）。**结构性上界见 `calcium_caliber_nyquist_ceiling_hz`（3.150003 Hz = 帧率/2）**——该上界是**已测**的（帧率 measured），它本身就是「钙口径 ≠ 电生理口径」的量化证据。",
+   "wrong_usage_consequence": "同 rate_median_hz_measured_calcium_band_lo",
+   "final": "0"
+  },
+  {
+   "key": "calcium_caliber_nyquist_ceiling_hz",
+   "value": "3.150003",
+   "value_kind": "point",
+   "unit": "Hz",
+   "evidence_level": "derived",
+   "provenance": "data/m11_microns_protocol.json::protocol.functional_series[0].frame_rate_hz = 6.300006 Hz（measured，B1 读回断言；见 data/m11_reference.csv::R-01）÷ 2（Nyquist）",
+   "note": "**钙口径的可分辨率上限**（结构性，由已测帧率推出）：钙成像无法分辨高于帧率/2 的事件 ⇒ 钙口径的「率」被硬性压缩在 ≤3.15 Hz。文献 spike 带上界 2.0 Hz 已达该上限的 **63.5%**（2.0/3.150003）⇒ 高率细胞在钙口径下被系统性**低估**。",
+   "wrong_usage_consequence": "把钙口径的 ≤3.15 Hz 上界当生理上界 ⇒ 掩盖真实高率细胞；反向把 spike 带的 2.0 Hz 直接套到钙口径 ⇒ 高率端不可分辨（判定不可判）",
+   "final": "1"
+  },
+  {
+   "key": "calcium_caliber_resolvable_floor_hz",
+   "value": "0.00315",
+   "value_kind": "point",
+   "unit": "Hz",
+   "evidence_level": "derived",
+   "provenance": "data/_mainagent_m11_same_source_band.csv（n=2000 帧 @0.15873 s ⇒ 记录 317.46 s）⇒ 可分辨率下限 = 1/317.46 s = 0.00315 Hz（主agent R10 探针实测的样本范围）",
+   "note": "**钙口径的可分辨率下限**：比文献 spike 带下界 0.5 Hz 低 **159×** ⇒ 低活动在钙口径下大面积落入「不可分辨」⇒ **静默比例在钙口径下系统性更高**（方向：钙静默 ≥ spike 静默）。另注：M11 的 P5 协议 T ≤ 120 s（⇒ 下限 0.00833 Hz）比该样本窗更短 ⇒ 模型侧与数据侧的「静默」口径**天然不同**，必须并列声明。",
+   "wrong_usage_consequence": "把钙口径的静默比例当电生理静默比例 ⇒ 静默带系统性偏高（会把合规工作点判成「过于静默」）",
+   "final": "1"
+  },
+  {
+   "key": "calcium_vs_spike_caliber_gap",
+   "value": "underestimate_rate|overestimate_silent",
+   "value_kind": "enum",
+   "unit": "",
+   "evidence_level": "derived",
+   "provenance": "本表 calcium_caliber_nyquist_ceiling_hz（3.150003 Hz，源自 measured 帧率）+ calcium_caliber_resolvable_floor_hz（0.00315 Hz，源自 measured 样本范围）+ PMID 19706480（钙域「每波活跃神经元比例」口径，摘要已核）",
+   "note": "**两口径混用的方向与量级**（主agent 要求写进 wrong_usage_consequence）：① **方向**：钙口径 → 中位率**低估**（上限压缩到 3.15 Hz）+ 静默比例**高估**（下限 0.00315 Hz，比 0.5 Hz 低 159×）；② **量级**：幅度取决于钙指示剂动力学与事件检测阈值——**本轮未测 ⇒ 不给倍数，标 unavailable**（不得凭印象）；③ **结构性换算**：在 6.300006 Hz 下，1 帧 ≈0.15873 s ⇒ 钙域「事件率」的量化台阶 = 0.15873 s；spike 域在 T=10 s 窗内的分辨台阶 = 0.1 Hz。",
+   "wrong_usage_consequence": "把两口径混成一条带 ⇒ (a) 的判定随风向翻转；把钙静默带套到 spike 工作点 ⇒ 把合规配置判成失败（假阴性）；反向 ⇒ 把 17 Hz 级 in vitro 值或未压缩的钙上限判成通过（假阳性）",
+   "final": "1"
+  },
+  {
+   "key": "microns_functional_calcium_sample_scope",
+   "value": "2 fields|2000 frames|317.46 s|6.300006 Hz",
+   "value_kind": "list",
+   "unit": "",
+   "evidence_level": "measured",
+   "provenance": "data/_mainagent_m11_same_source_band.csv（n=2000，两条管线）+ data/m11_microns_protocol.json::protocol.functional_series（frame_rate_hz 6.300006、frame_interval_s 0.15873）+ data/m11_reference.csv::R-03/R-04（单 field 40,000 帧 / 6,349.2 s）",
+   "note": "**样本范围（主agent 要求写进 note）**：可用功能时间序列仅 **2 个 field**（144 field 中）、每 field 本轮取 **2,000 帧 ≈ 317.46 s**；单 field 完整记录为 40,000 帧 / 6,349.2 s（**未全取**）⇒ 一切钙域统计的**总体外推范围**限于这 2 个 field / 317 s，不得写成「整卷/整动物」。",
+   "wrong_usage_consequence": "把 2 field / 317 s 的统计外推为整卷/整动物 ⇒ 过度泛化（清单 §3.1「单个 field ≠ 整卷」）",
+   "final": "1"
+  },
+  {
+   "key": "microns_functional_sentinel_count",
+   "value": "10383",
+   "value_kind": "point",
+   "unit": "samples",
+   "evidence_level": "measured",
+   "provenance": "data/m11_reference.csv::R-14（below-baseline 样本 10,383 / 80,000,000 = 0.01298%；主agent 与节点 B1 两侧独立一致）+ docs/m11_acceptance_master.md §3d/§3f-3",
+   "note": "**哨兵/below-baseline 样本计数（两侧一致：10,383）**；主agent 与 B1 对该计数**无分歧**，分歧在于**处置**（见 `microns_sentinel_mask_policy`）。**未处理 ≠ 无缺失**：任何钙域统计必须先声明处置口径并登记计数。",
+   "wrong_usage_consequence": "不登记就直接统计 ⇒ 「未处理」被读成「无缺失」（主agent 纪律）",
+   "final": "1"
+  },
+  {
+   "key": "microns_functional_sentinel_fraction",
+   "value": "0.0001298",
+   "value_kind": "point",
+   "unit": "",
+   "evidence_level": "measured",
+   "provenance": "10,383 / 80,000,000 = 0.0001298（= 0.01298%）；来源同 microns_functional_sentinel_count",
+   "note": "哨兵占比 **0.01298%**。**对 P5 (a)/(b) 的影响上界**：即使把这 0.01298% 的样本全部当作缺失或全部当作有效，任何**比例/中位数**类统计的变化 ≤0.0130 个百分点 ⇒ **低于任何合理带宽**（判据表带宽以 0.05 量级计）⇒ **该处置之争不阻塞 G1**；但对**空间成簇**类判据（P14 的像素/邻域统计、暗区偏置）可能更重要 ⇒ 仍需裁决（见 `microns_sentinel_mask_policy`）。",
+   "wrong_usage_consequence": "把「0.013% 的影响上界」当成「全里程实际影响」⇒ 在 P14 空间类判据上低估该处置的重要性",
+   "final": "1"
+  },
+  {
+   "key": "microns_sentinel_mask_policy",
+   "value": "unresolved_conflict",
+   "value_kind": "enum",
+   "unit": "",
+   "evidence_level": "measured",
+   "provenance": "位置 A（主agent 2026-10-11 指令）：哨兵掩膜必须前置，`uint16>65000 ⇔ int16<0` 作缺失处理并登记；位置 B（docs/m11_acceptance_master.md §3f-3 + data/m11_reference.csv::R-14，节点 B1 推翻主agent）：**无掩膜，保留并登记**（空间成簇证据：3×3 邻域负值比例 p50=0.111 vs 随机 ≈0.000129 ⇒ ~860× 富集、孤立比例 0.000、位于暗区邻域均值≈395 vs 全局中位 1,953）",
+   "note": "**🔴 未决冲突（本节点不擅自裁决）**：同一文件的 §3f-3/R-14 与主agent 最新指令**方向相反**。本行 `final=0` ⇒ 依赖掩膜处置的钙域统计**不得定稿**。影响上界见 `microns_functional_sentinel_fraction`（≤0.0130 个百分点 ⇒ **不阻塞 G1**）。裁决路径（任选）：① 两侧（掩膜/不掩膜）各自复算钙域统计并给差异；② 采纳 B1 的空间成簇证据（若成立则掩膜会删掉真实暗区数据）；③ 主agent 明确指定一方并注明与 §3f-3 的关系。",
+   "wrong_usage_consequence": "静默采纳任一方而不登记 ⇒ 复现性受损；按主agent 指令掩膜但 B1 证据成立 ⇒ **删除真实数据**（暗区成簇样本），使钙域静默/活动比例产生系统性偏差",
+   "final": "0"
+  },
+  {
+   "key": "microns_calcium_measured_population_anchors",
+   "value": "occupancy_Q=0.500|occupancy_H=0.613-0.642|transition_Q=0.400-0.438 Hz|transition_H=0.104-0.110 Hz|tau_native_unsmoothed=8.003-9.015 s",
+   "value_kind": "list",
+   "unit": "",
+   "evidence_level": "measured",
+   "provenance": "data/_mainagent_m11_same_source_band.csv + docs/m11_acceptance_master.md R10（Q 法：占用 0.500、转换 0.438–0.400 Hz、低态 dwell 中位 1.11–1.27 s；H 法 K=2：占用 0.613–0.642、转换 0.104–0.110 Hz、低态 dwell 中位 3.17–6.67 s）",
+   "note": "**这是 R9/R10 后钙域唯一已测的「率」类量**：群体级**状态转换率**（0.104–0.438 Hz）与占用比例、τ（8–9 s）。**它们不是逐细胞发放率** ⇒ **不得**用作 P5 (a) 的带（属 S 门/dwell 统计）。列在此处的目的：证明「钙域可测」与「(a) 的钙口径带已可得」是**两件事**。两法（Q/H）差异 **2.6–6×** ⇒ 必须并列。",
+   "wrong_usage_consequence": "把群体状态转换率当逐细胞中位率 ⇒ 量纲/口径双错；在 P5 内引用 ⇒ 越界（慢状态归 S 门）",
+   "final": "1"
+  },
+  {
+   "key": "allen_2p_role_in_m11",
+   "value": "cross_preparation_reference",
+   "value_kind": "enum",
+   "unit": "",
+   "evidence_level": "derived",
+   "provenance": "docs/m11_acceptance_master.md R6 第 3 条（活动通道改用 Allen BO 2p）+ R9 第 2 条（S 门/P14 目标带优先用 MICrONS 同源自建；**Allen 2p 降为跨制备参照**）",
+   "note": "口径分列第三列（主agent 要求「若还要用 Allen 2p 作跨制备参照，请同样分列」）：Allen BO 2p / NWB 在本门内**只作跨制备参照行**，**不是**目标带来源。本表已有的 `unresponsive_neurons_pct_all_areas`（23%，PMID 31844315）与 `rate_median_hz_literature_spike_band` 均属此类参照/文献档。",
+   "wrong_usage_consequence": "把 Allen 2p 的参照值当主目标 ⇒ 与 R9「同源优先」冲突（跨制备/跨品系/跨实验室）",
+   "final": "1"
+  },
+  {
+   "key": "allen_bo_neuropixels_spike_rate_band",
+   "value": "unavailable",
+   "value_kind": "unavailable",
+   "unit": "Hz",
+   "evidence_level": "unavailable",
+   "provenance": "docs/m11_data_gate_report.md §1（Allen BO Neuropixels 仅完成目录枚举：569 对象 / 853.7 GB，未下载任何 session NWB）+ docs/m11_acceptance_master.md R3",
+   "note": "Allen BO Neuropixels（在体电生理、清醒）的**实测**率带当前不可得（仅目录）；补取路径 = 托管作业 J1（单 session NWB ≈100–250 MB，20–60 min）。与钙口径行分列（本行 = 电生理口径、在体、Allen 制备）。",
+   "wrong_usage_consequence": "把「目录可达」当成「率带可得」⇒ 未测被当成已测；仍以 Allen Cell Types **in vitro**（17.41/17.63 Hz）顶上 ⇒ 高 8.7–34.8×（见 proxy_* 行）",
+   "final": "0"
   }
  ],
  "row_index": {
@@ -1292,9 +1507,9 @@
    "value_kind": "unavailable",
    "unit": "Hz",
    "evidence_level": "unavailable",
-   "provenance": "docs/m11_data_gate_report.md §1（m11_tuning_reference.csv / m11_dwell_reference.csv 未交付）+ data/m11_reference.csv::R-21（dwell_tau_reference_band = unverified，未定稿）+ R1（逐细胞轨迹 only-in-DB）+ docs/m11_acceptance_master.md R3（Allen in vivo NWB 仅目录 569 对象未下载）",
-   "note": "实测量通道仍未取得：逐细胞轨迹 only-in-DB（R1）；体素序列虽已可解码（R9/R-10..R-14）但**逐细胞/逐 ROI 的发放率参考量尚未重建**（R-21 仍 unverified；无 ROI 提取管线）；Allen in vivo NWB 未下载 ⇒ 实测带当前不可得，上面的 literature 档为临时锚",
-   "wrong_usage_consequence": "把 literature 档写成 measured ⇒ 违反 RF-M11-1 的证据级别纪律；把「体素可解码（R9）」误读为「发放率实测带已可得」⇒ 越界（可解码 ≠ 已重建出率口径）",
+   "provenance": "docs/m11_data_gate_report.md §1（m11_tuning_reference.csv/m11_dwell_reference.csv 未交付）+ docs/m11_acceptance_master.md R1/R2/R3",
+   "note": "实测量通道未取得：MICrONS 活动侧 unavailable（R1/R2）、Allen in vivo NWB 仅目录 569 对象未下载（R3 仅批准解析已有 per-cell NWB = 电流钳 in vitro）⇒ **实测带当前不可得**；上两行 literature 档为临时锚 **【R9 后状态（本节点 2026-10-11 追加）】** R9 判定体素序列**可解码**；但本行判 `unavailable` 的**理由仍然成立且更精确**：逐细胞轨迹 only-in-DB（R1 保持）+ 逐 ROI 的**发放率/钙事件率**参考量尚未重建（`m11_reference.csv::R-21` 仍 unverified）⇒ 实测带仍不可得。口径分列见新增行 `rate_median_hz_literature_spike_band` / `rate_median_hz_measured_calcium_band_lo|hi` 与 `calcium_vs_spike_caliber_gap`。按纪律：本行 value / evidence_level 逐字保留，仅 note 追加此指针。",
+   "wrong_usage_consequence": "把 literature 档写成 measured ⇒ 违反 RF-M11-1 的证据级别纪律",
    "final": "0"
   },
   "rate_median_hz_m10_fish_band": {
@@ -1737,6 +1952,17 @@
    "wrong_usage_consequence": "N/A",
    "final": "1"
   },
+  "microns_activity_channel": {
+   "key": "microns_activity_channel",
+   "value": "unavailable",
+   "value_kind": "unavailable",
+   "unit": "",
+   "evidence_level": "unavailable",
+   "provenance": "docs/m11_acceptance_master.md R1（逐细胞轨迹仅存于 v8 DataJoint DB：103.8 GB 镜像/116.2 GB dump，吞吐 36–58 KB/s ⇒ 20–30 天）+ R2（体素序列 format_unverified：逐轴 lag1–6 自相关 ≈0）",
+   "note": "**永久性数据限制**（非未测、非未命中）；活动通道改由 Allen 承担（R6） **【R9 后状态（本节点 2026-10-11 追加）】** 本行的 R2 依据（`format_unverified`）已被 **R9** 推翻（体素序列可解码，见 `data/m11_reference.csv::R-10..R-14`）⇒ 现行结论见**新增行** `microns_activity_channel_voxel_series` 与 `microns_activity_channel_percell`。**本行按「新增行 + 保留原行」纪律恢复原文本（value/value_kind/evidence_level/provenance 逐字取自 commit 5cf62d5），仅 `final` 置 0 并加此指针。**",
+   "wrong_usage_consequence": "把「同源结构-功能」写成成立 ⇒ 违反 R6 第 5 条（结构同源仅就结构侧成立）",
+   "final": "0"
+  },
   "microns_activity_channel_voxel_series": {
    "key": "microns_activity_channel_voxel_series",
    "value": "measured",
@@ -1945,6 +2171,149 @@
    "note": "(a)/(b) 的每一次报告必须同时给出 estimator（逐神经元 vs 群体轨迹）与口径定义（静默 = 计数==0 还是 rate<阈值），跨轮比较前核对",
    "wrong_usage_consequence": "只报数值不报估计器/口径 ⇒ 重演 M10 的 ×1.3004/×1.15/43× 与 0.92 vs 0.51 的静默口径混淆",
    "final": "1"
+  },
+  "rate_median_hz_literature_spike_band": {
+   "key": "rate_median_hz_literature_spike_band",
+   "value": "0.5|2.0",
+   "value_kind": "list",
+   "unit": "Hz",
+   "evidence_level": "literature",
+   "provenance": "PMID 30419013 / DOI 10.1371/journal.pcbi.1006535（PMC6258373 OA 全文：'The spontaneous rates were 0.5-1.0 Hz for excitatory and 1.5-2.0 Hz for inhibitory cells'）——与 rate_median_hz_lo/hi 同源同值",
+   "note": "**口径分列行（主agent 2026-10-11 要求）**：本行命名并锁定**电生理口径（spike rate）**的文献档；值同 rate_median_hz_lo/hi（0.5–2.0 Hz）与类级行 exc 0.5–1.0 / inh 1.5–2.0。与**钙口径**行 `rate_median_hz_measured_calcium_band_lo|hi` 必须**并列报告、不得混用**。",
+   "wrong_usage_consequence": "与钙口径混用 ⇒ 见 `calcium_vs_spike_caliber_gap`（方向：中位率低估 + 静默比例高估）",
+   "final": "1"
+  },
+  "rate_median_hz_measured_calcium_band_lo": {
+   "key": "rate_median_hz_measured_calcium_band_lo",
+   "value": "unavailable",
+   "value_kind": "unavailable",
+   "unit": "Hz",
+   "evidence_level": "unavailable",
+   "provenance": "docs/m11_acceptance_master.md R9（体素序列判 measured，可解码）+ data/m11_reference.csv::R-10/R-11/R-12/R-13/R-14 + data/m11_reference.csv::R-18（掩膜与 series 同格 ⇒ 同口径 ROI 可算）——但**逐 ROI 钙事件率尚未重建**",
+   "note": "**钙口径带（下界）：当前判 unavailable（未重建 ≠ 未命中）**。R9 后数据**可解码（measured）**，但 (a) 的钙口径带还需要这条管线：`field_seg_masks（ROI 掩膜）× functional_series（2,000 帧）→ 逐 ROI ΔF/F → 事件检测 → 事件率中位/T`。该管线尚未建立（B1 未交付 `m11_tuning_reference.csv`；`m11_reference.csv::R-21` 仍 unverified）⇒ 不得用未重建的口径做判据（清单 §0.7 #9）。定稿路径 = 托管作业 J2（5–15 min 离线），定稿后**新增行**并保留本行。",
+   "wrong_usage_consequence": "把 R9 的「可解码」当成「钙口径带已可得」⇒ 用未重建的口径判 (a)（未测被当成已测）；把钙活动量当峰电位率 ⇒ 见 calcium_vs_spike_caliber_gap",
+   "final": "0"
+  },
+  "rate_median_hz_measured_calcium_band_hi": {
+   "key": "rate_median_hz_measured_calcium_band_hi",
+   "value": "unavailable",
+   "value_kind": "unavailable",
+   "unit": "Hz",
+   "evidence_level": "unavailable",
+   "provenance": "同上（R9 + data/m11_reference.csv::R-10..R-14/R-18）",
+   "note": "钙口径带（上界）：同上（逐 ROI 钙事件率未重建）。**结构性上界见 `calcium_caliber_nyquist_ceiling_hz`（3.150003 Hz = 帧率/2）**——该上界是**已测**的（帧率 measured），它本身就是「钙口径 ≠ 电生理口径」的量化证据。",
+   "wrong_usage_consequence": "同 rate_median_hz_measured_calcium_band_lo",
+   "final": "0"
+  },
+  "calcium_caliber_nyquist_ceiling_hz": {
+   "key": "calcium_caliber_nyquist_ceiling_hz",
+   "value": "3.150003",
+   "value_kind": "point",
+   "unit": "Hz",
+   "evidence_level": "derived",
+   "provenance": "data/m11_microns_protocol.json::protocol.functional_series[0].frame_rate_hz = 6.300006 Hz（measured，B1 读回断言；见 data/m11_reference.csv::R-01）÷ 2（Nyquist）",
+   "note": "**钙口径的可分辨率上限**（结构性，由已测帧率推出）：钙成像无法分辨高于帧率/2 的事件 ⇒ 钙口径的「率」被硬性压缩在 ≤3.15 Hz。文献 spike 带上界 2.0 Hz 已达该上限的 **63.5%**（2.0/3.150003）⇒ 高率细胞在钙口径下被系统性**低估**。",
+   "wrong_usage_consequence": "把钙口径的 ≤3.15 Hz 上界当生理上界 ⇒ 掩盖真实高率细胞；反向把 spike 带的 2.0 Hz 直接套到钙口径 ⇒ 高率端不可分辨（判定不可判）",
+   "final": "1"
+  },
+  "calcium_caliber_resolvable_floor_hz": {
+   "key": "calcium_caliber_resolvable_floor_hz",
+   "value": "0.00315",
+   "value_kind": "point",
+   "unit": "Hz",
+   "evidence_level": "derived",
+   "provenance": "data/_mainagent_m11_same_source_band.csv（n=2000 帧 @0.15873 s ⇒ 记录 317.46 s）⇒ 可分辨率下限 = 1/317.46 s = 0.00315 Hz（主agent R10 探针实测的样本范围）",
+   "note": "**钙口径的可分辨率下限**：比文献 spike 带下界 0.5 Hz 低 **159×** ⇒ 低活动在钙口径下大面积落入「不可分辨」⇒ **静默比例在钙口径下系统性更高**（方向：钙静默 ≥ spike 静默）。另注：M11 的 P5 协议 T ≤ 120 s（⇒ 下限 0.00833 Hz）比该样本窗更短 ⇒ 模型侧与数据侧的「静默」口径**天然不同**，必须并列声明。",
+   "wrong_usage_consequence": "把钙口径的静默比例当电生理静默比例 ⇒ 静默带系统性偏高（会把合规工作点判成「过于静默」）",
+   "final": "1"
+  },
+  "calcium_vs_spike_caliber_gap": {
+   "key": "calcium_vs_spike_caliber_gap",
+   "value": "underestimate_rate|overestimate_silent",
+   "value_kind": "enum",
+   "unit": "",
+   "evidence_level": "derived",
+   "provenance": "本表 calcium_caliber_nyquist_ceiling_hz（3.150003 Hz，源自 measured 帧率）+ calcium_caliber_resolvable_floor_hz（0.00315 Hz，源自 measured 样本范围）+ PMID 19706480（钙域「每波活跃神经元比例」口径，摘要已核）",
+   "note": "**两口径混用的方向与量级**（主agent 要求写进 wrong_usage_consequence）：① **方向**：钙口径 → 中位率**低估**（上限压缩到 3.15 Hz）+ 静默比例**高估**（下限 0.00315 Hz，比 0.5 Hz 低 159×）；② **量级**：幅度取决于钙指示剂动力学与事件检测阈值——**本轮未测 ⇒ 不给倍数，标 unavailable**（不得凭印象）；③ **结构性换算**：在 6.300006 Hz 下，1 帧 ≈0.15873 s ⇒ 钙域「事件率」的量化台阶 = 0.15873 s；spike 域在 T=10 s 窗内的分辨台阶 = 0.1 Hz。",
+   "wrong_usage_consequence": "把两口径混成一条带 ⇒ (a) 的判定随风向翻转；把钙静默带套到 spike 工作点 ⇒ 把合规配置判成失败（假阴性）；反向 ⇒ 把 17 Hz 级 in vitro 值或未压缩的钙上限判成通过（假阳性）",
+   "final": "1"
+  },
+  "microns_functional_calcium_sample_scope": {
+   "key": "microns_functional_calcium_sample_scope",
+   "value": "2 fields|2000 frames|317.46 s|6.300006 Hz",
+   "value_kind": "list",
+   "unit": "",
+   "evidence_level": "measured",
+   "provenance": "data/_mainagent_m11_same_source_band.csv（n=2000，两条管线）+ data/m11_microns_protocol.json::protocol.functional_series（frame_rate_hz 6.300006、frame_interval_s 0.15873）+ data/m11_reference.csv::R-03/R-04（单 field 40,000 帧 / 6,349.2 s）",
+   "note": "**样本范围（主agent 要求写进 note）**：可用功能时间序列仅 **2 个 field**（144 field 中）、每 field 本轮取 **2,000 帧 ≈ 317.46 s**；单 field 完整记录为 40,000 帧 / 6,349.2 s（**未全取**）⇒ 一切钙域统计的**总体外推范围**限于这 2 个 field / 317 s，不得写成「整卷/整动物」。",
+   "wrong_usage_consequence": "把 2 field / 317 s 的统计外推为整卷/整动物 ⇒ 过度泛化（清单 §3.1「单个 field ≠ 整卷」）",
+   "final": "1"
+  },
+  "microns_functional_sentinel_count": {
+   "key": "microns_functional_sentinel_count",
+   "value": "10383",
+   "value_kind": "point",
+   "unit": "samples",
+   "evidence_level": "measured",
+   "provenance": "data/m11_reference.csv::R-14（below-baseline 样本 10,383 / 80,000,000 = 0.01298%；主agent 与节点 B1 两侧独立一致）+ docs/m11_acceptance_master.md §3d/§3f-3",
+   "note": "**哨兵/below-baseline 样本计数（两侧一致：10,383）**；主agent 与 B1 对该计数**无分歧**，分歧在于**处置**（见 `microns_sentinel_mask_policy`）。**未处理 ≠ 无缺失**：任何钙域统计必须先声明处置口径并登记计数。",
+   "wrong_usage_consequence": "不登记就直接统计 ⇒ 「未处理」被读成「无缺失」（主agent 纪律）",
+   "final": "1"
+  },
+  "microns_functional_sentinel_fraction": {
+   "key": "microns_functional_sentinel_fraction",
+   "value": "0.0001298",
+   "value_kind": "point",
+   "unit": "",
+   "evidence_level": "measured",
+   "provenance": "10,383 / 80,000,000 = 0.0001298（= 0.01298%）；来源同 microns_functional_sentinel_count",
+   "note": "哨兵占比 **0.01298%**。**对 P5 (a)/(b) 的影响上界**：即使把这 0.01298% 的样本全部当作缺失或全部当作有效，任何**比例/中位数**类统计的变化 ≤0.0130 个百分点 ⇒ **低于任何合理带宽**（判据表带宽以 0.05 量级计）⇒ **该处置之争不阻塞 G1**；但对**空间成簇**类判据（P14 的像素/邻域统计、暗区偏置）可能更重要 ⇒ 仍需裁决（见 `microns_sentinel_mask_policy`）。",
+   "wrong_usage_consequence": "把「0.013% 的影响上界」当成「全里程实际影响」⇒ 在 P14 空间类判据上低估该处置的重要性",
+   "final": "1"
+  },
+  "microns_sentinel_mask_policy": {
+   "key": "microns_sentinel_mask_policy",
+   "value": "unresolved_conflict",
+   "value_kind": "enum",
+   "unit": "",
+   "evidence_level": "measured",
+   "provenance": "位置 A（主agent 2026-10-11 指令）：哨兵掩膜必须前置，`uint16>65000 ⇔ int16<0` 作缺失处理并登记；位置 B（docs/m11_acceptance_master.md §3f-3 + data/m11_reference.csv::R-14，节点 B1 推翻主agent）：**无掩膜，保留并登记**（空间成簇证据：3×3 邻域负值比例 p50=0.111 vs 随机 ≈0.000129 ⇒ ~860× 富集、孤立比例 0.000、位于暗区邻域均值≈395 vs 全局中位 1,953）",
+   "note": "**🔴 未决冲突（本节点不擅自裁决）**：同一文件的 §3f-3/R-14 与主agent 最新指令**方向相反**。本行 `final=0` ⇒ 依赖掩膜处置的钙域统计**不得定稿**。影响上界见 `microns_functional_sentinel_fraction`（≤0.0130 个百分点 ⇒ **不阻塞 G1**）。裁决路径（任选）：① 两侧（掩膜/不掩膜）各自复算钙域统计并给差异；② 采纳 B1 的空间成簇证据（若成立则掩膜会删掉真实暗区数据）；③ 主agent 明确指定一方并注明与 §3f-3 的关系。",
+   "wrong_usage_consequence": "静默采纳任一方而不登记 ⇒ 复现性受损；按主agent 指令掩膜但 B1 证据成立 ⇒ **删除真实数据**（暗区成簇样本），使钙域静默/活动比例产生系统性偏差",
+   "final": "0"
+  },
+  "microns_calcium_measured_population_anchors": {
+   "key": "microns_calcium_measured_population_anchors",
+   "value": "occupancy_Q=0.500|occupancy_H=0.613-0.642|transition_Q=0.400-0.438 Hz|transition_H=0.104-0.110 Hz|tau_native_unsmoothed=8.003-9.015 s",
+   "value_kind": "list",
+   "unit": "",
+   "evidence_level": "measured",
+   "provenance": "data/_mainagent_m11_same_source_band.csv + docs/m11_acceptance_master.md R10（Q 法：占用 0.500、转换 0.438–0.400 Hz、低态 dwell 中位 1.11–1.27 s；H 法 K=2：占用 0.613–0.642、转换 0.104–0.110 Hz、低态 dwell 中位 3.17–6.67 s）",
+   "note": "**这是 R9/R10 后钙域唯一已测的「率」类量**：群体级**状态转换率**（0.104–0.438 Hz）与占用比例、τ（8–9 s）。**它们不是逐细胞发放率** ⇒ **不得**用作 P5 (a) 的带（属 S 门/dwell 统计）。列在此处的目的：证明「钙域可测」与「(a) 的钙口径带已可得」是**两件事**。两法（Q/H）差异 **2.6–6×** ⇒ 必须并列。",
+   "wrong_usage_consequence": "把群体状态转换率当逐细胞中位率 ⇒ 量纲/口径双错；在 P5 内引用 ⇒ 越界（慢状态归 S 门）",
+   "final": "1"
+  },
+  "allen_2p_role_in_m11": {
+   "key": "allen_2p_role_in_m11",
+   "value": "cross_preparation_reference",
+   "value_kind": "enum",
+   "unit": "",
+   "evidence_level": "derived",
+   "provenance": "docs/m11_acceptance_master.md R6 第 3 条（活动通道改用 Allen BO 2p）+ R9 第 2 条（S 门/P14 目标带优先用 MICrONS 同源自建；**Allen 2p 降为跨制备参照**）",
+   "note": "口径分列第三列（主agent 要求「若还要用 Allen 2p 作跨制备参照，请同样分列」）：Allen BO 2p / NWB 在本门内**只作跨制备参照行**，**不是**目标带来源。本表已有的 `unresponsive_neurons_pct_all_areas`（23%，PMID 31844315）与 `rate_median_hz_literature_spike_band` 均属此类参照/文献档。",
+   "wrong_usage_consequence": "把 Allen 2p 的参照值当主目标 ⇒ 与 R9「同源优先」冲突（跨制备/跨品系/跨实验室）",
+   "final": "1"
+  },
+  "allen_bo_neuropixels_spike_rate_band": {
+   "key": "allen_bo_neuropixels_spike_rate_band",
+   "value": "unavailable",
+   "value_kind": "unavailable",
+   "unit": "Hz",
+   "evidence_level": "unavailable",
+   "provenance": "docs/m11_data_gate_report.md §1（Allen BO Neuropixels 仅完成目录枚举：569 对象 / 853.7 GB，未下载任何 session NWB）+ docs/m11_acceptance_master.md R3",
+   "note": "Allen BO Neuropixels（在体电生理、清醒）的**实测**率带当前不可得（仅目录）；补取路径 = 托管作业 J1（单 session NWB ≈100–250 MB，20–60 min）。与钙口径行分列（本行 = 电生理口径、在体、Allen 制备）。",
+   "wrong_usage_consequence": "把「目录可达」当成「率带可得」⇒ 未测被当成已测；仍以 Allen Cell Types **in vitro**（17.41/17.63 Hz）顶上 ⇒ 高 8.7–34.8×（见 proxy_* 行）",
+   "final": "0"
   }
  }
 }
