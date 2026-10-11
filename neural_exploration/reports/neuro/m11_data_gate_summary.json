@@ -1,12 +1,12 @@
 {
  "generated_by": "tools/validate_p11_data_gate.py",
- "generated_at": "2026-10-11T15:46:16Z",
+ "generated_at": "2026-10-11T17:31:49Z",
  "gate": "G2 (P1/P2 数据门)",
  "assertions": [
   {
    "assertion": "P1.1a 清单 51 源逐号在位",
    "ok": true,
-   "detail": "缺失=[]；n_rows=68（含补测源）"
+   "detail": "缺失=[]；n_rows=73（含补测源）"
   },
   {
    "assertion": "P1.1b verdict 词表合法",
@@ -116,7 +116,7 @@
   {
    "assertion": "P1.6 M11 产出路径全部落在 m11 命名空间（冻结件零修改）",
    "ok": true,
-   "detail": "越界=[] (n_items=236)"
+   "detail": "越界=[] (n_items=240)"
   },
   {
    "assertion": "P2.7a functional_series 采集参数读回（帧率/时长/平面/体素/FOV）",
@@ -294,12 +294,64 @@
    "detail": "n_chunks=8 union=[0, 248, 0, 440] series_dims=[248, 440]；像素层：**unresolved（形式未自证）**：`field_seg_masks` 为 `compressed_segmen"
   },
   {
+   "assertion": "P1.12a visual-coding-2p 探针行已追加（G1..G8，含 manifest/stimulus/npz/nwb/h5）",
+   "ok": false,
+   "detail": "G 行=['G1', 'G2', 'G3', 'G4', 'G5']"
+  },
+  {
+   "assertion": "P1.12b 2p 刺激条件表已落盘（stimulus_mappings.json）",
+   "ok": true,
+   "detail": "bytes=17907"
+  },
+  {
+   "assertion": "P1.13a 自建 dwell/τ 目标带已产出（≥2 个独立实验，B4 冻结管线）",
+   "ok": true,
+   "detail": "n_experiments=2 experiments=['577885923_events.npz', '593887846_events.npz']"
+  },
+  {
+   "assertion": "P1.13b 目标带含样本量门与两个独立口径（H 法/Q 法；φ 平滑/未平滑并列）",
+   "ok": true,
+   "detail": "dwell_med=2.74s τ_med=6.46s φ_sm=0.867 φ_un=0.153 bins=4070.5"
+  },
+  {
+   "assertion": "P1.13c 形状判据（重尾 ∧ 拒绝指数）在可评实验上成立；不可评者标 unavailable（非 fail）",
+   "ok": true,
+   "detail": "n_evaluable=2 heavy_tail=True ks_reject=True per_exp={\"577885923_events.npz\": {\"p90_over_median\": 2.25, \"ks_p\": 1.58329737699236e-97}, \"593887846_events.npz\": {\"p90_over_median\": 4.200000000000003, \"ks_p\": 1.11712"
+  },
+  {
+   "assertion": "P1.13d 容差来源预注册（B4 三项 + 本轮跨实验/跨口径实测）",
+   "ok": true,
+   "detail": "{\"method_ratio\": 3.87, \"cross_condition\": 6.9, \"tau_cross_condition\": 3.94, \"source\": \"B4 实测（口径差 3.87× / 跨条件 dwell 6.9× / τ 跨条件 3.94×）\", \"self_cross_experiment\": 2.0, \"self_method_H_vs_Q\": 1.0, \"note\""
+  },
+  {
+   "assertion": "P1.13e **未**沿用 ZAPBench 数值（26.5 s / 37.18 s 不得出现在带中）",
+   "ok": true,
+   "detail": "dwell_med=2.741 τ_med=6.456（ZAPBench 26.5/37.18 已被排除）"
+  },
+  {
+   "assertion": "P1.13f 帧率标注 NEEDS_VERIFY（NWB 读回受阻）+ 11 Hz 敏感性并列",
+   "ok": true,
+   "detail": "**NEEDS_VERIFY**（NWB `imaging_rate` 因网络未读回；文件帧数÷30.9 Hz = 61.4 min 属合理 session 长度，÷11 Hz ="
+  },
+  {
+   "assertion": "P1.14 S 门判据预注册 CSV（形状/存在性/相对尺度 + 样本量门 + 双估计器断言）",
+   "ok": true,
+   "detail": "n_rows=12"
+  },
+  {
+   "assertion": "P1.15 长作业登记表（命令行+日志+产物+完成标记）在位",
+   "ok": true,
+   "detail": "jobs=[('J1', 'background_self_run'), ('J2', 'request_hosted'), ('J3', 'request_hosted')]"
+  },
+  {
    "assertion": "DET 复跑 verdict 一致（确定性）",
    "ok": true,
    "detail": "[{\"source_id\": \"2\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"3\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F7\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F8\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F9\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}]"
   }
  ],
- "failures": [],
+ "failures": [
+  "P1.12a visual-coding-2p 探针行已追加（G1..G8，含 manifest/stimulus/npz/nwb/h5）"
+ ],
  "unavailable": [
   "**细胞数 / 突触数（MICrONS）= 未测**（`unavailable`，**不得写 0、不得算负结果**）：权威逐细胞表 `node_data_v1.pkl`（294.6 MB）与逐对突触表 `edge_data_v1.pkl`（201.5 MB）本轮未取（DQ-4）；论文档锚（literature）= '>200,000 cells / 0.5 billion synapses'（Nature 2025）；Allen 侧可得锚 = Cell Types 1,920 标本（measured）",
   "MICrONS 逐细胞 ΔF/F 与 ROI 轨迹：仅存在于 v8 DataJoint MySQL 数据库（103.8 GB docker tar 或 116.2 GB SQL dump）→ 本轮未取（超预算）⇒ unavailable（非 0、非未命中）",
@@ -310,16 +362,16 @@
   "MICrONS minnie CAVE 表 API（info/materialize）：404 / 503 → REACHABLE_NO_DATA / BLOCKED"
  ],
  "P1": {
-  "verdict": "pass",
-  "n_assertions": 38,
-  "n_failed": 0
+  "verdict": "fail",
+  "n_assertions": 48,
+  "n_failed": 1
  },
  "P2": {
   "verdict": "pass",
   "n_assertions": 20,
   "n_failed": 0
  },
- "G2_gate": "pass",
+ "G2_gate": "fail",
  "determinism_check": {
   "note": "复跑固定子集（#2/#3/F7/F8/F9），比对 verdict 是否一致",
   "comparisons": [

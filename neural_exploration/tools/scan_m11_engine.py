@@ -1499,6 +1499,149 @@ def _off_equiv_quant() -> dict:
                      "⇒ 本节点早期'单 ULP FP 累加序'主张已**撤回**")
 
 
+def _on_path_activity_stats(t5: dict) -> dict:
+    """**ON 档（机制开启）活动统计单列**（RF-M11-K §二.2）：**不属于 G0**。
+
+    ON 档与 M10（机制全关）大幅不同是**预期的**（四亚型 + 层流 + 慢变量已启用）⇒
+    ON-vs-M10 **本来就是错的参照**；此表仅供 G1/P5 标定与 S/P14 目标带对照取用。
+    """
+    return dict(
+        in_g0=False,
+        label="**不属于 G0**；属 G1/P5 标定与 S/P14 生理目标对照",
+        why_not_in_g0="ON 档机制开启，与 M10（机制全关）的差异是机制效应的**预期后果**，"
+                      "不是引擎对齐问题；ON 档的可信度由 G1/P5 的判据带与六条硬门把关",
+        per_density=[dict(target_hz=p.get("target_hz"), achieved_hz=p.get("achieved_hz"),
+                          silent_frac_on=p.get("silent_frac_on"),
+                          silent_frac_m10=p.get("silent_frac_m10"),
+                          silent_diff_vs_m10_pp=(None if p.get("silent_frac_on") is None
+                                                 else abs(p["silent_frac_on"]
+                                                          - p.get("silent_frac_m10", 0.0)) * 100),
+                          ks_on_vs_m10=p.get("ks_on_vs_m10"),
+                          pop_hz_on=p.get("m11_on_pop_hz"))
+                     for p in t5.get("points", [])],
+        m9_e_m9_3_note="M9 的 E-M9-3（'判据级对齐必须在目标发放密度下复测'）**的生理侧结论仍待 G1/P5 给出**；"
+                       "本节点只能给'引擎在目标密度下与 M10 的自洽'（= (b)/(g) 的实际内容）")
+
+
+def _scope_declaration() -> dict:
+    """判据范围声明（RF-M11-K §二.2）：门链分工，避免"判据名实不符"。"""
+    return dict(
+        g0=dict(scope="**引擎对齐**（架构/语义/确定性/编码路径）",
+                criteria=["(a) 解析+链式延迟语义", "(b) 关闭态等价（off ≡ M10 逐位）",
+                          "(c) 逐类电导积分双估计器", "(d) 确定性",
+                          "(e) 分段可组合性 k=1/2/3/5/10（step/chunk）",
+                          "(f) 同步发放判别 + 逐类落槽",
+                          "(g) = (b) 在 3 档密度下复测（继承）",
+                          "(h) 跨进程逐位",
+                          "ext: 关闭态等价 / 四槽编码断言 / 逐机制阳性对照 / 无泄漏"],
+                does_not_claim=["**不检验** ON 档活动统计是否与数据一致",
+                                "**不检验** 中位率/静默带是否落生理带",
+                                "**不检验** 慢状态结构（dwell/τ）"]),
+        g1_p5=dict(scope="**生理工作点与判据带**（含「目标密度下的活动统计对齐」）",
+                   owner="M11 B3（判据带已建：(a)(b) 带 + 六条硬门）",
+                   carries=["E-M9-3 的**生理侧**结论", "中位率/静默/自持比/弹性/E-I 比"]),
+        s_p6=dict(scope="**慢状态机制门**（dwell/τ 与目标带同阶 + 消融归属）",
+                  target_band="主agent R10：原生未平滑 τ = 8.0–9.0 s、H 法 dwell 3.2–6.7 s、p90 32–34 s"),
+        p14=dict(scope="**活动金标准**（MICrONS 同源四指标对照）"))
+
+
+def _root_cause_map(crit: dict, ext: dict) -> dict:
+    """**顶层**根因映射（RF-M11-I/J 第 3 条：要求顶层可见，避免遗漏）。"""
+    out = {k: crit[k].get("root_cause") for k in crit if crit[k].get("root_cause")}
+    for k in ("off_state_equivalence",):
+        if ext.get(k, {}).get("root_cause"):
+            out[k] = ext[k]["root_cause"]
+    return out
+
+
+def _fix_map(crit: dict, ext: dict) -> dict:
+    """**顶层**修法映射；凡"改的是参照/夹具/状态词表而非引擎"者，value 内已显式标注。"""
+    out = {k: crit[k].get("fix") for k in crit if crit[k].get("fix")}
+    for k in ("off_state_equivalence",):
+        if ext.get(k, {}).get("fix"):
+            out[k] = ext[k]["fix"]
+    return out
+
+
+def _flip_log(crit: dict, ext: dict) -> list:
+    """fail→pass 翻转登记（每项含：改前值 / 改后值 / 操作类别 / 精确操作 / 证据 / 判据是否变）。"""
+    b = crit.get("b_state_fraction", {}).get("detail", [])
+    diag = crit.get("b_state_fraction", {}).get("low_density_diagnosis", {})
+    out = []
+    if b and isinstance(b, list):
+        before = [dict(target_hz=x.get("target_hz"), silent_diff_pp=14.0 if x.get("target_hz") == 0.5
+                       else (3.0 if x.get("target_hz") == 2.0 else 0.25),
+                       ks_p=6.8e-4 if x.get("target_hz") == 0.5 else (0.511 if x.get("target_hz") == 2.0
+                                                                     else 1.0),
+                       bit_identical=False if x.get("target_hz") in (0.5, 2.0) else None)
+                  for x in b]
+        out.append(dict(
+            criterion="criteria.b_state_fraction (0.5/2/17.4 Hz 三档)",
+            before=before,
+            after=[dict(target_hz=x.get("target_hz"), silent_diff_pp=x.get("silent_diff_pp"),
+                        ks_p=x.get("ks_p"), bit_identical=x.get("bit_identical"))
+                   for x in b],
+            category="**(b) 参照替换（合法口径修正）**：内核实现 → 同一个内核的**语义良定义配置**",
+            exact_operation=("`tools/scan_m11_engine.py::t5_density`：M10 参照臂 `delay_bins` "
+                             "(40,60,80) → (40,)；M11 被测臂同步 → (40,)"),
+            why_old_reference_invalid=("三延迟档下冻结件丢弃**全部**外部事件（E-M10-2）⇒ 参照侧输入"
+                                       "与 M11 不同 ⇒ 不是「引擎对齐」比较；低密度档受害最深"
+                                       "（外部驱动占比 0.333 vs 高密度 0.008）"),
+            evidence=dict(source="data/m11_density_reference_diag.json",
+                          sha256=diag.get("sha256"),
+                          invalid_arm_silent_diff_pp=diag.get("invalid_arm_silent_diff_pp"),
+                          valid_arm_silent_diff_pp=[p.get("valid_silent_diff_pp")
+                                                    for p in diag.get("per_point", [])],
+                          external_drive_share=diag.get("external_drive_share"),
+                          m10_ignores_ext=[p.get("m10_ignores_ext") for p in diag.get("per_point", [])]),
+            criterion_changed=False,
+            criterion_unchanged_detail=("静默定义=逐神经元率<0.5 Hz **未变**；阈值 1 pp / KS 0.05 **未变**；"
+                                        "N=400、T=4000、事件表(rng(11), T_table=20000)、无 settle **未变**；"
+                                        "比较对象（逐神经元率分布）**未变**；"
+                                        "结果 0.000 pp / p=1.000 **严于**阈值 ⇒ 非放宽")))
+    if ext.get("off_state_equivalence", {}).get("quantification"):
+        q = ext["off_state_equivalence"]["quantification"]
+        out.append(dict(
+            criterion="extensions.off_state_equivalence",
+            before="三延迟档**含**外部事件臂 = 非逐位（102/200 神经元、max|Δcounts|=3、总脉冲 +2.54%）",
+            after="三延迟档**纯网络**臂 = 逐位（0/200 神经元、max|Δcounts|=0、Δv=0）",
+            category="**比较对象变更（无效比较 → 有效且更严）**",
+            exact_operation=("T6 的等价臂由「三延迟档含 ext」改为「三延迟档无 ext」，"
+                             "并新增「密集×三延迟档（无 ext）」逐位臂；含 ext 情形单列为 E-M10-2 诊断臂"),
+            why_old_reference_invalid=("同一原因：该配置下 M10 自身丢驱动 ⇒ 输入语义不成立，"
+                                       "不构成等价比较（差异为语义级，非 FP 累加序）"),
+            evidence=q,
+            criterion_changed=False,
+            criterion_unchanged_detail="判据仍为 `np.array_equal` **无容差**；未新增任何计数容差"))
+    if crit.get("e_segment_composability", {}).get("detail", {}).get("step"):
+        out.append(dict(
+            criterion="criteria.e_segment_composability",
+            before="step 口径 k=2 → 172 脉冲 / 11 个神经元计数不同；k=5 → 165 / 28 个不同",
+            after="step 与 chunk 两口径 k=1/2/3/5/10 全部逐位相同（173/173/173/173/173）",
+            category="**引擎侧修复**（继承缺陷 E-M10-1）",
+            exact_operation=("`src/mouse_cortex_engine.py` L211/L244 新增 `ext_abs_index`；"
+                             "L707–715 改为绝对步号取外部事件；L939 新增分段适用域守卫"),
+            why_old_reference_invalid=None,
+            evidence=dict(minrepro="data/m11_minrepro_delivery.json",
+                          matrix="data/m11_compose_matrix.json", k_list=[1, 2, 3, 5, 10]),
+            criterion_changed=False,
+            criterion_unchanged_detail="判据仍为 `tot==base ∧ np.array_equal(cnt, base)`（无容差）"))
+    if crit.get("f_synchronous_firing", {}).get("detail", {}).get("m11_ok"):
+        out.append(dict(
+            criterion="criteria.f_synchronous_firing",
+            before="`m11_ok=False`（该臂把 cls=2/3 喂给 n_ch=2 的引擎 ⇒ 配置级守卫抛 ValueError）",
+            after="`m11_ok=True`（M9 抛错 ∧ M11 正常 ∧ 逐类落槽 rel_diff 全 0）",
+            category="**夹具臂定义修复**（引擎未改；该臂按四态纪律原为 `invalid`）",
+            exact_operation=("`tools/scan_m11_engine.py::t2_sync` 改为按臂选定编码"
+                             "（M9/M10/冻结档 → E/I 两槽；修正档 → 四槽）"),
+            why_old_reference_invalid=None,
+            evidence=dict(guard_line="src/mouse_cortex_engine.py L450 (_finalize_no_ring)",
+                          slot_check="data/m11_slot_assertions.json"),
+            criterion_changed=False,
+            criterion_unchanged_detail="判据与阈值未改（M9 抛错 ∧ M11 不抛 ∧ 逐类落槽 ≤2%）"))
+    return out
+
+
 def _load_density_diag() -> dict:
     """读回 (b)/(g) 的参照诊断（低密度档最小复现 + 量化）。"""
     path = os.path.join(DATA_DIR, "m11_density_reference_diag.json")
@@ -1587,13 +1730,20 @@ def build_summary(res: dict) -> dict:
             per_current={k: {kk: vv for kk, vv in v.items() if kk.startswith("err")}
                          for k, v in t1.items() if isinstance(v, dict) and k.startswith("I_")}))
     pb = [p.get("crit_b_pass") for p in t5.get("points", [])]
+    _on_stats = _on_path_activity_stats(t5)
     crit["b_state_fraction"] = dict(
         reference=("**M10 修正内核** `src/larval_zf_engine.py::LarvalZFEngine`（同网络/同事件表/同 seed；"
                    "M11 取机制全关 + REF_FROZEN 档 = `off_frozen` 臂）；**单延迟档（40）** —— "
-                   "冻结件外部事件语义良定义的唯一配置。静默定义 = 逐神经元率 < 0.5 Hz（与 M10 P5 同定义）；"
-                   "参照侧同一量与两侧样本量见 detail"),
+                   "冻结件外部事件语义良定义的唯一配置（`len_rings==1 ⇒ ring_flat is not None`）。"
+                   "**口径**：N=400 / indegree=20 / seed=0 / T=4000 步（=0.2 s，dt=0.05 ms）/ **无 settle**（状态由 reset 决定）"
+                   "/ 事件表 = rng(11)、T_table=20000、λ 由 bias_scale 标定（0.8145/0.9155/4.0938）而事件率固定 2 Hz/神经元、"
+                   "幅度 U[17,23]、syn_class 全 0 / 静默定义 = 逐神经元率 < 0.5 Hz（与 M10 P5 同定义）；"
+                   "参照命令：`scan_m11_engine.py --which t5`；参照侧同一量与两侧样本量见 detail"),
         **st(bool(pb) and all(pb), bool(pb),
-             "静默比差 <1pp 且发放率分布 KS p>0.05（在 3 档目标密度下）"),
+             "**(b) = 关闭态等价（自洽检查）**：新引擎**机制全关** ⇒ 与 M10 冻结内核**逐位一致**"
+             "（并由此平凡地满足 静默比差 <1 pp ∧ KS p>0.05）。"
+             "**本判据不检验 ON 档（机制开启）的活动统计**——ON vs M10 的差异是预期的（见 "
+             "`on_path_activity_stats`），不属 G0。"),
         detail=[dict(target_hz=p.get("target_hz"), achieved_hz=p.get("achieved_hz"),
                      silent_frac_m11=p.get("silent_frac_off"),
                      silent_frac_m10=p.get("silent_frac_m10"),
@@ -1604,6 +1754,29 @@ def build_summary(res: dict) -> dict:
                      spk_m11=p.get("m11_off_spk"), spk_m10=p.get("m10_spk"),
                      bit_identical=p.get("off_vs_m10_bit_identical"))
                 for p in t5.get("points", [])],
+        causal_correction=("**对 RF-M11-K §一 归因的更正（口径纪律）**：RF-M11-K 认为 (b) 的翻转是"
+                           "「引擎修复（使 off 档与 M10 逐位一致）」。**实测否证**：`ext_abs_index`（本节点唯一"
+                           "影响引擎行为的修复）对 (b) 的臂**完全没有影响** —— 该臂是**单次** `run(4000)` 调用，"
+                           "此时 `abs0=0`、`_eid = abs0 + s ≡ s`，与冻结件索引**逐位等价**；"
+                           "实测两种取值下逐神经元计数**完全相同**（单延迟档 102=102、三延迟档 127=127）。"
+                           "⇒ (b) 翻转的**唯一**原因是**参照臂配置修正**（`delay_bins` 三延迟档→单延迟档）；"
+                           "而三延迟档下 off 档与 M10 不逐位，是因为**M10 侧丢弃全部外部事件**（E-M10-2），"
+                           "**不是 M11 引擎缺陷**。（RF-M11-K 的**观察**是对的：旧臂 off ≠ M10；"
+                           "但**归因**应为'参照侧输入缺失'。）"),
+        root_cause=("**(b) 的历史失败来自「参照臂选错」，不是引擎缺陷、不是标定问题。** "
+                    "那一版参照侧 = M10 内核跑**三延迟档**网络；冻结件在 ≥2 延迟组下"
+                    "（`ext_active = … and ring_flat is not None`，`ring_flat = rings[0] if len_rings==1 "
+                    "else None`）**丢弃全部外部事件**（E-M10-2，已验证 M10 含事件脉冲数 == 不含事件脉冲数）。"
+                    "而低密度档的发放几乎全部由外部驱动贡献 ⇒ 参照侧静默比被抬高 14 pp 量级。"
+                    "实测其幅度随「外部驱动占比」单调下降：占比 0.333/0.076/0.008 ⇒ Δ静默 "
+                    "14.5/1.75/0.25 pp（与观测的 14.0/3.0/0.25 pp 同序）。"),
+        fix=("**(b) 未改引擎、未改判据/阈值/样本量/静默定义**，只做了一件可指名的操作："
+             "**把参照臂从「M10@三延迟档」换为「M10@单延迟档(40)」** —— 单延迟档是冻结件外部事件语义"
+             "良定义的唯一配置（`len_rings==1 ⇒ ring_flat is not None`）。操作记录："
+             "`tools/scan_m11_engine.py::t5_density` 内 M10 参照臂的 `delay_bins` 由 (40,60,80) 改为 (40,)；"
+             "M11 被测臂同步改为单延迟档以便逐位比对；另新增 `tools/diag_m11_density_reference.py` "
+             "给出翻转的量化证据。**判据本身仍为** `静默差 < 1 pp ∧ KS p > 0.05`："
+             "修正后实测 **0.000 pp / p=1.000**（比阈值更严），故不属「放宽」。"),
         low_density_diagnosis=_load_density_diag(),
         invalid_arm_note=("**早期失败臂（14.0 pp / KS p=6.8e-4）参照选错**：该臂参照侧 M10 用了"
                           "**三延迟档** ⇒ 按 E-M10-2 **丢弃全部外部事件**，而低密度档的发放主要由外部驱动"
@@ -1611,8 +1784,14 @@ def build_summary(res: dict) -> dict:
                           "0.076→1.75 pp、0.008→0.25 pp）。改用单延迟档参照后三档 "
                           "**0.000 pp / KS p=1.000**（脉冲总数逐位相同）⇒ (b) 的失败 = "
                           "**invalid（参照无效）**，不是引擎缺陷、也不是标定问题；修正参照后 = `pass`"),
+        on_path_activity_stats=_on_stats,
         scope_note=("(b) 是**引擎对齐**判据（M11 vs M10 同配置逐位），**不是**生理标定判据；"
-                    "'网络静默比是否与 MICrONS/Allen 数据一致'属 G1/P5 标定，不在 G0 内"))
+                    "'网络静默比是否与 MICrONS/Allen 数据一致'属 G1/P5 标定，不在 G0 内。"
+                    "**判据名实对齐声明**：本判据实际检验的是"
+                    "「机制全关 ⇒ 与 M10 逐位一致（关闭态等价）」，**不是**「目标密度下活动统计对齐」——"
+                    "后者按门链分工由 **G1/P5** 承担（B3 的 (a)(b) 判据带 + 六条硬门），"
+                    "S/P14 再做**目标带**对照。M9 E-M9-3（'对齐必须在目标密度下复测'）的"
+                    "**生理侧**结论因此仍待 G1/S 给出，本节点不代填。"))
     crit["c_mechanism_metrics"] = dict(
         reference="逐类电导积分的闭式重算（由 spike 时刻 + 边表 + 逐类 τ 独立算出，含外部事件）",
         **st(t7.get("dual_estimator_pass"), bool(t7),
@@ -1668,10 +1847,17 @@ def build_summary(res: dict) -> dict:
                    "（单延迟档）。**独立锚点信息**另有：Allen `ef__avg_firing_rate` n=1808，"
                    "median 17.413 / p10 8.42 / p25 11.84 / p75 35.59 / p90 81.76 / max 261.21 Hz"
                    "（**口径受限 NEEDS_VERIFY**：表征协议均值率 ≠ 自发率）；"
-                   "MICrONS 钙域推断密度锚 = `unavailable`（B1 L11.3/L11.5 口径未决）"),
+                   "MICrONS 钙域推断密度锚 = `unavailable`（B1 L11.3/L11.5 口径未决）。"
+                   "**口径与 (b) 完全一致**（N=400/indegree=20/seed=0/T=4000/无 settle/同一事件表 rng(11)、T_table=20000）；"
+                   "命令同 `--which t5`"),
         **st(t5.get("crit_g_pass"), bool(t5.get("points")),
              "3 档密度（含 Allen 中位带；口径受限）下的 (a)–(c) 类对齐复测；"
              "MICrONS 钙域密度锚 = unavailable（B1 L11.3/L11.5 未决）⇒ 如实登记、不计 fail"),
+        root_cause=("**(g) 与 (b) 同源（继承）**：(g) 即在 3 档目标密度下复测 (a)–(c)，其参照即 (b) 的参照，"
+                    "故历史失败与 (b) 同因（参照臂 M10@三延迟档丢驱动）。独立于 (b) 的锚点信息"
+                    "（Allen 分位 / MICrONS 钙域 unavailable）不受影响。"),
+        fix=("与 (b) 同一操作：参照臂改为单延迟档；判据未改。**由 (b) 继承**已在 "
+             "`detail.inheritance_note` 显式写出。"),
         detail=dict(density_anchored_points=t5.get("density_anchored_points"),
                     anchors=t5.get("anchors", {}).get("allen"),
                     inherited_from_b=bool(t5.get("points")),
@@ -1751,6 +1937,10 @@ def build_summary(res: dict) -> dict:
                 engine_version="m11e-1.0-4slot+laminar-delay-pack+slowvar",
                 criteria=crit, extensions=ext,
                 gate_pass_condition=gate_pass_condition,
+                scope_declaration=_scope_declaration(),
+                root_cause=_root_cause_map(crit, ext),
+                fix=_fix_map(crit, ext),
+                flip_log=_flip_log(crit, ext),
                 discoveries=[dict(
                     id="E-M9-4",
                     title="冻结件点核**同一参数位的双路径解释不一致**（上游冻结件第 5 类缺陷）",

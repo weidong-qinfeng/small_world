@@ -212,6 +212,27 @@ EXTRA = [
               "&prefix=aggregates/")),
     dict(sid="F16", name="[补测] Allen synphys 桶对象级 HEAD", category="allen_synphys", kind="bucket_head",
          url="https://allen-synphys.s3.amazonaws.com/"),
+    dict(sid="G1", name="[RF-M11-C] Allen BO 2p manifest.json", category="allen_2p", kind="info",
+         url="https://allen-brain-observatory.s3.amazonaws.com/visual-coding-2p/manifest.json"),
+    dict(sid="G2", name="[RF-M11-C] 2p _manifest.json（内部清单）", category="allen_2p", kind="info",
+         url="https://allen-brain-observatory.s3.amazonaws.com/visual-coding-2p/_manifest.json"),
+    dict(sid="G3", name="[RF-M11-C] 2p stimulus_mappings.json（刺激条件表）", category="allen_2p", kind="info",
+         url="https://allen-brain-observatory.s3.amazonaws.com/visual-coding-2p/stimulus_mappings.json"),
+    dict(sid="G4", name="[RF-M11-C] 2p ophys_experiments.json 前缀(Range 0-65535)", category="allen_2p", kind="obj",
+         byte_range=(0, 65535),
+         url="https://allen-brain-observatory.s3.amazonaws.com/visual-coding-2p/ophys_experiments.json"),
+    dict(sid="G5", name="[RF-M11-C] 2p events.npz 最小件（913 KB 全量）", category="allen_2p", kind="obj",
+         per_timeout=120,
+         url="https://allen-brain-observatory.s3.amazonaws.com/visual-coding-2p/ophys_experiment_events/593887846_events.npz"),
+    dict(sid="G6", name="[RF-M11-C] 2p events.npz 18-cell 件（16.4 MB，Range 0-1048575）", category="allen_2p", kind="obj",
+         byte_range=(0, 1048575), per_timeout=120,
+         url="https://allen-brain-observatory.s3.amazonaws.com/visual-coding-2p/ophys_experiment_events/638871662_events.npz"),
+    dict(sid="G7", name="[RF-M11-C] 2p ophys_experiment_data/*.nwb HEAD(Range 0-1023)", category="allen_2p", kind="obj",
+         byte_range=(0, 1023), per_timeout=120,
+         url="https://allen-brain-observatory.s3.amazonaws.com/visual-coding-2p/ophys_experiment_data/497256116.nwb"),
+    dict(sid="G8", name="[RF-M11-C] 2p ophys_experiment_analysis/*.h5 HEAD(Range 0-1023)", category="allen_2p", kind="obj",
+         byte_range=(0, 1023), per_timeout=120,
+         url="https://allen-brain-observatory.s3.amazonaws.com/visual-coding-2p/ophys_experiment_analysis/497256116_three_session_B_analysis.h5"),
     dict(sid="F17", name="[补测] node_and_edge_properties/v1 前缀", category="microns_functional", kind="list",
          url=(f"{S3_BOSS}/?list-type=2&delimiter=/&max-keys=25&prefix=iarpa_microns/minnie/functional_data/"
               "functional_connectomics/node_and_edge_properties/v1/")),
@@ -408,9 +429,48 @@ def main():
     ap.add_argument("--timeout", type=float, default=15.0, help="单源硬超时（s，默认 15）")
     ap.add_argument("--passes", type=int, default=2, help="每源探测次数（默认 2，用于 HTTP 码稳定性）")
     ap.add_argument("--out", default=CSV_OUT)
+    ap.add_argument("--extras-append", action="store_true",
+                    help="只探 --only 指定的源并**追加**到全量 CSV（不重写既有行）")
     args = ap.parse_args()
 
     os.makedirs(PROBE_RAW, exist_ok=True)
+    if args.extras_append:
+        # 只探指定新源，并**追加**到既有全量 CSV（保留原有 51+F 行；用于 RF-M11-C 之类的新增源）
+        os.makedirs(PROBE_RAW, exist_ok=True)
+        todo = parse_only(args.only or "G", SOURCES + EXTRA)
+        rows = []
+        with open(CSV_OUT, "a", newline="", encoding="utf-8") as f:
+            w = csv.DictWriter(f, fieldnames=CSV_FIELDS)
+            for src in todo:
+                st = src.get("per_timeout", args.timeout)
+                r0 = _run_curl(src["url"], timeout=st, byte_range=src.get("byte_range"),
+                               max_filesize=src.get("max_filesize"))
+                r1 = _run_curl(src["url"], timeout=st, byte_range=src.get("byte_range"),
+                               max_filesize=src.get("max_filesize"))
+                v, note = classify(src, r0)
+                v1, n1 = classify(src, r1)
+                if v1 != v:
+                    note += "；⚠️ 两次不一致（pass2=%s）" % v1
+                note += "；pass1_code=%s pass2_code=%s；appended_by=--extras-append" % (r0["code"], r1["code"])
+                row = dict(source_id=src["sid"], source=src["name"], category=src["category"], kind=src["kind"],
+                           url=src["url"], http_code=r0["code"], http_code_pass2=r1["code"],
+                           bytes=r0["nbytes"], content_type=r0["ct"], time_total_s=round(r0["t"], 3),
+                           speed_Bps=int(r0["speed"]), verdict=v, note=note)
+                w.writerow(row)
+                f.flush()
+                rows.append(row)
+                logf = open(LOG_OUT, "a", buffering=1)
+                logf.write("[append] %-4s %-52s %-18s HTTP %-4s %9d B  %s\n"
+                           % (src["sid"], src["name"][:52], v, r0["code"], r0["nbytes"], note[:90]))
+                logf.write("ALL_DONE %s\n" % datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"))
+                logf.close()
+                if r0["body_path"] and os.path.exists(r0["body_path"]):
+                    os.remove(r0["body_path"])
+                if r1["body_path"] and os.path.exists(r1["body_path"]):
+                    os.remove(r1["body_path"])
+        print("appended %d rows to %s" % (len(rows), CSV_OUT))
+        print(json.dumps({r["verdict"]: sum(1 for x in rows if x["verdict"] == r["verdict"]) for r in rows}))
+        return 0
     if args.only is not None and os.path.abspath(args.out) == os.path.abspath(CSV_OUT):
         print("拒绝执行：--only 会覆盖全量 m11_source_reachability.csv；请显式指定 --out（如 /tmp/x.csv）",
               file=sys.stderr)

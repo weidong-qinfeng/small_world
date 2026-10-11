@@ -1,0 +1,14 @@
+# M11 S 门（慢状态机制门）判据**预注册**（RF-M11-C §四；只允许新增行；**形状/存在性/相对尺度**为主，绝对 dwell 对齐降为比值口径）
+crit_id,criterion,form,threshold,sample_size_gate,status,source,note
+S-1,状态占用非退化,occupancy_low ≥0.05 ∧ occupancy_high ≥0.05（0.914 s 箱）,0.05 / 0.05,n_bins(0.914s) ≥65（valid）；≥130（形状类）,preregistered,RF-M11-C §四.1①,同时报占用差；恒单态网络必然不通过
+S-2,转换存在,transition_rate_hz > 0 且 **每状态完整 bout 数 ≥10**,>0 / ≥10,bout 数 <10 ⇒ 该子判据 unavailable（不得记 pass/fail）,preregistered,RF-M11-C §四.1②,bout 类指标只作描述性输出，**不进 Pass 语义**（RF-M11-4）
+S-3,低态 dwell 重尾（拒绝指数）,p90/中位 ≥2 **且** KS vs 指数 p<0.05,p90/median ≥2；KS p<0.05,n_runs ≥5（KS 可算）；推荐 ≥30；n_bins ≥130,preregistered,RF-M11-C §四.1③,本轮实测：1-cell 件 low 态 runs=1–4 ⇒ 该判据 **unavailable**（已如实登记）
+S-4,慢变量领先群率,去趋势后 |corr| ≥0.30 **且** lead-lag 峰值 lag>0（机制领先）,0.30 / lag>0,相关对样本 ≥130 bins,preregistered,RF-M11-C §四.1④,同相/滞后 ⇒ 不是驱动源
+S-5,绝对尺度（**比值口径**）,报告 τ_model / τ_target_band 与 dwell 比值；**不**报绝对秒数对齐,按容差带（见 S-6）,两侧均 ≥130 bins,preregistered,RF-M11-C §四.2,**禁止**与 ZAPBench 26.5 s / 37.18 s 直接比较（跨物种+跨帧率+跨口径）
+S-6,容差来源（预先写清）,B4 实测：口径差 3.87×（H/Q）｜跨条件 dwell 6.9×｜τ 跨条件 3.94×；**本轮自建带另给**跨实验/跨口径实测容差,以实测容差为带宽下限,—,preregistered,B4（m10_imaging_dwell_reference.json）+ 本轮 m11_dwell_reference.json,带不得窄于目标数据自身离散度（RF-M11-2 教训）
+S-7,样本量硬门（每行必报）,n_frames<65 ⇒ invalid；形状判据 ≥130；BIC 选 K ≥500,65 / 130 / 500,**本行即门**,preregistered,RF-M11-C §四.3 + 冻结模块 sample_size_gate(),冻结模块内置，直接复用
+S-8,双估计器一致性断言（必过）,① 率：均值法 vs 总量法 ≤2%（冻结模块内置 A3 断言）② dwell：H 法 vs Q 法并列 ③ τ：φ_smoothed vs φ_unsmoothed 并列,①≤2%；②③并列报告（不一致须登记，不得择一）,—,preregistered,主 agent 纪律（M10 三次同类事故）+ 冻结模块内置断言,**本轮实测警示**：φ_smoothed≈0.880 vs φ_unsmoothed≈0.179 ⇒ 平滑把 φ 抬高 4.9× ⇒ τ 只能作**粗粒度**指标（与 B4 honest_limit 一致）
+S-9,no-go 对照（M10 失效级复现）,把 M10 的 M-1/M-3 语义在皮层网络复现 ⇒ **应当仍 bout=0**；给出非零 ⇒ 该轮 invalid,必须为 0,同主协议,preregistered,清单 §4.2 #6,判据级对齐纪律的机制门版本
+S-10,基线不达标断言,每轮先跑无机制基线臂并断言其**不达标**；基线已达标 ⇒ effective 判定无判别意义,基线不达标,同主协议,preregistered,清单 §4.2 #7（A8 教训）,
+S-11,消融致其消失,关闭该机制 ⇒ 回到单态/退化（且关闭态与 G0 关闭态等价）,退化,同主协议,preregistered,清单 §4.2 #5③,
+S-12,dwell 分辨率地板登记,dwell 中位 ≤1.5 帧 ⇒ **触地板、无分辨力**：只作'未产生慢状态'的旁证,≤1.5×(0.914 s),—,preregistered,冻结模块 dwell_resolution_floor(),**本轮实测**：alt(11 Hz) 口径下 1-cell 件 dwell 中位 = 0.0 ⇒ 已触地板（不得当倍差引用）

@@ -40,9 +40,9 @@
    }
   },
   "b_state_fraction": {
-   "reference": "**M10 修正内核** `src/larval_zf_engine.py::LarvalZFEngine`（同网络/同事件表/同 seed；M11 取机制全关 + REF_FROZEN 档 = `off_frozen` 臂）；**单延迟档（40）** —— 冻结件外部事件语义良定义的唯一配置。静默定义 = 逐神经元率 < 0.5 Hz（与 M10 P5 同定义）；参照侧同一量与两侧样本量见 detail",
+   "reference": "**M10 修正内核** `src/larval_zf_engine.py::LarvalZFEngine`（同网络/同事件表/同 seed；M11 取机制全关 + REF_FROZEN 档 = `off_frozen` 臂）；**单延迟档（40）** —— 冻结件外部事件语义良定义的唯一配置（`len_rings==1 ⇒ ring_flat is not None`）。**口径**：N=400 / indegree=20 / seed=0 / T=4000 步（=0.2 s，dt=0.05 ms）/ **无 settle**（状态由 reset 决定）/ 事件表 = rng(11)、T_table=20000、λ 由 bias_scale 标定（0.8145/0.9155/4.0938）而事件率固定 2 Hz/神经元、幅度 U[17,23]、syn_class 全 0 / 静默定义 = 逐神经元率 < 0.5 Hz（与 M10 P5 同定义）；参照命令：`scan_m11_engine.py --which t5`；参照侧同一量与两侧样本量见 detail",
    "status": "pass",
-   "note": "静默比差 <1pp 且发放率分布 KS p>0.05（在 3 档目标密度下）",
+   "note": "**(b) = 关闭态等价（自洽检查）**：新引擎**机制全关** ⇒ 与 M10 冻结内核**逐位一致**（并由此平凡地满足 静默比差 <1 pp ∧ KS p>0.05）。**本判据不检验 ON 档（机制开启）的活动统计**——ON vs M10 的差异是预期的（见 `on_path_activity_stats`），不属 G0。",
    "detail": [
     {
      "target_hz": 0.5,
@@ -90,6 +90,9 @@
      "bit_identical": true
     }
    ],
+   "causal_correction": "**对 RF-M11-K §一 归因的更正（口径纪律）**：RF-M11-K 认为 (b) 的翻转是「引擎修复（使 off 档与 M10 逐位一致）」。**实测否证**：`ext_abs_index`（本节点唯一影响引擎行为的修复）对 (b) 的臂**完全没有影响** —— 该臂是**单次** `run(4000)` 调用，此时 `abs0=0`、`_eid = abs0 + s ≡ s`，与冻结件索引**逐位等价**；实测两种取值下逐神经元计数**完全相同**（单延迟档 102=102、三延迟档 127=127）。⇒ (b) 翻转的**唯一**原因是**参照臂配置修正**（`delay_bins` 三延迟档→单延迟档）；而三延迟档下 off 档与 M10 不逐位，是因为**M10 侧丢弃全部外部事件**（E-M10-2），**不是 M11 引擎缺陷**。（RF-M11-K 的**观察**是对的：旧臂 off ≠ M10；但**归因**应为'参照侧输入缺失'。）",
+   "root_cause": "**(b) 的历史失败来自「参照臂选错」，不是引擎缺陷、不是标定问题。** 那一版参照侧 = M10 内核跑**三延迟档**网络；冻结件在 ≥2 延迟组下（`ext_active = … and ring_flat is not None`，`ring_flat = rings[0] if len_rings==1 else None`）**丢弃全部外部事件**（E-M10-2，已验证 M10 含事件脉冲数 == 不含事件脉冲数）。而低密度档的发放几乎全部由外部驱动贡献 ⇒ 参照侧静默比被抬高 14 pp 量级。实测其幅度随「外部驱动占比」单调下降：占比 0.333/0.076/0.008 ⇒ Δ静默 14.5/1.75/0.25 pp（与观测的 14.0/3.0/0.25 pp 同序）。",
+   "fix": "**(b) 未改引擎、未改判据/阈值/样本量/静默定义**，只做了一件可指名的操作：**把参照臂从「M10@三延迟档」换为「M10@单延迟档(40)」** —— 单延迟档是冻结件外部事件语义良定义的唯一配置（`len_rings==1 ⇒ ring_flat is not None`）。操作记录：`tools/scan_m11_engine.py::t5_density` 内 M10 参照臂的 `delay_bins` 由 (40,60,80) 改为 (40,)；M11 被测臂同步改为单延迟档以便逐位比对；另新增 `tools/diag_m11_density_reference.py` 给出翻转的量化证据。**判据本身仍为** `静默差 < 1 pp ∧ KS p > 0.05`：修正后实测 **0.000 pp / p=1.000**（比阈值更严），故不属「放宽」。",
    "low_density_diagnosis": {
     "source": "m11_density_reference_diag.json",
     "sha256": "d60e21bc998835ef46397b4935845536",
@@ -148,7 +151,60 @@
     "diagnosis": "低密度档的 14 pp 差异**不是**静默定义口径问题、也不是阈值 0.5 Hz 附近的计数离散，更不是 V_th 附近的动力学差异：它来自**参照臂选错** —— 参照侧（M10）在三延迟档下**丢弃全部外部事件**（E-M10-2），而低密度档的发放几乎全部由外部驱动贡献（外部驱动占比随密度单调下降）⇒ 差异幅度随密度单调下降，与实测 14.0/3.0/0.25 pp 同序。改用**单延迟档**参照（冻结件外部事件语义良定义的唯一配置）后，三档全部 **0.000 pp / KS p=1.000**（且脉冲总数逐位相同）⇒ (b)/(g) 实质为 **invalid（参照无效）**，修正参照后判 **pass**；网络静默比是否与**数据**一致属 G1/P5 标定判据，不在 G0 内。"
    },
    "invalid_arm_note": "**早期失败臂（14.0 pp / KS p=6.8e-4）参照选错**：该臂参照侧 M10 用了**三延迟档** ⇒ 按 E-M10-2 **丢弃全部外部事件**，而低密度档的发放主要由外部驱动贡献 ⇒ 差异幅度随密度单调下降（与'外部驱动占比'同序：0.333→14.5 pp、0.076→1.75 pp、0.008→0.25 pp）。改用单延迟档参照后三档 **0.000 pp / KS p=1.000**（脉冲总数逐位相同）⇒ (b) 的失败 = **invalid（参照无效）**，不是引擎缺陷、也不是标定问题；修正参照后 = `pass`",
-   "scope_note": "(b) 是**引擎对齐**判据（M11 vs M10 同配置逐位），**不是**生理标定判据；'网络静默比是否与 MICrONS/Allen 数据一致'属 G1/P5 标定，不在 G0 内"
+   "on_path_activity_stats": {
+    "in_g0": false,
+    "label": "**不属于 G0**；属 G1/P5 标定与 S/P14 生理目标对照",
+    "why_not_in_g0": "ON 档机制开启，与 M10（机制全关）的差异是机制效应的**预期后果**，不是引擎对齐问题；ON 档的可信度由 G1/P5 的判据带与六条硬门把关",
+    "per_density": [
+     {
+      "target_hz": 0.5,
+      "achieved_hz": 0.475,
+      "silent_frac_on": 0.895,
+      "silent_frac_m10": 0.8325,
+      "silent_diff_vs_m10_pp": 6.25,
+      "ks_on_vs_m10": {
+       "D": 0.0625,
+       "p": 0.40405386994861653,
+       "na": 400,
+       "nb": 400,
+       "method": "kolmogorov_asymptotic"
+      },
+      "pop_hz_on": 0.5625
+     },
+     {
+      "target_hz": 2.0,
+      "achieved_hz": 1.95,
+      "silent_frac_on": 0.79,
+      "silent_frac_m10": 0.385,
+      "silent_diff_vs_m10_pp": 40.5,
+      "ks_on_vs_m10": {
+       "D": 0.4125000000000001,
+       "p": 1.604345558951925e-30,
+       "na": 400,
+       "nb": 400,
+       "method": "kolmogorov_asymptotic"
+      },
+      "pop_hz_on": 1.125
+     },
+     {
+      "target_hz": 17.412999876622898,
+      "achieved_hz": 17.924999999999997,
+      "silent_frac_on": 0.115,
+      "silent_frac_m10": 0.11,
+      "silent_diff_vs_m10_pp": 0.5000000000000004,
+      "ks_on_vs_m10": {
+       "D": 0.595,
+       "p": 4.8330373965460624e-63,
+       "na": 400,
+       "nb": 400,
+       "method": "kolmogorov_asymptotic"
+      },
+      "pop_hz_on": 12.875
+     }
+    ],
+    "m9_e_m9_3_note": "M9 的 E-M9-3（'判据级对齐必须在目标发放密度下复测'）**的生理侧结论仍待 G1/P5 给出**；本节点只能给'引擎在目标密度下与 M10 的自洽'（= (b)/(g) 的实际内容）"
+   },
+   "scope_note": "(b) 是**引擎对齐**判据（M11 vs M10 同配置逐位），**不是**生理标定判据；'网络静默比是否与 MICrONS/Allen 数据一致'属 G1/P5 标定，不在 G0 内。**判据名实对齐声明**：本判据实际检验的是「机制全关 ⇒ 与 M10 逐位一致（关闭态等价）」，**不是**「目标密度下活动统计对齐」——后者按门链分工由 **G1/P5** 承担（B3 的 (a)(b) 判据带 + 六条硬门），S/P14 再做**目标带**对照。M9 E-M9-3（'对齐必须在目标密度下复测'）的**生理侧**结论因此仍待 G1/S 给出，本节点不代填。"
   },
   "c_mechanism_metrics": {
    "reference": "逐类电导积分的闭式重算（由 spike 时刻 + 边表 + 逐类 τ 独立算出，含外部事件）",
@@ -352,9 +408,11 @@
    }
   },
   "g_target_density": {
-   "reference": "**由 (b) 继承**（(g) 即'在 3 档目标密度下复测 (a)–(c)'）：参照 = M10 修正内核（单延迟档）。**独立锚点信息**另有：Allen `ef__avg_firing_rate` n=1808，median 17.413 / p10 8.42 / p25 11.84 / p75 35.59 / p90 81.76 / max 261.21 Hz（**口径受限 NEEDS_VERIFY**：表征协议均值率 ≠ 自发率）；MICrONS 钙域推断密度锚 = `unavailable`（B1 L11.3/L11.5 口径未决）",
+   "reference": "**由 (b) 继承**（(g) 即'在 3 档目标密度下复测 (a)–(c)'）：参照 = M10 修正内核（单延迟档）。**独立锚点信息**另有：Allen `ef__avg_firing_rate` n=1808，median 17.413 / p10 8.42 / p25 11.84 / p75 35.59 / p90 81.76 / max 261.21 Hz（**口径受限 NEEDS_VERIFY**：表征协议均值率 ≠ 自发率）；MICrONS 钙域推断密度锚 = `unavailable`（B1 L11.3/L11.5 口径未决）。**口径与 (b) 完全一致**（N=400/indegree=20/seed=0/T=4000/无 settle/同一事件表 rng(11)、T_table=20000）；命令同 `--which t5`",
    "status": "pass",
    "note": "3 档密度（含 Allen 中位带；口径受限）下的 (a)–(c) 类对齐复测；MICrONS 钙域密度锚 = unavailable（B1 L11.3/L11.5 未决）⇒ 如实登记、不计 fail",
+   "root_cause": "**(g) 与 (b) 同源（继承）**：(g) 即在 3 档目标密度下复测 (a)–(c)，其参照即 (b) 的参照，故历史失败与 (b) 同因（参照臂 M10@三延迟档丢驱动）。独立于 (b) 的锚点信息（Allen 分位 / MICrONS 钙域 unavailable）不受影响。",
+   "fix": "与 (b) 同一操作：参照臂改为单延迟档；判据未改。**由 (b) 继承**已在 `detail.inheritance_note` 显式写出。",
    "detail": {
     "density_anchored_points": [
      0.5,
@@ -407,9 +465,9 @@
      "spk_total": 244,
      "sha256": "3d7a2b56707a29d3c3369610206697419437cd9f815fa7130c227b8f3a2e8df8",
      "pids": [
-      41486,
-      41487,
-      41488
+      42034,
+      42043,
+      42044
      ]
     },
     "off_frozen": {
@@ -418,9 +476,9 @@
      "spk_total": 3730,
      "sha256": "c29dd7a0ee3a7f74f4064db92cb28c859345a11cbbd1285460949abcc6dd41ea",
      "pids": [
-      41489,
-      41490,
-      41491
+      42045,
+      42046,
+      42047
      ]
     }
    }
@@ -580,8 +638,8 @@
      "spk_total": 244.0,
      "counts_sum": 244.0,
      "rel_diff_count_vs_total": 0.0,
-     "wall_s": 1.8364095000000002,
-     "wall_from_ms_per_step_s": 1.8364095000000002
+     "wall_s": 1.872848459,
+     "wall_from_ms_per_step_s": 1.8728484590000003
     },
     "core_readback": {
      "core_key": "nc4_slow1_semantic_fix",
@@ -850,31 +908,31 @@
     "rows": [
      {
       "seg": 0,
-      "rss_mb": 186.02,
+      "rss_mb": 189.12,
       "ar_buf_numel": 4096
      },
      {
       "seg": 1,
-      "rss_mb": 187.61,
+      "rss_mb": 189.38,
       "ar_buf_numel": 4096
      },
      {
       "seg": 2,
-      "rss_mb": 188.2,
+      "rss_mb": 189.56,
       "ar_buf_numel": 4096
      },
      {
       "seg": 3,
-      "rss_mb": 188.25,
+      "rss_mb": 189.56,
       "ar_buf_numel": 4096
      },
      {
       "seg": 4,
-      "rss_mb": 188.36,
+      "rss_mb": 189.73,
       "ar_buf_numel": 4096
      }
     ],
-    "rss_growth_mb": 2.3400000000000034,
+    "rss_growth_mb": 0.6099999999999852,
     "ar_buf_numel_last": 4096,
     "crit_pass": true,
     "note": "禁以动态规模为缓存键（M9 真 bug）；`_ar_buf` 必须保持**单一**增长缓冲"
@@ -882,6 +940,213 @@
   }
  },
  "gate_pass_condition": "pass ⟺ 全部判据项 {crit.a..crit.h, ext.off_state_equivalence, ext.slot_encoding_assertions, ext.positive_controls} 均 `pass`（无 `fail`、无 `unavailable`）；存在 `unavailable` ⇒ `incomplete`（**不得**写成 pass 或 partial）；存在 `fail` ⇒ `fail`",
+ "scope_declaration": {
+  "g0": {
+   "scope": "**引擎对齐**（架构/语义/确定性/编码路径）",
+   "criteria": [
+    "(a) 解析+链式延迟语义",
+    "(b) 关闭态等价（off ≡ M10 逐位）",
+    "(c) 逐类电导积分双估计器",
+    "(d) 确定性",
+    "(e) 分段可组合性 k=1/2/3/5/10（step/chunk）",
+    "(f) 同步发放判别 + 逐类落槽",
+    "(g) = (b) 在 3 档密度下复测（继承）",
+    "(h) 跨进程逐位",
+    "ext: 关闭态等价 / 四槽编码断言 / 逐机制阳性对照 / 无泄漏"
+   ],
+   "does_not_claim": [
+    "**不检验** ON 档活动统计是否与数据一致",
+    "**不检验** 中位率/静默带是否落生理带",
+    "**不检验** 慢状态结构（dwell/τ）"
+   ]
+  },
+  "g1_p5": {
+   "scope": "**生理工作点与判据带**（含「目标密度下的活动统计对齐」）",
+   "owner": "M11 B3（判据带已建：(a)(b) 带 + 六条硬门）",
+   "carries": [
+    "E-M9-3 的**生理侧**结论",
+    "中位率/静默/自持比/弹性/E-I 比"
+   ]
+  },
+  "s_p6": {
+   "scope": "**慢状态机制门**（dwell/τ 与目标带同阶 + 消融归属）",
+   "target_band": "主agent R10：原生未平滑 τ = 8.0–9.0 s、H 法 dwell 3.2–6.7 s、p90 32–34 s"
+  },
+  "p14": {
+   "scope": "**活动金标准**（MICrONS 同源四指标对照）"
+  }
+ },
+ "root_cause": {
+  "b_state_fraction": "**(b) 的历史失败来自「参照臂选错」，不是引擎缺陷、不是标定问题。** 那一版参照侧 = M10 内核跑**三延迟档**网络；冻结件在 ≥2 延迟组下（`ext_active = … and ring_flat is not None`，`ring_flat = rings[0] if len_rings==1 else None`）**丢弃全部外部事件**（E-M10-2，已验证 M10 含事件脉冲数 == 不含事件脉冲数）。而低密度档的发放几乎全部由外部驱动贡献 ⇒ 参照侧静默比被抬高 14 pp 量级。实测其幅度随「外部驱动占比」单调下降：占比 0.333/0.076/0.008 ⇒ Δ静默 14.5/1.75/0.25 pp（与观测的 14.0/3.0/0.25 pp 同序）。",
+  "e_segment_composability": "冻结件（M9/M10）在**步模式**下用**局部**步号索引外部事件（`larval_zf_engine.run` L377: `ea = int(ext_off[s])`，`s` 为 run() 内局部步号；chunk 分支用 `abs0 + a0` ⇒ 正确）⇒ **分段调用时每段重放前段事件**（E-M10-1）。故 'step 失败 / chunk 通过' 的分界在**外部事件索引**，**不在** per-class 投递的 base/slot 算术（该算术与 M10 E5-FIX 逐字同源）。",
+  "f_synchronous_firing": "**不是内核投递错误，而是测试夹具臂定义错误**：该臂把四类标签（含 cls=2/3）传给了**E1b 关闭**（n_ch=2）的引擎 ⇒ 被本节点新加的**配置级守卫**（`_finalize_no_ring` L450：'E1b 关闭态但存在 syn_class>1 的边 ⇒ 拒绝'）在`finalize()` 阶段拦下 ⇒ 按四态纪律该臂 = `invalid`（既非 pass 亦非 fail）。",
+  "g_target_density": "**(g) 与 (b) 同源（继承）**：(g) 即在 3 档目标密度下复测 (a)–(c)，其参照即 (b) 的参照，故历史失败与 (b) 同因（参照臂 M10@三延迟档丢驱动）。独立于 (b) 的锚点信息（Allen 分位 / MICrONS 钙域 unavailable）不受影响。",
+  "off_state_equivalence": "早期该判据的失败臂是**三延迟档 + 含外部事件**：该配置下 M10 自身（`ext_active = ... and ring_flat is not None`，≥2 延迟组 ⇒ `ring_flat=None`）**丢弃全部外部事件**（E-M10-2），M11 正常交付 ⇒ 两者输入的**语义不同**，不构成有效的等价比较（差异为**语义级**，不是 FP 累加序）"
+ },
+ "fix": {
+  "b_state_fraction": "**(b) 未改引擎、未改判据/阈值/样本量/静默定义**，只做了一件可指名的操作：**把参照臂从「M10@三延迟档」换为「M10@单延迟档(40)」** —— 单延迟档是冻结件外部事件语义良定义的唯一配置（`len_rings==1 ⇒ ring_flat is not None`）。操作记录：`tools/scan_m11_engine.py::t5_density` 内 M10 参照臂的 `delay_bins` 由 (40,60,80) 改为 (40,)；M11 被测臂同步改为单延迟档以便逐位比对；另新增 `tools/diag_m11_density_reference.py` 给出翻转的量化证据。**判据本身仍为** `静默差 < 1 pp ∧ KS p > 0.05`：修正后实测 **0.000 pp / p=1.000**（比阈值更严），故不属「放宽」。",
+  "e_segment_composability": "`src/mouse_cortex_engine.py`：新增 `ext_abs_index` 开关（L211 形参 / L244 属性），L709 改为 `_eid = (abs0 + s) if self.ext_abs_index else s`（默认 True=绝对步号；False 复刻冻结行为用于量级量化）；并新增分段适用域守卫 `assert_composable_for_segmentation`（L939）",
+  "f_synchronous_firing": "**引擎侧无需改动**（守卫行为正确，是 M10 L21 静默失效的对应防护）；改的是夹具：`tools/scan_m11_engine.py::t2_sync` 改为**按臂选定编码**（M9/M10/M11-冻结档用 E/I 两槽，M11-修正档用四槽）⇒ `m11_ok=True`",
+  "g_target_density": "与 (b) 同一操作：参照臂改为单延迟档；判据未改。**由 (b) 继承**已在 `detail.inheritance_note` 显式写出。",
+  "off_state_equivalence": "**未放松判据**（仍是逐位、无容差）：把该无效比较**替换**为有效且更严的比较 ——① 三延迟档的等价臂改用**纯网络语义**（不含外部事件）；② **新增**密/稀 × 三延迟档的逐位臂（此前从未测过）；③ 把'含 ext 的三延迟档'单独登记为 **E-M10-2 诊断臂**（`three_bins_isolation`），并保留 M10 自我丢弃的证据（含/不含事件计数完全相同）"
+ },
+ "flip_log": [
+  {
+   "criterion": "criteria.b_state_fraction (0.5/2/17.4 Hz 三档)",
+   "before": [
+    {
+     "target_hz": 0.5,
+     "silent_diff_pp": 14.0,
+     "ks_p": 0.00068,
+     "bit_identical": false
+    },
+    {
+     "target_hz": 2.0,
+     "silent_diff_pp": 3.0,
+     "ks_p": 0.511,
+     "bit_identical": false
+    },
+    {
+     "target_hz": 17.412999876622898,
+     "silent_diff_pp": 0.25,
+     "ks_p": 1.0,
+     "bit_identical": null
+    }
+   ],
+   "after": [
+    {
+     "target_hz": 0.5,
+     "silent_diff_pp": 0.0,
+     "ks_p": 1.0,
+     "bit_identical": true
+    },
+    {
+     "target_hz": 2.0,
+     "silent_diff_pp": 0.0,
+     "ks_p": 1.0,
+     "bit_identical": true
+    },
+    {
+     "target_hz": 17.412999876622898,
+     "silent_diff_pp": 0.0,
+     "ks_p": 1.0,
+     "bit_identical": true
+    }
+   ],
+   "category": "**(b) 参照替换（合法口径修正）**：内核实现 → 同一个内核的**语义良定义配置**",
+   "exact_operation": "`tools/scan_m11_engine.py::t5_density`：M10 参照臂 `delay_bins` (40,60,80) → (40,)；M11 被测臂同步 → (40,)",
+   "why_old_reference_invalid": "三延迟档下冻结件丢弃**全部**外部事件（E-M10-2）⇒ 参照侧输入与 M11 不同 ⇒ 不是「引擎对齐」比较；低密度档受害最深（外部驱动占比 0.333 vs 高密度 0.008）",
+   "evidence": {
+    "source": "data/m11_density_reference_diag.json",
+    "sha256": "d60e21bc998835ef46397b4935845536",
+    "invalid_arm_silent_diff_pp": [
+     14.500000000000002,
+     1.7500000000000016,
+     0.2500000000000002
+    ],
+    "valid_arm_silent_diff_pp": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "external_drive_share": [
+     0.3333333333333333,
+     0.0764462809917356,
+     0.008435767654856593
+    ],
+    "m10_ignores_ext": [
+     true,
+     true,
+     true
+    ]
+   },
+   "criterion_changed": false,
+   "criterion_unchanged_detail": "静默定义=逐神经元率<0.5 Hz **未变**；阈值 1 pp / KS 0.05 **未变**；N=400、T=4000、事件表(rng(11), T_table=20000)、无 settle **未变**；比较对象（逐神经元率分布）**未变**；结果 0.000 pp / p=1.000 **严于**阈值 ⇒ 非放宽"
+  },
+  {
+   "criterion": "extensions.off_state_equivalence",
+   "before": "三延迟档**含**外部事件臂 = 非逐位（102/200 神经元、max|Δcounts|=3、总脉冲 +2.54%）",
+   "after": "三延迟档**纯网络**臂 = 逐位（0/200 神经元、max|Δcounts|=0、Δv=0）",
+   "category": "**比较对象变更（无效比较 → 有效且更严）**",
+   "exact_operation": "T6 的等价臂由「三延迟档含 ext」改为「三延迟档无 ext」，并新增「密集×三延迟档（无 ext）」逐位臂；含 ext 情形单列为 E-M10-2 诊断臂",
+   "why_old_reference_invalid": "同一原因：该配置下 M10 自身丢驱动 ⇒ 输入语义不成立，不构成等价比较（差异为语义级，非 FP 累加序）",
+   "evidence": {
+    "three_bins_no_ext": {
+     "m10_spk": 2201,
+     "m11_spk": 2201,
+     "n_diff_neurons": 0,
+     "max_abs_delta_counts": 0,
+     "max_abs_dv_mV": 0.0,
+     "max_abs_dg_e": 0.0,
+     "verdict": "逐位一致（0 ULP）"
+    },
+    "dense_three_bins_no_ext": {
+     "m10_spk": 5639,
+     "m11_spk": 5639,
+     "n_diff_neurons": 0,
+     "max_abs_delta_counts": 0,
+     "max_abs_dv_mV": 0.0,
+     "verdict": "逐位一致（0 ULP）"
+    },
+    "three_bins_with_ext": {
+     "m10_spk": 2201,
+     "m11_spk": 2257,
+     "n_diff_neurons": 102,
+     "max_abs_delta_counts": 3,
+     "max_abs_dv_mV": 9.63889,
+     "max_abs_dg_e": 63.7593,
+     "total_rel_diff_pct": 2.5443,
+     "verdict": "**语义差异**（M10 丢事件）—— 不是 FP 累加序；相对量级 = ULP(spacing(50mV)=3.81e-06 mV) 的 2.5e6 倍"
+    },
+    "one_bin_with_ext": {
+     "m10_spk": 2279,
+     "m11_spk": 2279,
+     "n_diff_neurons": 0,
+     "max_abs_delta_counts": 0,
+     "verdict": "逐位一致（事件路径本身精确）"
+    },
+    "float32_spacing_at_50mV": 3.814697265625e-06,
+    "ulp_question": "**不存在 1 ULP 级差异**；三者非 0 即逐位 0，或为语义级（数十倍 ULP）⇒ 本节点早期'单 ULP FP 累加序'主张已**撤回**"
+   },
+   "criterion_changed": false,
+   "criterion_unchanged_detail": "判据仍为 `np.array_equal` **无容差**；未新增任何计数容差"
+  },
+  {
+   "criterion": "criteria.e_segment_composability",
+   "before": "step 口径 k=2 → 172 脉冲 / 11 个神经元计数不同；k=5 → 165 / 28 个不同",
+   "after": "step 与 chunk 两口径 k=1/2/3/5/10 全部逐位相同（173/173/173/173/173）",
+   "category": "**引擎侧修复**（继承缺陷 E-M10-1）",
+   "exact_operation": "`src/mouse_cortex_engine.py` L211/L244 新增 `ext_abs_index`；L707–715 改为绝对步号取外部事件；L939 新增分段适用域守卫",
+   "why_old_reference_invalid": null,
+   "evidence": {
+    "minrepro": "data/m11_minrepro_delivery.json",
+    "matrix": "data/m11_compose_matrix.json",
+    "k_list": [
+     1,
+     2,
+     3,
+     5,
+     10
+    ]
+   },
+   "criterion_changed": false,
+   "criterion_unchanged_detail": "判据仍为 `tot==base ∧ np.array_equal(cnt, base)`（无容差）"
+  },
+  {
+   "criterion": "criteria.f_synchronous_firing",
+   "before": "`m11_ok=False`（该臂把 cls=2/3 喂给 n_ch=2 的引擎 ⇒ 配置级守卫抛 ValueError）",
+   "after": "`m11_ok=True`（M9 抛错 ∧ M11 正常 ∧ 逐类落槽 rel_diff 全 0）",
+   "category": "**夹具臂定义修复**（引擎未改；该臂按四态纪律原为 `invalid`）",
+   "exact_operation": "`tools/scan_m11_engine.py::t2_sync` 改为按臂选定编码（M9/M10/冻结档 → E/I 两槽；修正档 → 四槽）",
+   "why_old_reference_invalid": null,
+   "evidence": {
+    "guard_line": "src/mouse_cortex_engine.py L450 (_finalize_no_ring)",
+    "slot_check": "data/m11_slot_assertions.json"
+   },
+   "criterion_changed": false,
+   "criterion_unchanged_detail": "判据与阈值未改（M9 抛错 ∧ M11 不抛 ∧ 逐类落槽 ≤2%）"
+  }
+ ],
  "discoveries": [
   {
    "id": "E-M9-4",
@@ -993,9 +1258,9 @@
   "n_unavailable": 0
  },
  "evidence": {
-  "alignment_json_sha256": "a6927f09609950d85351224c86dc4546",
+  "alignment_json_sha256": "62ae3d068dc824c1dd7e1e7c16d374b1",
   "engine_src_sha256": "6feb61291ad336e8048b1411c2169252",
-  "tool_sha256": "f83984cd23e00eb4b5b4e502eade4d73",
+  "tool_sha256": "94e18db111219a704b4df9a35d719fe1",
   "minrepro": "/Users/weidong/ai/small_world/neural_exploration/data/m11_minrepro_delivery.json",
   "stale_guard": "本 summary 由本轮实跑生成；若与 `criterion_states` 不一致，以本文件为准（旧快照的 (e) step/（f) m11_ok 值见 RF-M11-F 引用，已作废）"
  },

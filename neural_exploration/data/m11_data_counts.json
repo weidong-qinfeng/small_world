@@ -1,6 +1,6 @@
 {
  "generated_by": "tools/build_m11_inventory.py",
- "generated_at": "2026-10-11T15:46:10Z",
+ "generated_at": "2026-10-11T17:31:46Z",
  "units": "bytes; evidence ∈ {measured, derived, literature, unavailable}",
  "microns_structure": {
   "evidence": "measured(元数据) + derived(chunk 计数); shard 清单 = measured(有界)",
@@ -737,6 +737,72 @@
    "misread_risk": "**若把 0.25 µm/px 当成 series 的口径**：① 所有距离/尺度的物理量（感受野尺寸、空间相关长度、ROI/神经域半径、突触-距离关系）**系统性偏小 10×**；② FOV 会被算成 62×110 µm（面积偏小 100×），与 field_summaries 的 620×1100 µm 直接冲突；③ 任何'按物理距离配对/匹配'的对照（如连接概率 vs 距离、dend_len 对照）**口径不可比**。⇒ 纪律：**凡用到空间尺度，必须写明取自哪个对象/字段，并做跨对象 FOV 交叉核对**。"
   }
  },
+ "dwell_band": {
+  "evidence": "measured(Allen 2p events) + 冻结管线复用",
+  "n_experiments": 2,
+  "experiments": [
+   "577885923_events.npz",
+   "593887846_events.npz"
+  ],
+  "frame_rate_hz_primary": 30.9,
+  "frame_rate_source": "**NEEDS_VERIFY**（NWB `imaging_rate` 因网络未读回；文件帧数÷30.9 Hz = 61.4 min 属合理 session 长度，÷11 Hz = 2.87 h 不合理 ⇒ 采 30.9）",
+  "n_bins_0914s": 4070.5,
+  "occupancy_low_median": 0.6918679468934041,
+  "transition_rate_hz_median": 0.37655085876344535,
+  "low_dwell_median_s": 2.7414785707758385,
+  "low_dwell_p90_s": 9.732248926254233,
+  "low_dwell_p90_over_median": 3.2250000000000014,
+  "low_dwell_ks_p_max": null,
+  "ar1_tau_s_median": 6.456401129449646,
+  "ar1_tau_s_range": [
+   5.789362437127061,
+   7.123439821772231
+  ],
+  "ar1_phi_smoothed_median": 0.8667923470972487,
+  "ar1_phi_unsmoothed_median": 0.15344699139616796,
+  "spread_cross_experiment_low_dwell_median_s": 2.0,
+  "spread_cross_experiment_transition_rate_hz": 2.089,
+  "spread_cross_experiment_ar1_tau_s": 1.23,
+  "spread_cross_experiment_occupancy_low": 1.492,
+  "smoothed_vs_unsmoothed_phi_gap": 0.713345,
+  "shape_criterion": {
+   "n_evaluable": 2,
+   "n_runs_note": "**转换次数门**：low 态完整段 <5 时 KS 不可算 ⇒ 该实验的形状判据标 unavailable",
+   "per_experiment_status": {
+    "577885923_events.npz": "pass",
+    "593887846_events.npz": "pass"
+   },
+   "heavy_tail_all": true,
+   "ks_reject_exp_all": true,
+   "per_experiment": {
+    "577885923_events.npz": {
+     "p90_over_median": 2.25,
+     "ks_p": 1.58329737699236e-97
+    },
+    "593887846_events.npz": {
+     "p90_over_median": 4.200000000000003,
+     "ks_p": 1.1171259364295439e-11
+    }
+   }
+  },
+  "tolerance_sources": {
+   "method_ratio": 3.87,
+   "cross_condition": 6.9,
+   "tau_cross_condition": 3.94,
+   "source": "B4 实测（口径差 3.87× / 跨条件 dwell 6.9× / τ 跨条件 3.94×）",
+   "self_cross_experiment": 2.0,
+   "self_method_H_vs_Q": 1.0,
+   "note": "**绝对尺度不得按单点引用**：按 RF-M11-C §四.2 以'与自建目标带的比值'报告，并在报告中并列上述容差来源（B4 实测容差 + 本轮跨实验/跨口径实测容差）"
+  },
+  "literature_fallback_s": {
+   "band": [
+    0.3,
+    3.0
+   ],
+   "pmid": "11017176",
+   "note": "文献档（up/down dwell 量级）—— **仅量级参考、非判据带**"
+  }
+ },
  "literature": {
   "n_rows": 37,
   "by_status": {
@@ -746,9 +812,9 @@
   "evidence": "literature=Europe PMC 题录实测命中；未命中=literature_unverified"
  },
  "reachability": {
-  "n_sources": 68,
+  "n_sources": 73,
   "by_verdict": {
-   "REACHABLE": 51,
+   "REACHABLE": 56,
    "REACHABLE_NO_DATA": 3,
    "BLOCKED": 8,
    "NEEDS_VERIFY": 3,
@@ -827,7 +893,7 @@
     "exists": true,
     "note": "",
     "bytes_on_disk": 10679,
-    "sha256": "1936dbc54d30b1780753b166443fa94c716c48d4a260498f79d8d079ea5dc507",
+    "sha256": "d2ad6a4c99356ed966f8e3a7759bc5ca84023f6b3d83ac7e6c0a8036c95042fb",
     "status": "COMPLETE"
    },
    {
@@ -843,9 +909,9 @@
   ]
  },
  "inventory": {
-  "n_items": 236,
-  "total_bytes": 288488476,
-  "total_MB": 288.488
+  "n_items": 240,
+  "total_bytes": 288506605,
+  "total_MB": 288.507
  },
  "functional_connectomics_release": {
   "evidence": "measured(列举 200：KeyCount=4)",

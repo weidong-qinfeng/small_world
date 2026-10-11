@@ -178,7 +178,9 @@ def main():
     add("allen_bo_ecephys", os.path.join(RAW, "allen", "bo_ecephys", "probes.csv"),
         "https://allen-brain-observatory.s3.amazonaws.com/visual-coding-neuropixels/ecephys-cache/probes.csv",
         utcnow(), "measured(HTTP 200, 完整)", "**采样率读回**：spike 30 kHz / LFP 2.5 kHz（RF-M11-A 回退源）")
-    for extra in ("m11_grid_alignment.json", "m11_allen_activity_fallback.json", "m11_allen_activity_objects.csv",
+    for extra in ("m11_dwell_reference.csv", "m11_dwell_reference.json",
+                  "m11_s_gate_criteria_prereg.csv", "m11_b1_managed_jobs.json",
+                  "m11_grid_alignment.json", "m11_allen_activity_fallback.json", "m11_allen_activity_objects.csv",
                   "m11_decode_proof.json",
                   "m11_reference.csv", "m11_download_integrity.csv", "m11_download_integrity_summary.json",
                   "m11_microns_parse_validation.json", "m11_microns_parse_hypotheses.csv"):
@@ -421,6 +423,9 @@ def main():
         grid_alignment=dict(
             evidence="measured(实像素) + derived(尺度扫描)",
             **(load_json(os.path.join(DATA, "m11_grid_alignment.json")) or {})),
+        dwell_band=dict(
+            evidence="measured(Allen 2p events) + 冻结管线复用",
+            **(load_json(os.path.join(DATA, "m11_dwell_reference.json")) or {}).get("band", {})),
         literature=dict(n_rows=len(lit_rows), by_status=lit_v,
                         evidence="literature=Europe PMC 题录实测命中；未命中=literature_unverified"),
         reachability=dict(n_sources=len(reach_rows), by_verdict=vc,

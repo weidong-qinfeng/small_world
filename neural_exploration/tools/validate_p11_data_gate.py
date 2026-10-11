@@ -61,6 +61,7 @@ INTEG = os.path.join(DATA, "m11_download_integrity_summary.json")
 INTEG_CSV = os.path.join(DATA, "m11_download_integrity.csv")
 PARSE = os.path.join(DATA, "m11_microns_parse_validation.json")
 REFCSV = os.path.join(DATA, "m11_reference.csv")
+RAW = os.path.join(DATA, "m11_raw")
 ACTJSON = os.path.join(DATA, "m11_allen_activity_fallback.json")
 ACTCRED = os.path.join(DATA, "m11_decode_proof.json")
 
@@ -433,6 +434,57 @@ def main():
                      "n_chunks=%s union=%s series_dims=%s；像素层：%s"
                      % (mg.get("n_chunks"), mg.get("union_coverage_xy"), mg.get("series_dims_xy"),
                         str(mg.get("pixel_level_alignment"))[:60])))
+
+    # ---------------- P1.12–P1.15 RF-M11-C（活动通道 = Allen 2p / 自建目标带 / S 门预注册）----------------
+    gids = [r["source_id"] for r in rows if r["source_id"].startswith("G")]
+    A.append(assert_("P1.12a visual-coding-2p 探针行已追加（G1..G8，含 manifest/stimulus/npz/nwb/h5）",
+                     len(gids) >= 8, "G 行=%s" % gids))
+    A.append(assert_("P1.12b 2p 刺激条件表已落盘（stimulus_mappings.json）",
+                     os.path.exists(os.path.join(RAW, "allen", "vc2p", "stimulus_mappings.json")),
+                     "bytes=%s" % (os.path.getsize(os.path.join(RAW, "allen", "vc2p", "stimulus_mappings.json"))
+                                   if os.path.exists(os.path.join(RAW, "allen", "vc2p", "stimulus_mappings.json")) else 0)))
+    band = load(os.path.join(DATA, "m11_dwell_reference.json")) if os.path.exists(
+        os.path.join(DATA, "m11_dwell_reference.json")) else {}
+    b = band.get("band", {}) or {}
+    sc = b.get("shape_criterion", {}) or {}
+    A.append(assert_("P1.13a 自建 dwell/τ 目标带已产出（≥2 个独立实验，B4 冻结管线）",
+                     (b.get("n_experiments") or 0) >= 2, "n_experiments=%s experiments=%s"
+                     % (b.get("n_experiments"), b.get("experiments"))))
+    A.append(assert_("P1.13b 目标带含样本量门与两个独立口径（H 法/Q 法；φ 平滑/未平滑并列）",
+                     b.get("ar1_phi_unsmoothed_median") is not None
+                     and b.get("low_dwell_median_s") is not None,
+                     "dwell_med=%.2fs τ_med=%.2fs φ_sm=%.3f φ_un=%.3f bins=%s"
+                     % (b.get("low_dwell_median_s") or 0, b.get("ar1_tau_s_median") or 0,
+                        b.get("ar1_phi_smoothed_median") or 0, b.get("ar1_phi_unsmoothed_median") or 0,
+                        b.get("n_bins_0914s"))))
+    A.append(assert_("P1.13c 形状判据（重尾 ∧ 拒绝指数）在可评实验上成立；不可评者标 unavailable（非 fail）",
+                     sc.get("heavy_tail_all") is True and (sc.get("n_evaluable") or 0) >= 1,
+                     "n_evaluable=%s heavy_tail=%s ks_reject=%s per_exp=%s"
+                     % (sc.get("n_evaluable"), sc.get("heavy_tail_all"), sc.get("ks_reject_exp_all"),
+                        json.dumps(sc.get("per_experiment", {}), ensure_ascii=False)[:160])))
+    A.append(assert_("P1.13d 容差来源预注册（B4 三项 + 本轮跨实验/跨口径实测）",
+                     (b.get("tolerance_sources") or {}).get("method_ratio") is not None
+                     and (b.get("tolerance_sources") or {}).get("self_cross_experiment") is not None,
+                     json.dumps(b.get("tolerance_sources", {}), ensure_ascii=False)[:200]))
+    A.append(assert_("P1.13e **未**沿用 ZAPBench 数值（26.5 s / 37.18 s 不得出现在带中）",
+                     abs((b.get("low_dwell_median_s") or 0) - 26.5) > 1e-6
+                     and abs((b.get("ar1_tau_s_median") or 0) - 37.18) > 1e-6,
+                     "dwell_med=%.3f τ_med=%.3f（ZAPBench 26.5/37.18 已被排除）"
+                     % (b.get("low_dwell_median_s") or 0, b.get("ar1_tau_s_median") or 0)))
+    A.append(assert_("P1.13f 帧率标注 NEEDS_VERIFY（NWB 读回受阻）+ 11 Hz 敏感性并列",
+                     "NEEDS_VERIFY" in (b.get("frame_rate_source") or "")
+                     and any(r.get("rate_tag") == "alt" for r in (band.get("rows") or [])),
+                     (b.get("frame_rate_source") or "")[:90]))
+    sg = read_csv_rows(os.path.join(DATA, "m11_s_gate_criteria_prereg.csv"))
+    A.append(assert_("P1.14 S 门判据预注册 CSV（形状/存在性/相对尺度 + 样本量门 + 双估计器断言）",
+                     len(sg) >= 10 and any("样本量硬门" in r.get("criterion", "") for r in sg)
+                     and any("双估计器" in r.get("criterion", "") for r in sg),
+                     "n_rows=%s" % len(sg)))
+    mj = load(os.path.join(DATA, "m11_b1_managed_jobs.json")) if os.path.exists(
+        os.path.join(DATA, "m11_b1_managed_jobs.json")) else {}
+    A.append(assert_("P1.15 长作业登记表（命令行+日志+产物+完成标记）在位",
+                     len(mj.get("jobs") or []) >= 3,
+                     "jobs=%s" % [(j.get("id"), j.get("kind")) for j in (mj.get("jobs") or [])]))
 
     # ---------------- 判定 ----------------
     for a in A:

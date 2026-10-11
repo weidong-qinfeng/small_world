@@ -1,0 +1,39 @@
+{
+ "generated_by": "M11-B1（数据/参考带节点）",
+ "generated_at": "2026-10-11T17:05:00Z",
+ "rule": ">10 min 的作业一律登记（命令行 + 产物路径 + 日志 + 完成标记），便于主 agent 托管与核查",
+ "jobs": [
+  {
+   "id": "J1",
+   "kind": "background_self_run",
+   "title": "自建 dwell/τ 目标带（Allen BO 2p events × B4 冻结管线）",
+   "why_slow": "冻结模块的 2 状态/多 K 高斯 HMM 为 Python 逐时间步循环；n_bins(0.914s)≈4,076–11,413 ⇒ 单线程下 >10 min",
+   "command": "cd /Users/weidong/ai/small_world && PYTHONHASHSEED=0 OMP_NUM_THREADS=1 ./.venv-m11/bin/python neural_exploration/tools/build_m11_dwell_band.py",
+   "log": "neural_exploration/data/m11_raw/allen/vc2p/dwell_band.log",
+   "outputs": ["neural_exploration/data/m11_dwell_reference.csv", "neural_exploration/data/m11_dwell_reference.json"],
+   "completion_marker": "wrote …/m11_dwell_reference.csv（脚本末尾打印）",
+   "resource": "1 thread, no GPU; CPU/墙钟比按主 agent L46 方法在日志时间戳上核对"
+  },
+  {
+   "id": "J2",
+   "kind": "request_hosted",
+   "title": "取更大群体规模的 2p events 件（提升目标带的群体统计量）",
+   "status": "REQUESTED（未自启：网络实测 1.6–32 KB/s，16.4 MB 件预计 >30 min）",
+   "objects": [
+    {"url": "https://allen-brain-observatory.s3.amazonaws.com/visual-coding-2p/ophys_experiment_events/638871662_events.npz", "bytes": 16358638, "n_cells_derived": 18},
+    {"url": "https://allen-brain-observatory.s3.amazonaws.com/visual-coding-2p/ophys_experiment_events/497060401_events.npz", "bytes": 111876046, "n_cells_derived": 123}
+   ],
+   "derivation": "events.npz **不压缩**（npz=store）⇒ n_cells = bytes / (8 × n_frames)，n_frames≈113,835 实测",
+   "after_download": "重跑 tools/build_m11_dwell_band.py（自动纳入新件；完整性门会自动排除不完整文件）"
+  },
+  {
+   "id": "J3",
+   "kind": "request_hosted",
+   "title": "读回 2p NWB 的采样率与轨迹结构（`imaging_rate`）",
+   "status": "REQUESTED（6 MB Range 前缀已取 5.1 MB 后超时；/general★/processing 落在前缀之外）",
+   "command": "curl -sS -L -r 0-6291455 -o <prefix> https://allen-brain-observatory.s3.amazonaws.com/visual-coding-2p/ophys_experiment_data/497256116.nwb",
+   "or_full": "全量 176,019,299 B（约 1.5–30 h，视吞吐）",
+   "why": "当前帧率 30.9 Hz 为 NEEDS_VERIFY（由帧数与 session 时长合理性推断）"
+  }
+ ]
+}

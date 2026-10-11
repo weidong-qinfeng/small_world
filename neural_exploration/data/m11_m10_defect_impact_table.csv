@@ -1,0 +1,5 @@
+lam,n_seeds,frozen_pop_hz,fix_pop_hz,pop_rel_diff_pct,frozen_spk,fix_spk,spk_rel_diff_pct,frozen_silent_frac,fix_silent_frac,silent_diff_pp,frozen_rate_median_hz,fix_rate_median_hz,n_nan_frozen,n_nan_fix
+0.0,3,0.022933,0.0238,3.779,688,714,3.779,0.99867,0.99867,0.0,0.0,0.0,0,0
+1.0,3,0.065933,0.067167,1.871,1978,2015,1.871,0.976,0.976,0.0,0.0,0.0,0,0
+4.0,3,0.262767,0.266,1.23,7883,7980,1.23,0.894,0.89433,0.0333,0.0,0.0,0,0
+8.0,3,0.758267,0.767567,1.226,22748,23027,1.226,0.675,0.674,0.1,0.2,0.2167,0,0

@@ -40,3 +40,6 @@ neural_exploration/data/m10_p6_poptraces/
 neural_exploration/data/m11_raw/
 neural_exploration/data/_poptrace_*.npy
 neural_exploration/data/*_poptrace_*.npy
+.venv-m9/
+.venv-m10/
+.venv-m11/
