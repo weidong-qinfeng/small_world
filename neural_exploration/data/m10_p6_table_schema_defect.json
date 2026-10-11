@@ -1,0 +1,239 @@
+{
+  "artifact": "neural_exploration/data/m10_p6_judgement_table.csv",
+  "schema_v2_sha_note": "见同目录 m10_p6_judgement_table.json 内的 schema_v2 记录（本文件不重复哈希，避免单点声索）",
+  "defect_id": "D6（M10-B1 自查缺陷第 6 例）",
+  "discovered_by": "M10-B1 执行节点自查（非外部指出，亦非评审节点指出）",
+  "discovered_how": "交叉核对『本节点向评审节点提交的报告表述』与『文件是否可按列名解析』：报告称『CI 三列已入判决表』，遂用 csv 模块按名读取 tau_lo95_s ⇒ 取值为空 ⇒ 进而发现全表列数不齐",
+  "pre_fix_measured": {
+    "header_ncol": 23,
+    "row_ncol_histogram": {
+      "22": 2,
+      "23": 15,
+      "24": 7,
+      "26": 8
+    },
+    "ragged_rows": {
+      "22": [
+        23,
+        24
+      ],
+      "24": [
+        25,
+        26,
+        27,
+        28,
+        32,
+        33,
+        34
+      ],
+      "26": [
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43
+      ]
+    },
+    "note": "行号为修复前的文件行号（含 6 行注释头）"
+  },
+  "root_causes": [
+    "① RF-25 / RF-27 / RF-28 各轮追加行时多写 1 个字段 ⇒ sha16 列被写成字面量 'measured'，evidence_note 被挤出表头之外（7 行受影响，证据链字段错位）；",
+    "② RF-27 行少写 1 个空字段 ⇒ 该行 idx6 起整体左移 1（2 行受影响）；",
+    "③ RF-29 新增 τ CI 三列时直接追加在行尾、**未扩展表头** ⇒ tau_lo95_s / tau_hi95_s / tau_gap_in_se 三列无列名，落在表头之外（8 行受影响）；",
+    "④ 同一次追加把 **bootstrap 中位数** 写进 tau_ar1_s，而其余行该列是 **点估计** ⇒ 同一列混装两种口径，违反 L40 律①"
+  ],
+  "impact": {
+    "numeric_conclusions_changed": "无。全部判据数值来自权威来源（data/m10_p6_tau_bootstrap_CI.json 与各 validate 脚本），本次仅重排列/补列名/回填同源数值，**未重算任何统计量**。",
+    "interpretive_impact": "D6-④ 影响表述准确性：**必须**明确本表中 tau_ar1_s（点估计）与 tau_median_boot_s（自助中位）是两个不同口径的量，不得互换；差异最大者 M-6 λ×4 = 1.8244 s vs 3.0642 s（1.68×）。",
+    "report_claim_corrected": "本节点此前向评审节点提交的『CI 三列已入判决表』在『**可按列名解析**』这一意义上**不成立**（数值确实写入，但无列名、且 note 落在表头外）。已就地下修并报更正。"
+  },
+  "repairs_applied": {
+    "tags": {
+      "ok23": 15,
+      "shift+1": 2,
+      "sha16-fix": 7,
+      "ci26": 8
+    },
+    "schema_v2": "23 列原 schema + 4 列具名 CI 列（tau_median_boot_s, tau_lo95_s, tau_hi95_s, tau_gap_in_se）= 27 列",
+    "authoritative_source": "data/m10_p6_tau_bootstrap_CI.json（tau_med_s / tau_lo95_s / tau_hi95_s / gap_in_se）",
+    "point_estimate_source": "同臂 measured 行的 tau_ar1_s（0.914 s 箱 AR(1) 点估计）"
+  },
+  "post_fix_assertions": {
+    "A_header_is_schema_v2_27col": true,
+    "B_all_32_rows_are_27col": true,
+    "C_law3_point_inside_bootstrap_CI": "8/8 臂通过（两个独立估计器一致）",
+    "C_law3_detail": [
+      {
+        "level": "M-1",
+        "lam": 1.0,
+        "point_s": 1.5812,
+        "boot_med_s": 1.3827806637442321,
+        "ci95_s": [
+          1.1000177895330234,
+          1.7459054105349405
+        ],
+        "gap_in_se": 9.647183078729116,
+        "point_in_ci": true
+      },
+      {
+        "level": "M-4",
+        "lam": 1.0,
+        "point_s": 2.3106,
+        "boot_med_s": 2.0488646301311046,
+        "ci95_s": [
+          1.5802426846635436,
+          2.5472712387682543
+        ],
+        "gap_in_se": 7.76084708363735,
+        "point_in_ci": true
+      },
+      {
+        "level": "M-6",
+        "lam": 1.0,
+        "point_s": 2.2102,
+        "boot_med_s": 1.8476501519283404,
+        "ci95_s": [
+          1.462058748633854,
+          2.3126478884625272
+        ],
+        "gap_in_se": 8.44735258225734,
+        "point_in_ci": true
+      },
+      {
+        "level": "M0",
+        "lam": 1.0,
+        "point_s": 1.8398,
+        "boot_med_s": 1.5720552236110188,
+        "ci95_s": [
+          1.2059680749378872,
+          2.0715660268533367
+        ],
+        "gap_in_se": 7.8607746690201505,
+        "point_in_ci": true
+      },
+      {
+        "level": "M-1",
+        "lam": 4.0,
+        "point_s": 1.8718,
+        "boot_med_s": 1.552154923542932,
+        "ci95_s": [
+          1.0965992706218697,
+          2.145388605452411
+        ],
+        "gap_in_se": 6.274691692075068,
+        "point_in_ci": true
+      },
+      {
+        "level": "M-4",
+        "lam": 4.0,
+        "point_s": 7.8347,
+        "boot_med_s": 7.7690964791015595,
+        "ci95_s": [
+          5.251117830532253,
+          629.8963290579228
+        ],
+        "gap_in_se": 0.34467867880212183,
+        "point_in_ci": true
+      },
+      {
+        "level": "M-6",
+        "lam": 4.0,
+        "point_s": 1.8244,
+        "boot_med_s": 3.0641891056894415,
+        "ci95_s": [
+          1.632125104595085,
+          4.253915716190778
+        ],
+        "gap_in_se": 2.3641190896654503,
+        "point_in_ci": true
+      },
+      {
+        "level": "M0",
+        "lam": 4.0,
+        "point_s": 1.8477,
+        "boot_med_s": 1.6416970411777738,
+        "ci95_s": [
+          1.3005178515065068,
+          2.0557241841139184
+        ],
+        "gap_in_se": 9.01344081278888,
+        "point_in_ci": true
+      }
+    ],
+    "verification_command": "PYTHONHASHSEED=0 MPLBACKEND=Agg ./.venv-m9/bin/python neural_exploration/tools/normalize_m10_p6_table.py  # 幂等，重跑只做 A/B/C 断言",
+    "C_law3_detail_source": "本块由 m10_p6_tau_bootstrap_CI.json + 判决表程序化生成（断言表内 CI 与 JSON 逐位一致），非手录",
+    "C_law3_n_arms": 8
+  },
+  "process_defects": {
+    "D7": {
+      "name": "取证顺序错误（先改后取指纹）",
+      "detail": "修复前未先计算原文件哈希：`sha256sum` 在本机不存在（command not found），本节点**未改用 python hashlib 兜底**，直接进入修复流程 ⇒ 修复前文件字节未被指纹固定。",
+      "aggravation": "第二次幂等运行触发 `shutil.copy2(TABLE, SNAP)`，把已规范化的 v2 内容覆盖到 `m10_p6_judgement_table_pre_schema_fix.csv` 快照 ⇒ 原始 ragged 文件字节未留存；该误导性命名的快照文件已删除。",
+      "lesson": "任何『修复前留证』步骤都必须：① 用不依赖外部命令的方式（python hashlib）先取 sha256；② 快照写入必须 **只读一次**（存在即跳过，本次已加 `if not SNAP.exists()`）。这与 L40 律② 同源：**可复现 ≠ 正确**，同理『有快照文件』≠『快照内容是修复前状态』。",
+      "residual_evidence_chain": [
+        "① 缺陷指纹（本文件 pre_fix_measured：列数直方图 + 受影响行号）——由修复前 csv 解析直接测得；",
+        "② 权威数值来源 data/m10_p6_tau_bootstrap_CI.json（含 n_boot / phi_med / CI）；",
+        "③ git HEAD=abc3fc3 内该表旧版（RF-27 期），可用 `git show abc3fc3:neural_exploration/data/m10_p6_judgement_table.csv` 复核前缀行；",
+        "④ 复现方法：normalize 脚本的 repair() 分支即为缺陷的机器可读定义，任何人可对任意列数输入断言其行为。"
+      ]
+    }
+  },
+  "bootstrap_side_note": {
+    "arm": "M-4 λ×4",
+    "n_boot": 1946,
+    "dropped": 54,
+    "reason": "重采样样本 φ≥1（τ 不收敛/退化）⇒ 被剔除；被剔除样本集中在 τ 极小侧",
+    "consequence": "该臂 CI **下界 5.25 s 可能被抬高**（真实下界或更低）；本臂已判 unavailable（CI 跨越 9.4 s）且按 RF-28 仅描述性 ⇒ **不影响任何判决**，登记备查。"
+  },
+  "gate_effect": "无。P6 主判据结论不变：7/8 臂 fail（CI 上界 1.75–4.25 s ≪ 9.4 s），M-4 λ×4 unavailable 且仅描述性；gate3 仍为『c1∧c2∧c3 通过、c4 unavailable ⇒ 部分可判（3/4）』，c4 不代填。",
+  "git_reproducible_prefix": {
+    "claim": "缺陷可由**已提交历史**独立复现（无需相信本节点自述）",
+    "abc3fc3_histogram": {
+      "header": 23,
+      "rows": 22,
+      "row_ncol": {
+        "22": 2,
+        "23": 15,
+        "24": 5
+      }
+    },
+    "fbcfca0_histogram": {
+      "header": 23,
+      "rows": 14,
+      "row_ncol": {
+        "22": 2,
+        "23": 12
+      }
+    },
+    "final_pre_fix_histogram": {
+      "header": 23,
+      "rows": 32,
+      "row_ncol": {
+        "22": 2,
+        "23": 15,
+        "24": 7,
+        "26": 8
+      }
+    },
+    "recoverable": "abc3fc3 覆盖其中 11 行（22 列 2 行 + 24 列 5 行）+ 表头恒 23 列的事实 ⇒ 已提交历史即可复现『表头 23 / 行 22-24 并存』",
+    "not_recoverable": "RF-28 追加的 2 行 24 列 与 RF-29 追加的 8 行 26 列（共 10 行）从未以 ragged 形态提交 ⇒ 其字节不可恢复，仅有本文件记录的指纹 + 权威 JSON 数值",
+    "verify_command": "git show abc3fc3:neural_exploration/data/m10_p6_judgement_table.csv | python -c \"import csv,sys;from collections import Counter;d=[r for r in csv.reader(sys.stdin.read().splitlines()) if r and not r[0].startswith('#')];print(len(d[0]),dict(Counter(len(r) for r in d[1:])))\""
+  },
+  "housekeeping": [
+    {
+      "id": "H1",
+      "severity": "高",
+      "finding": "提交 091aa38（21:02）把本节点**被自身补丁损坏的 1.29 MB 脚本**纳入版本库：HEAD:neural_exploration/tools/normalize_m10_p6_table.py = 1,290,370 字节，首行为 '    # ---- 验证（改用 verify()…'（即 str.replace('',…) 插入事故的产物）。",
+      "current_state": "工作树已改为正确版本（git status 显示 ' M'，未提交）⇒ **下次提交前必须重新 git add 该文件**，否则版本库保留垃圾大文件。"
+    },
+    {
+      "id": "H2",
+      "severity": "中",
+      "finding": "同一提交把 `data/m10_p6_judgement_table_pre_schema_fix.csv`（14,657 字节）入库，而其内容经剖析为 **27 列 / 32 行 = 规范化后 v2**，与文件名『pre_schema_fix』**语义相反**（该快照已被第二次幂等运行覆盖）。",
+      "current_state": "该文件已从工作树删除（git status ' D'）⇒ 建议提交此删除；若保留于历史，任何按名理解的下游读者都会被误导，须以本文件声明为准。"
+    }
+  ]
+}
