@@ -80,12 +80,13 @@ M10-B1 交叉核对时发现（已入档）：λ×1 臂的模型群体序列**�
 
 ## 5. 开放项（⏳）
 
-0. **DQ-4 下载（主agent 托管，进行中）**：`functional_connectomics/node_and_edge_properties/v1/`
-   `node_data_v1.pkl` **294,635,032 B** + `edge_data_v1.pkl` **201,511,086 B**（HEAD 均 200，主agent 亲测）。
-   **吞吐实测**：单连接 **≈17 KB/s**（≈8 h，不可行）；**8 路并发 Range 聚合 ≈136 KB/s**（⇒ 两文件合计 **≈1 h**）
-   ⇒ 采用 **`curl -r` 分片 + 8 并发 + 分片重试 + 合并后校验 `stat -c%s == Content-Length`**；日志 `/tmp/ma_fc_parallel.log`。
-   **工程教训（可复用）**：**S3 对象在本机单连接受限时，Range 并发可显著提速（实测 3.4×–8×）**；
-   但**必须记录分片边界并在合并后做尺寸/哈希校验**（否则"拼错顺序"会被静默接受）。
+0. **DQ-4 下载 → 判 `unavailable（吞吐限制）`**：`functional_connectomics/node_and_edge_properties/v1/`
+   `node_data_v1.pkl` **294,635,032 B** + `edge_data_v1.pkl` **201,511,086 B**（HEAD 均 200 ⇒ **可达**）。
+   **吞吐实测三组对照**：单连接 **≈17 KB/s**；4 路并发 Range 短测聚合 ≈57 KB/s（瞬时）；**8 路并发持续 17 min 仅聚合 ≈10–16 KB/s**（各分片 ≈1.2 KB/s）；
+   **GCS 镜像 HTTP 404（该功能数据未镜像）** ⇒ **两文件 ETA ≈5–8 h，判不可行**（与 R1 DataJoint DB、M10 的 ZENODO 同类：**"可达 ≠ 可行"**）。
+   已启动的 8 路分片下载保留在后台（纯 I/O、可续传，日志 `/tmp/ma_fc_parallel.log`），**但 M11 任何判据/报告/交接不得依赖它**；
+   `readme_v1.md`（5,594 B，已落盘）**足以做规划与 schema 引用**。
+   **新增纪律**：**取数决策必须有实测吞吐支撑**（不得凭"应该很快"）；**S3 对象在单连接受限时 Range 并发可提速，但必须记录分片边界并在合并后做尺寸校验**。
 1. R4 的 10× 口径差（P2 四类参考量的前置条件）；
 2. R5 的两处 anomaly；
 3. R3 的 Allen NWB 读回（采样率 / units / 电极表）；
