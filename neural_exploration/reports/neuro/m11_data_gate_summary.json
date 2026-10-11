@@ -1,6 +1,6 @@
 {
  "generated_by": "tools/validate_p11_data_gate.py",
- "generated_at": "2026-10-11T13:24:12Z",
+ "generated_at": "2026-10-11T14:26:24Z",
  "gate": "G2 (P1/P2 数据门)",
  "assertions": [
   {
@@ -116,7 +116,7 @@
   {
    "assertion": "P1.6 M11 产出路径全部落在 m11 命名空间（冻结件零修改）",
    "ok": true,
-   "detail": "越界=[] (n_items=231)"
+   "detail": "越界=[] (n_items=235)"
   },
   {
    "assertion": "P2.7a functional_series 采集参数读回（帧率/时长/平面/体素/FOV）",
@@ -219,12 +219,34 @@
    "detail": "R-16={\"ref_id\": \"R-16\", \"quantity\": \"voxel_size_doc_conflict\", \"value\": \"10x\", \"unit\": \"ratio\", \"assertion\": \"doc 4 px/µm vs series 2.5 µm/px\", \"status\": \"NEEDS_VERI"
   },
   {
+   "assertion": "P1.8a 回退源采样率读回（Allen BO ecephys probes.csv 自描述）",
+   "ok": true,
+   "detail": "spike=30000.31 Hz（mean 29909.63）/ LFP=2500.03 Hz（mean 2492.47）/ n_probes=332"
+  },
+  {
+   "assertion": "P1.8b 回退源逐对象完整性登记（INCOMPLETE/MISSING 不入统计）",
+   "ok": false,
+   "detail": "[[\"manifest.json\", \"COMPLETE\"], [\"sessions.csv\", \"COMPLETE\"], [\"probes.csv\", \"COMPLETE\"], [\"units_prefix_1MB.csv\", \"RANGE_BOUNDED\"], [\"channels_prefix_1MB.csv\", \"INCOMPLETE\"], [\"probe_810755797_lfp_head8MB.bin\", \"INCOMPLETE\"]]"
+  },
+  {
+   "assertion": "P1.8c 采样率统计**只**用 COMPLETE 的 probes.csv",
+   "ok": true,
+   "detail": "n_probes=332 n_with_sr=332（构建器要求本地大小 == 期望 26,954 B 才计算）"
+  },
+  {
+   "assertion": "P1.8d MICrONS 体素解码证据在位（大端 int16，lat_x 与帧轴自相关过门）",
+   "ok": true,
+   "detail": "lat_x=0.814 帧轴lag1=0.8032 p50=1953.0（LE 对照：lat_x=-0.0011 帧轴lag1=0.0003）"
+  },
+  {
    "assertion": "DET 复跑 verdict 一致（确定性）",
    "ok": true,
    "detail": "[{\"source_id\": \"2\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"3\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F7\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F8\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F9\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}]"
   }
  ],
- "failures": [],
+ "failures": [
+  "P1.8b 回退源逐对象完整性登记（INCOMPLETE/MISSING 不入统计）"
+ ],
  "unavailable": [
   "**细胞数 / 突触数（MICrONS）= 未测**（`unavailable`，**不得写 0、不得算负结果**）：权威逐细胞表 `node_data_v1.pkl`（294.6 MB）与逐对突触表 `edge_data_v1.pkl`（201.5 MB）本轮未取（DQ-4）；论文档锚（literature）= '>200,000 cells / 0.5 billion synapses'（Nature 2025）；Allen 侧可得锚 = Cell Types 1,920 标本（measured）",
   "MICrONS 逐细胞 ΔF/F 与 ROI 轨迹：仅存在于 v8 DataJoint MySQL 数据库（103.8 GB docker tar 或 116.2 GB SQL dump）→ 本轮未取（超预算）⇒ unavailable（非 0、非未命中）",
@@ -234,16 +256,16 @@
   "MICrONS minnie CAVE 表 API（info/materialize）：404 / 503 → REACHABLE_NO_DATA / BLOCKED"
  ],
  "P1": {
-  "verdict": "pass",
-  "n_assertions": 26,
-  "n_failed": 0
+  "verdict": "fail",
+  "n_assertions": 30,
+  "n_failed": 1
  },
  "P2": {
   "verdict": "pass",
   "n_assertions": 17,
   "n_failed": 0
  },
- "G2_gate": "pass",
+ "G2_gate": "fail",
  "determinism_check": {
   "note": "复跑固定子集（#2/#3/F7/F8/F9），比对 verdict 是否一致",
   "comparisons": [

@@ -88,6 +88,11 @@ def verify_objects():
                 r["note"] = ("有界 Range 前缀（**故意只取前 %d B**；全量 %s ⇒ 未取）" % (exp, key))
             if r["verdict"] == "INCOMPLETE":
                 r["note"] = "期望 %s B，实收 %s B ⇒ **INCOMPLETE（不进统计，需重取）**" % (exp, n)
+        # **统计资格**：只有"完整/有界前缀且用途为 schema 读回"的对象可进入统计；
+        # INCOMPLETE/MISSING 一律 stat_eligible=False（主 agent §三 要求）
+        r["stat_eligible"] = r["verdict"] in ("COMPLETE", "RANGE_BOUNDED")
+        if r["verdict"] == "INCOMPLETE":
+            r["note"] = (r.get("note", "") + "；**不入统计**（stat_eligible=False），需重取")
         rows.append(r)
     return rows
 
@@ -204,7 +209,7 @@ def main():
         f.write("# M11 活动通道回退源：逐对象完整性登记（generated_by=tools/build_m11_allen_activity.py；"
                 "verdict ∈ {COMPLETE, RANGE_BOUNDED, INCOMPLETE, MISSING}；**INCOMPLETE 不进统计**）\n")
         cols = ["local_file", "url", "range", "expected_bytes", "bytes", "sha256", "verdict",
-                "retrieved_at", "use", "note"]
+                "stat_eligible", "retrieved_at", "use", "note"]
         w = csv.DictWriter(f, fieldnames=cols, extrasaction="ignore")
         w.writeheader()
         for r in objs:

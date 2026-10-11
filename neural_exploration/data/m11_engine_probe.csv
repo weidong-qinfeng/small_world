@@ -1,0 +1,7 @@
+n_neuron,arm,device,n_edge,steady_ms_per_step,single_trial_wall_s_T30s,gpu_h_per_trial_T30s,gpu_h_per_trial_T120s,rss_mb,build_s,n_slot,n_delay_group,spk_total,status
+8192,on,mps,159745,0.6615,396.9,0.1103,0.441,630.5,0.97,121,3,11028,measured
+31000,on,mps,604500,1.1362,681.72,0.1894,0.7575,877.4,3.4,121,3,42127,measured
+75909,on,mps,1480227,1.7165,1029.9,0.2861,1.1443,1222.2,8.01,121,3,102863,measured
+8192,off_frozen,mps,159745,2.0568,1234.08,0.3428,1.3712,1283.6,0.95,121,3,42939,measured
+31000,off_frozen,mps,604500,2.4173,1450.38,0.4029,1.6116,1466.3,3.29,121,3,161803,measured
+75909,off_frozen,mps,1480227,2.7008,1620.48,0.4501,1.8006,1636.0,7.91,121,3,393371,measured

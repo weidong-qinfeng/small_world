@@ -46,7 +46,9 @@
 | **下载完整性门**（主 agent §三） | **measured** | 逐对象 5 步链（http→大小→SHA-256→解压→尺寸自洽）：**COMPLETE 200/200**（首轮 197，3 片 `curl_exit=28` 半成品已重取）；`manifest.integrity`=COMPLETE 全行 | `m11_download_integrity.csv` / `_summary.json` |
 | **解析结构性门**（主 agent §二） | **measured** | 18 个假设 × 6 判据：**唯一自洽解 = 大端 int16**（lat_x **0.801**、相邻帧 **0.784**、p50 **1,815**）；小端/uint16/delta(cumsum)/Morton/float **全部判 invalid**（逐条原因落盘） | `m11_microns_parse_validation.json` / `_hypotheses.csv` |
 | **NaN/哨兵/掩膜登记**（主 agent §四） | **measured** | **NaN=0 / Inf=0**（整型域结构性为 0）；饱和(32767)=**0**；零值 0.2416%；低于基线 **10,383 (0.01298%)** 且**成簇于暗区**（邻域负值比例 0.111 vs 随机 0.000129；孤立 0.000）⇒ **无掩膜** | 同上 |
-| **参考锚** | **measured / 1 NEEDS_VERIFY / 1 unverified** | `m11_reference.csv` 22 行：帧率 **6.300006 Hz**、字节序 **big-endian**、20 B 头、10 帧/片=1.5873 s 均为 `asserted`；**dwell/τ 带 = `unverified`** | `m11_reference.csv` |
+| **参考锚** | **measured / 1 NEEDS_VERIFY / 1 unverified** | `m11_reference.csv` **26 行**：帧率 **6.300006 Hz**、字节序 **big-endian**、20 B 头、10 帧/片=1.5873 s、**Allen ephys 采样率 30 kHz / LFP 2.5 kHz** 均为 `asserted`；**dwell/τ 带 = `unverified`**（R-21） | `m11_reference.csv` |
+| **体素解码证据**（RF-M11-A 反证） | **measured** | `demo_m11_microns_decode.py` 一条命令复核：LE lat_x **−0.001** / 帧轴 lag1 **0.000** / p50 **0** ⇔ **BE lat_x +0.814** / 帧轴 lag1 **+0.803** / p50 **1953**；帧轴 lag1..6 = 0.803→0.709 平滑衰减 | `m11_decode_proof.json` + `m11_microns_decode_proof.png` |
+| **活动回退源**（RF-M11-A §二.3.a） | **measured**（自描述 CSV） | Allen BO ecephys：`probes.csv` **完整** ⇒ **spike 30,000.3 Hz / LFP 2,500.03 Hz**（332 probe，均值 29,909.6 / 2,492.5）；`sessions.csv` 完整（58 session）；`units.csv` 全量 51.4 MB **未取**（DQ-6），1 MB 前缀读回 27 列 schema | `m11_allen_activity_fallback.json` / `m11_allen_activity_objects.csv` |
 | 结构-功能**同源**证据 | **measured** | 同一 minnie65 体积内的 EM/seg 与 144 个双光子 field；`functional_coregistration` 前缀可达（2 键） | 同上 |
 | Allen Cell Types 元数据 | **measured（全取）** | **1,920/1,920 行**；54 字段（11 个 `ef__*`）；`ef__avg_firing_rate` n=**1,808**（中位 17.44 Hz） | `m11_allen_celltypes_metadata.csv` |
 | Allen per-cell NWB | **measured（对象级 + 头）** | HEAD 200 / **91,560,414 B** / `486940961_ephys.nwb`；Range 0-99 → 206；**44.7 MB 可见前缀 + 稀疏文件头解析**：`nwb_version = NWB-1.0.5`、`file_create_date = 2018-02-28`、根组 11 键、`Sweep_10` = `CurrentClampSeries`（"Voltage recorded from cell during current-clamp recording"） | `m11_allen_sources.json` |
@@ -85,6 +87,11 @@
 7. **网络波动会改变单源 verdict**：`#33 portal.brain-map.org` 三轮分别给 404 / 404 / 连接超时
    ⇒ 末轮判 `BLOCKED`（间歇不可达）；**不得**只引"好看的那一轮"。
 8. **Allen per-cell NWB 全量未到位**：44.7/91.5 MB 后停滞 ⇒ 完整内部结构（细胞/轨迹/刺激表）`unavailable`。
+9. **Allen `units.csv`（51.4 MB）/ `channels.csv`（6.6 MB）全量未取**：网络退化到 **16 KB/s** ⇒ 预计 >30 min
+   ⇒ 按纪律未自启（**DQ-6**）；已用 1 MB Range 前缀读回 schema。
+10. **Allen LFP NWB 全量 2,062,950,784 B > 2 GB** 单文件上限 ⇒ 合规地不下载，仅 Range 头解析。
+11. **网络吞吐剧烈退化**：本轮实测 S3 `bossdb-open-data` **194–349 KB/s → 16 KB/s**（同一时段）
+   ⇒ 一切取数决策必须按**当时的实测吞吐**做，不得沿用早前数字（本轮据此放弃了 ≥50 MB 的下载）。
 7. **本工作包未产出**：实测级调谐/dwell/等价协议 CSV（见 §1 未交付项）。
 
 ---
@@ -175,6 +182,16 @@ $PY neural_exploration/tools/validate_p11_data_gate.py --determinism-check
 ⇒ 若批准下载（≈496 MB，DQ-4），P2 的 C1/C2 参考量可**同源同口径**直接算出，P2 可从 `partial_pass` 推向全过。
 **本节点因 ">30 min 先汇报" 纪律未启动该下载。**
 
+## §6b-2 RF-M11-A（体素格式裁定）的处置：**接受回退，不接受 `format_unverified`**
+
+| 项 | 处置 |
+|---|---|
+| "不再攻关格式" | ✅ 服从（破解已在上一轮完成，成本已沉没；本轮只付"一条命令复核"的成本） |
+| "功能通道回退到自描述源" | ✅ **已落地**：Allen BO Neuropixels 自描述表（采样率 **30 kHz / 2.5 kHz** 读回）+ NWB(HDF5) 前缀；见 §2「活动回退源」 |
+| 登记体素序列 `format_unverified` | ❌ **不接受**：用**主 agent 自己的检验项**做 LE/BE 对照，BE 直读给出帧轴 lag1..6 = **0.803/0.783/0.761/0.743/0.725/0.709**、lat_x **0.814**、p50 **1953**；并有**独立地面真值**（原始未压缩 TIFF lat_x **0.767**、p50 **1,879**）。主 agent 三轮检验均为 `<i2` 小端读法 —— 其"无结构"是**字节序假象**。⇒ 登记 **`decoded(big-endian int16)`** 并保留裁定留痕（`m11_reference.csv` R-26） |
+| 风险说明 | 若判死功能体素序列，M11 将失去"**同源**结构-功能"这一相对 M10/M9 的唯一方法学升级（H4/P14 不可检验）⇒ 故建议保留 `decoded` 状态 |
+| **dwell/τ 参考带** | 仍 **`unverified`**（与格式无关：取决于 C1/C2 参考量重建 + RF-M11-2 劈半自检）——与 RF-M11-A §三.3 一致 |
+
 ## §6c 主 agent 独立复核的三项硬要求（**已全部落实并门化**）
 
 | 硬要求 | 处置 | 证据 |
@@ -191,5 +208,6 @@ $PY neural_exploration/tools/validate_p11_data_gate.py --determinism-check
 2. **P2 尚不足以"定稿 dwell 带"**：需先核 `int16/uint16` 与 **10× 分辨率口径差**（§3.1）；
    核对后即可用"2 field × 6.3001 Hz × 40,000 帧（105.8 min）"做劈半可达性自检（RF-M11-2）。
 3. **未启动**（遵守门链）：G0 引擎门、G1 生理门、S 机制门、P7–P14 —— 且 RF-M11-2..6 未落盘。
-4. **交主 agent 的四个决策**：DQ-1（DB 取数 vs 场级重建）/ DQ-2（NWB 全量续传托管作业）/
-   DQ-3（19 条冲突项落清单）/ **DQ-4（是否下载功能连接组学两个 pkl ≈496 MB —— 决定 P2 能否全过）**。
+4. **交主 agent 的六个决策**：DQ-1（DB 取数 vs 场级重建）/ DQ-2（NWB 全量续传托管作业）/
+   DQ-3（21 条冲突项落清单）/ **DQ-4**（功能连接组学两表 ≈496 MB —— 决定 P2 能否全过）/
+   **DQ-5**（把大端读法/完整性门/6.30 Hz 写入清单读取约定）/ **DQ-6**（`units.csv` 51.4 MB + `channels.csv` 6.6 MB 是否托管取）。

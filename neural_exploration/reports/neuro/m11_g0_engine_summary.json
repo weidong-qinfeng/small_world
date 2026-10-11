@@ -666,8 +666,102 @@
  "gate_verdict": "pass",
  "note": "四态：pass/fail/invalid/unavailable；未运行项一律 unavailable，不计 fail",
  "probe": {
-  "rows": [],
-  "device": null,
-  "two_comp": null
+  "rows": [
+   {
+    "arm": "on",
+    "n": 8192,
+    "status": "measured",
+    "n_edge": 159745,
+    "steady_ms_per_step": 0.6615,
+    "gpu_h_per_30s": 0.1103,
+    "gpu_h_per_120s": 0.441,
+    "build_s": 0.97,
+    "rss_mb": 630.5,
+    "spk_total": 11028,
+    "n_delay_group": 3,
+    "n_slot": 121,
+    "single_trial_wall_s": 396.9
+   },
+   {
+    "arm": "on",
+    "n": 31000,
+    "status": "measured",
+    "n_edge": 604500,
+    "steady_ms_per_step": 1.1362,
+    "gpu_h_per_30s": 0.1894,
+    "gpu_h_per_120s": 0.7575,
+    "build_s": 3.4,
+    "rss_mb": 877.4,
+    "spk_total": 42127,
+    "n_delay_group": 3,
+    "n_slot": 121,
+    "single_trial_wall_s": 681.72
+   },
+   {
+    "arm": "on",
+    "n": 75909,
+    "status": "measured",
+    "n_edge": 1480227,
+    "steady_ms_per_step": 1.7165,
+    "gpu_h_per_30s": 0.2861,
+    "gpu_h_per_120s": 1.1443,
+    "build_s": 8.01,
+    "rss_mb": 1222.2,
+    "spk_total": 102863,
+    "n_delay_group": 3,
+    "n_slot": 121,
+    "single_trial_wall_s": 1029.9
+   },
+   {
+    "arm": "off_frozen",
+    "n": 8192,
+    "status": "measured",
+    "n_edge": 159745,
+    "steady_ms_per_step": 2.0568,
+    "gpu_h_per_30s": 0.3428,
+    "gpu_h_per_120s": 1.3712,
+    "build_s": 0.95,
+    "rss_mb": 1283.6,
+    "spk_total": 42939,
+    "n_delay_group": 3,
+    "n_slot": 121,
+    "single_trial_wall_s": 1234.08
+   },
+   {
+    "arm": "off_frozen",
+    "n": 31000,
+    "status": "measured",
+    "n_edge": 604500,
+    "steady_ms_per_step": 2.4173,
+    "gpu_h_per_30s": 0.4029,
+    "gpu_h_per_120s": 1.6116,
+    "build_s": 3.29,
+    "rss_mb": 1466.3,
+    "spk_total": 161803,
+    "n_delay_group": 3,
+    "n_slot": 121,
+    "single_trial_wall_s": 1450.38
+   },
+   {
+    "arm": "off_frozen",
+    "n": 75909,
+    "status": "measured",
+    "n_edge": 1480227,
+    "steady_ms_per_step": 2.7008,
+    "gpu_h_per_30s": 0.4501,
+    "gpu_h_per_120s": 1.8006,
+    "build_s": 7.91,
+    "rss_mb": 1636.0,
+    "spk_total": 393371,
+    "n_delay_group": 3,
+    "n_slot": 121,
+    "single_trial_wall_s": 1620.48
+   }
+  ],
+  "device": "mps",
+  "two_comp": {
+   "status": "unavailable",
+   "reason": "E4b 层特异双房室档未实现（清单 §2.2 标『复用+扩展』，属 P-EXT1 预算门控）"
+  }
  }
 }

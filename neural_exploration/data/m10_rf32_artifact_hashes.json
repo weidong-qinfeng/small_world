@@ -1,0 +1,64 @@
+{
+  "artifact": "M10-B1 RF-32 文字订正落盘指纹",
+  "basis": "file_bytes（**基准已标注**，RF-31/L52 纪律）",
+  "generated_by": "neural_exploration/tools/hash_report.py（同口径）",
+  "rows": [
+    {
+      "path": "docs/m10_stage3_report.md",
+      "n_bytes": 49959,
+      "n_lines": 581,
+      "sha256_file_bytes": "6691b96567e758a2eed17de9221d46610a4e0f8290d0cead3d3cdc39d7a50165",
+      "sha256_file_bytes_16": "6691b96567e758a2"
+    },
+    {
+      "path": "reports/neuro/m10_stage23_summary.json",
+      "n_bytes": 54979,
+      "n_lines": 1408,
+      "sha256_file_bytes": "4d9dcc96ca16ec34e03e1881ad7fe3abc9a835cdd5e4a5f6bd242ae674d46bf3",
+      "sha256_file_bytes_16": "4d9dcc96ca16ec34"
+    },
+    {
+      "path": "data/m10_p6_judgement_table.csv",
+      "n_bytes": 18318,
+      "n_lines": 55,
+      "sha256_file_bytes": "5428fb93c01ead06547864b4f28002e4889a80c1c789bf5cd09cb7973fd5d674",
+      "sha256_file_bytes_16": "5428fb93c01ead06"
+    },
+    {
+      "path": "data/m10_p6_table_schema_defect.json",
+      "n_bytes": 13414,
+      "n_lines": 275,
+      "sha256_file_bytes": "8d5ab71f387d1ae199111588b8110affdab6eac306b95528163578558bdbe5f3",
+      "sha256_file_bytes_16": "8d5ab71f387d1ae1"
+    },
+    {
+      "path": "docs/m10_env_notes.md",
+      "n_bytes": 134491,
+      "n_lines": 1574,
+      "sha256_file_bytes": "2c729893cb6e45a02003c1eac324418885846b8c8d956b0f002ba79cfcf2ba3a",
+      "sha256_file_bytes_16": "2c729893cb6e45a0"
+    },
+    {
+      "path": "tools/hash_report.py",
+      "n_bytes": 4924,
+      "n_lines": 107,
+      "sha256_file_bytes": "288067e5e698eee05d735200e072791c0560578b6d059a335269d66b20d3aabe",
+      "sha256_file_bytes_16": "288067e5e698eee0"
+    },
+    {
+      "path": "tools/normalize_m10_p6_table.py",
+      "n_bytes": 16966,
+      "n_lines": 322,
+      "sha256_file_bytes": "87d6a7729af65743bd4cdd8bb32835ef91fdd4f1a240e8c27261046d76ef65c1",
+      "sha256_file_bytes_16": "87d6a7729af65743"
+    },
+    {
+      "path": "tools/validate_p10_tau_bootstrap.py",
+      "n_bytes": 17712,
+      "n_lines": 332,
+      "sha256_file_bytes": "9f7bcc43fc5ccccab7c534015a1815e1cdf7ee5efe17b2209b07be656015856c",
+      "sha256_file_bytes_16": "9f7bcc43fc5cccca"
+    }
+  ],
+  "note": "本账本自身不入 rows，避免自指哈希"
+}

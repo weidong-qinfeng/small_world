@@ -817,7 +817,8 @@
       ],
       "source": "M10-B4 追加任务 G（全记录 φ=0.9757213）；42.332 s 为前 80% 段值（13.9% 口径差）",
       "model_value": "unavailable（pop trace 未落盘；须托管臂产出后离线计算）",
-      "honest_limit": "Ljung-Box 三口径全部拒绝白噪 ⇒ τ 仅一阶近似、粗粒度指标（B4 登记）"
+      "honest_limit": "Ljung-Box 三口径全部拒绝白噪 ⇒ τ 仅一阶近似、粗粒度指标（B4 登记）",
+      "_superseded_by_RF32": "RF32_final（量级/双口径表述部分；旧字段保留不改）"
     },
     "supporting_quantitative_evidence": {
       "same_method_dwell_gap": {
@@ -867,7 +868,8 @@
       "fail",
       "invalid",
       "unavailable"
-    ]
+    ],
+    "_superseded_by_RF32": "RF32_final（量级/双口径表述部分；旧字段保留不改）"
   },
   "RF17_finalization": {
     "E_M9_1_exact_numbers": {
@@ -1116,7 +1118,8 @@
     "G1": "条件性通过（T=2 s 窗 + 临界未分辨 + A12 时长依赖 三限定必携）",
     "P6": "❌ 反证（定稿）",
     "P7_P13": "blocked_by_p6（非未测）",
-    "M10": "通过（反证型收口）—— 主agent 终审 acceptance_master §4.4 / commit 798fcad"
+    "M10": "通过（反证型收口）—— 主agent 终审 acceptance_master §4.4 / commit 798fcad",
+    "_superseded_by_RF32": "RF32_final（量级/双口径表述部分；旧字段保留不改）"
   },
   "RF28_final": {
     "M6_lambda4_merged": {
@@ -1400,5 +1403,6 @@
       "verdict_impact": "无。M-4 λ×4 已判 MECHANISM_NOT_IMPLEMENTED(scope)/unavailable/仅描述性 ⇒ 其 τ_未平滑≈9.03 s 绝不可读作『机制奏效』；M-6 λ×4 τ_未平滑=1.682 s 仅为窗下界 0.18×（低 5.6×）。§4.8.2 的『类别性差距/反证增强』结论不变，其证据基础是 λ×1 四臂 4/4 为负"
     },
     "jobs_started": "无（stage H 为 B4 离线复算；本节点未起任何作业）"
-  }
+  },
+  "tau_criterion_final_pointer_RF32": "上列字符串为**旧版措辞**，已由 RF32_final 的双口径定稿表述取代（原值保留不改）"
 }

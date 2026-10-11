@@ -1478,6 +1478,27 @@ def make_plot(res: dict, path: str) -> str:
     return "ok"
 
 
+def _probe_fit(t10: dict) -> dict:
+    """三档 ms/step 的 `t = a + b·N` 最小二乘拟合（与 M9/M10 锚同形式；**禁用段 0 预热值**）。"""
+    out = {}
+    for arm in sorted({r.get("arm") for r in t10.get("rows", []) if r.get("status") == "measured"}):
+        rr = sorted([r for r in t10.get("rows", [])
+                     if r.get("arm") == arm and r.get("status") == "measured"], key=lambda z: z["n"])
+        if len(rr) < 2:
+            continue
+        N = np.asarray([z["n"] for z in rr], dtype=float)
+        t = np.asarray([z["steady_ms_per_step"] for z in rr], dtype=float)
+        b, a = np.polyfit(N, t, 1)
+        pred = a + b * N
+        out[arm] = dict(a_ms=float(a), b_ms_per_neuron_step=float(b),
+                        max_rel_resid=float(np.max(np.abs(pred - t) / np.maximum(t, 1e-12))),
+                        points=len(rr),
+                        spk_per_neuron_hz=[round(z["spk_total"] / z["n"] / 1.0, 3) for z in rr],
+                        density_caveat="墙钟混入发放密度（M10 L18.4）：各臂的 spk/neuron 已并列，"
+                                       "跨臂比较墙钟前必须核对密度")
+    return out
+
+
 def build_summary(res: dict) -> dict:
     t1, t2, t3, t4, t5 = res.get("t1", {}), res.get("t2", {}), res.get("t3", {}), \
         res.get("t4", {}), res.get("t5", {})
@@ -1576,7 +1597,12 @@ def build_summary(res: dict) -> dict:
                 gate_verdict=verdict,
                 note="四态：pass/fail/invalid/unavailable；未运行项一律 unavailable，不计 fail",
                 probe=dict(rows=t10.get("rows", []), device=t10.get("device"),
-                           two_comp=t10.get("two_comp")))
+                           two_comp=t10.get("two_comp"), fit=_probe_fit(t10),
+                           ng_note=("预注册上限 0.5 GPU-h/试次（30 s）："
+                                    "on 档 N=75,909 实测 "
+                                    + str(next((r["gpu_h_per_30s"] for r in t10.get("rows", [])
+                                                if r.get("arm") == "on" and r.get("n") == 75909),
+                                               None)) + " GPU-h"))
 
 
 def main(argv=None) -> int:

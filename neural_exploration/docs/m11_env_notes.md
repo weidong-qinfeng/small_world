@@ -443,6 +443,9 @@ RF-M11-2 要求：M11 定稿 dwell 带前必须做"目标数据劈半 + 同协�
    （F17：v1 前缀 200 / 4 键），但**未取对象内容**（属 P4/§3 范围）。
 8. **MICrONS 结构-功能同源映射表**（`functional_coregistration`）：前缀可达（200 / 830 B，2 键），
    但**映射表内容未取**（属 P2/H4 后续）。
+9. **Allen `units.csv`（51,439,189 B）/ `channels.csv`（6,613,329 B）全量**：网络 16 KB/s ⇒ 预计 >30 min ⇒
+   **未取**（登记 `unavailable`，DQ-6 裁决）；已取 1 MB Range 前缀读回 schema。
+10. **Allen LFP NWB 全量**（2,062,950,784 B）：**超过"单次 ≤2 GB"上限** ⇒ 合规地不下载，只做 Range 头解析。
 
 ---
 
@@ -498,13 +501,14 @@ RF-M11-2 要求：M11 定稿 dwell 带前必须做"目标数据劈半 + 同协�
 
 ---
 
-## L24 — 交主 agent 的五个决策请求
+## L24 — 交主 agent 的六个决策请求
 
 | # | 请求 | 影响 | 建议 |
 |---|---|---|---|
 | **DQ-1** | 是否允许"**不取 v8 DataJoint DB**"，改走**场级重建**（144 ROI 掩膜 + 2 field 钙电影）？ | 决定 P2 的 `measured` 范围与 P7/P14 的逐细胞口径 | **建议允许**（DB 取数需 20–30 天，等于停工） |
 | **DQ-2** | 是否由主 agent 起**托管后台作业**继续 NWB 全量（91.5 MB，约 40–50 min）并做完整头解析？ | 决定 Allen per-cell 通道的证据级别（partial → full） | **建议：让现有作业跑完**（已续传，零额外成本） |
 | **DQ-3** | L19 的 19 条冲突项是否按"新增行 + 保留原行"逐条落入清单 §1.6/§1.1？ | 判据带定稿纪律（运行前定稿） | **建议逐条落入**，并给 `m11_microns_protocol.json` 加"待核口径"指针（L11.3/L11.5） |
+| **DQ-6** | 是否托管取 **Allen `units.csv`（51,439,189 B，逐 unit 质量表）** 与 **`channels.csv`（6,613,329 B）**？ | 决定 P7/P8/P14 的**单元级电生理带**能否 `measured`（现仅有 schema）；网络 16 KB/s ⇒ 预计 >30 min，本节点按纪律未自启 | **建议托管**（或换网/镜像）；不取则 P7/P8 的类型级带仍走 `literature` |
 | **DQ-5** | 是否把 **L25.2 的读取约定**（20 B 大端头 + 大端 int16 + 无掩膜 + 完整性门）与 **L26 的 6.30 Hz 读回断言**按"新增行"写入清单 §1.1.2/§1.5？ | 决定后续节点是否会重复"小端误读 ⇒ 判据全错"与"半成品入统计"两类事故 | **建议写入**（本节点已把三者做成可复跑的门：`verify_m11_downloads.py` / `validate_m11_microns_parse.py` / `build_m11_reference.py`） |
 | **DQ-4** | 是否为 **L23 的两个 pkl**（node 294.6 MB / edge 201.5 MB，合计 ≈496 MB）起**托管下载作业**？ | 决定 P2 能否**同源同口径**算出 C1（调谐/OSI）与 C2（群体相关），并把 P2 从 `partial_pass` 推向全过；亦直接影响 P7/P8/P14 的对照材料 | **建议批准**（在预算内；按 200–350 KB/s 估 ≈25–45 min，建议**分段 + 断点续传 + 增量日志**；本节点因 >30 min 纪律**未自启**） |
 
@@ -611,3 +615,62 @@ RF-M11-2 要求：M11 定稿 dwell 带前必须做"目标数据劈半 + 同协�
 | `data/m11_raw/microns/functional/tif_frames_probe.bin` | 原始 BigTIFF 4 帧前缀（独立地面真值；Range 512–2200000） |
 
 ---
+
+---
+
+## L28 — RF-M11-A（主 agent 裁定：体素格式不可解 ⇒ 功能通道回退）的处置
+
+**处置结论：接受"不再攻关"与"回退源落地"两项；不接受把体素序列登记 `format_unverified`（理由与证据如下）。**
+
+### L28.1 判定性实测：主 agent 的三批检验**全部是小端读法**，其"无结构"是**字节序假象**
+本节点用**主 agent 自己的检验项**在同一文件上做 LE/BE 对照（`tools/demo_m11_microns_decode.py`，
+产物 `data/m11_decode_proof.json` + `reports/neuro/m11_microns_decode_proof.png`）：
+
+| 检验项（主 agent 采用） | `<i2`（小端，主 agent 与本节点首版） | **`>i2`（大端）** |
+|---|---|---|
+| 帧轴 lag1..6 自相关 | 0.0003 / −0.0009 / −0.0007 / −0.0003 / −0.0035 / 0.0028 | **0.803 / 0.783 / 0.761 / 0.743 / 0.725 / 0.709**（平滑衰减=钙成像时间结构） |
+| 轴1(y) lag1..6 | ≈0（−0.0014…0.0013） | **0.801 / 0.654 / 0.572 / 0.516 / 0.484 / 0.468** |
+| 轴2(x) lag1..6 | ≈0 | **0.814 / 0.676 / 0.593 / 0.531 / 0.489 / 0.464** |
+| 横向相邻像素相关 | −0.001 | **+0.814 / +0.801** |
+| p50 | **0** | **1,953** |
+| 值域 | −32,768 … 32,584 | −41 … 29,796 |
+| 唯一值 / 最高频次 | 8,971 / 401 (0.10%) | 8,971 / 401（**同一批字节 ⇒ 该项无判别力**） |
+
+⇒ 主 agent 观测到的"逐轴自相关全 ≈0、p50=0、值域 ±32k 对称、近似均匀"**正是小端读法的指纹**：
+把每个 int16 的 (hi,lo) 对调，原本的强空间-时间结构被打散为准随机序列。**这不是"格式不可解"。**
+
+**四条独立证据（任一单独成立即可推翻 format_unverified）**：
+1. **相干性**：BE 直读 lat_x=0.814 / 帧轴 lag1=0.803，判据（≥0.2）**远超**；LE 为 ≈0；
+2. **独立地面真值**：同数据集**原始未压缩 BigTIFF**（另一 scan、Range 6 帧）lat_x=**0.767**、p50=**1,879**
+   ⇔ 分片解码 0.777 / 1,863 ⇒ 阈值由真实数据锚定，非自证；
+3. **Morton 被否**：本节点实现的是"补齐 256×256 后按 Z 序取有效位"（恰好 40,000，无越界），
+   结果是 lat_x 0.588 < 0.784 ⇒ **Morton 只会降低相干性 ⇒ 数据不是 Z 序**；
+4. **格式本身不需要官方客户端**：`20 B 大端头 [num_dims=4, x=200, y=200, z=1, t=10] + gzip 成员 + 大端 int16（x 最快）`
+   —— 是 N5/BossDB（Java）系惯例；`pip install` 不可得**不影响**该读法自证（已用结构化判据门化）。
+
+**风险对照（为何不能轻率登记 `format_unverified`）**：MICrONS 的"**同源**结构-功能"是 M11 相对 M10/M9 的
+**唯一方法学升级**（H4 / P14 的核心）。若把功能体素序列判死，M11 的活动金标准将退化为**跨动物**的替代源，
+H4 不可检验。⇒ 建议登记 **`decoded(big-endian int16)`**，并在文档保留
+"主 agent 曾裁定 `format_unverified`，节点以 4 条证据否证"的**复核留痕**（已写入 `m11_reference.csv` R-26）。
+
+### L28.2 回退源**已按 RF-M11-A §二.3.a 落地**（自描述格式，零解码风险）
+`tools/build_m11_allen_activity.py` → `data/m11_allen_activity_fallback.json` + `m11_allen_activity_objects.csv`：
+
+| 对象 | 状态 | **读回值** |
+|---|---|---|
+| `probes.csv`（**完整** 26,954 B，332 probe） | COMPLETE | **`sampling_rate` 均值 29,909.6 Hz / 最大 30,000.3 Hz（spike-band 30 kHz）**；**`lfp_sampling_rate` 均值 2,492.5 / 最大 2,500.03 Hz**；`lfp_temporal_subsampling_factor=2.0`；325/332 `has_lfp_data=True` |
+| `sessions.csv`（**完整** 7,849 B，58 session） | COMPLETE | `session_type / specimen_id / age_in_days / sex / genotype / has_nwb` ⇒ **P14 的 session 级隔离材料** |
+| `units.csv`（全量 **51,439,189 B 未取**） | RANGE_BOUNDED（1 MB 前缀） | **27 列 schema 读回**：`firing_rate / snr / isi_violations / presence_ratio / quality("good") / amplitude / d_prime / isolation_distance / silhouette_score / nn_hit_rate / nn_miss_rate / ecephys_channel_id` … ⇒ P7/P8 的电生理带与单元质量筛选表（**DQ-6**：是否托管取全量） |
+| `channels.csv`（6,613,329 B） | 前缀（网络中断⇒INCOMPLETE，已登记） | 逐 channel 表（结构/层归属列在表头） |
+| `probe_810755797_lfp.nwb`（**2,062,950,784 B > 2 GB 单文件上限**） | 前缀 Range（头部解析） | HDF5 自描述；**不下载全量**（合规） |
+
+**纪律**：断言 `P1.8b` 强制"**INCOMPLETE/MISSING 对象不得进入统计**"；采样率统计**只**用本地大小 == 期望值的
+`probes.csv`（`P1.8c` 强制）。⇒ 主 agent §三 的完整性门要求现已覆盖**全部新增下载对象**（不只功能子集）。
+
+### L28.3 与 RF-M11-A §三 三条硬要求的对应
+| 要求 | 状态 |
+|---|---|
+| 完整性门（逐对象 http→大小→sha256→解压/解析→尺寸自洽；失败者 INCOMPLETE 且不进统计） | ✅ **已覆盖全部对象**：功能子集 200/200 COMPLETE（`m11_download_integrity.csv`）+ 回退源逐对象登记（`m11_allen_activity_objects.csv`） |
+| NaN/非有限值与哨兵登记 | ✅ **已完成**：NaN=0 / Inf=0（整型域）；10,383 个"低于基线"样本**成簇于暗区 ⇒ 非哨兵、无掩膜**；主 agent 的 106 NaN 与 \|x\|>1e30 = **float 误读副产物**（L25.3） |
+| 读回 `frame_interval_s=0.15873 ⇒ 6.30 Hz`（与 ZAPBench 1.09 Hz 差 5.8×） | ✅ `m11_reference.csv` **R-01 `asserted`**（判定器 `P2.12a` 强制）；**dwell/τ 带仍 `unverified`**（R-21，`P2.12c` 强制） |
+

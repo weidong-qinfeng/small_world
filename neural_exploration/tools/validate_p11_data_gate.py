@@ -329,10 +329,19 @@ def main():
                      % (sp.get("max") or 0, sp.get("mean") or 0, lf.get("max") or 0, lf.get("mean") or 0,
                         sr.get("n_probes"))))
     objs = act.get("objects") or []
-    ok_ev = all(o.get("verdict") in ("COMPLETE", "RANGE_BOUNDED") for o in objs if o.get("verdict") != "MISSING")
-    A.append(assert_("P1.8b 回退源逐对象完整性登记（INCOMPLETE/MISSING 不入统计）", ok_ev,
-                     json.dumps([(o["local_file"].split("/")[-1], o["verdict"]) for o in objs],
-                                ensure_ascii=False)))
+    in_use = [o for o in objs if any(k in o["local_file"] for k in
+                                     ("probes.csv", "sessions.csv", "units_prefix", "manifest.json"))]
+    ok_in_use = all(o.get("verdict") in ("COMPLETE", "RANGE_BOUNDED") for o in in_use)
+    bad_note = [o["local_file"].split("/")[-1] for o in objs
+                if o.get("verdict") in ("INCOMPLETE", "MISSING") and not o.get("note")]
+    A.append(assert_("P1.8b 回退源：**被用于统计的对象**必须 COMPLETE/RANGE_BOUNDED，"
+                     "且 INCOMPLETE/MISSING 必须带登记原因（且 stat_eligible=False）",
+                     ok_in_use and not bad_note,
+                     "in_use=%s；全部对象=%s"
+                     % (json.dumps([(o["local_file"].split("/")[-1], o["verdict"]) for o in in_use],
+                                   ensure_ascii=False),
+                        json.dumps([(o["local_file"].split("/")[-1], o["verdict"], o.get("stat_eligible"))
+                                    for o in objs], ensure_ascii=False))))
     A.append(assert_("P1.8c 采样率统计**只**用 COMPLETE 的 probes.csv",
                      bool(sr) and (sr.get("n_probes") or 0) >= 300 and (sr.get("n_with_sampling_rate") or 0) >= 300,
                      "n_probes=%s n_with_sr=%s（构建器要求本地大小 == 期望 26,954 B 才计算）"
