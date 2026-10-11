@@ -57,20 +57,29 @@ DUAL_EST_TOL = 0.02         # 双估计器一致性硬门（清单：相对差 �
 # ---------------------------------------------------------------------------
 # 点神经元核（E1b/E2b）
 # ---------------------------------------------------------------------------
-def _mc_core_factory(p, nc: int, slow_on: bool, taus: Sequence[float],
-                     e_inhs: Sequence[float], slow_tau_ms: float, e_slow: float):
-    """返回点神经元状态更新核。
+REF_FIX = "semantic_fix"        # 文档语义：第 4 形参=g_ahp、第 5 形参=cool（= 冻结件 gaba 路径语义）
+REF_FROZEN = "m10_frozen"       # 冻结件缺陷档：调用序 (t_cool, t_ahp) 与形参名 (g_ahp, cool) 错位
 
-    变体（4 个，闭包在创建时固化 ⇒ **作用域守卫**可由 `core_readback()` 核对）：
+
+def _mc_core_factory(p, nc: int, slow_on: bool, frozen: bool, taus: Sequence[float],
+                     e_inhs: Sequence[float], slow_tau_ms: float, e_slow: float):
+    """返回点神经元状态更新核（**6 变体**：nc × slow_on × refractory_form）。
 
     | 变体 | 语义 |
     |---|---|
-    | `nc=2, slow_on=False` | **与 M10 `_point_core_factory(ahp_form="conductance")` 逐字一致**（关闭态等价前提）|
-    | `nc=2, slow_on=True`  | 上式 + 慢电导项 `gs2·(E_slow − v)`（加在 `iext` 之前，全零时逐位退化）|
-    | `nc=4, slow_on=False` | 三类抑制电导各自独立时间常数与反转电位 |
-    | `nc=4, slow_on=True`  | 上式 + 慢电导项 |
+    | `nc=2, slow=False, REF_FIX` | 文档语义点核（= M10 `gaba_split=True` 且 `frac_slow=0` 的语义，逐位一致）|
+    | `nc=2, slow=False, REF_FROZEN` | **冻结件 M9/M10 非 gaba 路径的实收语义**（第 4/5 形参错位，见 E-M9-4）|
+    | `nc=2, slow=True, *` | 上式 + 慢电导项 `gs·(E_slow − v)`（慢项全零时逐位退化）|
+    | `nc=4, slow=*, REF_FIX` | 三类抑制电导各自独立时间常数与反转电位（**冻结档在 4 槽下无定义 ⇒ 构造时拒绝**）|
 
     `taus = (tau_e, tau_pv, tau_sst, tau_vip)`；`e_inhs = (e_pv, e_sst, e_vip)`。
+
+    **前置发现（E-M9-4）**：`adult_engine._point_core_factory` 的形参序为
+    `(v, ge, gi, g_ahp, cool, ev_e, ev_i, iext)`，而全部 4 个 point 调用点
+    （`adult_engine` L666/L690、`larval_zf_engine` L348/L373）传入 `(t_cool, t_ahp)`
+    ⇒ 不应期门实读 `t_ahp`、AHP 电导实读 `t_cool`。**`REF_FROZEN` 逐位复刻缺陷档**
+    （实测单神经元 ISI 182 步 vs 文档语义 144 步），用于"关闭态等价"与缺陷量级量化；
+    冻结档在 `nc=4` 下无定义 ⇒ 显式拒绝（不静默）。
     """
     dt_s = p.dt_ms * 1e-3
     ae = math.exp(-p.dt_ms / p.tau_e)
@@ -82,22 +91,43 @@ def _mc_core_factory(p, nc: int, slow_on: bool, taus: Sequence[float],
     legacy = (str(p.ahp_form) == "current")
     if legacy:  # pragma: no cover —— legacy 档不在 M11 路线（显式拒绝，避免静默错核）
         raise ValueError("M11 内核不支持 ahp_form='current'（legacy）；请用 'conductance'")
+    if frozen and nc != N_CH_OFF:
+        raise ValueError("冻结缺陷档（REF_FROZEN）只在 nc=2（E1b 关闭）下有意义")
+    if frozen and ahp_g_inc != 0.0:
+        raise ValueError("冻结缺陷档 + ahp_g_inc≠0 是无意义组合（冻结件把 t_cool 当 AHP）")
     a_slow = math.exp(-p.dt_ms / max(1e-9, float(slow_tau_ms)))
 
     if nc == 2 and not slow_on:
         ei = float(p.e_inh)
         ai = math.exp(-p.dt_ms / p.tau_i)
 
+        if not frozen:
+            def core(v, ge, gi, cool, g_ahp, ev_e, ev_i, iext):
+                """文档语义点核（与 M10 `gaba_split=True, frac_slow=0` 逐位一致）。"""
+                ge2 = ge + ev_e
+                gi2 = gi + ev_i
+                ga2 = g_ahp * aa
+                drive = (gl * (vr - v) + ge2 * (ee - v) + gi2 * (ei - v)
+                         + ga2 * (ek - v) + iext)
+                v2 = torch.clamp(v + dt_s * drive, min=vfloor)
+                spk = (v2 >= vth) & (cool <= 0.0)
+                cool2 = torch.where(spk, ref_m1, torch.clamp(cool - 1.0, min=0.0))
+                ga3 = torch.where(spk, ga2 + ahp_g_inc, ga2)
+                v3 = torch.where(cool2 > 0.0, vres, v2)
+                return v3, ge2 * ae, gi2 * ai, ga3, cool2, spk
+
+            return core
+
         def core(v, ge, gi, cool, g_ahp, ev_e, ev_i, iext):
-            """**逐字复制 M10 的非 gaba_split 核**（关闭态等价的可审计依据）。"""
+            """**冻结件实收语义**（形参名保持调用序；第 4/5 形参使用错位 ⇒ 逐位复刻缺陷档）。"""
             ge2 = ge + ev_e
             gi2 = gi + ev_i
-            ga2 = g_ahp * aa
+            ga2 = cool * aa                      # 冻结件把 `cool` 形参当 g_ahp 用
             drive = (gl * (vr - v) + ge2 * (ee - v) + gi2 * (ei - v)
                      + ga2 * (ek - v) + iext)
             v2 = torch.clamp(v + dt_s * drive, min=vfloor)
-            spk = (v2 >= vth) & (cool <= 0.0)
-            cool2 = torch.where(spk, ref_m1, torch.clamp(cool - 1.0, min=0.0))
+            spk = (v2 >= vth) & (g_ahp <= 0.0)   # 冻结件把 `g_ahp` 形参当 cool 用
+            cool2 = torch.where(spk, ref_m1, torch.clamp(g_ahp - 1.0, min=0.0))
             ga3 = torch.where(spk, ga2 + ahp_g_inc, ga2)
             v3 = torch.where(cool2 > 0.0, vres, v2)
             return v3, ge2 * ae, gi2 * ai, ga3, cool2, spk
@@ -108,20 +138,24 @@ def _mc_core_factory(p, nc: int, slow_on: bool, taus: Sequence[float],
         ei = float(p.e_inh)
         ai = math.exp(-p.dt_ms / p.tau_i)
 
-        def core(v, ge, gi, gs, s_inc, cool, g_ahp, ev_e, ev_i, iext):
+        def core(v, ge, gi, cool, g_ahp, gs, s_inc, ev_e, ev_i, iext):
             ge2 = ge + ev_e
             gi2 = gi + ev_i
-            ga2 = g_ahp * aa
-            gs_used = gs
+            if frozen:
+                ga2 = cool * aa
+                gate = g_ahp
+            else:
+                ga2 = g_ahp * aa
+                gate = cool
             drive = (gl * (vr - v) + ge2 * (ee - v) + gi2 * (ei - v)
-                     + ga2 * (ek - v) + gs_used * (e_slow - v) + iext)
+                     + ga2 * (ek - v) + gs * (e_slow - v) + iext)
             v2 = torch.clamp(v + dt_s * drive, min=vfloor)
-            spk = (v2 >= vth) & (cool <= 0.0)
-            cool2 = torch.where(spk, ref_m1, torch.clamp(cool - 1.0, min=0.0))
+            spk = (v2 >= vth) & (gate <= 0.0)
+            cool2 = torch.where(spk, ref_m1, torch.clamp(gate - 1.0, min=0.0))
             ga3 = torch.where(spk, ga2 + ahp_g_inc, ga2)
-            gs2 = torch.where(spk, gs_used + s_inc, gs_used)
+            gs2 = torch.where(spk, gs + s_inc, gs)
             v3 = torch.where(cool2 > 0.0, vres, v2)
-            return v3, ge2 * ae, gi2 * ai, gs2 * a_slow, ga3, cool2, spk
+            return v3, ge2 * ae, gi2 * ai, ga3, cool2, gs2 * a_slow, spk
 
         return core
 
@@ -148,7 +182,7 @@ def _mc_core_factory(p, nc: int, slow_on: bool, taus: Sequence[float],
 
         return core
 
-    def core(v, ge, g1, g2, g3, gs, s_inc, cool, g_ahp, ev_e, ev_1, ev_2, ev_3, iext):
+    def core(v, ge, g1, g2, g3, cool, g_ahp, gs, s_inc, ev_e, ev_1, ev_2, ev_3, iext):
         ge2 = ge + ev_e
         h1 = g1 + ev_1
         h2 = g2 + ev_2
@@ -162,7 +196,7 @@ def _mc_core_factory(p, nc: int, slow_on: bool, taus: Sequence[float],
         ga3 = torch.where(spk, ga2 + ahp_g_inc, ga2)
         gs2 = torch.where(spk, gs + s_inc, gs)
         v3 = torch.where(cool2 > 0.0, vres, v2)
-        return v3, ge2 * ae, h1 * a1, h2 * a2, h3 * a3, gs2 * a_slow, ga3, cool2, spk
+        return v3, ge2 * ae, h1 * a1, h2 * a2, h3 * a3, ga3, cool2, gs2 * a_slow, spk
 
     return core
 
@@ -202,6 +236,9 @@ class MouseCortexEngine(LarvalZFEngine):
         self.t_slow_inc = None
         self.slow_trace = []
         self.slow_sample_every = 2000
+
+        # ---- 不应期/AHP 语义档（上游缺陷登记 E-M9-4）----
+        self.refractory_form = REF_FIX
 
         # ---- 双估计器 / 积分累积 ----
         self._tr_on = False
@@ -344,6 +381,24 @@ class MouseCortexEngine(LarvalZFEngine):
         super().add_synapses(pre, post, gmax, delay_steps, inhibitory=inhibitory,
                              syn_class=syn_class)
 
+    def configure_refractory(self, form: str = REF_FIX) -> Dict[str, Any]:
+        """不应期/AHP 语义档（**上游缺陷 E-M9-4 的可选择处置**）。
+
+        - `REF_FIX`（默认，M11 基线）：文档语义（第 4 形参 = g_ahp、第 5 形参 = cool）；
+        - `REF_FROZEN`：**逐位复刻冻结件 M9/M10 非 gaba 点核的实收语义**（形参序错位），
+          仅用于"关闭态等价"与缺陷量级量化；`nc=4` 下无定义 ⇒ 拒绝。
+        """
+        if form not in (REF_FIX, REF_FROZEN):
+            raise ValueError("refractory_form 必须 ∈ {%r, %r}" % (REF_FIX, REF_FROZEN))
+        if form == REF_FROZEN and int(self.n_ch) != N_CH_OFF:
+            raise ValueError("REF_FROZEN 只在 n_ch=2（E1b 关闭）下有意义")
+        self.refractory_form = str(form)
+        assert self.refractory_form == str(form), "refractory_form 读回不一致"
+        if self._built:
+            self._build_cores()
+        return dict(refractory_form=self.refractory_form,
+                    frozen_arg_order_bug=(self.refractory_form == REF_FROZEN))
+
     def _build_cores(self):
         """点核（按 n_ch × slow_on 变体）；two_comp 档仅登记（本引擎不实现分层档）。"""
         self._cores.clear()
@@ -351,11 +406,13 @@ class MouseCortexEngine(LarvalZFEngine):
         p = self.point
         taus = (p.tau_e, self.sub["tau_pv_ms"], self.sub["tau_sst_ms"], self.sub["tau_vip_ms"])
         e_inhs = (self.sub["e_pv"], self.sub["e_sst"], self.sub["e_vip"])
-        fn = _mc_core_factory(p, int(self.n_ch), bool(self.slow_on), taus, e_inhs,
+        frozen = (self.refractory_form == REF_FROZEN)
+        fn = _mc_core_factory(p, int(self.n_ch), bool(self.slow_on), frozen, taus, e_inhs,
                               self.slow["tau_slow_ms"], self.slow["e_slow"])
         self._cores["point"] = fn
         self._compile_ok["point"] = False
-        self._core_key = ("nc%d_slow%d" % (int(self.n_ch), int(bool(self.slow_on))))
+        self._core_key = ("nc%d_slow%d_%s" % (int(self.n_ch), int(bool(self.slow_on)),
+                                              self.refractory_form))
         self.accel = "eager"
         cfg = getattr(self, "_two_comp_cfg", None)
         if cfg is not None:
@@ -365,6 +422,8 @@ class MouseCortexEngine(LarvalZFEngine):
     def core_readback(self) -> Dict[str, Any]:
         """**作用域守卫**：报告核闭包创建时固化的参数（与 config 不一致 ⇒ 机制未生效）。"""
         return dict(core_key=self._core_key, n_ch=int(self.n_ch), slow_on=bool(self.slow_on),
+                    refractory_form=str(self.refractory_form),
+                    frozen_arg_order_bug=bool(self.refractory_form == REF_FROZEN),
                     tau_e_ms=float(self.point.tau_e),
                     tau_pv_ms=float(self.sub["tau_pv_ms"]),
                     tau_sst_ms=float(self.sub["tau_sst_ms"]),
@@ -598,8 +657,8 @@ class MouseCortexEngine(LarvalZFEngine):
                     ev3 = rv[3][_sl]
                     iext = t_stim[s][t_stim_col] if has_stim else zero_iext
                     if slow_on:
-                        t_v, t_ge, t_g1, t_g2, t_g3, t_slow, t_ahp, t_cool, spk = core(
-                            t_v, t_ge, t_g1, t_g2, t_g3, t_slow, t_slow_inc, t_cool, t_ahp,
+                        t_v, t_ge, t_g1, t_g2, t_g3, t_ahp, t_cool, t_slow, spk = core(
+                            t_v, t_ge, t_g1, t_g2, t_g3, t_cool, t_ahp, t_slow, t_slow_inc,
                             ev0, ev1, ev2, ev3, iext)
                     else:
                         t_v, t_ge, t_g1, t_g2, t_g3, t_ahp, t_cool, spk = core(
@@ -608,8 +667,8 @@ class MouseCortexEngine(LarvalZFEngine):
                 else:
                     iext = t_stim[s][t_stim_col] if has_stim else zero_iext
                     if slow_on:
-                        t_v, t_ge, t_gi, t_slow, t_ahp, t_cool, spk = core(
-                            t_v, t_ge, t_gi, t_slow, t_slow_inc, t_cool, t_ahp,
+                        t_v, t_ge, t_gi, t_ahp, t_cool, t_slow, spk = core(
+                            t_v, t_ge, t_gi, t_cool, t_ahp, t_slow, t_slow_inc,
                             ev0, ev1, iext)
                     else:
                         t_v, t_ge, t_gi, t_ahp, t_cool, spk = core(

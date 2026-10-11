@@ -1,0 +1,242 @@
+{
+ "generated_by": "tools/validate_m11_microns_parse.py",
+ "generated_at": "2026-10-11T13:02:46Z",
+ "criteria": {
+  "lat_x_min": 0.2,
+  "frame_min": 0.2,
+  "value_sanity": "非全 0/非饱和",
+  "nonfinite": "必须为 0",
+  "rule": "任一条不过即 invalid，不得用于统计"
+ },
+ "n_complete_objects": 200,
+ "search_objects": [
+  "0",
+  "39",
+  "79",
+  "119",
+  "159",
+  "199"
+ ],
+ "hypotheses_aggregate": {
+  "① 直读 int16-LE（小端/大端）": {
+   "n": 6,
+   "n_pass": 0,
+   "reasons": [
+    "C1 横向相邻像素相关 -0.001 < 0.20; C2 相邻帧相关 -0.001 < 0.20",
+    "C1 横向相邻像素相关 -0.001 < 0.20; C2 相邻帧相关 0.000 < 0.20",
+    "C1 横向相邻像素相关 -0.002 < 0.20; C2 相邻帧相关 0.002 < 0.20"
+   ],
+   "lat_mean": -0.0006,
+   "frame_mean": 0.0003
+  },
+  "① 直读 int16-BE（小端/大端）": {
+   "n": 6,
+   "n_pass": 6,
+   "reasons": [],
+   "lat_mean": 0.8015,
+   "frame_mean": 0.7842
+  },
+  "① 直读 uint16-LE（小端/大端）": {
+   "n": 6,
+   "n_pass": 0,
+   "reasons": [
+    "C1 横向相邻像素相关 -0.001 < 0.20; C2 相邻帧相关 0.001 < 0.20",
+    "C1 横向相邻像素相关 -0.002 < 0.20; C2 相邻帧相关 -0.001 < 0.20",
+    "C1 横向相邻像素相关 0.002 < 0.20; C2 相邻帧相关 0.001 < 0.20"
+   ],
+   "lat_mean": 0.0049,
+   "frame_mean": 0.0052
+  },
+  "① 直读 uint16-BE（小端/大端）": {
+   "n": 6,
+   "n_pass": 5,
+   "reasons": [
+    "C2 相邻帧相关 0.195 < 0.20"
+   ],
+   "lat_mean": 0.6733,
+   "frame_mean": 0.654
+  },
+  "① 直读 float32-LE": {
+   "n": 6,
+   "n_pass": 0,
+   "reasons": [
+    "C1 横向相邻像素相关 -0.000 < 0.20; C2 相邻帧相关 0.001 < 0.20",
+    "C1 横向相邻像素相关 -0.002 < 0.20; C2 相邻帧相关 0.001 < 0.20",
+    "C1 横向相邻像素相关 0.003 < 0.20; C2 相邻帧相关 0.001 < 0.20"
+   ],
+   "lat_mean": NaN,
+   "frame_mean": NaN
+  },
+  "① 直读 float32-BE": {
+   "n": 6,
+   "n_pass": 0,
+   "reasons": [
+    "C1 横向相邻像素相关 -0.000 < 0.20; C2 相邻帧相关 0.000 < 0.20",
+    "C1 横向相邻像素相关 nan < 0.20; C2 相邻帧相关 nan < 0.20; C4 非有限值 1 个",
+    "C1 横向相邻像素相关 nan < 0.20; C2 相邻帧相关 nan < 0.20; C4 非有限值 19 个"
+   ],
+   "lat_mean": NaN,
+   "frame_mean": NaN
+  },
+  "① 直读 uint8": {
+   "n": 6,
+   "n_pass": 0,
+   "reasons": [
+    "C1 横向相邻像素相关 -0.555 < 0.20",
+    "C1 横向相邻像素相关 -0.561 < 0.20",
+    "C1 横向相邻像素相关 -0.565 < 0.20"
+   ],
+   "lat_mean": -0.566,
+   "frame_mean": 0.5691
+  },
+  "② delta 解码 cumsum_flat（int16-LE，int64）": {
+   "n": 6,
+   "n_pass": 6,
+   "reasons": [],
+   "lat_mean": 1.0,
+   "frame_mean": 0.917
+  },
+  "② delta 解码 cumsum_flat mod 65536（int16-LE）": {
+   "n": 6,
+   "n_pass": 0,
+   "reasons": [
+    "C1 横向相邻像素相关 -0.002 < 0.20; C2 相邻帧相关 -0.000 < 0.20",
+    "C1 横向相邻像素相关 -0.004 < 0.20; C2 相邻帧相关 0.004 < 0.20",
+    "C1 横向相邻像素相关 0.000 < 0.20; C2 相邻帧相关 -0.002 < 0.20"
+   ],
+   "lat_mean": 0.001,
+   "frame_mean": -0.0004
+  },
+  "② delta 解码 cumsum_flat（int16-BE，int64）": {
+   "n": 6,
+   "n_pass": 6,
+   "reasons": [],
+   "lat_mean": 1.0,
+   "frame_mean": 0.9999
+  },
+  "② delta 解码 cumsum_flat mod 65536（int16-BE）": {
+   "n": 6,
+   "n_pass": 0,
+   "reasons": [
+    "C2 相邻帧相关 -0.002 < 0.20",
+    "C2 相邻帧相关 -0.007 < 0.20",
+    "C2 相邻帧相关 -0.012 < 0.20"
+   ],
+   "lat_mean": 0.8225,
+   "frame_mean": 0.0012
+  },
+  "② delta 沿 x 轴 cumsum（int16-BE）": {
+   "n": 6,
+   "n_pass": 6,
+   "reasons": [],
+   "lat_mean": 1.0,
+   "frame_mean": 0.9947
+  },
+  "② delta 沿 y 轴 cumsum（int16-BE）": {
+   "n": 6,
+   "n_pass": 6,
+   "reasons": [],
+   "lat_mean": 0.9964,
+   "frame_mean": 0.9958
+  },
+  "② delta 沿 t 轴 cumsum（int16-BE）": {
+   "n": 6,
+   "n_pass": 6,
+   "reasons": [],
+   "lat_mean": 0.9445,
+   "frame_mean": 0.9933
+  },
+  "③ Morton 反排列（int16-LE）": {
+   "n": 6,
+   "n_pass": 0,
+   "reasons": [
+    "C1 横向相邻像素相关 -0.002 < 0.20; C2 相邻帧相关 0.000 < 0.20",
+    "C1 横向相邻像素相关 -0.004 < 0.20; C2 相邻帧相关 0.002 < 0.20",
+    "C1 横向相邻像素相关 0.000 < 0.20; C2 相邻帧相关 0.000 < 0.20"
+   ],
+   "lat_mean": -0.0007,
+   "frame_mean": 0.0003
+  },
+  "②+③ Morton + cumsum（int16-LE）": {
+   "n": 6,
+   "n_pass": 6,
+   "reasons": [],
+   "lat_mean": 0.9999,
+   "frame_mean": 0.917
+  },
+  "③ Morton 反排列（int16-BE）": {
+   "n": 6,
+   "n_pass": 6,
+   "reasons": [],
+   "lat_mean": 0.5879,
+   "frame_mean": 0.7842
+  },
+  "②+③ Morton + cumsum（int16-BE）": {
+   "n": 6,
+   "n_pass": 6,
+   "reasons": [],
+   "lat_mean": 1.0,
+   "frame_mean": 0.9999
+  }
+ },
+ "hypotheses_passing": [
+  "① 直读 int16-BE（小端/大端）",
+  "② delta 解码 cumsum_flat（int16-LE，int64）",
+  "② delta 解码 cumsum_flat（int16-BE，int64）",
+  "② delta 沿 x 轴 cumsum（int16-BE）",
+  "② delta 沿 y 轴 cumsum（int16-BE）",
+  "② delta 沿 t 轴 cumsum（int16-BE）",
+  "②+③ Morton + cumsum（int16-LE）",
+  "③ Morton 反排列（int16-BE）",
+  "②+③ Morton + cumsum（int16-BE）"
+ ],
+ "winner": "① 直读 int16-BE（小端/大端）",
+ "interpretation": {
+  "dtype": "int16（与 attributes.json 声明一致）",
+  "byte_order": "**big-endian（大端）**",
+  "evidence": "`>i2` 直读即满足全部预注册判据；`<i2`/`<u2` 全不通过",
+  "root_cause": "此前（含本节点首版与主 agent 复核）均按**小端**直读 ⇒ 相邻像素/相邻帧相关≈0 的假象；delta/Morton 假设**均不成立**",
+  "nan_note": "整型解释下 NaN/Inf **结构上不可能**；主 agent 检出的 106 个 NaN 与 |x|>1e30 是**float 误解读的副产物**（本工具 float32 假设行同样判 invalid）"
+ },
+ "full_objects": {
+  "n_objects": 200,
+  "raw_bytes_total": 160000000,
+  "vmin_global": -138.0,
+  "vmax_global": 32763.0,
+  "n_nan": 0,
+  "n_inf": 0,
+  "n_sentinel_uint16_ge_65000": 10383,
+  "n_zero": 193266,
+  "n_elements": 80000000,
+  "n_saturated_p99x3": 0,
+  "masked_rule": "哨兵/饱和候选掩膜规则（数据驱动，预注册）：**uint16 读法 > 65000** （⇔ int16 < 0，本轮共 10383 / 80000000 元素 = 0.01298%）→ 统计前置为缺失并登记",
+  "lat_x_mean": 0.7768,
+  "lat_x_min": 0.6155,
+  "lat_x_max": 0.8868,
+  "lat_y_mean": 0.7613,
+  "lat_y_min": 0.6289,
+  "lat_y_max": 0.8549,
+  "frame_mean": 0.7728,
+  "frame_min": 0.5844,
+  "frame_max": 0.8818,
+  "p1_mean": 205.1248,
+  "p1_min": 0.0,
+  "p1_max": 415.0,
+  "p50_mean": 1862.92,
+  "p50_min": 1212.0,
+  "p50_max": 2797.0,
+  "p99_mean": 6471.36,
+  "p99_min": 3559.0,
+  "p99_max": 10042.01
+ },
+ "tiff_groundtruth": null,
+ "sentinel_and_missing": {
+  "n_elements_full": 80000000,
+  "n_nan": 0,
+  "n_inf": 0,
+  "n_zero": 193266,
+  "n_sentinel_uint16_ge_65000": 10383,
+  "rule": "哨兵/饱和候选掩膜规则（数据驱动，预注册）：**uint16 读法 > 65000** （⇔ int16 < 0，本轮共 10383 / 80000000 元素 = 0.01298%）→ 统计前置为缺失并登记",
+  "discipline": "**未处理 ≠ 无缺失**：NaN/哨兵/零值计数与掩膜规则必须随统计量一并落盘"
+ }
+}

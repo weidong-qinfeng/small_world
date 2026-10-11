@@ -1,27 +1,11 @@
 {
  "generated_by": "tools/verify_m11_downloads.py",
- "generated_at": "2026-10-11T12:21:21Z",
+ "generated_at": "2026-10-11T12:23:18Z",
  "n_objects": 200,
- "n_complete": 197,
- "n_incomplete": 3,
- "incomplete": [
-  {
-   "t_chunk": "61",
-   "bytes": 661010,
-   "reasons": "传输未干净结束（curl_exit=28）; 解压失败：Compressed file ended before the end-of-stream marker was re"
-  },
-  {
-   "t_chunk": "120",
-   "bytes": 132044,
-   "reasons": "传输未干净结束（curl_exit=28）; 解压失败：Compressed file ended before the end-of-stream marker was re"
-  },
-  {
-   "t_chunk": "122",
-   "bytes": 330258,
-   "reasons": "传输未干净结束（curl_exit=28）; 解压失败：Compressed file ended before the end-of-stream marker was re"
-  }
- ],
- "total_bytes_complete": 135225442,
+ "n_complete": 200,
+ "n_incomplete": 0,
+ "incomplete": [],
+ "total_bytes_complete": 137291280,
  "integrity_csv": "data/m11_download_integrity.csv",
  "rule": "统计量/参考带一律只用 COMPLETE 对象；INCOMPLETE → 可重取（--refetch），不得静默计入"
 }
