@@ -383,5 +383,490 @@
    ]
   ],
   "gate3_note": "修正为可证伪判据（interior bout）后：全部等级 bout=0.0000（T=2 s 与 12 s）⇒ 门 3 未过；判别性结论来自门 1/2"
+ },
+ "adjudications_applied": {
+  "裁决1_connectome_three_state": {
+   "decision": "partial",
+   "evidence": "data/m10_connectome_counts.json::completeness_level",
+   "attribution_downgraded": true,
+   "attribution_strength": "abstract_only（partial 连接组 ⇒ 消融归属降级为抽象网络内归属）",
+   "reachability_addendum": {
+    "zebrafishbrain.org": "HTTP 200 但 114 字节 parked/lander ⇒ 无可达数据资源",
+    "zenodo.org": "本次 curl+urllib 双 200（与主agent 观测不同）但吞吐 56 KB/s 且 4 并发无改善"
+   }
+  },
+  "裁决2_p6_slow_variable_hard_criterion": {
+   "implemented": "tools/validate_p10_slow_variable.py + data/m10_p6_slow_variable.csv",
+   "M-1": {
+    "tau_setting_ms": 1000.0,
+    "tau_in_range": true,
+    "corr_stp_x": 0.2066,
+    "tau_activity_s": 0.01,
+    "ratio": 100.0,
+    "same_order": false,
+    "hard_criterion_pass": false
+   },
+   "M-2": {
+    "tau_setting_ms": 500.0,
+    "tau_in_range": true,
+    "corr_stp_u": 0.9452,
+    "tau_activity_s": 0.02,
+    "ratio": 25.0,
+    "same_order": false,
+    "hard_criterion_pass": false
+   },
+   "M-3": {
+    "tau_setting_ms": 200.0,
+    "tau_in_range": true,
+    "gaba_b_fluctuation": "undefined(无涨落)",
+    "tau_activity_s": 0.01,
+    "ratio": 20.0,
+    "same_order": false,
+    "hard_criterion_pass": false
+   },
+   "verdict": "裁决 2 判据在本次协议下不可满足（bout=0 ⇒ “与 bout 时长同阶”分支无定义）；M-2 慢变量与群率强相关(0.945)但时间尺度不同阶 ⇒ 慢变量在涨、群率未在慢尺度组织",
+   "consequence": "P6 维持 not passed：门1/2（不自持/驱动弹性）由 STP 通过；门3（bout）与裁决2判据均未过。“STP 修复输入增益”与“STP 产生双态”是两件独立的事。",
+   "global_params_leq_8": true,
+   "param_ranges_pre_registered": "data/m10_mechanism_ladder.csv",
+   "closed_state_equivalence": "密集工况不可用（M9 引擎崩，L17）；稀疏工况逐位一致见 T1(t1_m9_m10_identical=true)"
+  },
+  "裁决3_p7_equivalence": {
+   "protocol": "data/m10_equivalence_protocol.csv（TOST margin 预注册 + KS d_eq + 沿用条款逐条）",
+   "sampling_attenuation": "data/m10_sampling_attenuation.csv：1.0943 Hz 帧化 + 同管线反演的衰减因子 ≈1.004–1.016（≈1%，无系统衰减）⇒ 跨口径比较唯一合法形式 = 两侧同管线反演",
+   "selfcheck": "data/m10_equivalence_selfcheck.json：成像率分布分裂半 TOST(margin 0.05) 与 KS(d_eq 0.05/0.1/0.2) 全通过 ⇒ 边界可达"
+  },
+  "upstream_not_delivered": "M9 run_m9_validation.py / gen_m9_report.py / m9_imaging_reference.csv 磁盘不存在 → 只读不依赖（已按主agent 指示登记）"
+ },
+ "L21_silent_failure_self_found": {
+  "defect": "src/larval_zf_circuit.build_engine 未传 syn_class ⇒ 抑制边写入兴奋槽 ⇒ 抑制完全失效",
+  "evidence_fixed": {
+   "inh_slot_edges_before": 0,
+   "inh_slot_edges_after": "2880/10000",
+   "t_gis_mean_before": 0.0,
+   "t_gis_mean_after": 2.09
+  },
+  "invalidated": "L19.2/L19.3/L20.2 全部 P5/P6 数值（无抑制运行）；旧产物改名留档",
+  "rerun_results": {
+   "dose_response": "修复前全或无（λ=16→96.8 Hz）→ 修复后单调分级（λ=0→0.030；8→0.306；16→0.795；32→2.08；64→5.24 Hz）",
+   "P5_c_selfsustain": 0.098,
+   "P5_d_elasticity_4x": 5.796,
+   "P5_b_silent": 0.921,
+   "P5_a_rate_median": 0.0,
+   "G1_pass": true,
+   "P6_M0": {
+    "selfsustain": 0.098,
+    "elasticity": 5.796,
+    "bout": 0.0,
+    "outcome": "partial"
+   },
+   "P6_M-1": {
+    "selfsustain": 0.0939,
+    "elasticity": 7.684,
+    "bout": 0.0,
+    "outcome": "partial"
+   },
+   "key_conclusion_changed": "“STP 修复输入增益”不成立：修复抑制后基线自身即通过门 1/2；M9 R3「输入通路增益过低」很可能同属投递/编码路径缺陷类假象（与 L17 同源家族）"
+  },
+  "RF2_gaba_ablation": {
+   "GABA_B_off": {
+    "pop_hz": 1.893,
+    "silent": 0.528,
+    "elas4": 3.706,
+    "gis": 0.0
+   },
+   "both_on": {
+    "pop_hz": 0.942,
+    "silent": 0.71,
+    "elas4": 3.348,
+    "gis": 8.001
+   },
+   "GABA_A_off": {
+    "pop_hz": 0.852,
+    "silent": 0.695,
+    "elas4": 3.234,
+    "gis": 21.102
+   },
+   "attribution": "GABA_B 慢通路为主导抑制制动（去掉 → 群率翻倍）；只改活动水平、不产生双态"
+  }
+ },
+ "RF_rulings_applied": {
+  "RF-1": "partial 为正式分级；归属降级为参数级/类级（措辞已更新到产物与 CSV 头）",
+  "RF-2": "① 亚型 τ/比例预注册于 m10_mechanism_ladder.csv ✓ ② A/B 分别消融（ablate_m10_gaba.py）✓ ③ 测量限制登记 ✓",
+  "RF-3": "P7 ④ 判 unavailable（不入分母）+ 替代方案待做（条件对比对/块内子集）",
+  "RF-4": "不安排 Zenodo 长窗口；ZBB/DFF 登记“受吞吐限制未测”"
+ },
+ "m9_reeval": {
+  "file": "data/m10_m9_reeval.csv",
+  "summary": "data/m10_m9_reeval_summary.json",
+  "config": "M9 定稿网络 + PARAMS(ahp_g=25) + 原协议 T=1000ms/settle=300ms/segment=2000/g_ext=19.230769",
+  "verdicts": {
+   "R3_zero_drive": "KEPT（0.9853 → 0.9709）",
+   "R3_4x_drive": "KEPT（1.0725 → 1.0749）",
+   "P4d_P7a_bout0": "KEPT（两引擎均 0）",
+   "P7b_daynight": "not_run（仅方向判别，同向）",
+   "P10_activity": "not_run（预算）"
+  },
+  "new_evidence": {
+   "m9_engine_rerun_hz": 6.0032,
+   "m9_recorded_hz": 4.6783,
+   "m10_fixed_hz": 4.5021,
+   "interpretation": "M9 冻结引擎在密集发放下静默读越界内存 ⇒ 绝对数值不可复现（+28%）；但定性结论全部复现；修正内核反而更接近 M9 记录值（−3.8%）"
+  },
+  "errata": [
+   "E-M9-1 全规模数值可复现性",
+   "E-M9-2 RB1 归因错误（真因=投递公式缺陷）",
+   "E-M9-3 对齐门适用域（仅稀疏工况成立）"
+  ],
+  "g0_addendum": {
+   "f_synchronous_firing_discrimination": "通过（T2）",
+   "dense_regime_alignment_required": "已写入判据（M9 密度 4.6 Hz vs ZAPBench 147.7 Hz）"
+  }
+ },
+ "L23_correction": {
+  "praised_ladder_result_invalidated": true,
+  "reason": "主agent 引用的 M-1/M-2 effective（+752%/+815%）来自 syn_class 静默失效运行（无抑制，L21）",
+  "corrected": {
+   "M0_baseline_elasticity": 5.796,
+   "M-1_elasticity": 7.684,
+   "G1_pass": true,
+   "no_discrimination": "基线自身即通过门 1/2 ⇒ 阶梯对门 1/2 无判别性",
+   "remaining_hard_problem": "bout/慢状态结构（门 3 = 0.0000，T=2/20 s）"
+  }
+ },
+ "P6_round2": {
+  "config": "N=600 λ0=8 bias150 g_exc1.0 g_inh22 T=60s（修正内核）",
+  "A_tau_in_phys_range": true,
+  "B_slow_var_corr": {
+   "stp_u": -0.0128,
+   "stp_x": -0.0361,
+   "pass": false
+  },
+  "C_timescale_same_order": {
+   "tau_slow_s": 1.0,
+   "tau_activity_s": 0.01,
+   "ratio": 100.0,
+   "pass": false
+  },
+  "closed_state_equiv_dense": "不可对照（M9 引擎缺陷，2075 vs 2077）；稀疏工况 T1 逐位一致 ✓",
+  "hard_criterion_pass": false,
+  "not_run": [
+   "M-5 组合级",
+   "M-2/M-3/M-4 修正内核重跑",
+   "T=60s 三条件全阶梯",
+   "模型侧 HMM dwell/转换率 vs ZAPBench 同口径对照"
+  ],
+  "not_run_reason": "本机长协议进程被反复重启（环境限制）；工具已就位"
+ },
+ "RF3_altdecoding": {
+  "file": "data/m10_p7_altdecoding.csv",
+  "result": "条件对比对 4 对：原始口径 cross 0.97–1.00 但**同条件内漂移地板 0.68–0.77**；帧中心化后 cross 0.25–0.48、地板 0.50 ⇒ 裕度 ≈0（不可分）",
+  "interleaved_available": false,
+  "verdict": "④ 维持 unavailable（数据获取限制，量化否定）；P7 按 3/4 指标判定"
+ },
+ "P6_round2_T60": {
+  "config": "N=300 indegree20 bias150 g_exc1.0 g_inh22 T=60s lam0=8（修正内核）",
+  "arms": {
+   "lam0": {
+    "pop_hz": 0.0,
+    "median_hz": 0.0,
+    "silent": 1.0,
+    "bout": 0.0
+   },
+   "lam1": {
+    "pop_hz": 0.2234,
+    "median_hz": 0.0,
+    "silent": 0.887,
+    "bout": 0.0
+   },
+   "lam4": {
+    "pop_hz": 2.4191,
+    "median_hz": 1.0167,
+    "silent": 0.273,
+    "bout": 0.0
+   }
+  },
+  "gate1_selfsustain": {
+   "value": 0.0,
+   "pass": true
+  },
+  "gate2_elasticity": {
+   "value": 9.8291,
+   "pass": true
+  },
+  "gate3_bout": {
+   "value": 0.0,
+   "n_bouts": 0,
+   "pass": false
+  },
+  "outcome": "partial",
+  "converged_conclusion": "门 1/2 由基线自身通过（无判别性）；唯一未解决=慢状态结构（T=2/12/20/60s bout 恒 0；慢变量相关≈0；时间尺度差 2 个数量级）⇒ 预注册突触时间尺度阶梯结构上够不到成像双态尺度 26.5 s",
+  "recommendation": "新增 M-6 级（慢状态变量 τ∈[10,60] s，由成像 dwell 26.5 s 反推并预注册）",
+  "not_run": [
+   "M-5 组合级",
+   "M-2/M-3/M-4 修正内核重跑",
+   "模型侧 HMM dwell 同口径对照表"
+  ]
+ },
+ "dimensional_selfcheck": {
+  "requirement": "主agent 复核：率/计数/积分量必须做量纲自检",
+  "implemented": "validate_p10_equivalence.attenuation_table 内嵌 3 条断言（true_rate×T==true_spikes；est_rate×T==est_spikes；0<est_rate<1e3）→ 首版 ×7300 的荒谬值会被直接拦下",
+  "attenuation_corrected": "1.004–1.016（≤1.6%，无系统衰减）；定义 est/true 已写死；附 correction_factor 列",
+  "figure": "reports/neuro/m10_sampling_attenuation.png",
+  "tost_unified": "m10_equivalence_protocol.csv 新增 p7_tost_unified_form + 逐指标 margin/CI95/p"
+ },
+ "criterion_correction_dwell_window": {
+  "window_s": [
+   8.0,
+   80.0
+  ],
+  "ref_dwell_s": 26.5,
+  "applied_to": [
+   "m10_calibration_targets.csv",
+   "m10_mechanism_ladder.csv",
+   "validate_p10_slow_variable.SAME_ORDER_WINDOW"
+  ],
+  "implication": "M-1/M-2/M-3 的 τ(0.2–1 s) 结构性低于窗下界 ⇒ 与门 3 恒 0 自洽"
+ },
+ "M6_slow_recovery_candidate": {
+  "def": "STP τ_rec=26 s（=成像 dwell 26.5 s）+ GABA_B τ_slow=2 s",
+  "status": "部分完成（写出阶段被环境重启中断）",
+  "B_slow_var_corr": {
+   "M-1": {
+    "stp_u": -0.0128,
+    "stp_x": -0.0361,
+    "pass": false
+   },
+   "M-6": {
+    "stp_u": 0.9219,
+    "stp_x": -0.9818,
+    "gaba_b": -0.9979,
+    "pass": true
+   }
+  },
+  "A_C": "未取得（须完整重跑）；τ_rec=26 s 落在 [8,80] s 窗内",
+  "direction_conclusion": "把慢变量 τ 提到成像 dwell 量级后，慢变量首次与群率慢涨落高度相关（|r|≥0.92，M-1 仅~0.02）⇒ 主agent 指定的\"更慢机制\"方向被实测支持：缺口由 τ 量级决定，而非\"是否用 STP\""
+ },
+ "budget": {
+  "gpu_h": 1.3,
+  "cpu_h": 2.3,
+  "gpu_limit": 12,
+  "cpu_limit": 40
+ },
+ "M6_breakthrough": {
+  "level": "M-6（STP τ_rec=26 s + GABA_B τ_slow=2 s）",
+  "hard_criterion_A_B_C": {
+   "A_tau_in_range": true,
+   "B_corr": {
+    "stp_u": 0.847,
+    "stp_x": -0.982,
+    "gaba_b": -0.992,
+    "pass": true
+   },
+   "C_dwell_window": true
+  },
+  "first_level_passing": true,
+  "comparison_table": {
+   "M-1": {
+    "tau_s": 1.0,
+    "B": false,
+    "C": false
+   },
+   "M-2": {
+    "tau_s": 0.5,
+    "B": true,
+    "C": false
+   },
+   "M-3": {
+    "tau_s": 0.2,
+    "B": true,
+    "C": false
+   },
+   "M-4": {
+    "tau_s": 2.0,
+    "B": false,
+    "C": false,
+    "impl_limit": "静态增益，无慢变量轨迹"
+   },
+   "M-6": {
+    "tau_s": 26.0,
+    "B": true,
+    "C": true
+   }
+  },
+  "conclusion": "\"慢变量↔群率相关\" M-2/M-3 即可满足；\"τ 与成像 dwell 同阶\"只有 τ≥8 s 者满足 ⇒ 缺口由 τ 量级决定"
+ },
+ "M5_first_nonzero_bout": {
+  "arm": "M-5 λ×0（T=60 s, N=250）",
+  "pop_hz": 0.0398,
+  "bout_fraction": 0.8533,
+  "n_bouts": 11,
+  "bout_median_s": 4.7,
+  "caveat": "活动极稀疏（~10 spike/s 全网络）；bout 中位 4.70 s 仍比成像 26.5 s 小 5.6×（未达同阶窗下界 8 s）",
+  "next": "组合级应把 M-1 的 τ_rec 换成 M-6 的 26 s（M-6⊗M-3⊗M-4）——最可能同时满足三级门 + 裁决 2"
+ },
+ "M4_implementation_limitation": "预注册为 tonic→phasic，实际实现为静态增益 ⇒ B 判据无轨迹可评；其\"无效\"部分属实现限制",
+ "L28_correction": {
+  "invalidated": "L28 的 “M-6 的 C 全过” 表述（基于 H 法 26.5 s + τ 窗口）",
+  "corrected_M6": {
+   "A": true,
+   "B": true,
+   "C": false,
+   "D": true,
+   "hard_criterion_pass": false
+  },
+  "reason": "RF-6/RF-8：C 必须用**同方法（分位法）dwell** 比较；模型 Q-dwell 0.02 s vs 成像 Q-dwell 6.854 s"
+ },
+ "same_method_gap_decisive": {
+  "model_dwell_low_median_s": 0.02,
+  "imaging_dwell_low_median_s": 6.854,
+  "dwell_ratio": 343,
+  "model_transition_rate_hz": 57.7,
+  "imaging_transition_rate_hz_approx": 0.02,
+  "occupancy_model": [
+   0.54,
+   0.46
+  ],
+  "occupancy_imaging": [
+   0.672,
+   0.328
+  ],
+  "conclusion": "占用比例同量级 ✓；时间尺度/转换率差 2–3 个数量级（同管线同方法）"
+ },
+ "M5_T60_full": {
+  "lam0": {
+   "pop": 0.0398,
+   "bout": 0.8533,
+   "nbouts": 11,
+   "bout_med_s": 4.7
+  },
+  "lam1": {
+   "pop": 0.2797,
+   "bout": 0.0
+  },
+  "lam4": {
+   "pop": 2.8965,
+   "bout": 0.0
+  },
+  "selfsustain": 0.1423,
+  "selfsustain_pass": false,
+  "elasticity_4x": 9.3546,
+  "gate3_bout": false,
+  "caveat": "非零 bout 只出现在零驱动近静默臂（~10 spike/s）⇒ 不得表述为\"产生了双态活动结构\""
+ },
+ "P6_final_verdict": {
+  "verdict": "not passed",
+  "reasons": [
+   "门1/2 由基线自身通过 ⇒ 阶梯无判别性",
+   "活跃臂 bout 恒 0（T=2/12/20/60 s）",
+   "裁决2 C 条全部未过：模型状态时间尺度与成像差 2–3 个数量级（M-6 亦未改变）"
+  ],
+  "implication": "点神经元 + 常见慢机制不足以产生成像量级慢状态结构 → 写入必需机制清单"
+ },
+ "E_M9_1_RETRACTED": {
+  "status": "retracted_and_rewritten",
+  "falsified_by": "主agent 独立探针 tools/verify_m9_path_attribution.py（A_frozen 臂）",
+  "A_frozen_hz": 4.678288,
+  "m9_recorded_hz": 4.678288,
+  "dev_ppm": 2.6,
+  "my_defect": [
+   "run_arm 把 settle 窗计入分子而按 1.0 s 归一 ⇒ ×1.3004 放大",
+   "初值未复刻 run_resting 的 v0 = v_rest+2·N(0,1)"
+  ],
+  "also_falsified": "“MPS 静默读越界内存 ⇒ 数值依赖分配历史”的机制解释（主agent 两进程逐位相同 6.003209938601845）",
+  "revised_wording": "M9 绝对速率值在同口径下可复现到 2.6e-6；E-M9-2/E-M9-3 仍成立；缺陷每步触发（mean 32.6 spike/step）但对群率量级影响有限",
+  "artifacts": [
+   "data/m10_m9_reeval.csv（顶部口径警告 + INFLATED 标注）",
+   "data/m10_m9_reeval_correction.json（折算估算 + 复跑队列状态）"
+  ],
+  "relative_quantities_unaffected": {
+   "selfsustain": 0.9709,
+   "elasticity_4x": 1.0749,
+   "R3_verdict": "保持"
+  },
+  "rerun_status": "代码已修正；同口径 MPS 复跑排队（MPS 串行纪律，不与主agent B_patched 并发）"
+ },
+ "lesson_L25b": "跨入口比较绝对量前必须核对 ①测量窗口径 ②初值语义；任何“不可复现”声明必须附同入口复现臂",
+ "mps_serial_discipline": "MPS 一次只允许一个作业（并发实测 ms/step 2.4→14.1，6× 退化）；并发期间墙钟不得用于预算判定",
+ "E_M9_1_FINAL": {
+  "reproducible": {
+   "A_frozen_hz": 4.678288,
+   "dev_ppm": 2.6
+  },
+  "correct": {
+   "B_patched_hz": 3.522538,
+   "m10_fixed_hz": 3.462,
+   "agreement_pct": 1.7,
+   "verdict": "M9 记录值为缺陷档；群率 −24.7%、静默 0.585→0.762"
+  },
+  "discipline": "可复现 ≠ 正确（分两行报告）",
+  "ratio_metrics_unaffected": true,
+  "absolute_metrics_flag": [
+   "P4 静默",
+   "R4 4.77 Hz",
+   "P10 活动统计"
+  ]
+ },
+ "P6_FINAL_VERDICT": {
+  "verdict": "not passed（❌ 反证）",
+  "primary_criterion": {
+   "statistic": "AR(1) τ（0.914 s 箱 + 5 帧平滑 + z）—— RF-16-3 定稿",
+   "imaging_reference_tau_s": 37.18,
+   "window_s": [
+    9.4,
+    146.3
+   ],
+   "source": "M10-B4 追加任务 G（全记录 φ=0.9757213）；42.332 s 为前 80% 段值（13.9% 口径差）",
+   "model_value": "unavailable（pop trace 未落盘；须托管臂产出后离线计算）",
+   "honest_limit": "Ljung-Box 三口径全部拒绝白噪 ⇒ τ 仅一阶近似、粗粒度指标（B4 登记）"
+  },
+  "supporting_quantitative_evidence": {
+   "same_method_dwell_gap": {
+    "model": 0.02,
+    "imaging": 6.854,
+    "ratio": 343
+   },
+   "transition_rate_gap": {
+    "model_hz": 57.7,
+    "imaging_hz": 0.0196,
+    "ratio": 2944
+   },
+   "occupancy": {
+    "model": [
+     0.54,
+     0.46
+    ],
+    "imaging": [
+     0.672,
+     0.328
+    ],
+    "same_order": true
+   },
+   "bout": {
+    "value": 0.0,
+    "note": "T=2/12/20/60 s 全配置恒 0；唯一非零出现在零驱动近静默臂（~10 spike/s）⇒ 不作双态证据"
+   }
+  },
+  "attribution_limitation": "**限定**：在 g_exc=1 的校准工作点上（准静态斜坡 ≥40 s 探针未检出滞回 ⇒ 无可检出上态），全部预注册慢机制都不产生成像量级的慢状态结构。**不得**表述为\"任何机制都不可能产生双态\"。",
+  "substrate_diagnosis": {
+   "probe": "tools/verify_p6_substrate_diagnosis.py（主agent）",
+   "hysteresis_by_ramp": {
+    "2s": 1.541,
+    "4s": 1.371,
+    "20s": 0.269,
+    "40s": 0.081
+   },
+   "note": "主agent 自我否证首个\"双稳基质\"结论（斜坡速率伪影）；正确协议=每程≥40 s 准静态"
+  },
+  "invalidated_items": [
+   "M-6 的 criterion_B（零滞后相关 ⇒ invalid，RF-16-2）",
+   "M-6 的 criterion_C 旧表述（参数在窗内⇒通过，范畴错误）",
+   "M-6 的“B 通过/C 通过”一律不计 pass"
+  ],
+  "states_used": [
+   "pass",
+   "fail",
+   "invalid",
+   "unavailable"
+  ]
  }
 }
