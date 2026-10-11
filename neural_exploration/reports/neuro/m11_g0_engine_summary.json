@@ -407,9 +407,9 @@
      "spk_total": 244,
      "sha256": "3d7a2b56707a29d3c3369610206697419437cd9f815fa7130c227b8f3a2e8df8",
      "pids": [
-      41173,
-      41174,
-      41185
+      41486,
+      41487,
+      41488
      ]
     },
     "off_frozen": {
@@ -418,9 +418,9 @@
      "spk_total": 3730,
      "sha256": "c29dd7a0ee3a7f74f4064db92cb28c859345a11cbbd1285460949abcc6dd41ea",
      "pids": [
-      41201,
-      41203,
-      41209
+      41489,
+      41490,
+      41491
      ]
     }
    }
@@ -580,8 +580,8 @@
      "spk_total": 244.0,
      "counts_sum": 244.0,
      "rel_diff_count_vs_total": 0.0,
-     "wall_s": 1.7636381659999998,
-     "wall_from_ms_per_step_s": 1.763638166
+     "wall_s": 1.8364095000000002,
+     "wall_from_ms_per_step_s": 1.8364095000000002
     },
     "core_readback": {
      "core_key": "nc4_slow1_semantic_fix",
@@ -850,31 +850,31 @@
     "rows": [
      {
       "seg": 0,
-      "rss_mb": 190.22,
+      "rss_mb": 186.02,
       "ar_buf_numel": 4096
      },
      {
       "seg": 1,
-      "rss_mb": 190.44,
+      "rss_mb": 187.61,
       "ar_buf_numel": 4096
      },
      {
       "seg": 2,
-      "rss_mb": 190.55,
+      "rss_mb": 188.2,
       "ar_buf_numel": 4096
      },
      {
       "seg": 3,
-      "rss_mb": 190.7,
+      "rss_mb": 188.25,
       "ar_buf_numel": 4096
      },
      {
       "seg": 4,
-      "rss_mb": 190.7,
+      "rss_mb": 188.36,
       "ar_buf_numel": 4096
      }
     ],
-    "rss_growth_mb": 0.47999999999998977,
+    "rss_growth_mb": 2.3400000000000034,
     "ar_buf_numel_last": 4096,
     "crit_pass": true,
     "note": "禁以动态规模为缓存键（M9 真 bug）；`_ar_buf` 必须保持**单一**增长缓冲"
@@ -993,7 +993,7 @@
   "n_unavailable": 0
  },
  "evidence": {
-  "alignment_json_sha256": "26846c5e553b12a9c141300ad7ad8eb3",
+  "alignment_json_sha256": "a6927f09609950d85351224c86dc4546",
   "engine_src_sha256": "6feb61291ad336e8048b1411c2169252",
   "tool_sha256": "f83984cd23e00eb4b5b4e502eade4d73",
   "minrepro": "/Users/weidong/ai/small_world/neural_exploration/data/m11_minrepro_delivery.json",
