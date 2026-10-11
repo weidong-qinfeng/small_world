@@ -1,6 +1,6 @@
 {
  "generated_by": "tools/validate_p11_data_gate.py",
- "generated_at": "2026-10-11T12:04:35Z",
+ "generated_at": "2026-10-11T13:24:12Z",
  "gate": "G2 (P1/P2 数据门)",
  "assertions": [
   {
@@ -116,7 +116,7 @@
   {
    "assertion": "P1.6 M11 产出路径全部落在 m11 命名空间（冻结件零修改）",
    "ok": true,
-   "detail": "越界=[] (n_items=225)"
+   "detail": "越界=[] (n_items=231)"
   },
   {
    "assertion": "P2.7a functional_series 采集参数读回（帧率/时长/平面/体素/FOV）",
@@ -159,6 +159,66 @@
    "detail": "n_unavailable=6"
   },
   {
+   "assertion": "P1.7a 逐对象完整性门（http→大小→SHA→解压→尺寸自洽）全部 COMPLETE",
+   "ok": true,
+   "detail": "COMPLETE=200/200 incomplete=[]"
+  },
+  {
+   "assertion": "P1.7b 完整性 CSV 逐行 verdict==COMPLETE",
+   "ok": true,
+   "detail": "非完整=[]"
+  },
+  {
+   "assertion": "P1.7c manifest 已写回 integrity 列且与完整性门一致",
+   "ok": true,
+   "detail": "n=200 缺 integrity 列=0"
+  },
+  {
+   "assertion": "P2.11a 解析假设检验已选胜出解 = int16 大端（唯一自洽）",
+   "ok": true,
+   "detail": "winner=① 直读 int16-BE（小端/大端）；通过门槛者=['① 直读 int16-BE（小端/大端）', '③ Morton 反排列（int16-BE）']"
+  },
+  {
+   "assertion": "P2.11b 预注册判据（lat_x≥0.2 ∧ 相邻帧≥0.2 ∧ 值域合理 ∧ 无 NaN/Inf ∧ 声明域 ∧ 非退化）",
+   "ok": true,
+   "detail": "lat_x=0.777 lat_y=0.761 frame=0.773 p50=1863 n_nan=0 n_inf=0（200 个对象 / 80000000 元素）"
+  },
+  {
+   "assertion": "P2.11c 独立地面真值（原始 TIFF 帧，不同 scan）同量级相关",
+   "ok": true,
+   "detail": "TIFF n_frames=6 lat_x=0.767 lat_y=0.735 p50=2194（判据阈值由真实数据锚定，非自证）"
+  },
+  {
+   "assertion": "P2.11d NaN/哨兵/缺失显式登记 + 掩膜规则已预注册",
+   "ok": true,
+   "detail": "NaN=0 Inf=0 零值=193266 低于基线=10383 饱和(32767)=0"
+  },
+  {
+   "assertion": "P2.11e 统计只用 COMPLETE 对象（解析门对象数 == 完整性门 COMPLETE 数）",
+   "ok": true,
+   "detail": "parse=200 integrity=200"
+  },
+  {
+   "assertion": "P2.12a 参考锚落盘：帧率读回断言值 == 6.300006 Hz",
+   "ok": true,
+   "detail": "R-01 value=6.300006 status=asserted"
+  },
+  {
+   "assertion": "P2.12b 参考锚含字节序断言（big-endian）",
+   "ok": true,
+   "detail": "R-10=big-endian"
+  },
+  {
+   "assertion": "P2.12c dwell/τ 参考带仍标 unverified（未定稿不得入判据）",
+   "ok": true,
+   "detail": "R-21 status=unverified"
+  },
+  {
+   "assertion": "P2.12d 空间分辨率 10× 口径冲突已登记 NEEDS_VERIFY",
+   "ok": true,
+   "detail": "R-16={\"ref_id\": \"R-16\", \"quantity\": \"voxel_size_doc_conflict\", \"value\": \"10x\", \"unit\": \"ratio\", \"assertion\": \"doc 4 px/µm vs series 2.5 µm/px\", \"status\": \"NEEDS_VERI"
+  },
+  {
    "assertion": "DET 复跑 verdict 一致（确定性）",
    "ok": true,
    "detail": "[{\"source_id\": \"2\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"3\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F7\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F8\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F9\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}]"
@@ -175,12 +235,12 @@
  ],
  "P1": {
   "verdict": "pass",
-  "n_assertions": 23,
+  "n_assertions": 26,
   "n_failed": 0
  },
  "P2": {
   "verdict": "pass",
-  "n_assertions": 8,
+  "n_assertions": 17,
   "n_failed": 0
  },
  "G2_gate": "pass",

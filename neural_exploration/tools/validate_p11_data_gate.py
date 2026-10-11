@@ -57,6 +57,10 @@ INV = os.path.join(DATA, "m11_data_inventory.csv")
 CNT = os.path.join(DATA, "m11_data_counts.json")
 SUBSET = os.path.join(DATA, "m11_functional_subset_manifest.csv")
 SUBSET_SUM = os.path.join(DATA, "m11_functional_subset_summary.json")
+INTEG = os.path.join(DATA, "m11_download_integrity_summary.json")
+INTEG_CSV = os.path.join(DATA, "m11_download_integrity.csv")
+PARSE = os.path.join(DATA, "m11_microns_parse_validation.json")
+REFCSV = os.path.join(DATA, "m11_reference.csv")
 
 VERDICTS = {"REACHABLE", "REACHABLE_NO_DATA", "NEEDS_TOKEN", "NEEDS_VERIFY", "BLOCKED", "NOT_EXIST"}
 FRAME_RATE_EXPECT = 1.0 / 0.15873          # 6.300006 Hz（来自 attributes.json t-resolution）
@@ -252,6 +256,65 @@ def main():
     A.append(assert_("P2.10 未取项显式登记 unavailable + 原因（未测 ≠ 未命中）", len(ureg) >= 3,
                      "n_unavailable=%d" % len(ureg)))
     res["unavailable"] = ureg
+
+    # ---------------- P1.7 下载完整性门（主 agent 硬要求 §三）----------------
+    ig = load(INTEG) if os.path.exists(INTEG) else {}
+    irows = read_csv_rows(INTEG_CSV)
+    A.append(assert_("P1.7a 逐对象完整性门（http→大小→SHA→解压→尺寸自洽）全部 COMPLETE",
+                     ig.get("n_incomplete") == 0 and ig.get("n_complete") == ig.get("n_objects"),
+                     "COMPLETE=%s/%s incomplete=%s" % (ig.get("n_complete"), ig.get("n_objects"),
+                                                       json.dumps(ig.get("incomplete", []), ensure_ascii=False)[:200])))
+    bad_ig = [r["t_chunk"] for r in irows if r.get("verdict") != "COMPLETE"]
+    A.append(assert_("P1.7b 完整性 CSV 逐行 verdict==COMPLETE", not bad_ig, "非完整=%s" % bad_ig[:6]))
+    man_rows = read_csv_rows(SUBSET)
+    A.append(assert_("P1.7c manifest 已写回 integrity 列且与完整性门一致",
+                     bool(man_rows) and all(r.get("integrity") == "COMPLETE" for r in man_rows),
+                     "n=%d 缺 integrity 列=%d" % (len(man_rows),
+                                                  sum(1 for r in man_rows if "integrity" not in r))))
+
+    # ---------------- P2.11/12 解析门（主 agent 硬要求 §二）----------------
+    pa = load(PARSE) if os.path.exists(PARSE) else {}
+    full = pa.get("full_objects", {}) or {}
+    ti = pa.get("tiff_groundtruth") or {}
+    win_ok = pa.get("winner") and "int16-BE" in pa.get("winner", "")
+    A.append(assert_("P2.11a 解析假设检验已选胜出解 = int16 大端（唯一自洽）", bool(win_ok),
+                     "winner=%s；通过门槛者=%s" % (pa.get("winner"), pa.get("hypotheses_passing"))))
+    A.append(assert_("P2.11b 预注册判据（lat_x≥0.2 ∧ 相邻帧≥0.2 ∧ 值域合理 ∧ 无 NaN/Inf ∧ 声明域 ∧ 非退化）",
+                     (full.get("lat_x_mean") or 0) >= 0.2 and (full.get("frame_mean") or 0) >= 0.2
+                     and (full.get("n_nan") == 0) and (full.get("n_inf") == 0),
+                     "lat_x=%.3f lat_y=%.3f frame=%.3f p50=%.0f n_nan=%s n_inf=%s（%s 个对象 / %s 元素）"
+                     % (full.get("lat_x_mean", 0), full.get("lat_y_mean", 0), full.get("frame_mean", 0),
+                        full.get("p50_mean", 0), full.get("n_nan"), full.get("n_inf"),
+                        full.get("n_objects"), full.get("n_elements"))))
+    A.append(assert_("P2.11c 独立地面真值（原始 TIFF 帧，不同 scan）同量级相关",
+                     (ti.get("lat_x") or 0) >= 0.2,
+                     "TIFF n_frames=%s lat_x=%.3f lat_y=%.3f p50=%.0f（判据阈值由真实数据锚定，非自证）"
+                     % (ti.get("n_frames"), ti.get("lat_x") or 0, ti.get("lat_y") or 0, ti.get("p50") or 0)))
+    A.append(assert_("P2.11d NaN/哨兵/缺失显式登记 + 掩膜规则已预注册",
+                     bool(full.get("masked_rule")) and full.get("n_nan") == 0,
+                     "NaN=%s Inf=%s 零值=%s 低于基线=%s 饱和(32767)=%s" % (
+                         full.get("n_nan"), full.get("n_inf"), full.get("n_zero"),
+                         full.get("n_int16_negative"), full.get("n_int16_saturated_max"))))
+    A.append(assert_("P2.11e 统计只用 COMPLETE 对象（解析门对象数 == 完整性门 COMPLETE 数）",
+                     (pa.get("n_complete_objects") or 0) == (ig.get("n_complete") or -1),
+                     "parse=%s integrity=%s" % (pa.get("n_complete_objects"), ig.get("n_complete"))))
+
+    # ---------------- P2.13 参考锚（readback assertion）----------------
+    ref = read_csv_rows(REFCSV)
+    rmap = {r["ref_id"]: r for r in ref}
+    fr = float((rmap.get("R-01") or {}).get("value") or 0)
+    A.append(assert_("P2.12a 参考锚落盘：帧率读回断言值 == 6.300006 Hz",
+                     abs(fr - 6.300006) < 1e-4,
+                     "R-01 value=%s status=%s" % (fr, (rmap.get("R-01") or {}).get("status"))))
+    A.append(assert_("P2.12b 参考锚含字节序断言（big-endian）",
+                     (rmap.get("R-10") or {}).get("value") == "big-endian",
+                     "R-10=%s" % (rmap.get("R-10") or {}).get("value")))
+    A.append(assert_("P2.12c dwell/τ 参考带仍标 unverified（未定稿不得入判据）",
+                     (rmap.get("R-21") or {}).get("status") == "unverified",
+                     "R-21 status=%s" % (rmap.get("R-21") or {}).get("status")))
+    A.append(assert_("P2.12d 空间分辨率 10× 口径冲突已登记 NEEDS_VERIFY",
+                     (rmap.get("R-16") or {}).get("status") == "NEEDS_VERIFY",
+                     "R-16=%s" % json.dumps(rmap.get("R-16", {}), ensure_ascii=False)[:160]))
 
     # ---------------- 判定 ----------------
     for a in A:

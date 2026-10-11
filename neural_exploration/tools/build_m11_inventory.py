@@ -41,6 +41,8 @@ LIT_CSV = os.path.join(DATA, "m11_literature_priors.csv")
 REACH_CSV = os.path.join(DATA, "m11_source_reachability.csv")
 SUBSET_MANIFEST = os.path.join(DATA, "m11_functional_subset_manifest.csv")
 SUBSET_SUMMARY = os.path.join(DATA, "m11_functional_subset_summary.json")
+TIFF_URL = ("https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/functional_data/"
+            "two_photon_functional_scans/functional_scan_17797_4_10_v1.tif")
 S3_LIST_URL = "https://bossdb-open-data.s3.amazonaws.com/"
 OUT_INV = os.path.join(DATA, "m11_data_inventory.csv")
 OUT_CNT = os.path.join(DATA, "m11_data_counts.json")
@@ -173,6 +175,13 @@ def main():
     add("m11_json", STRUCT_JSON, "（本工具产出）", st.get("generated_at", ""), "measured+derived", "结构侧")
     add("m11_json", PROTO_JSON, "（本工具产出）", pr.get("generated_at", ""), "measured", "采集参数读回")
     add("m11_json", ALLEN_JSON, "（本工具产出）", al.get("generated_at", ""), "measured", "Allen 侧")
+    for extra in ("m11_reference.csv", "m11_download_integrity.csv", "m11_download_integrity_summary.json",
+                  "m11_microns_parse_validation.json", "m11_microns_parse_hypotheses.csv"):
+        add("m11_gate", os.path.join(DATA, extra), "（本工具链产出）", utcnow(),
+            "measured(结构性验证 / 完整性门)", "主 agent 复核要求的三项门（解析/完整性/哨兵）产物")
+    add("microns_raw_tiff_frames", os.path.join(RAW, "microns", "functional", "tif_frames_probe.bin"),
+        TIFF_URL, utcnow(), "measured(Range 512-2200000, HTTP 206)",
+        "原始 BigTIFF 帧前缀（独立地面真值：lat_x≈0.77）")
     for p in (SUBSET_MANIFEST, SUBSET_SUMMARY):
         add("m11_csv", p, "", sub.get("generated_at", ""), "measured", "功能有界子集清单")
 
@@ -326,6 +335,21 @@ def main():
                          "EM/seg 全量下载：TB 级 → 明令禁止（清单 §1.1.2）"]),
         microns_functional=dict(evidence="measured(元数据+有界子集)", **func_counts),
         allen=dict(evidence="measured", **allen_counts),
+        download_integrity=dict(
+            evidence="measured(逐对象 http→大小→SHA-256→解压→尺寸自洽)",
+            **(load_json(os.path.join(DATA, "m11_download_integrity_summary.json")) or {})),
+        microns_parse_validation=dict(
+            evidence="measured(结构性假设检验 + 预注册判据)",
+            winner=(load_json(os.path.join(DATA, "m11_microns_parse_validation.json")) or {}).get("winner"),
+            hypotheses_passing=(load_json(os.path.join(DATA, "m11_microns_parse_validation.json")) or {}).get("hypotheses_passing"),
+            full_objects={k: v for k, v in
+                          ((load_json(os.path.join(DATA, "m11_microns_parse_validation.json")) or {})
+                           .get("full_objects") or {}).items()
+                          if k in ("n_objects", "n_elements", "lat_x_mean", "lat_y_mean", "frame_mean",
+                                   "p50_mean", "n_nan", "n_inf", "n_zero", "n_int16_negative",
+                                   "n_int16_saturated_max")},
+            sentinel_and_missing=((load_json(os.path.join(DATA, "m11_microns_parse_validation.json")) or {})
+                                  .get("sentinel_and_missing") or {})),
         literature=dict(n_rows=len(lit_rows), by_status=lit_v,
                         evidence="literature=Europe PMC 题录实测命中；未命中=literature_unverified"),
         reachability=dict(n_sources=len(reach_rows), by_verdict=vc,

@@ -1,6 +1,6 @@
 {
  "generated_by": "tools/validate_m11_microns_parse.py",
- "generated_at": "2026-10-11T13:06:50Z",
+ "generated_at": "2026-10-11T13:24:12Z",
  "criteria": {
   "lat_x_min": 0.2,
   "frame_min": 0.2,
@@ -276,19 +276,19 @@
  "tiff_groundtruth": {
   "source": "local neural_exploration/data/m11_raw/microns/functional/tif_frames_probe.bin",
   "url": "https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/functional_data/two_photon_functional_scans/functional_scan_17797_4_10_v1.tif",
-  "bytes": 921600,
-  "n_frames": 4,
+  "bytes": 1391105,
+  "n_frames": 6,
   "frame_shape": [
    440,
    248
   ],
   "dtype": "uint16-LE（BigTIFF 头声明，SampleFormat=1）",
-  "lat_x": 0.7653,
-  "lat_y": 0.7348,
-  "frame": -0.0401,
-  "p1": 3.7899999999999636,
-  "p50": 1879.0,
-  "p99": 7376.420000000042,
+  "lat_x": 0.7672,
+  "lat_y": 0.7353,
+  "frame": -0.0212,
+  "p1": 6.0,
+  "p50": 2194.0,
+  "p99": 6723.0,
   "vmin": 0.0,
   "vmax": 65535.0,
   "n_nan": 0,

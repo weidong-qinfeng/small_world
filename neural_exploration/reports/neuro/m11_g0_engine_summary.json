@@ -1,0 +1,130 @@
+{
+ "generated_by": "tools/scan_m11_engine.py",
+ "gate": "G0/P3",
+ "engine_version": "m11e-1.0-4slot+laminar-delay-pack+slowvar",
+ "criteria": {
+  "a_spike_time_alignment": {
+   "status": "fail",
+   "note": "解析（Euler 离散闭式）对照 + 链式延迟语义 + M9 稀疏逐位",
+   "detail": {
+    "chain_m9_vs_m11_frozen": false,
+    "chain_monotone": true,
+    "chain_first_steps": [
+     28,
+     69,
+     110,
+     151,
+     192,
+     233,
+     274,
+     315
+    ],
+    "per_current": {
+     "I_400": {
+      "err_vs_continuous_ms": -0.08883083359671673,
+      "err_vs_discrete_ms": 83.03682310708724,
+      "err_vs_discrete_steps": 1660.7364621417448
+     },
+     "I_700": {
+      "err_vs_continuous_ms": -0.06294361119890546,
+      "err_vs_discrete_ms": 27.645607702362415,
+      "err_vs_discrete_steps": 552.9121540472484
+     },
+     "I_1200": {
+      "err_vs_continuous_ms": -0.04680972583458942,
+      "err_vs_discrete_ms": 13.73818511709182,
+      "err_vs_discrete_steps": 274.7637023418364
+     }
+    }
+   }
+  },
+  "b_state_fraction": {
+   "status": "unavailable",
+   "note": "静默比差 <1pp 且发放率分布 KS p>0.05（在 3 档目标密度下）",
+   "detail": []
+  },
+  "c_mechanism_metrics": {
+   "status": "fail",
+   "note": "逐类电导积分：引擎累积（动态）vs 闭式（由 spike 时刻+边表独立算出）≤2%",
+   "detail": {
+    "integral_rel_diff": null,
+    "accumulated": null,
+    "closed_form": null
+   }
+  },
+  "d_determinism": {
+   "status": "fail",
+   "note": "同引擎同参数重跑 + 分段/跨进程逐位（(e)(h) 更严）",
+   "detail": {
+    "sparse_step_chunk": null,
+    "dense": null
+   }
+  },
+  "e_segment_composability": {
+   "status": "fail",
+   "note": "k=1/2/5 总脉冲与逐神经元计数逐位相同（step/chunk 两口径）；反例臂必现差异",
+   "detail": {
+    "step": null,
+    "chunk": null,
+    "control_falsifiable": null
+   }
+  },
+  "f_synchronous_firing": {
+   "status": "fail",
+   "note": "M9 抛错 / M11 正常；且逐类环槽残量与独立重算一致（≤2%）",
+   "detail": {
+    "m9_raises": null,
+    "m11_ok": null,
+    "slot_check": null
+   }
+  },
+  "g_target_density": {
+   "status": "unavailable",
+   "note": "3 档密度（含 Allen 中位带；口径受限）下的 (a)–(c) 类对齐复测；MICrONS 钙域密度锚 = unavailable（B1 L11.3/L11.5 未决）",
+   "detail": {
+    "density_anchored_points": null,
+    "anchors": null
+   }
+  },
+  "h_cross_process": {
+   "status": "fail",
+   "note": "3 个全新进程 × 2 档（on / off_frozen）→ 脉冲总数与逐神经元计数逐位相同",
+   "detail": {
+    "on": {},
+    "off_frozen": {}
+   }
+  }
+ },
+ "extensions": {
+  "off_state_equivalence": {
+   "status": "fail",
+   "note": "新机制全关 + REF_FROZEN ⇒ 与 M9/M10 逐位一致（单延迟档稀疏/密集）；三延迟档 FP 累加序差异已定位到单 ULP",
+   "detail": {}
+  },
+  "slot_encoding_assertions": {
+   "status": "fail",
+   "note": "逐类边数（两条独立实现）== 逐类槽内边数；g_* 读回一致；慢状态非零；负对照（丢 syn_class）被拦截且断言可证伪",
+   "detail": {}
+  },
+  "positive_controls": {
+   "status": "fail",
+   "note": "E1b/E2b/E3b 逐一：开关可测地不同 + 参数确在表达式内（否则 MECHANISM_NOT_IMPLEMENTED）",
+   "detail": {}
+  },
+  "upstream_defect_E_M9_4": {
+   "status": "registered",
+   "note": null,
+   "detail": {}
+  },
+  "no_leak": {
+   "status": "fail",
+   "detail": {}
+  }
+ },
+ "gate_verdict": "fail",
+ "probe": {
+  "rows": [],
+  "device": null,
+  "two_comp": null
+ }
+}

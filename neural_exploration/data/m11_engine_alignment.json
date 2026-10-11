@@ -1,0 +1,94 @@
+{
+ "t1": {
+  "I_400": {
+   "I": 400.0,
+   "v_inf": -44.0,
+   "analytic_first_step_continuous": 831.7766166719343,
+   "analytic_first_step_discrete": -830.7364621417448,
+   "measured_first_step": 830,
+   "err_vs_continuous_ms": -0.08883083359671673,
+   "err_vs_discrete_ms": 83.03682310708724,
+   "err_vs_discrete_steps": 1660.7364621417448
+  },
+  "I_700": {
+   "I": 700.0,
+   "v_inf": -38.0,
+   "analytic_first_step_continuous": 277.25887222397813,
+   "analytic_first_step_discrete": -276.9121540472483,
+   "measured_first_step": 276,
+   "err_vs_continuous_ms": -0.06294361119890546,
+   "err_vs_discrete_ms": 27.645607702362415,
+   "err_vs_discrete_steps": 552.9121540472484
+  },
+  "I_1200": {
+   "I": 1200.0,
+   "v_inf": -28.0,
+   "analytic_first_step_continuous": 137.93619451669178,
+   "analytic_first_step_discrete": -137.76370234183636,
+   "measured_first_step": 137,
+   "err_vs_continuous_ms": -0.04680972583458942,
+   "err_vs_discrete_ms": 13.73818511709182,
+   "err_vs_discrete_steps": 274.7637023418364
+  },
+  "chain": {
+   "per_arm": {
+    "m9_adult": {
+     "spk": 44,
+     "counts": [
+      5,
+      7,
+      6,
+      6,
+      5,
+      5,
+      5,
+      5
+     ]
+    },
+    "m11_fix": {
+     "spk": 78,
+     "counts": [
+      8,
+      13,
+      12,
+      11,
+      10,
+      9,
+      8,
+      7
+     ]
+    },
+    "m11_frozen": {
+     "spk": 42,
+     "counts": [
+      5,
+      7,
+      6,
+      6,
+      5,
+      5,
+      4,
+      4
+     ]
+    }
+   },
+   "m9_vs_m11_frozen_bit_identical": false,
+   "note": "链式（每步 ≤1 发放）⇒ M9 投递公式恰好正确；此臂验证 '非投递语义不动'"
+  },
+  "chain_first_spike_steps": [
+   28,
+   69,
+   110,
+   151,
+   192,
+   233,
+   274,
+   315
+  ],
+  "chain_monotone": true,
+  "crit_a_pass": false,
+  "crit_a_note": "判据 (a)：解析（与引擎同一 Euler 递推的闭式）首发放步误差 ≤1 步（0.05 ms < 0.1 ms 容差）；链式传播逐级 ≥delay 步；稀疏链 M9≡M11(frozen) 逐位一致"
+ },
+ "started_at": "2026-10-11T21:28:26",
+ "which": "merged:t1"
+}

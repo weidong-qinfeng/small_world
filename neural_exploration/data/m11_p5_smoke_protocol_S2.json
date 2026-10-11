@@ -1,0 +1,29 @@
+{
+ "_comment": "M11-B3 冒烟测试 S2：3 seed 聚合档 —— 直接注入 M10 独立实测件 data/m10_p5_gate1_ci.json 的逐 seed 脉冲数（zero/base），用于**核对本工具的 CI 实现**。预期：R=0.10153846、se_log=0.03654036、CI95=[0.09452067,0.10907730] 与 M10 记录逐位一致；点估计 0.10154 > 0.10 ⇒ (c) = fail（且标注「统计未分辨」）。M10 数据仅作工具校验，**不是** M11 判据。",
+ "protocol_id": "m11_b3_smoke_S2_m10_gate1_3seed",
+ "fixture_kind": "smoke_only(M10 m10_p5_gate1_ci.json 聚合档; 不得用作 M11 判据)",
+ "dt_ms": 0.05,
+ "settle_ms": 500.0,
+ "bin_ms": 100.0,
+ "n_neuron": 1000,
+ "arms": [
+  {"arm_id": "gate1_zero_seed0", "config_id": "M10_gate1_T10s", "T_ms": 10000.0, "settle_ms": 500.0,
+   "role": "zero_drive", "mechanism": "none", "drive_mult": 0.0, "seed": 0, "n_neuron": 1000,
+   "agg": {"spk_total": 275.0}},
+  {"arm_id": "gate1_zero_seed1", "config_id": "M10_gate1_T10s", "T_ms": 10000.0, "settle_ms": 500.0,
+   "role": "zero_drive", "mechanism": "none", "drive_mult": 0.0, "seed": 1, "n_neuron": 1000,
+   "agg": {"spk_total": 275.0}},
+  {"arm_id": "gate1_zero_seed2", "config_id": "M10_gate1_T10s", "T_ms": 10000.0, "settle_ms": 500.0,
+   "role": "zero_drive", "mechanism": "none", "drive_mult": 0.0, "seed": 2, "n_neuron": 1000,
+   "agg": {"spk_total": 275.0}},
+  {"arm_id": "gate1_base_seed0", "config_id": "M10_gate1_T10s", "T_ms": 10000.0, "settle_ms": 500.0,
+   "role": "baseline", "mechanism": "none", "drive_mult": 1.0, "seed": 0, "n_neuron": 1000,
+   "agg": {"spk_total": 2786.0}},
+  {"arm_id": "gate1_base_seed1", "config_id": "M10_gate1_T10s", "T_ms": 10000.0, "settle_ms": 500.0,
+   "role": "baseline", "mechanism": "none", "drive_mult": 1.0, "seed": 1, "n_neuron": 1000,
+   "agg": {"spk_total": 2604.0}},
+  {"arm_id": "gate1_base_seed2", "config_id": "M10_gate1_T10s", "T_ms": 10000.0, "settle_ms": 500.0,
+   "role": "baseline", "mechanism": "none", "drive_mult": 1.0, "seed": 2, "n_neuron": 1000,
+   "agg": {"spk_total": 2735.0}}
+ ]
+}

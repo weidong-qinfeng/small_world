@@ -4,7 +4,7 @@
 > **判定器**：`tools/validate_p11_data_gate.py` → `reports/neuro/m11_data_gate_summary.json`
 > **依据**：`docs/生物仿真M11实施清单.md` §1/§7 P1–P2/§10.1 + `docs/m11_list_review_master.md`（RF-M11-1..6）
 > **环境/口径/冲突登记**：`docs/m11_env_notes.md`（L1–L23，本文所有数字的出处）
-> **日期**：2026-10-11（08:09–12:15 UTC）；**墙钟**：**≈4.0 h**（含 2 次全量可达性探测重跑 18.9 + 33.9 min、子集 23 min、NWB 停滞等待 ~50 min）
+> **日期**：2026-10-11（08:09–14:20 UTC）；**墙钟**：**≈6.2 h**（含 2 次全量探测重跑 18.9+33.9 min、子集 23 min、NWB 停滞等待 ~50 min，以及**主 agent 复核后的三项门**：完整性门 + 解析门 + 参考锚）
 > **解释器**：`./.venv-m11/bin/python`（3.9.6；h5py 3.14.0 / numpy 2.0.2 / pypdf 6.20.0 —— **新增依赖，已登记**）
 > **线程纪律**：全程 `OMP_NUM_THREADS=1 MKL_NUM_THREADS=1`；**零 GPU/MPS 作业**；**下载总量 ≈0.21 GB**（较单次 2 GB / 总计 6 GB 上限留有余量）
 
@@ -14,9 +14,9 @@
 
 | 判据 | 一句话语义（清单 §0.4/§7） | 本轮判定 | 关键证据 |
 |---|---|---|---|
-| **P1** 皮层数据门 | 可达性表逐源实测 + 结构/morph-ephys/文献三类数据落盘 + 权威计数锚硬断言 + SHA 确定性 + 完整度分级 | **pass（附 §3 限制）** | **68 源逐行实测**（REACHABLE 51 / REACHABLE_NO_DATA 3 / NEEDS_VERIFY 3 / NEEDS_TOKEN 1 / BLOCKED 8 / NOT_EXIST 2；两次探测 **68/68 码一致**）；em/seg/seg_m1300 info 落盘 + shard 对象级 206×6；Allen **1,920 行** + NWB HEAD/Range/头解析；文献 37 行 provenance（**31 literature / 6 unverified**） |
-| **P2** 结构-功能同源数据门 | 结构与功能**同源**路径落盘 + **采集参数读回断言** + 四类参考量同口径可算 + 证据级别标注 | **数据门范围 = pass（判定器 P2 8/8 断言）；全节 = `partial_pass`**（采集参数/同源路径/有界子集全 `measured`；**清单 §1.7 列出的三个参考量 CSV 属 P2 后续步，未交付 ⇒ 不写成 pass**） | 帧率 **6.300006 Hz** 读回断言通过；掩膜格与 series **同格**（248×440×1 @2.5×2.5×10 µm）；136.3 MB 有界子集 **chunk=20 B 头+gzip，解压 raw=800,000 B 精确匹配** |
-| **G2（门）** | P1 ∧ P2 均过 | **`pass`（判定器：P1 23/23、P2 8/8、共 32 条断言 0 失败；附 §3 限制）** | 判定器输出 `reports/neuro/m11_data_gate_summary.json`；**确定性复跑：5 个固定源 verdict 100% 一致**；**未启动** G0/G1/S（遵守前置门链） |
+| **P1** 皮层数据门 | 可达性表逐源实测 + 结构/morph-ephys/文献三类数据落盘 + 权威计数锚硬断言 + SHA 确定性 + 完整度分级 | **pass（附 §3 限制）** | **68 源逐行实测**（REACHABLE 51 / REACHABLE_NO_DATA 3 / NEEDS_VERIFY 3 / NEEDS_TOKEN 1 / BLOCKED 8 / NOT_EXIST 2；两次探测 **68/68 码一致**）；em/seg/seg_m1300 info 落盘 + shard 对象级 206×6；Allen **1,920 行** + NWB HEAD/Range/头解析；文献 37 行 provenance（**31 literature / 6 unverified**）；**新增完整性门：200/200 COMPLETE** |
+| **P2** 结构-功能同源数据门 | 结构与功能**同源**路径落盘 + **采集参数读回断言** + 四类参考量同口径可算 + 证据级别标注 | **数据门范围 = pass（判定器 P2 全部断言通过）；全节 = `partial_pass`**（采集参数/同源路径/有界子集/**解析门**全 `measured`；**清单 §1.7 三个参考量 CSV 属后续步，未交付 ⇒ 不写成 pass**） | 帧率 **6.300006 Hz** 读回断言；掩膜格与 series **同格**；**解析门胜出解 = 大端 int16**（lat_x **0.777** / frame **0.773**，全 200 对象）；**独立地面真值**（原始 TIFF，另一 scan）lat_x **0.765** / p50 **1,879** 同量级 |
+| **G2（门）** | P1 ∧ P2 均过 | **`pass`（判定器：**44 条断言 0 失败** —— 含主 agent 复核后新增的完整性/解析/参考锚 12 条；附 §3 限制）** | 判定器输出 `reports/neuro/m11_data_gate_summary.json`；**确定性复跑：5 个固定源 verdict 100% 一致**；**未启动** G0/G1/S（遵守前置门链） |
 
 **未通过/未交付项（不静默、不计入 fail 之外的语义）**：
 
@@ -42,7 +42,11 @@
 | MICrONS 采集参数（时间口径） | **measured（读回断言通过）** | **6.300006 Hz**、40,000 帧、6,349.2 s、z=1、2.5×2.5×10 µm、FOV 620×1100 µm | 同上 |
 | MICrONS 神经域/掩膜 | **measured** | 144 份 info；`compressed_segmentation`；格 248×440×1 @2500×2500×10000 nm | 同上 |
 | MICrONS 原始扫描帧维 | **measured（Range 头）** | BigTIFF `{"shape":[320000,440,248]}`、strip 218,240 B/帧 | 同上 |
-| MICrONS 功能有界子集 | **measured** | **200/200 对象、136,348,754 B（136.3 MB）、2,000 帧**；**chunk = 20 B 头 + gzip**，解压 raw = **800,000 B**（= 10 帧 × 200 × 200 × 2 B）逐片精确匹配 | `m11_functional_subset_manifest.csv` / `_verify.json` |
+| MICrONS 功能有界子集 | **measured** | **200/200 对象、2,000 帧**；**chunk = 20 B 大端头 `[4,200,200,1,10]` + gzip**，解压 raw = **800,000 B** 逐片精确匹配 | `m11_functional_subset_manifest.csv` / `_verify.json` |
+| **下载完整性门**（主 agent §三） | **measured** | 逐对象 5 步链（http→大小→SHA-256→解压→尺寸自洽）：**COMPLETE 200/200**（首轮 197，3 片 `curl_exit=28` 半成品已重取）；`manifest.integrity`=COMPLETE 全行 | `m11_download_integrity.csv` / `_summary.json` |
+| **解析结构性门**（主 agent §二） | **measured** | 18 个假设 × 6 判据：**唯一自洽解 = 大端 int16**（lat_x **0.801**、相邻帧 **0.784**、p50 **1,815**）；小端/uint16/delta(cumsum)/Morton/float **全部判 invalid**（逐条原因落盘） | `m11_microns_parse_validation.json` / `_hypotheses.csv` |
+| **NaN/哨兵/掩膜登记**（主 agent §四） | **measured** | **NaN=0 / Inf=0**（整型域结构性为 0）；饱和(32767)=**0**；零值 0.2416%；低于基线 **10,383 (0.01298%)** 且**成簇于暗区**（邻域负值比例 0.111 vs 随机 0.000129；孤立 0.000）⇒ **无掩膜** | 同上 |
+| **参考锚** | **measured / 1 NEEDS_VERIFY / 1 unverified** | `m11_reference.csv` 22 行：帧率 **6.300006 Hz**、字节序 **big-endian**、20 B 头、10 帧/片=1.5873 s 均为 `asserted`；**dwell/τ 带 = `unverified`** | `m11_reference.csv` |
 | 结构-功能**同源**证据 | **measured** | 同一 minnie65 体积内的 EM/seg 与 144 个双光子 field；`functional_coregistration` 前缀可达（2 键） | 同上 |
 | Allen Cell Types 元数据 | **measured（全取）** | **1,920/1,920 行**；54 字段（11 个 `ef__*`）；`ef__avg_firing_rate` n=**1,808**（中位 17.44 Hz） | `m11_allen_celltypes_metadata.csv` |
 | Allen per-cell NWB | **measured（对象级 + 头）** | HEAD 200 / **91,560,414 B** / `486940961_ephys.nwb`；Range 0-99 → 206；**44.7 MB 可见前缀 + 稀疏文件头解析**：`nwb_version = NWB-1.0.5`、`file_create_date = 2018-02-28`、根组 11 键、`Sweep_10` = `CurrentClampSeries`（"Voltage recorded from cell during current-clamp recording"） | `m11_allen_sources.json` |
@@ -68,6 +72,11 @@
    ⇒ M11 的钙域参考量走**场级重建**（144 ROI 掩膜 + 2 field 钙电影）路径。
 3. **单个 field ≠ 整卷**：`functional_series` 为单平面（z=1），文档述多深度（two planes per depth × 2–4 depths）
    ⇒ **整卷体积率未测**。
+3b. **dwell/τ 参考带 = `unverified`**（主 agent 明确要求）：解析门虽已过，但 C1/C2 参考量重建与
+   RF-M11-2 的"目标数据劈半 + 同协议等价检验"未完成 ⇒ **不得作为任何判据带**。
+3c. **帧率差异的判据级后果**：MICrONS **6.30 Hz** vs ZAPBench **1.09 Hz**（**5.8×**）
+   ⇒ 沿用 M10 的 26.5 s dwell / 37.18 s τ 将构成**跨物种 + 跨帧率 + 跨箱宽**三重错配。
+3d. **采样下界**：帧间期 158.73 ms ⇒ 0.3 s 级状态仅 ~1.9 帧（dwell 下界可分辨性受限，定稿时须写明）。
 4. **数据规模限制**：EM 未压缩上界 **502.4 TB**（raw）、seg/seg_m1300 未压缩上界 2.6/7.9 PB；
    原始扫描 2.686 TB、刺激电影 1.84 TB ⇒ **M11 必须子体积/按需取块**（清单 §9 风险表首行，本轮实测加固）。
 5. **网络限制**：`portal.brain-map.org`（挂起 925.9 s 一次）、`synapse.brain-map.org`（DNS）、
@@ -110,7 +119,12 @@ $PY neural_exploration/tools/build_m11_literature_priors.py
 # ⑦ 权威清单 + 计数锚
 $PY neural_exploration/tools/build_m11_inventory.py
 
-# ⑧ P1/P2 判定（含确定性复跑子集）
+# ⑧ 主 agent 复核后的三项门（完整性 / 解析 / 参考锚）
+$PY neural_exploration/tools/verify_m11_downloads.py --refetch      # 完整性门（5 步判定链）
+$PY neural_exploration/tools/validate_m11_microns_parse.py --n-full 200   # 解析门（18 假设 × 6 判据）
+$PY neural_exploration/tools/build_m11_reference.py                 # 参考锚（含 6.300006 Hz 读回断言）
+
+# ⑨ P1/P2 判定（含确定性复跑子集）
 $PY neural_exploration/tools/validate_p11_data_gate.py --determinism-check
 ```
 
@@ -132,7 +146,7 @@ $PY neural_exploration/tools/validate_p11_data_gate.py --determinism-check
 | Allen（元数据 5 页 + NWB HEAD/Range/头 + BO 目录） | **≈4 min** | NWB 全量作业另计（44.7 MB 后停滞 → 停） |
 | 文献 provenance（37 行 × 2–3 次查询） | **≈2 min**（网络波动时更久） | Europe PMC |
 | 清单 + 计数锚 + 判定器 | **≈3 min** | SHA-256 覆盖 136 MB 子集 |
-| **合计** | **≈4.0 h 墙钟**（含等待/文档/NWB 停滞等待；净计算 ≈0.5–0.8 CPU-h，单线程） | **GPU = 0**；下载 ≈0.21 GB |
+| **合计** | **≈6.2 h 墙钟**（含等待/文档/NWB 停滞等待/主 agent 复核后的三项门；净计算 ≈0.8–1.1 CPU-h，单线程） | **GPU = 0**；下载 ≈0.21 GB（新增仅原始 TIFF 4 帧 ≈0.9 MB） |
 
 ---
 
@@ -143,9 +157,9 @@ $PY neural_exploration/tools/validate_p11_data_gate.py --determinism-check
 
 | 类别 | 文件 | 规模 |
 |---|---|---|
-| 工具 | `tools/probe_m11_sources.py` / `fetch_m11_microns.py` / `fetch_m11_allen.py` / `build_m11_literature_priors.py` / `build_m11_inventory.py` / `validate_p11_data_gate.py` | 6 个 |
-| 数据（表） | `data/m11_source_reachability.csv`（68 源）/ `m11_data_inventory.csv`（224 件）/ `m11_literature_priors.csv`（37 行）/ `m11_allen_celltypes_metadata.csv`（1,920 行）/ `m11_functional_subset_manifest.csv`（200 行） | 5 个 |
-| 数据（JSON） | `m11_microns_structure.json` / `m11_microns_protocol.json` / `m11_allen_sources.json` / `m11_literature_priors.json` / `m11_data_counts.json` / `m11_functional_subset_summary.json` / `m11_functional_subset_verify.json` | 7 个 |
+| 工具 | `tools/probe_m11_sources.py` / `fetch_m11_microns.py` / `fetch_m11_allen.py` / `build_m11_literature_priors.py` / `build_m11_inventory.py` / `validate_p11_data_gate.py` + **`verify_m11_downloads.py` / `validate_m11_microns_parse.py` / `build_m11_reference.py`** | **9 个** |
+| 数据（表） | `data/m11_source_reachability.csv`（68 源）/ `m11_data_inventory.csv`（231 件）/ `m11_literature_priors.csv`（37 行）/ `m11_allen_celltypes_metadata.csv`（1,920 行）/ `m11_functional_subset_manifest.csv`（200 行 + integrity 列）/ **`m11_download_integrity.csv`** / **`m11_microns_parse_hypotheses.csv`** / **`m11_reference.csv`（22 行）** | 8 个 |
+| 数据（JSON） | `m11_microns_structure.json` / `m11_microns_protocol.json` / `m11_allen_sources.json` / `m11_literature_priors.json` / `m11_data_counts.json` / `m11_functional_subset_summary.json` / `m11_functional_subset_verify.json` / **`m11_download_integrity_summary.json`** / **`m11_microns_parse_validation.json`** | 9 个 |
 | 原始落盘 | `data/m11_raw/{microns/struct, microns/functional, microns/functional_subset, microns/pdf_text, allen, probe, literature}` | 见清单 |
 | 报告 | `reports/neuro/m11_data_gate_summary.json` / `docs/m11_data_gate_report.md` / `docs/m11_env_notes.md`（L1–L23） | 3 个 |
 | 清单改写（唯一例外） | `docs/生物仿真M11实施清单.md` §0.7 #2（L220–L222 → **L220–L227**，RF-M11-1；文件 1226 → **1232** 行） | 9+/3−（已由主 agent 提交 `b0996c1`，故当前 `git diff` 为空属正常） |
@@ -160,6 +174,15 @@ $PY neural_exploration/tools/validate_p11_data_gate.py --determinism-check
 出处：Ding et al. 2025, **DOI 10.1038/s41586-025-08840-3**（readme 原文）。
 ⇒ 若批准下载（≈496 MB，DQ-4），P2 的 C1/C2 参考量可**同源同口径**直接算出，P2 可从 `partial_pass` 推向全过。
 **本节点因 ">30 min 先汇报" 纪律未启动该下载。**
+
+## §6c 主 agent 独立复核的三项硬要求（**已全部落实并门化**）
+
+| 硬要求 | 处置 | 证据 |
+|---|---|---|
+| §二 结构性解析验证（含 delta / Morton 假设） | ✅ **根因 = 字节序**（小端误读）：大端 int16 直读给出 lat_x **+0.801** / 相邻帧 **+0.784**；delta 与 Morton 假设**均不成立**；**并发现主 agent 的 4 条判据对 `cumsum` 退化结构天然通过 ⇒ 补 C5 声明域约束 + C6 非退化**（通过者 9 → 2，再按相干性+简洁性选唯一解） | `m11_microns_parse_validation.json`（含独立地面真值：原始 TIFF lat_x 0.765 / p50 1,879） |
+| §三 完整性门 | ✅ 197/200 → **200/200 COMPLETE**；**根因（本节点缺陷）= 判定未校验 `curl_exit`**，半成品被记 `REACHABLE` ⇒ 已修 + 固化为独立门；**统计只用 COMPLETE** | `m11_download_integrity.csv` / `_summary.json`；判定器 `P1.7a-c` / `P2.11e` |
+| §四 NaN/哨兵登记 | ✅ **NaN/Inf = 0**（整型域）；主 agent 的 106 NaN / |x|>1e30 = **float 误读副产物**；低于基线 0.013% **成簇于暗区 ⇒ 非哨兵、无掩膜** | 同上 + `m11_reference.csv` R-13/R-14 |
+| 6.30 Hz 作为读回断言值 | ✅ 落 `m11_reference.csv` **R-01 `asserted`**，判定器 `P2.12a` 强制核对 | `data/m11_reference.csv` |
 
 ## §7 结论与下一步建议
 

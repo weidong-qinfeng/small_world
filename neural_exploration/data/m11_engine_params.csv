@@ -1,0 +1,21 @@
+key,value,note
+engine_version,m11e-1.0-4slot+laminar-delay-pack+slowvar,M11 内核版本
+base_kernel,src/larval_zf_engine.py (M10 E5-FIX),继承底座（冻结件零修改）
+n_ch_off,2,E1b 关闭：E/I 两槽（M10 语义）
+n_ch_on,4,E1b 开启：E/PV/SST/VIP 四槽
+tau_pv_ms,8.0,PV 抑制电导时间常数（**抽象默认，literature_unverified**）
+tau_sst_ms,64.0,SST 抑制电导时间常数（抽象默认）
+tau_vip_ms,32.0,VIP 抑制电导时间常数（抽象默认）
+e_pv_e_sst_e_vip_mV,-80.0,三类抑制反转电位（抽象默认；严格低于 v_rest）
+refractory_form_default,semantic_fix,文档语义（E-M9-4 修正档）
+refractory_form_frozen,m10_frozen,冻结档：逐位复刻 M9/M10 非 gaba 点核参数序缺陷
+delay_bins,40/60/80 步 (2/3/4 ms),E3b 层间延迟打包档（≤4 档，共享单一环槽）
+ring_width,n_slot × n_ch × N,单共享环槽（n_ch=2 时 == M10 的 2N 布局）
+slow_tau_ms,1000.0,E2b 慢变量时间常数（抽象默认）
+slow_inc_per_spike,6.0,E2b 每 spike 慢电导增量（1/s；**必须 >0**）
+slow_e_slow_mV,-77.0,慢电导反转电位（= E_K，钾介导）
+dual_estimator_tol,0.02,双估计器一致性硬门（相对差 ≤2%）
+probe_indegree,20,夹具柱突触前数/神经元
+probe_density_events_hz,2.0,夹具外部事件率（Hz/神经元）
+cpu_interp,./.venv-m9/bin/python,引擎侧解释器（清单 §0.10 L5：引擎复用 .venv-m9）
+gpu_h_per_trial_formula,ms_per_step × N_steps × 3.6e-6,单试次 GPU-h（禁用段 0 预热值）

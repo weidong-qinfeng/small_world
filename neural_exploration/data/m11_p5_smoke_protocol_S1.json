@@ -1,0 +1,17 @@
+{
+ "_comment": "M11-B3 冒烟测试 S1：单臂 / 只有群体轨迹（无逐神经元计数）。预期：(a)(b) 逐神经元口径 unavailable、双估计器 unavailable；四态如实输出。数据 = M10 冻结轨迹（只读），**不是** M11 判据。",
+ "protocol_id": "m11_b3_smoke_S1_trace_only",
+ "fixture_kind": "smoke_only(M10 pop trace; 不得用作 M11 判据)",
+ "dt_ms": 0.05,
+ "settle_ms": 500.0,
+ "bin_ms": 100.0,
+ "smooth_frames": 5,
+ "n_neuron": 250,
+ "arms": [
+  {"arm_id": "M0_lamx0.0_T120s",
+   "config_id": "M10_M0_T120s",
+   "T_ms": 120000.0, "settle_ms": 500.0,
+   "role": "zero_drive", "mechanism": "none", "drive_mult": 0.0, "seed": 0,
+   "pop_trace": "neural_exploration/data/m10_p6_poptraces/poptrace_M0_lamx0.0_n250.npy"}
+ ]
+}

@@ -1,6 +1,6 @@
 {
  "generated_by": "tools/build_m11_inventory.py",
- "generated_at": "2026-10-11T12:04:35Z",
+ "generated_at": "2026-10-11T13:24:12Z",
  "units": "bytes; evidence ∈ {measured, derived, literature, unavailable}",
  "microns_structure": {
   "evidence": "measured(元数据) + derived(chunk 计数); shard 清单 = measured(有界)",
@@ -314,6 +314,48 @@
    }
   }
  },
+ "download_integrity": {
+  "evidence": "measured(逐对象 http→大小→SHA-256→解压→尺寸自洽)",
+  "generated_by": "tools/verify_m11_downloads.py",
+  "generated_at": "2026-10-11T12:23:18Z",
+  "n_objects": 200,
+  "n_complete": 200,
+  "n_incomplete": 0,
+  "incomplete": [],
+  "total_bytes_complete": 137291280,
+  "integrity_csv": "data/m11_download_integrity.csv",
+  "rule": "统计量/参考带一律只用 COMPLETE 对象；INCOMPLETE → 可重取（--refetch），不得静默计入"
+ },
+ "microns_parse_validation": {
+  "evidence": "measured(结构性假设检验 + 预注册判据)",
+  "winner": "① 直读 int16-BE（小端/大端）",
+  "hypotheses_passing": [
+   "① 直读 int16-BE（小端/大端）",
+   "③ Morton 反排列（int16-BE）"
+  ],
+  "full_objects": {
+   "n_objects": 200,
+   "n_nan": 0,
+   "n_inf": 0,
+   "n_elements": 80000000,
+   "n_zero": 193266,
+   "n_int16_negative": 10383,
+   "n_int16_saturated_max": 0,
+   "lat_x_mean": 0.7768,
+   "lat_y_mean": 0.7613,
+   "frame_mean": 0.7728,
+   "p50_mean": 1862.92
+  },
+  "sentinel_and_missing": {
+   "n_elements_full": 80000000,
+   "n_nan": 0,
+   "n_inf": 0,
+   "n_zero": 193266,
+   "n_sentinel_uint16_ge_65000": null,
+   "rule": "**掩膜规则（预注册）：无掩膜**。NaN/Inf 在整型域结构性为 0；int16 饱和(32767)=0 ⇒ 无饱和伪影；低于基线样本 10383 (0.01298%) **保留**（成簇于暗区、属噪声下探；掩膜会引入正偏）；零值 193266 (0.2416%) 一并登记",
+   "discipline": "**未处理 ≠ 无缺失**：NaN/哨兵/零值计数与掩膜规则必须随统计量一并落盘"
+  }
+ },
  "literature": {
   "n_rows": 37,
   "by_status": {
@@ -335,9 +377,9 @@
   "evidence": "measured(curl 两次探测)"
  },
  "inventory": {
-  "n_items": 225,
-  "total_bytes": 285985347,
-  "total_MB": 285.985
+  "n_items": 231,
+  "total_bytes": 288431365,
+  "total_MB": 288.431
  },
  "functional_connectomics_release": {
   "evidence": "measured(列举 200：KeyCount=4)",

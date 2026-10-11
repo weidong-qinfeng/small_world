@@ -1,0 +1,223 @@
+{
+ "probe": "mainagent_m11_same_source_band",
+ "frame_hz": 6.300006,
+ "frame_s": 0.15873000755872296,
+ "n_frames": 2000,
+ "duration_s": 317.46001511744595,
+ "globals": {
+  "n_files": 200,
+  "n_elements": 80000000,
+  "n_sentinel": 10383,
+  "sentinel_frac": 0.0001297875,
+  "global_mean": 2083.571898387762,
+  "global_std": 1443.6161248977298,
+  "baseline_median": 1550.5,
+  "mad": 632.5,
+  "threshold_med_plus_3mad": 3448.0
+ },
+ "counts": {
+  "n_total": 80000000,
+  "n_valid": 79989617
+ },
+ "sample_gate": {
+  "n_frames": 2000,
+  "tau_ok": true,
+  "shape_ok": true,
+  "bic_ok": true
+ },
+ "pipelines": {
+  "frame_mean|native|unsmoothed": {
+   "status": "measured",
+   "n": 2000,
+   "phi": 0.9825467867749567,
+   "tau_s": 9.015002930996193,
+   "ljung_box_Q": 201.7182040757635,
+   "resid_lag1": 0.23148246459250527,
+   "resid_whiten": false
+  },
+  "frame_mean|native|smooth5": {
+   "status": "measured",
+   "n": 1996,
+   "phi": 0.9946667367312143,
+   "tau_s": 29.682831668943596,
+   "ljung_box_Q": 2811.30453251024,
+   "resid_lag1": 0.85409629800697,
+   "resid_whiten": false
+  },
+  "frame_mean|box0.914|unsmoothed": {
+   "status": "measured",
+   "n": 333,
+   "phi": 0.8875079050578795,
+   "tau_s": 7.657471505762383,
+   "ljung_box_Q": 29.60854284398144,
+   "resid_lag1": 0.19649393507364546,
+   "resid_whiten": false
+  },
+  "frame_mean|box0.914|smooth5": {
+   "status": "measured",
+   "n": 329,
+   "phi": 0.9711714324777664,
+   "tau_s": 31.239492605454533,
+   "ljung_box_Q": 424.5552556598401,
+   "resid_lag1": 0.7888066900779316,
+   "resid_whiten": false
+  },
+  "frame_mean|state_structure": {
+   "Q": {
+    "occ_low": 0.5,
+    "occ_high": 0.5,
+    "transition_rate_hz": 0.43785041699999994,
+    "n_switches": 139,
+    "dwell": {
+     "low": {
+      "n": 69,
+      "median_s": 1.1111100529110607,
+      "p90_s": 7.015866334095557
+     },
+     "high": {
+      "n": 69,
+      "median_s": 0.4761900226761689,
+      "p90_s": 4.7301542252499456
+     }
+    }
+   },
+   "H": {
+    "mu": [
+     1853.109267659028,
+     2496.001393104942
+    ],
+    "sd": [
+     181.90942003899116,
+     228.4652556221795
+    ],
+    "A": [
+     [
+      0.9798245638334246,
+      0.020175436166571407
+     ],
+     [
+      0.037480990206857114,
+      0.9625190097931621
+     ]
+    ],
+    "occ_low": 0.6425,
+    "occ_high": 0.3575,
+    "transition_rate_hz": 0.11025010499999999,
+    "n_switches": 35,
+    "dwell": {
+     "low": {
+      "n": 17,
+      "median_s": 3.1746001511744595,
+      "p90_s": 34.19044362814894
+     },
+     "high": {
+      "n": 17,
+      "median_s": 2.2222201058221214,
+      "p90_s": 17.111094814830338
+     }
+    }
+   },
+   "internal_consistency_Q_rel": 0.027749229188078265,
+   "internal_consistency_H_rel": 0.4285714285714285,
+   "consistency_pass_Q": true,
+   "consistency_pass_H": true
+  },
+  "high_pixel_frac|native|unsmoothed": {
+   "status": "measured",
+   "n": 2000,
+   "phi": 0.9803616807031713,
+   "tau_s": 8.003040270896298,
+   "ljung_box_Q": 129.35868291607596,
+   "resid_lag1": 0.10285632214265751,
+   "resid_whiten": false
+  },
+  "high_pixel_frac|native|smooth5": {
+   "status": "measured",
+   "n": 1996,
+   "phi": 0.9948062112930551,
+   "tau_s": 30.482072661009763,
+   "ljung_box_Q": 2768.361691460099,
+   "resid_lag1": 0.8339679810159636,
+   "resid_whiten": false
+  },
+  "high_pixel_frac|box0.914|unsmoothed": {
+   "status": "measured",
+   "n": 333,
+   "phi": 0.8872927422081304,
+   "tau_s": 7.641945011610053,
+   "ljung_box_Q": 25.290884309679893,
+   "resid_lag1": 0.19037064440657545,
+   "resid_whiten": false
+  },
+  "high_pixel_frac|box0.914|smooth5": {
+   "status": "measured",
+   "n": 329,
+   "phi": 0.9720756474322727,
+   "tau_s": 32.26599293628395,
+   "ljung_box_Q": 407.2844470745588,
+   "resid_lag1": 0.7846995042841138,
+   "resid_whiten": false
+  },
+  "high_pixel_frac|state_structure": {
+   "Q": {
+    "occ_low": 0.5,
+    "occ_high": 0.5,
+    "transition_rate_hz": 0.40005038099999995,
+    "n_switches": 127,
+    "dwell": {
+     "low": {
+      "n": 63,
+      "median_s": 1.2698400604697837,
+      "p90_s": 7.619040362818706
+     },
+     "high": {
+      "n": 63,
+      "median_s": 0.4761900226761689,
+      "p90_s": 5.111106243390882
+     }
+    }
+   },
+   "H": {
+    "mu": [
+     0.07764520967370735,
+     0.20695903518722233
+    ],
+    "sd": [
+     0.027576928165600346,
+     0.0552950027239651
+    ],
+    "A": [
+     [
+      0.9791509867488115,
+      0.020849013251191068
+     ],
+     [
+      0.03443989716428628,
+      0.9655601028357147
+     ]
+    ],
+    "occ_low": 0.613,
+    "occ_high": 0.387,
+    "transition_rate_hz": 0.10395009899999999,
+    "n_switches": 33,
+    "dwell": {
+     "low": {
+      "n": 16,
+      "median_s": 6.666660317466365,
+      "p90_s": 32.619016553317564
+     },
+     "high": {
+      "n": 16,
+      "median_s": 3.4126951625125437,
+      "p90_s": 22.38093106577994
+     }
+    }
+   },
+   "internal_consistency_Q_rel": 0.01574803149606288,
+   "internal_consistency_H_rel": 0.2784992784992784,
+   "consistency_pass_Q": true,
+   "consistency_pass_H": true
+  }
+ },
+ "wall_s": 2.7
+}
