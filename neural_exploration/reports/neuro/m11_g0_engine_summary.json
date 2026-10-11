@@ -39,9 +39,31 @@
    }
   },
   "b_state_fraction": {
-   "status": "unavailable",
-   "note": "静默比差 <1pp 且发放率分布 KS p>0.05（在 3 档目标密度下）（本轮未运行）",
-   "detail": []
+   "status": "fail",
+   "note": "静默比差 <1pp 且发放率分布 KS p>0.05（在 3 档目标密度下）",
+   "detail": [
+    {
+     "target_hz": 0.5,
+     "achieved_hz": 0.475,
+     "silent_diff_pp": 14.000000000000002,
+     "ks_p": 0.0006828973106786729,
+     "bit_identical": false
+    },
+    {
+     "target_hz": 2.0,
+     "achieved_hz": 1.95,
+     "silent_diff_pp": 2.9999999999999973,
+     "ks_p": 0.5111457417605447,
+     "bit_identical": false
+    },
+    {
+     "target_hz": 17.412999876622898,
+     "achieved_hz": 17.924999999999997,
+     "silent_diff_pp": 0.2500000000000002,
+     "ks_p": 0.9999999999763176,
+     "bit_identical": false
+    }
+   ]
   },
   "c_mechanism_metrics": {
    "status": "pass",
@@ -177,19 +199,51 @@
    }
   },
   "g_target_density": {
-   "status": "unavailable",
-   "note": "3 档密度（含 Allen 中位带；口径受限）下的 (a)–(c) 类对齐复测；MICrONS 钙域密度锚 = unavailable（B1 L11.3/L11.5 未决）⇒ 如实登记、不计 fail（本轮未运行）",
+   "status": "fail",
+   "note": "3 档密度（含 Allen 中位带；口径受限）下的 (a)–(c) 类对齐复测；MICrONS 钙域密度锚 = unavailable（B1 L11.3/L11.5 未决）⇒ 如实登记、不计 fail",
    "detail": {
-    "density_anchored_points": null,
-    "anchors": null
+    "density_anchored_points": [
+     17.412999876622898
+    ],
+    "anchors": {
+     "n": 1808,
+     "min": 1.98491464867011,
+     "p10": 8.417879509151225,
+     "p25": 11.84158469454915,
+     "median": 17.412999876622898,
+     "p75": 35.59276383287885,
+     "p90": 81.75632120143568,
+     "max": 261.210274270789,
+     "mean": 31.718032123800736
+    }
    }
   },
   "h_cross_process": {
-   "status": "unavailable",
-   "note": "3 个全新进程 × 2 档（on / off_frozen）→ 脉冲总数与逐神经元计数逐位相同（本轮未运行）",
+   "status": "pass",
+   "note": "3 个全新进程 × 2 档（on / off_frozen）→ 脉冲总数与逐神经元计数逐位相同",
    "detail": {
-    "on": {},
-    "off_frozen": {}
+    "on": {
+     "n_process": 3,
+     "bit_identical": true,
+     "spk_total": 244,
+     "sha256": "3d7a2b56707a29d3c3369610206697419437cd9f815fa7130c227b8f3a2e8df8",
+     "pids": [
+      38279,
+      38290,
+      38293
+     ]
+    },
+    "off_frozen": {
+     "n_process": 3,
+     "bit_identical": true,
+     "spk_total": 3730,
+     "sha256": "c29dd7a0ee3a7f74f4064db92cb28c859345a11cbbd1285460949abcc6dd41ea",
+     "pids": [
+      38304,
+      38306,
+      38314
+     ]
+    }
    }
   }
  },
@@ -545,6 +599,27 @@
      "m11_frozen_core_rel_ext_matches_m10": true,
      "fix_core_rel_ext_control_replays": true,
      "note": "冻结件 `if ext_active and not chunk_mode and s < ext_n_steps: ea=ext_off[s]` 用**局部**步号⇒ 分段调用时每段重放前段事件（chunk 模式用 abs0，故不受影响）。M11 已改为绝对步号索引（`ext_abs_index=True`），实测 k=1/2/5 逐位一致。"
+    },
+    "E_M10_2_multi_delay_ext_dropped": {
+     "per_case": {
+      "one_delay_bin": {
+       "m10_with_ext": 2383,
+       "m10_without_ext": 2242,
+       "m10_events_ignored": false,
+       "m11_with_ext": 2383,
+       "m11_ext_effect_pct": 6.289
+      },
+      "two_delay_bins": {
+       "m10_with_ext": 2224,
+       "m10_without_ext": 2224,
+       "m10_events_ignored": true,
+       "m11_with_ext": 2352,
+       "m11_ext_effect_pct": 5.755
+      }
+     },
+     "condition": "main run: `ext_active = ... and ring_flat is not None`，`ring_flat = rings[0] if len_rings == 1 else None` ⇒ **≥2 个延迟组时全部外部事件被静默丢弃**",
+     "m11_fixed_by": "M11 采用**单共享环槽**（`len(rings) == 1` 恒成立）⇒ 多延迟档下事件正常交付",
+     "note": "清单 §2.2 E3b 要求层间延迟打包；本项说明该要求**不只是性能**（M10 L18.1 的 >30×），更是**正确性**：若不打包，分层网络的全部外部驱动会被静默丢弃（静默失效第 5 例）"
     }
    }
   },

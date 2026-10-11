@@ -498,45 +498,43 @@ def t5_density(verbose=True) -> dict:
         scale = cal["scale"]
         T = 4000
         res = {}
-        for tag in ("m11_off_frozen", "m11_on"):
-            arm = "off_frozen" if tag == "m11_off_frozen" else "on"
-            eng, _, _ = worker_build(arm=arm, n=CPU_N, seed=0, density_hz=2.0, bias_scale=scale)
+        # M10 对照必须用**单延迟档**：冻结件在 ≥2 延迟组下会静默丢弃全部外部事件（E-M10-2）
+        for tag, arm, bins in (("m11_off_frozen_1bin", "off_frozen", (40,)),
+                               ("m11_on", "on", (40, 60, 80))):
+            eng, _, _ = worker_build(arm=arm, n=CPU_N, seed=0, density_hz=2.0,
+                                     bias_scale=scale, delay_bins=bins)
             r = eng.run(T, delivery="step", record="counts", pop_trace=True)
             cnt = eng.t_count.detach().cpu().numpy().astype(np.float64)
             res[tag] = dict(r=r, cnt=cnt, eng=eng)
-        # M10 内核（同网络、同事件表 → 由 worker_build 的确定性保证；事件表用 T=20000 全表）
-        net = build_laminar_probe_column(CPU_N, indegree=20, seed=0, delay_bins=(40, 60, 80),
-                                         bias_scale=scale)
-        cls = np.where(net["syn_class"] > 0, 1, 0).astype(np.int8)
-        net10 = dict(net, syn_class=cls, inhibitory=(cls > 0))
-        m10 = LarvalZFEngine(CPU_N, device="cpu", use_compile=False, verbose=False,
-                             use_abs_slots=True)
-        m10.add_synapses(net10["pre"], net10["post"], net10["gmax"], net10["delay"],
-                         inhibitory=net10["inhibitory"], syn_class=net10["syn_class"])
-        m10.finalize()
-        m10.set_neuron_heterogeneity(net10["bias"])
         st, ne, gg = run_events(seed=11, T=20000, n=CPU_N, density_hz=2.0)
-        m10.set_external_events(st, ne, gg, n_steps=20000)
-        m10.reset(seed=1)
-        m10.reset_counts()
-        r10 = m10.run(T, delivery="step", record="counts")
-        c10 = m10.t_count.detach().cpu().numpy().astype(np.float64)
-        # M9（密集工况预期失效）
-        m9 = AdultEngine(CPU_N, device="cpu", use_compile=False, verbose=False)
+
+        def _runner(cls_eng, bins, base_cls):
+            net = build_laminar_probe_column(CPU_N, indegree=20, seed=0, delay_bins=bins,
+                                             bias_scale=scale)
+            cls = (np.where(net["syn_class"] > 0, 1, 0).astype(np.int8) if base_cls
+                   else net["syn_class"])
+            n2 = dict(net, syn_class=cls, inhibitory=(cls > 0))
+            e = cls_eng(CPU_N, device="cpu", use_compile=False, verbose=False,
+                        use_abs_slots=True)
+            e.add_synapses(n2["pre"], n2["post"], n2["gmax"], n2["delay"],
+                           inhibitory=n2["inhibitory"], syn_class=n2["syn_class"])
+            e.finalize()
+            e.set_neuron_heterogeneity(n2["bias"])
+            e.set_external_events(st, ne, gg, n_steps=20000)
+            e.reset(seed=1)
+            e.reset_counts()
+            rr = e.run(T, delivery="step", record="counts")
+            return e.t_count.detach().cpu().numpy().astype(np.float64), rr
+
+        c10, _ = _runner(LarvalZFEngine, (40,), True)
+        c10_3bin, _ = _runner(LarvalZFEngine, (40, 60, 80), True)
+        # M9（高发放密度工况预期失效）
         m9_err = None
         try:
-            m9.add_synapses(net10["pre"], net10["post"], net10["gmax"], net10["delay"],
-                            inhibitory=net10["inhibitory"], syn_class=net10["syn_class"])
-            m9.finalize()
-            m9.set_neuron_heterogeneity(net10["bias"])
-            m9.set_external_events(st, ne, gg, n_steps=20000)
-            m9.reset(seed=1)
-            m9.reset_counts()
-            m9.run(T, delivery="step", record="counts")
-            m9_err = None
+            _runner(AdultEngine, (40,), True)
         except Exception as ex:  # noqa: BLE001
             m9_err = "%s: %s" % (type(ex).__name__, str(ex)[:100])
-        cm = res["m11_off_frozen"]["cnt"]
+        cm = res["m11_off_frozen_1bin"]["cnt"]
         ca = res["m11_on"]["cnt"]
         Tm = T * 0.05e-3
         p = dict(target_hz=float(tg), bias_scale=float(scale),
@@ -553,7 +551,10 @@ def t5_density(verbose=True) -> dict:
                  m11_on_spk=int(ca.sum()), m11_on_pop_hz=float(ca.sum() / CPU_N / Tm),
                  silent_frac_on=float(np.mean(ca / Tm < 0.5)),
                  ks_on_vs_m10=ks_2samp(ca / Tm, c10 / Tm),
-                 m9_status=("unavailable(M9 内核在密集/多发放工况失效)" if m9_err else "ran"),
+                 m10_3bin_spk=int(c10_3bin.sum()),
+                 m10_3bin_note=("M10 三延迟档臂：外部事件被静默丢弃（E-M10-2）⇒ 与 M11 臂**不可比**，"
+                                "仅登记"),
+                 m9_status=("unavailable(M9 内核在高发放密度工况失效)" if m9_err else "ran"),
                  m9_err=m9_err)
         point.update(p)
         # (b) 判据：静默差 <1pp 且 KS p>0.05（对 off 档 = 逐位 ⇒ 必过）
@@ -1193,9 +1194,52 @@ def t11_defect(verbose=True) -> dict:
         note="冻结件 `if ext_active and not chunk_mode and s < ext_n_steps: ea=ext_off[s]` 用**局部**步号"
              "⇒ 分段调用时每段重放前段事件（chunk 模式用 abs0，故不受影响）。M11 已改为绝对步号索引"
              "（`ext_abs_index=True`），实测 k=1/2/5 逐位一致。")
+    # ---- E-M10-2：多延迟组 ⇒ 外部事件被静默丢弃 ----
+    def _ext_effect(cls_eng, bins, use_ext, m11_frozen=False):
+        N, E = 200, 2000
+        e = cls_eng(N, device="cpu", use_compile=False, verbose=False)
+        if m11_frozen:
+            e.configure_refractory(REF_FROZEN)
+        rng = np.random.default_rng(0)
+        pre = rng.integers(0, N, E); post = rng.integers(0, N, E)
+        g = rng.uniform(8, 35, E).astype(np.float32); inh = rng.random(E) < 0.2
+        dly = (np.full(E, 40, dtype=np.int32) if bins is None else
+               np.random.default_rng(7).choice(bins, E).astype(np.int32))
+        e.add_synapses(pre, post, g, dly, inhibitory=inh, syn_class=inh.astype(np.int8))
+        e.finalize()
+        e.set_neuron_heterogeneity(np.exp(rng.normal(np.log(380.0), 0.35, N)).astype(np.float32))
+        T = 4000
+        if use_ext:
+            r2 = np.random.default_rng(3); n = int(20.0 * T * 0.05e-3 * N)
+            st = r2.integers(0, T, n); ne = r2.integers(0, N, n)
+            gg = r2.uniform(15, 25, n).astype(np.float32)
+        else:
+            st = ne = np.zeros(0, dtype=int); gg = np.zeros(0, dtype=np.float32)
+        e.set_external_events(st, ne, gg, n_steps=T)
+        e.reset(seed=1); e.reset_counts()
+        r = e.run(T, delivery="step", record="counts")
+        return int(r["spk_total"])
+    ext2 = {}
+    for tag, bins in (("one_delay_bin", None), ("two_delay_bins", [40, 80])):
+        m10_on = _ext_effect(LarvalZFEngine, bins, True)
+        m10_off = _ext_effect(LarvalZFEngine, bins, False)
+        m11_on = _ext_effect(MouseCortexEngine, bins, True, m11_frozen=True)
+        ext2[tag] = dict(m10_with_ext=m10_on, m10_without_ext=m10_off,
+                         m10_events_ignored=bool(m10_on == m10_off),
+                         m11_with_ext=m11_on, m11_ext_effect_pct=round(
+                             100.0 * (m11_on - m10_off) / max(1.0, m10_off), 3))
+    out["E_M10_2_multi_delay_ext_dropped"] = dict(
+        per_case=ext2,
+        condition="main run: `ext_active = ... and ring_flat is not None`，`ring_flat = rings[0] "
+                  "if len_rings == 1 else None` ⇒ **≥2 个延迟组时全部外部事件被静默丢弃**",
+        m11_fixed_by="M11 采用**单共享环槽**（`len(rings) == 1` 恒成立）⇒ 多延迟档下事件正常交付",
+        note="清单 §2.2 E3b 要求层间延迟打包；本项说明该要求**不只是性能**（M10 L18.1 的 >30×），"
+             "更是**正确性**：若不打包，分层网络的全部外部驱动会被静默丢弃（静默失效第 5 例）")
     if verbose:
         print("  [T11b] E-M10-1 外部事件重放：%s（M11 修后逐位=%s）" % (
             rep, out["E_M10_1_ext_replay"]["m11_fixed_composable"]), flush=True)
+        print("  [T11c] E-M10-2 多延迟组丢事件：%s" % (
+            {k: {kk: vv for kk, vv in v.items()} for k, v in ext2.items()},), flush=True)
     return out
     if verbose:
         print("  [T11] ISI: %s；网络级 冻结档 %d vs 修正档 %d（%+.3f%%）" % (

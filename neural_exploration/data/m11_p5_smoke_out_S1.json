@@ -91,7 +91,7 @@
  },
  "exit_code": 3,
  "generated_by": "tools/validate_p11_resting.py",
- "generated_at": "2026-10-11T21:48:21",
+ "generated_at": "2026-10-11T22:07:31",
  "role": "M11 P5/G1 离线评估（只做分析，不做仿真；不写判据带）",
  "protocol_path": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_smoke_protocol_S1.json",
  "protocol": {
@@ -157,6 +157,14 @@
    "dim_check_trace": 0.0
   }
  },
+ "output_invariants": {
+  "rows": 11,
+  "units": 1,
+  "criteria_per_unit": [
+   9
+  ],
+  "caliber_fields_checked": 8
+ },
  "rows": [
   {
    "config_id": "M10_M0_T120s",
@@ -183,8 +191,8 @@
    "n_neuron": 250,
    "note": "主口径：逐神经元计数/T 的中位数（清单 §4.5(a)）",
    "protocol_id": "m11_b3_smoke_S1_trace_only",
-   "protocol_T_ms": null,
-   "protocol_settle_ms": null,
+   "protocol_T_ms": 120000.0,
+   "protocol_settle_ms": 500.0,
    "protocol_seed": null,
    "protocol_dt_ms": 0.05,
    "protocol_bin_ms": 100.0,
@@ -215,8 +223,8 @@
    "n_neuron": 250,
    "note": "M11 主静默口径 = 计数==0 的神经元比例；与 M10 的 rate<0.5 Hz 口径不同（见判据表 silent_def_*）",
    "protocol_id": "m11_b3_smoke_S1_trace_only",
-   "protocol_T_ms": null,
-   "protocol_settle_ms": null,
+   "protocol_T_ms": 120000.0,
+   "protocol_settle_ms": 500.0,
    "protocol_seed": null,
    "protocol_dt_ms": 0.05,
    "protocol_bin_ms": 100.0,
@@ -247,8 +255,8 @@
    "n_neuron": 250,
    "note": "并列口径：群体轨迹逐箱率的中位数（描述性交叉核对）",
    "protocol_id": "m11_b3_smoke_S1_trace_only",
-   "protocol_T_ms": null,
-   "protocol_settle_ms": null,
+   "protocol_T_ms": 120000.0,
+   "protocol_settle_ms": 500.0,
    "protocol_seed": null,
    "protocol_dt_ms": 0.05,
    "protocol_bin_ms": 100.0,
@@ -279,8 +287,8 @@
    "n_neuron": 250,
    "note": "并列口径（描述性）",
    "protocol_id": "m11_b3_smoke_S1_trace_only",
-   "protocol_T_ms": null,
-   "protocol_settle_ms": null,
+   "protocol_T_ms": 120000.0,
+   "protocol_settle_ms": 500.0,
    "protocol_seed": null,
    "protocol_dt_ms": 0.05,
    "protocol_bin_ms": 100.0,
@@ -347,8 +355,8 @@
    "n_neuron": 250,
    "note": "剂量-响应 [0.0, 0.5, 1.0, 2.0, 4.0, 8.0]；判据表登记 criterion_d_as_mechanism_evidence=0.0 ⇒ 基线自身即过该判据（M10 实测 +579.6%），故它在本工具中被标为非判别性 sanity 前置",
    "protocol_id": "m11_b3_smoke_S1_trace_only",
-   "protocol_T_ms": null,
-   "protocol_settle_ms": null,
+   "protocol_T_ms": 120000.0,
+   "protocol_settle_ms": 500.0,
    "protocol_seed": null,
    "protocol_dt_ms": 0.05,
    "protocol_bin_ms": 100.0,

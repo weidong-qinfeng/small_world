@@ -1,0 +1,6 @@
+anchor,quantity,value,n,source_file,evidence,status,note
+allen_celltypes_ef__avg_firing_rate,median_hz,17.412999876622898,1808,m11_allen_celltypes_metadata.csv,measured(元数据字段),NEEDS_VERIFY(口径：表征协议下的均值率，非自发率),B1 落盘（ApiCellTypesSpecimenDetail）；只作密度区间输入，不作判据带
+allen_celltypes_ef__avg_firing_rate,p25,11.84158469454915,1808,m11_allen_celltypes_metadata.csv,measured(元数据字段),NEEDS_VERIFY(口径),四分位带（密度复测的锚点）
+allen_celltypes_ef__avg_firing_rate,median,17.412999876622898,1808,m11_allen_celltypes_metadata.csv,measured(元数据字段),NEEDS_VERIFY(口径),四分位带（密度复测的锚点）
+allen_celltypes_ef__avg_firing_rate,p75,35.59276383287885,1808,m11_allen_celltypes_metadata.csv,measured(元数据字段),NEEDS_VERIFY(口径),四分位带（密度复测的锚点）
+microns_calcium_inferred,pop_rate_hz,,0,data/m11_microns_protocol.json,unavailable,unavailable,需 ΔF/F 反演；B1 L11.3（int16/uint16 歧义）与 L11.5（10× 分辨率口径差）未解决 ⇒ 不得反演（未测 ≠ 未命中）

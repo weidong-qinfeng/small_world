@@ -520,18 +520,58 @@ class Evaluator:
         self.arm_metrics: Dict[str, Dict[str, Any]] = {}
         self.duration_ladder: Dict[str, Any] = {}
         self.tension: Dict[str, Any] = {}
+        self.invariants: Dict[str, Any] = {}
 
     # ---------------- 协议前缀（口径字段，逐行携带） ----------------
-    def _proto_fields(self, arm: Optional[Arm]) -> Dict[str, Any]:
+    def _proto_fields(self, arm: Optional[Arm], T_ms: Optional[float] = None) -> Dict[str, Any]:
+        """口径字段：**即使该行没有可用臂也必须给全**（T/settle 由评估单元回退；seed 无臂时为 None）。"""
         return {
             "protocol_id": self.proto.get("protocol_id", "?"),
-            "protocol_T_ms": None if arm is None else arm.T_ms,
-            "protocol_settle_ms": None if arm is None else (arm.settle_ms if arm.settle_ms is not None else self.settle_ms),
-            "protocol_seed": None if arm is None else arm.seed,
+            "protocol_T_ms": (arm.T_ms if arm is not None else T_ms),
+            "protocol_settle_ms": (arm.settle_ms if (arm is not None and arm.settle_ms is not None) else self.settle_ms),
+            "protocol_seed": (arm.seed if arm is not None else None),
             "protocol_dt_ms": self.dt_ms,
             "protocol_bin_ms": self.bin_ms,
             "protocol_smooth_frames": self.smooth_frames,
         }
+
+    # ---------------- 输出不变式（硬断言；违反即 raise，不静默） ----------------
+    @staticmethod
+    def _assert_output_invariants(rows: List[Dict[str, Any]]) -> Dict[str, int]:
+        """把「口径标注（硬门⑥）」与「未定稿带不得判 pass（硬门②的带纪律）」做成**真断言**。
+
+        ① 每条输出行必须带 protocol（T/settle/seed/dt/bin/smooth）与 estimator（口径标注）；
+        ② 任何 `pass` 的带类判据必须真的有一条已定稿的带（band_lo/band_hi 非空）；
+        ③ 每个评估单元（config×T×mechanism）必须出现全部 9 条子判据（防「判据静默丢失」——
+           与 M10 的编码路径静默失效同族的失效模式）。
+        """
+        proto_keys = ("protocol_id", "protocol_T_ms", "protocol_settle_ms", "protocol_seed",
+                      "protocol_dt_ms", "protocol_bin_ms", "protocol_smooth_frames")
+        for i, r in enumerate(rows):
+            for k in proto_keys:
+                assert k in r, f"**硬门⑥违反**：第 {i} 行缺口径字段 {k}"
+            assert r.get("estimator"), f"**硬门⑥违反**：第 {i} 行缺 estimator"
+            assert r.get("protocol_id"), f"**硬门⑥违反**：第 {i} 行缺 protocol_id"
+            assert r.get("protocol_T_ms") is not None, f"**硬门⑥违反**：第 {i} 行缺 protocol_T_ms"
+            if r["status"] == "pass" and r["criterion"] in (CRIT["a"], CRIT["b"], CRIT["c"], CRIT["e"]):
+                assert r.get("band_lo") is not None, (
+                    f"**带纪律违反**：{r['criterion']} 判 pass 但 band_lo 为空（不得用未定稿带判 pass）")
+                if r["criterion"] in (CRIT["a"], CRIT["b"], CRIT["e"]):
+                    assert r.get("band_hi") is not None, (
+                        f"**带纪律违反**：{r['criterion']} 判 pass 但 band_hi 为空")
+                assert r.get("value") is not None, (
+                    f"**带纪律违反**：{r['criterion']} 判 pass 但 value 为空")
+        units: Dict[Tuple[str, float, str], set] = {}
+        for r in rows:
+            if r["is_primary_estimator"] == 1:
+                units.setdefault((r["config_id"], r["T_ms"], r["mechanism"]), set()).add(r["criterion"])
+        need = set(CRIT.values())
+        for u, got in units.items():
+            missing = sorted(need - got)
+            assert not missing, f"**子判据静默丢失**：单元 {u} 缺 {missing}（与 M10 静默失效同族的失效模式）"
+        return {"rows": len(rows), "units": len(units),
+                "criteria_per_unit": sorted({len(v) for v in units.values()}),
+                "caliber_fields_checked": len(proto_keys) + 1}
 
     def _emit(self, *, config_id: str, T_ms: float, mechanism: str, criterion: str, estimator: str,
               value: Any, unit: str, status: str, reason: str, band_lo: Any = None, band_hi: Any = None,
@@ -547,7 +587,7 @@ class Evaluator:
                "baseline_value": baseline_value, "baseline_meets": baseline_meets,
                "is_primary_estimator": is_primary, "n_seeds": n_seeds, "zero_drive_spikes": zero_spikes,
                "n_neuron": n_neuron, "note": note}
-        row.update(self._proto_fields(arm))
+        row.update(self._proto_fields(arm, T_ms))
         self.rows.append(row)
 
     # ---------------- 主流程 ----------------
@@ -567,6 +607,8 @@ class Evaluator:
         self._duration_ladder()
         self._tension()
         self._apply_duration_flip()
+        # 硬断言（违反即 raise）：口径标注 / 未定稿带不得判 pass / 子判据不得静默丢失
+        self.invariants = self._assert_output_invariants(self.rows)
         return self._verdict()
 
     def _unit_arms(self, cfg: str, T_ms: float, mech: str, role: Optional[str] = None) -> List[Arm]:
@@ -1360,6 +1402,7 @@ def main(argv=None) -> int:
                   "n_neuron": a.n_neuron, "pop_trace": a.pop_trace_path, "counts": a.counts_path,
                   "n_steps_present": (None if a.trace is None else int(a.trace.size))} for a in ev.arms],
         "arm_metrics": ev.arm_metrics,
+        "output_invariants": ev.invariants,
         "rows": ev.rows,
         "elapsed_s": None,
     })

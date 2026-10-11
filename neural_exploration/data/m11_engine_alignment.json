@@ -641,8 +641,509 @@
    "m11_frozen_core_rel_ext_matches_m10": true,
    "fix_core_rel_ext_control_replays": true,
    "note": "冻结件 `if ext_active and not chunk_mode and s < ext_n_steps: ea=ext_off[s]` 用**局部**步号⇒ 分段调用时每段重放前段事件（chunk 模式用 abs0，故不受影响）。M11 已改为绝对步号索引（`ext_abs_index=True`），实测 k=1/2/5 逐位一致。"
+  },
+  "E_M10_2_multi_delay_ext_dropped": {
+   "per_case": {
+    "one_delay_bin": {
+     "m10_with_ext": 2383,
+     "m10_without_ext": 2242,
+     "m10_events_ignored": false,
+     "m11_with_ext": 2383,
+     "m11_ext_effect_pct": 6.289
+    },
+    "two_delay_bins": {
+     "m10_with_ext": 2224,
+     "m10_without_ext": 2224,
+     "m10_events_ignored": true,
+     "m11_with_ext": 2352,
+     "m11_ext_effect_pct": 5.755
+    }
+   },
+   "condition": "main run: `ext_active = ... and ring_flat is not None`，`ring_flat = rings[0] if len_rings == 1 else None` ⇒ **≥2 个延迟组时全部外部事件被静默丢弃**",
+   "m11_fixed_by": "M11 采用**单共享环槽**（`len(rings) == 1` 恒成立）⇒ 多延迟档下事件正常交付",
+   "note": "清单 §2.2 E3b 要求层间延迟打包；本项说明该要求**不只是性能**（M10 L18.1 的 >30×），更是**正确性**：若不打包，分层网络的全部外部驱动会被静默丢弃（静默失效第 5 例）"
   }
  },
- "started_at": "2026-10-11T21:51:12",
- "which": "merged:t11"
+ "t4": {
+  "on": {
+   "runs": [
+    {
+     "rc": 0,
+     "out": {
+      "arm": "on",
+      "n": 400,
+      "steps": 20000,
+      "delivery": "step",
+      "spk_total": 244,
+      "counts_sha256": "3d7a2b56707a29d3c3369610206697419437cd9f815fa7130c227b8f3a2e8df8",
+      "n_nonzero": 206,
+      "pid": 38279,
+      "n_ch": 4,
+      "core": "nc4_slow1_semantic_fix",
+      "slot_counts": {
+       "E": 6208,
+       "PV": 525,
+       "SST": 508,
+       "VIP": 559
+      },
+      "edge_counts": {
+       "E": 6208,
+       "PV": 525,
+       "SST": 508,
+       "VIP": 559
+      }
+     },
+     "stdout_tail": "{\"arm\": \"on\", \"n\": 400, \"steps\": 20000, \"delivery\": \"step\", \"spk_total\": 244, \"counts_sha256\": \"3d7a2b56707a29d3c3369610206697419437cd9f815fa7130c227b8f3a2e8df8\", \"n_nonzero\": 206, \"pid\": 38279, \"n_ch\": 4, \"core\": \"nc4_slow1_semantic_fix\", \"slot_counts\": {\"E\": 6208, \"PV\": 525, \"SST\": 508, \"VIP\": 559}, \"edge_counts\": {\"E\": 6208, \"PV\": 525, \"SST\": 508, \"VIP\": 559}}\n",
+     "stderr_tail": "",
+     "wall_s": 2.62
+    },
+    {
+     "rc": 0,
+     "out": {
+      "arm": "on",
+      "n": 400,
+      "steps": 20000,
+      "delivery": "step",
+      "spk_total": 244,
+      "counts_sha256": "3d7a2b56707a29d3c3369610206697419437cd9f815fa7130c227b8f3a2e8df8",
+      "n_nonzero": 206,
+      "pid": 38290,
+      "n_ch": 4,
+      "core": "nc4_slow1_semantic_fix",
+      "slot_counts": {
+       "E": 6208,
+       "PV": 525,
+       "SST": 508,
+       "VIP": 559
+      },
+      "edge_counts": {
+       "E": 6208,
+       "PV": 525,
+       "SST": 508,
+       "VIP": 559
+      }
+     },
+     "stdout_tail": "{\"arm\": \"on\", \"n\": 400, \"steps\": 20000, \"delivery\": \"step\", \"spk_total\": 244, \"counts_sha256\": \"3d7a2b56707a29d3c3369610206697419437cd9f815fa7130c227b8f3a2e8df8\", \"n_nonzero\": 206, \"pid\": 38290, \"n_ch\": 4, \"core\": \"nc4_slow1_semantic_fix\", \"slot_counts\": {\"E\": 6208, \"PV\": 525, \"SST\": 508, \"VIP\": 559}, \"edge_counts\": {\"E\": 6208, \"PV\": 525, \"SST\": 508, \"VIP\": 559}}\n",
+     "stderr_tail": "",
+     "wall_s": 928.24
+    },
+    {
+     "rc": 0,
+     "out": {
+      "arm": "on",
+      "n": 400,
+      "steps": 20000,
+      "delivery": "step",
+      "spk_total": 244,
+      "counts_sha256": "3d7a2b56707a29d3c3369610206697419437cd9f815fa7130c227b8f3a2e8df8",
+      "n_nonzero": 206,
+      "pid": 38293,
+      "n_ch": 4,
+      "core": "nc4_slow1_semantic_fix",
+      "slot_counts": {
+       "E": 6208,
+       "PV": 525,
+       "SST": 508,
+       "VIP": 559
+      },
+      "edge_counts": {
+       "E": 6208,
+       "PV": 525,
+       "SST": 508,
+       "VIP": 559
+      }
+     },
+     "stdout_tail": "{\"arm\": \"on\", \"n\": 400, \"steps\": 20000, \"delivery\": \"step\", \"spk_total\": 244, \"counts_sha256\": \"3d7a2b56707a29d3c3369610206697419437cd9f815fa7130c227b8f3a2e8df8\", \"n_nonzero\": 206, \"pid\": 38293, \"n_ch\": 4, \"core\": \"nc4_slow1_semantic_fix\", \"slot_counts\": {\"E\": 6208, \"PV\": 525, \"SST\": 508, \"VIP\": 559}, \"edge_counts\": {\"E\": 6208, \"PV\": 525, \"SST\": 508, \"VIP\": 559}}\n",
+     "stderr_tail": "",
+     "wall_s": 2.83
+    }
+   ],
+   "n_process": 3,
+   "bit_identical": true,
+   "spk_total": 244,
+   "sha256": "3d7a2b56707a29d3c3369610206697419437cd9f815fa7130c227b8f3a2e8df8",
+   "pids": [
+    38279,
+    38290,
+    38293
+   ]
+  },
+  "off_frozen": {
+   "runs": [
+    {
+     "rc": 0,
+     "out": {
+      "arm": "off_frozen",
+      "n": 400,
+      "steps": 20000,
+      "delivery": "step",
+      "spk_total": 3730,
+      "counts_sha256": "c29dd7a0ee3a7f74f4064db92cb28c859345a11cbbd1285460949abcc6dd41ea",
+      "n_nonzero": 328,
+      "pid": 38304,
+      "n_ch": 2,
+      "core": "nc2_slow0_m10_frozen",
+      "slot_counts": {
+       "E": 6208,
+       "PV": 1592
+      },
+      "edge_counts": {
+       "E": 6208,
+       "PV": 1592
+      }
+     },
+     "stdout_tail": "{\"arm\": \"off_frozen\", \"n\": 400, \"steps\": 20000, \"delivery\": \"step\", \"spk_total\": 3730, \"counts_sha256\": \"c29dd7a0ee3a7f74f4064db92cb28c859345a11cbbd1285460949abcc6dd41ea\", \"n_nonzero\": 328, \"pid\": 38304, \"n_ch\": 2, \"core\": \"nc2_slow0_m10_frozen\", \"slot_counts\": {\"E\": 6208, \"PV\": 1592}, \"edge_counts\": {\"E\": 6208, \"PV\": 1592}}\n",
+     "stderr_tail": "",
+     "wall_s": 2.43
+    },
+    {
+     "rc": 0,
+     "out": {
+      "arm": "off_frozen",
+      "n": 400,
+      "steps": 20000,
+      "delivery": "step",
+      "spk_total": 3730,
+      "counts_sha256": "c29dd7a0ee3a7f74f4064db92cb28c859345a11cbbd1285460949abcc6dd41ea",
+      "n_nonzero": 328,
+      "pid": 38306,
+      "n_ch": 2,
+      "core": "nc2_slow0_m10_frozen",
+      "slot_counts": {
+       "E": 6208,
+       "PV": 1592
+      },
+      "edge_counts": {
+       "E": 6208,
+       "PV": 1592
+      }
+     },
+     "stdout_tail": "{\"arm\": \"off_frozen\", \"n\": 400, \"steps\": 20000, \"delivery\": \"step\", \"spk_total\": 3730, \"counts_sha256\": \"c29dd7a0ee3a7f74f4064db92cb28c859345a11cbbd1285460949abcc6dd41ea\", \"n_nonzero\": 328, \"pid\": 38306, \"n_ch\": 2, \"core\": \"nc2_slow0_m10_frozen\", \"slot_counts\": {\"E\": 6208, \"PV\": 1592}, \"edge_counts\": {\"E\": 6208, \"PV\": 1592}}\n",
+     "stderr_tail": "",
+     "wall_s": 2.52
+    },
+    {
+     "rc": 0,
+     "out": {
+      "arm": "off_frozen",
+      "n": 400,
+      "steps": 20000,
+      "delivery": "step",
+      "spk_total": 3730,
+      "counts_sha256": "c29dd7a0ee3a7f74f4064db92cb28c859345a11cbbd1285460949abcc6dd41ea",
+      "n_nonzero": 328,
+      "pid": 38314,
+      "n_ch": 2,
+      "core": "nc2_slow0_m10_frozen",
+      "slot_counts": {
+       "E": 6208,
+       "PV": 1592
+      },
+      "edge_counts": {
+       "E": 6208,
+       "PV": 1592
+      }
+     },
+     "stdout_tail": "{\"arm\": \"off_frozen\", \"n\": 400, \"steps\": 20000, \"delivery\": \"step\", \"spk_total\": 3730, \"counts_sha256\": \"c29dd7a0ee3a7f74f4064db92cb28c859345a11cbbd1285460949abcc6dd41ea\", \"n_nonzero\": 328, \"pid\": 38314, \"n_ch\": 2, \"core\": \"nc2_slow0_m10_frozen\", \"slot_counts\": {\"E\": 6208, \"PV\": 1592}, \"edge_counts\": {\"E\": 6208, \"PV\": 1592}}\n",
+     "stderr_tail": "",
+     "wall_s": 2.29
+    }
+   ],
+   "n_process": 3,
+   "bit_identical": true,
+   "spk_total": 3730,
+   "sha256": "c29dd7a0ee3a7f74f4064db92cb28c859345a11cbbd1285460949abcc6dd41ea",
+   "pids": [
+    38304,
+    38306,
+    38314
+   ]
+  },
+  "crit_h_pass": true
+ },
+ "t5": {
+  "anchors": {
+   "allen": {
+    "n": 1808,
+    "min": 1.98491464867011,
+    "p10": 8.417879509151225,
+    "p25": 11.84158469454915,
+    "median": 17.412999876622898,
+    "p75": 35.59276383287885,
+    "p90": 81.75632120143568,
+    "max": 261.210274270789,
+    "mean": 31.718032123800736
+   },
+   "rows": [
+    {
+     "anchor": "allen_celltypes_ef__avg_firing_rate",
+     "quantity": "median_hz",
+     "value": 17.412999876622898,
+     "n": 1808,
+     "source_file": "m11_allen_celltypes_metadata.csv",
+     "evidence": "measured(元数据字段)",
+     "status": "NEEDS_VERIFY(口径：表征协议下的均值率，非自发率)",
+     "note": "B1 落盘（ApiCellTypesSpecimenDetail）；只作密度区间输入，不作判据带"
+    },
+    {
+     "anchor": "allen_celltypes_ef__avg_firing_rate",
+     "quantity": "p25",
+     "value": 11.84158469454915,
+     "n": 1808,
+     "source_file": "m11_allen_celltypes_metadata.csv",
+     "evidence": "measured(元数据字段)",
+     "status": "NEEDS_VERIFY(口径)",
+     "note": "四分位带（密度复测的锚点）"
+    },
+    {
+     "anchor": "allen_celltypes_ef__avg_firing_rate",
+     "quantity": "median",
+     "value": 17.412999876622898,
+     "n": 1808,
+     "source_file": "m11_allen_celltypes_metadata.csv",
+     "evidence": "measured(元数据字段)",
+     "status": "NEEDS_VERIFY(口径)",
+     "note": "四分位带（密度复测的锚点）"
+    },
+    {
+     "anchor": "allen_celltypes_ef__avg_firing_rate",
+     "quantity": "p75",
+     "value": 35.59276383287885,
+     "n": 1808,
+     "source_file": "m11_allen_celltypes_metadata.csv",
+     "evidence": "measured(元数据字段)",
+     "status": "NEEDS_VERIFY(口径)",
+     "note": "四分位带（密度复测的锚点）"
+    },
+    {
+     "anchor": "microns_calcium_inferred",
+     "quantity": "pop_rate_hz",
+     "value": "",
+     "n": 0,
+     "source_file": "data/m11_microns_protocol.json",
+     "evidence": "unavailable",
+     "status": "unavailable",
+     "note": "需 ΔF/F 反演；B1 L11.3（int16/uint16 歧义）与 L11.5（10× 分辨率口径差）未解决 ⇒ 不得反演（未测 ≠ 未命中）"
+    }
+   ]
+  },
+  "points": [
+   {
+    "target_hz": 0.5,
+    "calibration": {
+     "target_hz": 0.5,
+     "achieved": 0.475,
+     "scale": 0.814453125,
+     "bracket": [
+      0.049999999999999996,
+      50.949999999999996
+     ],
+     "ok": true,
+     "hist": [
+      [
+       1.9375,
+       7.874999999999999
+      ],
+      [
+       1.21875,
+       5.35
+      ],
+      [
+       0.859375,
+       0.85
+      ],
+      [
+       0.6796875,
+       0.09999999999999999
+      ],
+      [
+       0.76953125,
+       0.37499999999999994
+      ],
+      [
+       0.814453125,
+       0.475
+      ]
+     ]
+    },
+    "bias_scale": 0.814453125,
+    "achieved_hz": 0.475,
+    "m11_off_spk": 124,
+    "m11_off_pop_hz": 1.5499999999999998,
+    "m10_spk": 59,
+    "m10_pop_hz": 0.7374999999999999,
+    "off_vs_m10_bit_identical": false,
+    "off_vs_m10_rel_diff_pct": 110.1695,
+    "silent_frac_off": 0.8025,
+    "silent_frac_m10": 0.9425,
+    "silent_diff_pp": 14.000000000000002,
+    "ks_off_vs_m10": {
+     "D": 0.14,
+     "p": 0.0006828973106786729,
+     "na": 400,
+     "nb": 400,
+     "method": "kolmogorov_asymptotic"
+    },
+    "m11_on_spk": 45,
+    "m11_on_pop_hz": 0.5625,
+    "silent_frac_on": 0.895,
+    "ks_on_vs_m10": {
+     "D": 0.0475000000000001,
+     "p": 0.7477687826200221,
+     "na": 400,
+     "nb": 400,
+     "method": "kolmogorov_asymptotic"
+    },
+    "m9_status": "ran",
+    "m9_err": null,
+    "crit_b_pass": false
+   },
+   {
+    "target_hz": 2.0,
+    "calibration": {
+     "target_hz": 2.0,
+     "achieved": 1.95,
+     "scale": 0.91552734375,
+     "bracket": [
+      0.049999999999999996,
+      50.949999999999996
+     ],
+     "ok": true,
+     "hist": [
+      [
+       0.859375,
+       0.85
+      ],
+      [
+       1.0390625,
+       4.225
+      ],
+      [
+       0.94921875,
+       3.5749999999999997
+      ],
+      [
+       0.904296875,
+       1.075
+      ],
+      [
+       0.9267578125,
+       2.3749999999999996
+      ],
+      [
+       0.91552734375,
+       1.95
+      ]
+     ]
+    },
+    "bias_scale": 0.91552734375,
+    "achieved_hz": 1.95,
+    "m11_off_spk": 457,
+    "m11_off_pop_hz": 5.7125,
+    "m10_spk": 472,
+    "m10_pop_hz": 5.8999999999999995,
+    "off_vs_m10_bit_identical": false,
+    "off_vs_m10_rel_diff_pct": -3.178,
+    "silent_frac_off": 0.3925,
+    "silent_frac_m10": 0.4225,
+    "silent_diff_pp": 2.9999999999999973,
+    "ks_off_vs_m10": {
+     "D": 0.05750000000000011,
+     "p": 0.5111457417605447,
+     "na": 400,
+     "nb": 400,
+     "method": "kolmogorov_asymptotic"
+    },
+    "m11_on_spk": 90,
+    "m11_on_pop_hz": 1.125,
+    "silent_frac_on": 0.79,
+    "ks_on_vs_m10": {
+     "D": 0.4225000000000001,
+     "p": 5.35086250141204e-32,
+     "na": 400,
+     "nb": 400,
+     "method": "kolmogorov_asymptotic"
+    },
+    "m9_status": "unavailable(M9 内核在密集/多发放工况失效)",
+    "m9_err": "IndexError: index 1803 is out of bounds for dimension 0 with size 1800",
+    "crit_b_pass": false
+   },
+   {
+    "target_hz": 17.412999876622898,
+    "calibration": {
+     "target_hz": 17.412999876622898,
+     "achieved": 17.924999999999997,
+     "scale": 4.09375,
+     "bracket": [
+      0.049999999999999996,
+      50.949999999999996
+     ],
+     "ok": true,
+     "hist": [
+      [
+       0.5,
+       0.049999999999999996
+      ],
+      [
+       12.0,
+       50.949999999999996
+      ],
+      [
+       6.25,
+       27.675
+      ],
+      [
+       3.375,
+       14.624999999999998
+      ],
+      [
+       4.8125,
+       21.175
+      ],
+      [
+       4.09375,
+       17.924999999999997
+      ]
+     ]
+    },
+    "bias_scale": 4.09375,
+    "achieved_hz": 17.924999999999997,
+    "m11_off_spk": 4147,
+    "m11_off_pop_hz": 51.8375,
+    "m10_spk": 4141,
+    "m10_pop_hz": 51.762499999999996,
+    "off_vs_m10_bit_identical": false,
+    "off_vs_m10_rel_diff_pct": 0.1449,
+    "silent_frac_off": 0.0825,
+    "silent_frac_m10": 0.085,
+    "silent_diff_pp": 0.2500000000000002,
+    "ks_off_vs_m10": {
+     "D": 0.015000000000000013,
+     "p": 0.9999999999763176,
+     "na": 400,
+     "nb": 400,
+     "method": "kolmogorov_asymptotic"
+    },
+    "m11_on_spk": 1030,
+    "m11_on_pop_hz": 12.875,
+    "silent_frac_on": 0.115,
+    "ks_on_vs_m10": {
+     "D": 0.5974999999999999,
+     "p": 1.4352350492807728e-63,
+     "na": 400,
+     "nb": 400,
+     "method": "kolmogorov_asymptotic"
+    },
+    "m9_status": "unavailable(M9 内核在密集/多发放工况失效)",
+    "m9_err": "IndexError: index 2380 is out of bounds for dimension 0 with size 2380",
+    "crit_b_pass": true
+   }
+  ],
+  "crit_g_pass": false,
+  "density_anchored_points": [
+   17.412999876622898
+  ]
+ },
+ "started_at": "2026-10-11T22:07:03",
+ "which": "merged:t5"
 }
