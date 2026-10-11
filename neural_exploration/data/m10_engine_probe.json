@@ -1,0 +1,91 @@
+{
+ "generated_by": "tools/scan_m10_engine.py",
+ "started_at": "2026-10-11T12:10:53",
+ "t3_pass_bit_identical": true,
+ "t3_arms": {
+  "m10_abs_step": [
+   {
+    "k": 1,
+    "total": 61539,
+    "rel_diff_pct": 0.0,
+    "n_neurons_count_diff": 0,
+    "bit_identical": true
+   },
+   {
+    "k": 2,
+    "total": 61539,
+    "rel_diff_pct": 0.0,
+    "n_neurons_count_diff": 0,
+    "bit_identical": true
+   },
+   {
+    "k": 5,
+    "total": 61539,
+    "rel_diff_pct": 0.0,
+    "n_neurons_count_diff": 0,
+    "bit_identical": true
+   }
+  ],
+  "m10_abs_chunk": [
+   {
+    "k": 1,
+    "total": 61548,
+    "rel_diff_pct": 0.0,
+    "n_neurons_count_diff": 0,
+    "bit_identical": true
+   },
+   {
+    "k": 2,
+    "total": 61548,
+    "rel_diff_pct": 0.0,
+    "n_neurons_count_diff": 0,
+    "bit_identical": true
+   },
+   {
+    "k": 5,
+    "total": 61548,
+    "rel_diff_pct": 0.0,
+    "n_neurons_count_diff": 0,
+    "bit_identical": true
+   }
+  ],
+  "m10_rel_step_control": [
+   {
+    "k": 1,
+    "total": 61539,
+    "rel_diff_pct": 0.0,
+    "n_neurons_count_diff": 0,
+    "bit_identical": true
+   },
+   {
+    "k": 2,
+    "total": 61483,
+    "rel_diff_pct": -0.091,
+    "n_neurons_count_diff": 222,
+    "bit_identical": false
+   },
+   {
+    "k": 5,
+    "total": 61515,
+    "rel_diff_pct": -0.039,
+    "n_neurons_count_diff": 467,
+    "bit_identical": false
+   }
+  ],
+  "m9_step_control": [
+   {
+    "k": 1,
+    "error": "IndexError: index 5039 is out of bounds for dimension 0 with size 5039"
+   },
+   {
+    "k": 2,
+    "error": "IndexError: index 5039 is out of bounds for dimension 0 with size 5039"
+   },
+   {
+    "k": 5,
+    "error": "IndexError: index 5039 is out of bounds for dimension 0 with size 5039"
+   }
+  ]
+ },
+ "elapsed_s": null
+}
