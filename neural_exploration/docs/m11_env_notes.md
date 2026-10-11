@@ -792,3 +792,31 @@ B3b 落盘后应**新增行**（R-27+）而非修改 R-21（清单 §0.3 #8 只�
   ⇒ 一切"≤300 MB 可整取"的判断都必须**当场测速**（教训 L22 #9 复现）。
 - 已登记 `data/m11_b1_managed_jobs.json`：**J1**（本节点后台跑，含日志与产物）/ **J2**（更大群体 npz，REQUESTED）/
   **J3**（NWB 采样率读回，REQUESTED）；均含命令行、产物路径、完成标记。
+
+---
+
+## L31 — R8 与 DQ-4：属性级同源 + 逐细胞/逐对表解析就绪
+
+### L31.1 R8（同源三级表述，取代"功能侧不可用"）
+- **① 结构同源 ✅**（EM/seg，`measured`）；**② 属性级同源 ✅**：`functional_connectomics/node_and_edge_properties/v1`
+  （Ding 2025, DOI 10.1038/s41586-025-08840-3）——node 表 **26 列**（`nucleus_id/animal_id/scan_session/scan_idx/unit_id/`
+  `nucleus_x,y,z`/`hva`/`brain_area`/`layer`/**`osi_iv`/`gosi_iv`/`pref_ori`/`pref_dir`/`in_vivo_mean_resp`/`mei`**/…）、
+  edge 表 **19 列**（`pre/post_nucleus_id`/**`population`**/`n_synapses`/`synapse_size`/`dend_len`/`pre,post_hva`/
+  `pre,post_layer`/`proj_hva(_layer)`/**`in_vivo_sig_corr_iv`**/`in_silico_sig_corr_cvt`/…）；
+  **`population ∈ {Connected, ADP(距离匹配), Same region}` = 清单 §0.7 #5 要求的匹配负对照**（本轮最有价值的发现）。
+- **③ 时间序列级非同源 ❌**：该表无时间序列 ⇒ **S 门与 dwell/τ 目标带仍走 Allen 2p（R6 不变）**；
+  逐细胞 ΔF/F 仍 `unavailable`（v8 DB，DQ-1 裁定不下载）。
+- ⇒ 表述纪律：**不得**写"功能侧完全不可用"，**不得**写"全同源"；正确写法 =
+  **"结构同源 + 属性级同源 + 时间序列级跨源代理（Allen 2p）"**。
+
+### L31.2 DQ-4（托管下载）**实测状态：停滞** + 解析器/等待器就位
+- `node_data_v1.pkl` 本地 **2,322,432 / 294,635,032 B = 3.417%**（`parts/` 8 段 10,067,968 B；末次写入 20:47；**进程已不在**）；
+  `edge_data_v1.pkl` **0 / 201,511,086 B**；期望尺寸由 Range `Content-Range: bytes 0-0/294635032` **实测**确认。
+- **按主 agent 指示不另起下载** ⇒ 交付**解析器**（`tools/parse_m11_functional_connectomics.py`，**只解析不下载**，
+  完整性门不过即 `INCOMPLETE` + 非零退出）+ **等待器**（`/tmp/m11_fc_waiter.sh`，每 5 min 检查、达尺寸即自动解析、日志含 `ALL_DONE`）。
+- `readme_v1.md` 已置于 `functional_connectomics/`（5,594 B）⇒ **schema 核对自动化**（node 26 / edge 19 列已解析出）。
+
+### L31.3 教训（本轮新增）
+- **`&` 与 `cd` 的作用域陷阱**：`cd X && cmd &` 会把 `cd` 放进子 shell ⇒ 后续 `curl -o` 落在**旧工作目录**
+  （本轮 `577885923_events.npz` 曾落到仓库根；已归位）。**写文件后必须回读路径**。
+- **"托管作业在跑"必须实测确认**：凭日志首行/用户告知不足；本轮以 **parts 字节数 + 时间戳 + 进程表**三重确认对方作业已停滞。
