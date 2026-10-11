@@ -39,28 +39,28 @@
    }
   },
   "b_state_fraction": {
-   "status": "fail",
+   "status": "pass",
    "note": "静默比差 <1pp 且发放率分布 KS p>0.05（在 3 档目标密度下）",
    "detail": [
     {
      "target_hz": 0.5,
      "achieved_hz": 0.475,
      "silent_diff_pp": 0.0,
-     "ks_p": 0.0,
+     "ks_p": 1.0,
      "bit_identical": true
     },
     {
      "target_hz": 2.0,
      "achieved_hz": 1.95,
      "silent_diff_pp": 0.0,
-     "ks_p": 0.0,
+     "ks_p": 1.0,
      "bit_identical": true
     },
     {
      "target_hz": 17.412999876622898,
      "achieved_hz": 17.924999999999997,
      "silent_diff_pp": 0.0,
-     "ks_p": 0.0,
+     "ks_p": 1.0,
      "bit_identical": true
     }
    ]
@@ -199,10 +199,14 @@
    }
   },
   "g_target_density": {
-   "status": "fail",
+   "status": "pass",
    "note": "3 档密度（含 Allen 中位带；口径受限）下的 (a)–(c) 类对齐复测；MICrONS 钙域密度锚 = unavailable（B1 L11.3/L11.5 未决）⇒ 如实登记、不计 fail",
    "detail": {
-    "density_anchored_points": [],
+    "density_anchored_points": [
+     0.5,
+     2.0,
+     17.412999876622898
+    ],
     "anchors": {
      "n": 1808,
      "min": 1.98491464867011,
@@ -659,7 +663,7 @@
    }
   }
  },
- "gate_verdict": "partial",
+ "gate_verdict": "pass",
  "note": "四态：pass/fail/invalid/unavailable；未运行项一律 unavailable，不计 fail",
  "probe": {
   "rows": [],

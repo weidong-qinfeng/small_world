@@ -173,3 +173,38 @@
 3. **张力识别要与判据带状态绑定**：`n_both_in_band == 0` 在带未定稿时**恒真** ⇒ 若据此报"结构性张力"就是构造性结论（M10 D2/D3 同族）。修法：`structural_tension` 仅在两条带都定稿时可为 True，否则只给 `qualitative_monotone_opposition`。
 4. **"单一估计器"是 `unavailable` 而不是 `invalid`**：只有 1 个估计器时硬门③**不可校验**（未测），与"两个估计器不一致（口径缺陷）"是两回事 ⇒ 分别映射到 `unavailable` / `invalid`。（首次实现把前者记成硬失败，已修正。）
 5. **收口前重读主agent 裁决文件**（L11）：长工作包期间上游可能被重写（本次 95 行 → 185 行，含一次**裁定反转**）。
+
+## L16 — 初审反馈落实：**只允许新增行**的口径分列升级（72 → 80 → 94 行）
+
+主agent 初审（对 72 行版）要求：① 升级一律**新增行 + 保留原行**；② 钙口径与电生理口径**分列**；③ 样本范围写进 note；④ 哨兵掩膜前置并登记；⑤ Allen 2p 也要分列。
+
+| 动作 | 行 | 说明 |
+|---|---|---|
+| **恢复原行**（逐字取自 commit `5cf62d5`） | `microns_activity_channel` | 我上一轮曾**就地替换**该行为两个新键 ⇒ 本轮**恢复原行文本**（value/value_kind/evidence_level/provenance 逐字保留），仅 `final` 置 0 并追加「R9 后状态」指针。**同类的就地修改还有 `rate_median_hz_measured_in_vivo_band`（note 被改）**，本轮同样恢复原 note 文本后仅追加指针。⇒ **纪律自纠**：我自己在 R9 到达时违反了「只允许新增行」，已在本条登记并回退。 |
+| **新增（口径分列）** | `rate_median_hz_literature_spike_band`（literature，0.5–2.0，电生理口径命名行）、`rate_median_hz_measured_calcium_band_lo/hi`（**unavailable**）、`calcium_caliber_nyquist_ceiling_hz`(3.150003 Hz)、`calcium_caliber_resolvable_floor_hz`(0.00315 Hz)、`calcium_vs_spike_caliber_gap` | 钙口径带**当前仍不可得**：R9 只使数据「可解码」，**逐 ROI 的事件率管线尚未建立** ⇒ 已测的钙域「率」只有**群体状态转换率**（0.104–0.438 Hz），不是逐细胞率。 |
+| **新增（样本范围 / 哨兵）** | `microns_functional_calcium_sample_scope`（**2 field / 2,000 帧 ≈317.46 s**；单 field 完整记录 40,000 帧/6,349.2 s 未全取）、`microns_functional_sentinel_count`(10,383)、`microns_functional_sentinel_fraction`(0.01298%)、`microns_calcium_measured_population_anchors` | 「未处理 ≠ 无缺失」已写入 note。 |
+| **新增（Allen 参照）** | `allen_2p_role_in_m11`（cross_preparation_reference）、`allen_bo_neuropixels_spike_rate_band`（unavailable，仅目录 569 对象） | 按 R6/R9 只作参照。 |
+| 行数 | 72 → **80**（R9/R10/R11）→ **94**（本轮） | 证据级别：`derived 52 / literature 18 / measured 11 / unavailable 12 / literature_unverified 1`；`final=0` **13 行** |
+
+### L16.1 🔴 未决冲突：哨兵掩膜的处置（**影响上界 ≤0.0130 个百分点 ⇒ 不阻塞 G1**）
+
+- **位置 A**（主agent 本轮指令）：`uint16 读法 > 65000 ⇔ int16 < 0` 必须**前置为缺失**并登记；
+- **位置 B**（`docs/m11_acceptance_master.md` §3f-3 + `data/m11_reference.csv::R-14`，**B1 推翻主agent 且已被采信**）：**无掩膜，保留并登记**；理由是**空间成簇证据**（3×3 邻域负值比例 p50 **0.111** vs 随机 ≈0.000129 ⇒ **~860× 富集**、孤立比例 **0.000**、位于暗区、邻域均值 ≈395 vs 全局中位 1,953）⇒ 按 A 处理会**删掉真实暗区数据**。
+- **两侧一致的部分**：计数 **10,383 / 80,000,000 = 0.01298%** 与「必须登记」。
+- **本节点的量化界定**：即使把这 0.01298% 全部当成缺失或全部当成有效，任何**比例/中位数**类统计的变化 **≤0.0130 个百分点**，**低于任何合理带宽**（判据表带宽以 0.05 量级计）⇒ **该处置之争不阻塞 P5/G1**；但对**空间成簇**类判据（P14 的像素/邻域统计、暗区偏置）可能更重要，**仍需裁决**。
+- 本节点**不擅自裁决**：判据表以 `microns_sentinel_mask_policy = unresolved_conflict` + **`final=0`** 登记，并列出三条裁决路径（两侧各自复算给差异 / 采纳 B1 的成簇证据 / 主agent 明确指定并注明与 §3f-3 的关系）。
+
+## L17 — 硬门⑥ 的**真断言**落地（并由断言抓到一处真缺口）
+
+- 新增 `Evaluator._assert_output_invariants()`（**raise AssertionError**，非"软提示"），三条不变式：
+  ① 每行必须带 7 个口径字段（`protocol_id/T_ms/settle_ms/seed/dt_ms/bin_ms/smooth_frames`）+ `estimator` + 非空 `protocol_T_ms`；
+  ② **`pass` 的带类判据（a/b/c/e）必须有非空 `band_lo`（a/b/e 还需 `band_hi`）与非空 `value`** ⇒ 把「未定稿带不得判 pass」从"约定"变成"不可绕过"；
+  ③ 每个评估单元（config×T×mechanism）必须出现**全部 9 条子判据** ⇒ 防「判据静默丢失」（与 M10 编码路径静默失效同族）。
+- **断言在首跑即抓到一处真缺口**：无臂配置（S1 之类）下 `(d)` 行由 `arm=None` 生成 ⇒ `protocol_T_ms` 为 `None` ⇒ **硬门⑥ 违反**。修法：`_proto_fields(arm, T_ms)` 在无臂时**回退到该评估单元的 T**（settle 回退到协议值，seed 记 `None`）。
+- 全部冒烟输出 `output_invariants = {'rows': N, 'units': M, 'criteria_per_unit': [9], 'caliber_fields_checked': 8}` ⇒ 硬门⑥ 已**可机械核验**。
+
+## L18 — 硬门③ 用 `hard_failures + verdict` 而非 `raise` 的取舍（有意为之）
+
+- M10 的内核用 `assert` 直接抛异常（`larval_zf_circuit.py::run_protocol` 的双估计器断言）：优点是"当场炸"，缺点是**整轮输出（含 JSON/CSV）全部丢失**，事后无法审计是哪一段口径错了。
+- 本工具的选择：**记录到 `hard_failures` + 总判定置 `invalid` + exit=2**，输出照常落盘（S4 实测：`rel_diff=0.1304` ⇒ `invalid`、CSV/JSON 完整可用）。
+- 代价：脚本本身**不会非零退出以外的"硬停止"**（若调用方忽略 exit code 就可能漏掉）⇒ 规避方式：① exit code 语义固定并写入 docstring；② `hard_failures` 在 `print_summary` 与 JSON 顶层各出现一次；③ 只有**输出不变式**（硬门⑥/带纪律/子判据完整性）用 `raise`（那三类一旦违反，输出本身不可信）。

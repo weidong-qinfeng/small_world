@@ -56,6 +56,21 @@
 | `rate_median_hz_m10_fish_band` / `silent_frac_m10_fish_band` | 斑马鱼幼鱼（M10） | RF-M11-1 禁移植；若移植，M10 的「中位率 0.000 Hz + 静默 0.920」会被判成 (b) 通过 |
 | ⚠️ **越界警示**：`microns_same_source_tau_band_ref`（8.003–9.015 s） | MICrONS **同源** 2 field × 2,000 帧 @6.300006 Hz（**measured**，非代理） | **归属 S 门（P6）/RF-M11-2**；在 P5/G1 内引用它判任何子判据 ⇒ **越界**；且 Q 法低态 dwell 1.11–1.27 s vs H 法 3.17–6.67 s（**2.6–6×**）⇒ 口径差必须并列 |
 
+### §2.3 ★ 口径分列（主agent 初审反馈落地）：**钙口径 ≠ 电生理口径**
+
+| 口径 | 行 | 状态 | 值 |
+|---|---|---|---|
+| **电生理（spike rate）** | `rate_median_hz_literature_spike_band`（命名行）+ `rate_median_hz_lo/hi` + 类级 exc/inh 4 行 | `literature` / **已定稿** | 0.5–2.0 Hz（E 0.5–1.0 / I 1.5–2.0） |
+| **钙（MICrONS 同源）** | `rate_median_hz_measured_calcium_band_lo` / `_hi` | **`unavailable`**（`final=0`） | 待「ROI 掩膜 × 帧序列 → 逐 ROI ΔF/F → 事件检测 → 事件率中位」管线（**尚未建立**；J2） |
+| **钙的结构界**（由 measured 帧率/样本范围推出） | `calcium_caliber_nyquist_ceiling_hz` = **3.150003 Hz**；`calcium_caliber_resolvable_floor_hz` = **0.00315 Hz** | `derived` / 已定稿 | 上界 = 帧率/2；下界 = 1/317.46 s |
+| **跨口径混用的后果** | `calcium_vs_spike_caliber_gap` | `derived` / 已定稿 | 方向：**中位率低估**（上限压缩到 3.15 Hz，spike 带上界 2.0 Hz 已达其 63.5%）+ **静默比例高估**（下限比 0.5 Hz 低 **159×**）；**幅度未测 ⇒ 不给倍数** |
+| **样本范围** | `microns_functional_calcium_sample_scope` | `measured` / 已定稿 | **2 个 field（144 中）+ 每 field 2,000 帧 ≈ 317.46 s**；单 field 完整记录 40,000 帧/6,349.2 s（未全取） |
+| **哨兵/缺失** | `microns_functional_sentinel_count`=**10,383**、`_fraction`=**0.01298%** | `measured` / 已定稿 | 两侧计数一致；**未处理 ≠ 无缺失** |
+| **哨兵处置** | `microns_sentinel_mask_policy` | **`unresolved_conflict`（`final=0`）** | 位置 A（主agent 指令）= 前置为缺失；位置 B（§3f-3 / `R-14`，B1 证据）= **无掩膜、保留并登记**。**影响上界 ≤0.0130 个百分点 ⇒ 不阻塞 G1**（notes L16） |
+| **Allen 2p（参照）** | `allen_2p_role_in_m11`=cross_preparation_reference + `unresponsive_neurons_pct_all_areas`(23%) + `allen_bo_neuropixels_spike_rate_band`(`unavailable`) | `derived`/`literature`/`unavailable` | 按 R6/R9 **只作跨制备参照**，不是目标带来源 |
+
+**诚实结论**：R9 让 MICrONS 钙序列**可解码（measured）**，但 **(a) 的钙口径带仍不可得**——「可解码」≠「已重建出率口径」。已测的钙域「率」只有**群体状态转换率**（0.104–0.438 Hz，`microns_calcium_measured_population_anchors`），**不是逐细胞率**，且**归属 S 门**（P5 内引用即越界）。
+
 ### §2.2 R9 / R10 / R11 到位后的更正（跨节点并发，如实登记）
 
 | 项 | 内容 | 对本表的影响 |
@@ -97,6 +112,17 @@
 | 另：**四次口径事故**（×1.3004 / ×1.15 / 43× / 无断言） | **硬门③双估计器一致性**：`counts` 求和 vs `pop_trace` 求和 vs 外部聚合读数，两两相对差 >2% ⇒ **整轮 `invalid`**（不是 fail）；只有单一估计器 ⇒ `unavailable` 且阻断 pass；并加**非平凡量纲自检**：轨迹长度 ⟺ `round(T_ms/dt_ms)`（**该断言正是 ×1.3004 的同族缺陷探测器**）、计数长度 ⟺ N。<br>**冒烟证据（S3/S4）**：正常臂 `rel_diff = 0.0`；把基准臂计数人为放大 1.15× ⇒ `rel_diff = 0.1304 > 0.02` ⇒ 整轮 `invalid`、exit=2。 |
 | 另：**判据带未定稿却照判** | **带定稿机械强制**：带值全部读自 `m11_p5_targets.csv`；`final=0` 或 `evidence_level=unavailable` ⇒ 该子判据 `unavailable`（**拒绝用未定稿带判 pass/fail**）。 |
 | 另：**"未测" 被写成 pass/fail** | 四态 + 退出码：`pass`=0 / `fail`=1 / `invalid`=2 / `unavailable`=3；`invalid` 与 `unavailable` **永不计入** pass/fail（清单 §0.7 #6）。 |
+
+### §4.1 六条硬门的**实现与断言状态**（主agent 要求逐条确认）
+
+| 硬门 | 实现位置 | 断言形式 | 冒烟证据 |
+|---|---|---|---|
+| **① 样本量门** | `Evaluator._eval_selfsustain`（seed 去重 + `zero_spikes` 汇总） | **门条件判定**（不 raise）：`gate_fail` 非空 ⇒ `status=unavailable`，点估计保留为描述性 | S3：每臂 1 seed ⇒ `sample_size_gate_unmet: 零驱动臂 seed 数 1 < 3; …`；S5：T=2 s 臂 `零驱动脉冲 19 < 300` |
+| **② CI 门** | `selfsustain_ci()` + `_eval_selfsustain` | 主/次两法并列；`ci_upper_rel_diff > tol(0.25)` ⇒ `status=invalid`；判定式 = `R ≤ max 且 max(两法上界) ≤ max×1.2` | **S2**：R=0.1015384615、se_log=0.0365403631、逐 seed 比值与 `m10_p5_gate1_ci.json` **逐位一致**；两法上界相对差 0.0054 ⇒ 一致；判 `fail` |
+| **③ 双估计器断言** | `arm_metrics()`（三估计器两两相对差 + 量纲自检） | **硬失败**：`rel_diff > 0.02` ⇒ 进 `hard_failures` ⇒ 总判定 `invalid`（**不 raise**，以保证输出落盘——M10 用 `assert` 直接抛异常反而丢了整轮证据）；单一估计器 ⇒ `unavailable` 且**阻断 pass**；另断言 `trajectory_len == round(T_ms/dt_ms)`、`counts_len == n_neuron` | **S3**：6/6 臂 `rel_diff = 0.0`；**S4**：`rel_diff = 0.1304 > 0.02` ⇒ `invalid`、exit=2 |
+| **④ 时长三档** | `_duration_ladder()` + `_apply_duration_flip()` | 缺档 ⇒ `unavailable`；**截断守卫**（短轨迹是长轨迹逐位前缀）⇒ `invalid` 且并入 `hard_failures`；跨 T `status_flip` ⇒ 该子判据 `invalid` | **S5**：`ladder_arms_look_truncated` 触发 ⇒ `invalid`、exit=2；S1/S3/S4 给出 `T_levels_present_ms`/`ladder_required_ms` 与 `unavailable` 原因 |
+| **⑤ 判别性断言** | `_baseline_arm_value()` + `_verdict()` + 判据表 `criterion_d_as_mechanism_evidence` | 缺「无机制基线臂」⇒ 整体 `unavailable`（不得 pass）；基线达标 ⇒ `discriminative=false`；(d) 恒标 `sanity_precondition(non_discriminative)` 并进 `non_discriminative_criteria` | S1：`baseline_arm_registered=False` ⇒ 阻断 pass；S3/S4：`baseline_arm_registered=True` 且 `non_discriminative_criteria=['p5_d_drive_elasticity']` |
+| **⑥ 口径标注** | `Evaluator._proto_fields()`（每行 7 个 protocol 字段 + estimator）**+ `_assert_output_invariants()` 真断言** | **raise AssertionError**（三条）：(i) 每行必须带 7 个口径字段 + `estimator` + `protocol_T_ms`；(ii) `pass` 的带类判据必须有非空 `band_lo`（a/b/e 还需 `band_hi`）与 `value`（**未定稿带不得判 pass**）；(iii) 每个评估单元必须出现**全部 9 条子判据**（防「判据静默丢失」，与 M10 编码路径静默失效同族） | 断言在实现首跑即**抓到一处真缺口**（无臂行缺 `protocol_T_ms` ⇒ 修 `_proto_fields` 回退到单元 T）——这正是断言价值的证据；最终 S1–S5 全部输出 `output_invariants = {'rows': …, 'units': …, 'criteria_per_unit': [9], 'caliber_fields_checked': 8}` |
 
 ---
 

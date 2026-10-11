@@ -979,10 +979,10 @@
     "silent_diff_pp": 0.0,
     "ks_off_vs_m10": {
      "D": 0.0,
-     "p": 0.0,
+     "p": 1.0,
      "na": 400,
      "nb": 400,
-     "method": "kolmogorov_asymptotic"
+     "method": "kolmogorov_asymptotic(D=0 -> p=1)"
     },
     "m11_on_spk": 45,
     "m11_on_pop_hz": 0.5625,
@@ -998,7 +998,7 @@
     "m10_3bin_note": "M10 三延迟档臂：外部事件被静默丢弃（E-M10-2）⇒ 与 M11 臂**不可比**，仅登记",
     "m9_status": "unavailable(M9 内核在高发放密度工况失效)",
     "m9_err": "TypeError: __init__() got an unexpected keyword argument 'use_abs_slots'",
-    "crit_b_pass": false
+    "crit_b_pass": true
    },
    {
     "target_hz": 2.0,
@@ -1051,10 +1051,10 @@
     "silent_diff_pp": 0.0,
     "ks_off_vs_m10": {
      "D": 0.0,
-     "p": 0.0,
+     "p": 1.0,
      "na": 400,
      "nb": 400,
-     "method": "kolmogorov_asymptotic"
+     "method": "kolmogorov_asymptotic(D=0 -> p=1)"
     },
     "m11_on_spk": 90,
     "m11_on_pop_hz": 1.125,
@@ -1070,7 +1070,7 @@
     "m10_3bin_note": "M10 三延迟档臂：外部事件被静默丢弃（E-M10-2）⇒ 与 M11 臂**不可比**，仅登记",
     "m9_status": "unavailable(M9 内核在高发放密度工况失效)",
     "m9_err": "TypeError: __init__() got an unexpected keyword argument 'use_abs_slots'",
-    "crit_b_pass": false
+    "crit_b_pass": true
    },
    {
     "target_hz": 17.412999876622898,
@@ -1123,10 +1123,10 @@
     "silent_diff_pp": 0.0,
     "ks_off_vs_m10": {
      "D": 0.0,
-     "p": 0.0,
+     "p": 1.0,
      "na": 400,
      "nb": 400,
-     "method": "kolmogorov_asymptotic"
+     "method": "kolmogorov_asymptotic(D=0 -> p=1)"
     },
     "m11_on_spk": 1030,
     "m11_on_pop_hz": 12.875,
@@ -1142,12 +1142,16 @@
     "m10_3bin_note": "M10 三延迟档臂：外部事件被静默丢弃（E-M10-2）⇒ 与 M11 臂**不可比**，仅登记",
     "m9_status": "unavailable(M9 内核在高发放密度工况失效)",
     "m9_err": "TypeError: __init__() got an unexpected keyword argument 'use_abs_slots'",
-    "crit_b_pass": false
+    "crit_b_pass": true
    }
   ],
-  "crit_g_pass": false,
-  "density_anchored_points": []
+  "crit_g_pass": true,
+  "density_anchored_points": [
+   0.5,
+   2.0,
+   17.412999876622898
+  ]
  },
- "started_at": "2026-10-11T22:07:36",
+ "started_at": "2026-10-11T22:08:00",
  "which": "merged:t5"
 }
