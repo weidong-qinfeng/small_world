@@ -254,7 +254,8 @@ $PY neural_exploration/tools/validate_p11_data_gate.py --determinism-check
 | G-3 | v8 DataJoint DB 未取 ⇒ 逐细胞 ΔF/F / ROI 轨迹 / 扫描级 fps / 瞳孔-跑道同步量 | `unavailable` | 需 20–30 天量级带宽 ⇒ 需外部条件变化 |
 | G-4 | `units.csv` 51.4 MB / `channels.csv` 6.6 MB 全量未取（精确 units 计数仅有 `derived` 外推 ≈136,720） | `unavailable`（DQ-6） | 托管取数后替换为 `measured` 计数 |
 | G-5 | Allen per-cell NWB 头：`/general/extracellular_ephys`、`/acquisition` 采样率、`/units` spike times **不可读**（本地仅 44,695,552 B 真实前缀，其余为稀疏洞；网络 1.6–16 KB/s、DANDI 7.2 KB/s） | `unavailable` | 已由自描述表替代（30 kHz / 2.5 kHz + units schema）；如需 NWB 逐字对齐再续传 |
-| G-6 | 体素序列覆盖度：14 4 field 中仅 **2** 个有 `functional_series` | `partial` | 若需全 FOV 统计须回到 v8 DB |
+| G-6 | 体素序列覆盖度：144 field 中仅 **2** 个有 `functional_series` | `partial` | 若需全 FOV 统计须回到 v8 DB |
+| **G-7**（R8/DQ-4 新增，"应做而未做"） | **属性级同源表未取**：`node_data_v1.pkl`（294,635,032 B）/ `edge_data_v1.pkl`（201,511,086 B）受吞吐限制（10–16 KB/s ⇒ 5–8 h；GCS 404）⇒ **P7/P8/P14 的同源属性对照与其匹配负对照材料（`Connected`/`ADP`/`Same region`）本轮均未得** | **`unavailable（吞吐限制）`**——**不得**写成"已具备"或"已排除" | 未来轮次：换网络/换时段复用 `parts/` 续传；到位后由 `tools/parse_m11_functional_connectomics.py`（只解析不下载）解析并落 parquet（schema 已由 readme 核：node 26 / edge 19 列） |
 
 > **合规声明（RF-M11-B §五.3）**：本轮**未**用 MICrONS 体素序列计算任何速率/dwell/τ/活动相关统计量。
 > `m11_grid_alignment.json` 中的相关仅用于**空间同格性几何判定**（判据是"峰值因子=2.5、位移 0,0"，
@@ -262,19 +263,21 @@ $PY neural_exploration/tools/validate_p11_data_gate.py --determinism-check
 > **本节点保留反证证据**（大端解码，`tools/demo_m11_microns_decode.py` 一条命令可复核 + B3b 独立复现），
 > 并**建议**改判 `decoded(big-endian int16)`；**在裁定变更前，一切产出按 `format_unverified` 执行。**
 
-## §6e ★★ R8：「同源」的**三级精确表述**（取代此前的"功能侧不可用"）
+## §6e ★★ R8：「同源」三级表述（**按主 agent 口径 = 计划/缺口，不是"本轮已得"**）
 
-> **① 结构同源 ✅**：MICrONS EM/seg/seg_m1300（`measured`；em 体积 1.2861 mm³，主 agent 独立复算一致）。
-> **② 属性级同源 ✅（R8 新增）**：`functional_connectomics/node_and_edge_properties/v1`（Ding et al. 2025，
-> **DOI 10.1038/s41586-025-08840-3**）——逐神经元 `node_data_v1.pkl`（EM 坐标 + `layer`/`brain_area` +
-> **`pref_ori`/`pref_dir`/`osi_iv`/`gosi_iv`/`in_vivo_mean_resp`/`mei`**）与逐对 `edge_data_v1.pkl`
-> （**`population` ∈ {Connected, ADP, Same region}** 自带**匹配负对照** + `n_synapses`/`synapse_size` +
-> `pre_layer`/`pre_len`/`dend_len` + **`in_vivo_sig_corr_iv`**）。**schema 已由 readme 核对：node 26 列 / edge 19 列。**
-> **③ 时间序列级非同源 ❌**：该表**不含时间序列** ⇒ **S 门（慢状态时间尺度）与 dwell/τ 目标带仍用 Allen 2p 代理（R6 不变）**；
-> 逐细胞 ΔF/F 轨迹仍 `unavailable`（仅存 v8 DataJoint DB，DQ-1 已裁定不下载）。
+> **① 结构同源 ✅ `measured`**：MICrONS EM/seg/seg_m1300（em 体积 1.2861 mm³，主 agent 独立复算一致）。
+> **② 属性级同源 = 通道已确认存在且可达，但本轮 `unavailable（吞吐限制）`**：
+> `functional_connectomics/node_and_edge_properties/v1`（Ding et al. 2025，**DOI 10.1038/s41586-025-08840-3**）
+> —— **HEAD 200**、**schema 由 `readme_v1.md` 实证**（node **26 列** / edge **19 列**：`layer`/`brain_area`/`pref_ori`/
+> `osi_iv`/`gosi_iv`/`in_vivo_mean_resp`；`population∈{Connected, ADP, Same region}`/`n_synapses`/`in_vivo_sig_corr_iv`…）；
+> 但 **`node_data_v1.pkl` 294,635,032 B / `edge_data_v1.pkl` 201,511,086 B 受吞吐限制本轮未取到**
+> （**主 agent 实测 10–16 KB/s ⇒ ETA 5–8 h**，GCS 无该数据镜像 ⇒ 404）⇒ **判 `unavailable（吞吐限制）`**。
+> **③ 时间序列级非同源 ❌**：该表**不含时间序列** ⇒ S 门与 dwell/τ 目标带仍用 **Allen 2p 代理**（R6，`derived/cross_source`）；
+> 逐细胞 ΔF/F 仍 `unavailable`（v8 DataJoint DB，DQ-1/R1 裁定不下载）。
 
-⇒ **不得**写"功能侧完全不可用"，**不得**写"全同源"；正确表述 = **"结构同源 + 属性级同源 + 时间序列级跨源代理（Allen 2p）"**。
-该表述已同步 §6d 的 M12 交接缺口（G-1 修订版）。
+⇒ **纪律（主 agent §二）**：**P7/P8/P14 的"同源属性对照"在本轮为 `unavailable`；其匹配负对照材料
+（`Connected`/`ADP`/`Same region`）亦因此未得** ⇒ **不得**写成"已具备"、**不得**写成"已排除"；
+**必须**写进 **M12 交接缺口**（G-7）与本里程碑**限制正文**（本段即正文）。
 
 ## §6f-2 ★ 活动通道 = Allen **2p 钙成像**（RF-M11-C）：实测与自建目标带
 
@@ -324,25 +327,36 @@ $PY neural_exploration/tools/validate_p11_data_gate.py --determinism-check
 影响：① 目标带的群体规模由 1–4 cells 提升到 18/123 cells（形状判据的样本量门才可能过）；② 帧率由"推断"升为"实测"。
 （清单与命令见 `data/m11_b1_managed_jobs.json`；本节点按 >10 min 纪律未自启。）
 
-## §6h DQ-4 状态（**下载停滞 3.417%，已就绪解析器与等待器**）+ P2 判定**上调建议**
+## §6h DQ-4 实测结论 = **`unavailable（吞吐限制）`**（reachable but infeasible；不阻塞、不轮询）
 
-| 项 | 实测 |
-|---|---|
-| `node_data_v1.pkl` | 本地 **2,322,432 / 294,635,032 B = 3.417%**（`parts/` 8 段共 10,067,968 B；末次写入 20:47，**进程已不在** ⇒ 托管作业**已停滞**） |
-| `edge_data_v1.pkl` | **0 / 201,511,086 B**（未开始） |
-| `readme_v1.md` | 5,594 B ✅（已置于 `functional_connectomics/`，**schema 核对依据**：node 26 列 / edge 19 列） |
-| 解析器（DQ-4 要求） | `tools/parse_m11_functional_connectomics.py`：**只解析不下载**；完整性门（尺寸==期望）不过即 `INCOMPLETE` 且退出非零；完整时 `pd.read_pickle` → schema 逐列核对（对照 readme）+ 逐列非空率 + 关键列取值分布（`layer`/`brain_area`/`population`；`osi_iv`/`n_synapses` 数值摘要）→ **parquet** + `m11_functional_connectomics_counts.json`（含 sha256/行数） |
-| 等待器 | `/tmp/m11_fc_waiter.sh`（每 5 min 检查，**只等不下载**；两表达期望尺寸即自动解析；日志 `functional_connectomics/waiter.log`，含 `ALL_DONE`） |
-| 当前解析状态 | `parse_status = not_run（文件未完整）` —— **不是 fail、不是未命中** |
+| 方式 | 实测吞吐 | 294 MB 推算 |
+|---|---|---|
+| 单连接（主 agent） | ≈17 KB/s | ≈5 h |
+| 8 路并发 Range（17 min 持续） | 聚合 **10–16 KB/s**（各分片 ~1.2 KB/s） | **5–8 h** |
+| GCS 镜像 | **HTTP 404**（功能数据**未镜像**） | — |
+| 本节点补充实测（用于决策口径） | 同一小时内 **1.6 KB/s ↔ 32 KB/s（20× 波动）**；2p NWB 3.3 KB/s；DANDI 7.2 KB/s；brain-map 1.6 KB/s | — |
 
-**P2 判定上调建议（主 agent 让我按"四类参考量是否同口径可算"给建议）**：
-- **可算性：C1（调谐类）与 C2 的成对相关部分现已成立** —— 属性级同源表直接提供 **in vivo OSI/偏好/平均反应**（node）与
-  **in vivo 信号相关**（edge），且 `population` 列**自带匹配负对照**（清单 §0.7 #5 所需）；
-  C3（dwell 目标带）由 **Allen 2p 自建带**承担（`derived/cross_source`）；C4（行为）仍待 IBL。
-- ⇒ **建议：P2 由 `partial_pass` 上调为 `pass（附两条限制）`**，条件：
-  **① C1/C2 的参考量 CSV（`m11_tuning_reference.csv` / `m11_activity_reference.csv`）在下一轮落盘**（依赖 DQ-4 下载完成）；
-  **② dwell 分量标 `derived/cross_source`，且未过 RF-M11-2 劈半自检前不得定稿**。
-- 若主 agent 要求"落盘后才上调"，则维持 `partial_pass`——**两种口径我都已把状态写实**，不混同。
+**处置（三项均已完成）**：
+1. **不阻塞**：DQ-4 按 `unavailable（吞吐限制）` 登记（`m11_functional_connectomics_counts.json` + R-31 + M12 G-7），
+   与 R1（v8 DB）、M10（ZENODO）同类：**"可达 ≠ 可行"**；
+2. **不轮询**：本节点已**主动停掉**等待器（`waiter.log` 记 `stopped by M11-B1 per DQ-4 ruling`），此后**不再对该对象发任何请求**；
+3. **readme 足以规划**：`readme_v1.md`（5,594 B）已落盘且 schema 已机器化解析（node 26 / edge 19 列）⇒
+   作为**未来轮次的取数计划**（换网络/换时段；或待 `parts/` 续传完成后由
+   `tools/parse_m11_functional_connectomics.py`（**只解析不下载**）自动完成解析）。
+**实测吞吐口径（本轮新立）**：`data/m11_throughput_measured.csv`（11 行）——**取数决策必须有实测吞吐支撑，不得凭"应该很快"**。
+
+## §6i 四类参考量的**四态收敛**（`data/m11_activity_reference.csv`；只用现阶段可得数据）
+
+| 参考量 | 可算性 | n / 样本量门 | 值 | 状态 |
+|---|---|---|---|---|
+| **C1 调谐类**（OSI/DSI/半宽） | ✖ 两条路都不可算（属性表未取 + 2p events 无刺激标签） | 0 | — | **`unavailable`** |
+| **C2 率分布** | △ 逐细胞事件率可算 | **n=5 细胞**（门 ≥130） | median **0.1096** | **`thin`**（不得作判据带） |
+| **C2 成对相关** | △ 4-cell 件可算 | **6 对** | median **0.0538** | **`thin`** |
+| **C3 dwell/τ 目标带** | ✅（B4 冻结管线） | **4,070 bins**（门 ≥130 ✅）/ low 态完整段 ≥453（门 ≥5 ✅） | dwell **2.74 s**、p90/中位 **3.23**、转换 **0.377 Hz**、τ **6.46 s** | **`measured`** |
+| **C4 行为类** | ✖ 需凭据 | 0 | — | **`unavailable（NEEDS_TOKEN）`** |
+
+⇒ **净结果**：四类中**仅 C3 达 `measured`**；C2 为 `thin`；C1/C4 为 `unavailable`。
+（有效维度 / 相位随机化代理地板**未算**：需更多细胞与同管线地板。）
 
 ## §7 结论与下一步建议
 
