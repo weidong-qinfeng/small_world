@@ -10,7 +10,10 @@
    "why_slow": "冻结模块的 2 状态/多 K 高斯 HMM 为 Python 逐时间步循环；n_bins(0.914s)≈4,076–11,413 ⇒ 单线程下 >10 min",
    "command": "cd /Users/weidong/ai/small_world && PYTHONHASHSEED=0 OMP_NUM_THREADS=1 ./.venv-m11/bin/python neural_exploration/tools/build_m11_dwell_band.py",
    "log": "neural_exploration/data/m11_raw/allen/vc2p/dwell_band.log",
-   "outputs": ["neural_exploration/data/m11_dwell_reference.csv", "neural_exploration/data/m11_dwell_reference.json"],
+   "outputs": [
+    "neural_exploration/data/m11_dwell_reference.csv",
+    "neural_exploration/data/m11_dwell_reference.json"
+   ],
    "completion_marker": "wrote …/m11_dwell_reference.csv（脚本末尾打印）",
    "resource": "1 thread, no GPU; CPU/墙钟比按主 agent L46 方法在日志时间戳上核对"
   },
@@ -20,8 +23,16 @@
    "title": "取更大群体规模的 2p events 件（提升目标带的群体统计量）",
    "status": "REQUESTED（未自启：网络实测 1.6–32 KB/s，16.4 MB 件预计 >30 min）",
    "objects": [
-    {"url": "https://allen-brain-observatory.s3.amazonaws.com/visual-coding-2p/ophys_experiment_events/638871662_events.npz", "bytes": 16358638, "n_cells_derived": 18},
-    {"url": "https://allen-brain-observatory.s3.amazonaws.com/visual-coding-2p/ophys_experiment_events/497060401_events.npz", "bytes": 111876046, "n_cells_derived": 123}
+    {
+     "url": "https://allen-brain-observatory.s3.amazonaws.com/visual-coding-2p/ophys_experiment_events/638871662_events.npz",
+     "bytes": 16358638,
+     "n_cells_derived": 18
+    },
+    {
+     "url": "https://allen-brain-observatory.s3.amazonaws.com/visual-coding-2p/ophys_experiment_events/497060401_events.npz",
+     "bytes": 111876046,
+     "n_cells_derived": 123
+    }
    ],
    "derivation": "events.npz **不压缩**（npz=store）⇒ n_cells = bytes / (8 × n_frames)，n_frames≈113,835 实测",
    "after_download": "重跑 tools/build_m11_dwell_band.py（自动纳入新件；完整性门会自动排除不完整文件）"
@@ -34,6 +45,20 @@
    "command": "curl -sS -L -r 0-6291455 -o <prefix> https://allen-brain-observatory.s3.amazonaws.com/visual-coding-2p/ophys_experiment_data/497256116.nwb",
    "or_full": "全量 176,019,299 B（约 1.5–30 h，视吞吐）",
    "why": "当前帧率 30.9 Hz 为 NEEDS_VERIFY（由帧数与 session 时长合理性推断）"
+  },
+  {
+   "id": "J4",
+   "kind": "request_hosted",
+   "title": "延长**同源** dwell/τ 主带的时间窗（提升 S 门判据的样本量）",
+   "status": "REQUESTED（未自启：网络实测 1.6–32 KB/s；按 RF-M11-D 不再下载大对象）",
+   "why": "当前同源主带仅覆盖 t∈[0,2000) 帧 = **317.46 s / 333 箱**；低态完整段仅 6（S-2 门要求 ≥10）、BIC 门需 ≥500 箱（差 167 箱 ≈ 1,002 帧 ≈ 101 片）⇒ 判据 S-2/S-3/BIC 现在无法判定",
+   "minimal_fix": {
+    "objects": "同一 (x,y) 块的 t 分片（`functional_series/session4_scan7_field4/0/0/0/{t}`）",
+    "need_chunks": "约 101–300 片（≈69–204 MB）",
+    "url_example": "https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/functional_data/functional_series/session4_scan7_field4/0/0/0/200",
+    "after": "重跑 tools/build_m11_dwell_band_microns.py（自动纳入新分片）"
+   },
+   "alternative": "或改取第二个 field（session5_scan3_field1）的同规模分片，做**跨 field** 离散度（现仅有跨时间/跨空间半劈）"
   }
  ]
 }

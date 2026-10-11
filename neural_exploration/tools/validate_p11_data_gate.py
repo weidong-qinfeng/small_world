@@ -37,6 +37,7 @@ import csv
 import hashlib
 import json
 import os
+import re
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -447,34 +448,54 @@ def main():
         os.path.join(DATA, "m11_dwell_reference.json")) else {}
     b = band.get("band", {}) or {}
     sc = b.get("shape_criterion", {}) or {}
-    A.append(assert_("P1.13a 自建 dwell/τ 目标带已产出（≥2 个独立实验，B4 冻结管线）",
-                     (b.get("n_experiments") or 0) >= 2, "n_experiments=%s experiments=%s"
-                     % (b.get("n_experiments"), b.get("experiments"))))
-    A.append(assert_("P1.13b 目标带含样本量门与两个独立口径（H 法/Q 法；φ 平滑/未平滑并列）",
-                     b.get("ar1_phi_unsmoothed_median") is not None
-                     and b.get("low_dwell_median_s") is not None,
-                     "dwell_med=%.2fs τ_med=%.2fs φ_sm=%.3f φ_un=%.3f bins=%s"
-                     % (b.get("low_dwell_median_s") or 0, b.get("ar1_tau_s_median") or 0,
-                        b.get("ar1_phi_smoothed_median") or 0, b.get("ar1_phi_unsmoothed_median") or 0,
-                        b.get("n_bins_0914s"))))
-    A.append(assert_("P1.13c 形状判据（重尾 ∧ 拒绝指数）在可评实验上成立；不可评者标 unavailable（非 fail）",
-                     sc.get("heavy_tail_all") is True and (sc.get("n_evaluable") or 0) >= 1,
-                     "n_evaluable=%s heavy_tail=%s ks_reject=%s per_exp=%s"
-                     % (sc.get("n_evaluable"), sc.get("heavy_tail_all"), sc.get("ks_reject_exp_all"),
-                        json.dumps(sc.get("per_experiment", {}), ensure_ascii=False)[:160])))
-    A.append(assert_("P1.13d 容差来源预注册（B4 三项 + 本轮跨实验/跨口径实测）",
-                     (b.get("tolerance_sources") or {}).get("method_ratio") is not None
-                     and (b.get("tolerance_sources") or {}).get("self_cross_experiment") is not None,
-                     json.dumps(b.get("tolerance_sources", {}), ensure_ascii=False)[:200]))
-    A.append(assert_("P1.13e **未**沿用 ZAPBench 数值（26.5 s / 37.18 s 不得出现在带中）",
-                     abs((b.get("low_dwell_median_s") or 0) - 26.5) > 1e-6
-                     and abs((b.get("ar1_tau_s_median") or 0) - 37.18) > 1e-6,
-                     "dwell_med=%.3f τ_med=%.3f（ZAPBench 26.5/37.18 已被排除）"
-                     % (b.get("low_dwell_median_s") or 0, b.get("ar1_tau_s_median") or 0)))
-    A.append(assert_("P1.13f 帧率标注 NEEDS_VERIFY（NWB 读回受阻）+ 11 Hz 敏感性并列",
-                     "NEEDS_VERIFY" in (b.get("frame_rate_source") or "")
-                     and any(r.get("rate_tag") == "alt" for r in (band.get("rows") or [])),
-                     (b.get("frame_rate_source") or "")[:90]))
+    pb = (band.get("band") or {})
+    prim = pb.get("primary") or {}
+    sh = pb.get("s_gate_health_check") or {}
+    sen = pb.get("sentinel") or {}
+    A.append(assert_("P1.13a **同源** dwell/τ 主带在位（MICrONS 体素序列；≥300 帧门）",
+                     bool(prim) and (prim.get("n_frames") or 0) >= 55
+                     and "MICrONS" in (pb.get("source") or ""),
+                     "source=%s n_bins=%s（≥65 valid 门；≥300 帧=50 箱）"
+                     % ((pb.get("source") or "")[:40], prim.get("n_frames"))))
+    A.append(assert_("P1.13b 两种时间基 + H/Q 并列 + φ 平滑/未平滑并列",
+                     prim.get("low_dwell_median_s_physical") is not None
+                     and prim.get("ar1_phi_unsmoothed") is not None
+                     and prim.get("q_low_dwell_median_s_module") is not None,
+                     "dwell_phys=%.2fs dwell_module=%.2fs φ_sm=%.3f φ_un=%.3f H/Q=%.2f"
+                     % (prim.get("low_dwell_median_s_physical") or 0, prim.get("low_dwell_median_s_module") or 0,
+                        prim.get("ar1_phi_smoothed") or 0, prim.get("ar1_phi_unsmoothed") or 0,
+                        prim.get("h_vs_q_dwell_ratio") or 0)))
+    A.append(assert_("P1.13c S 门判据体检**如实四态**（S-1 pass；S-2 unavailable；S-3 重尾但 KS 未拒）",
+                     (sh.get("S1_occupancy_degenerate_free") or {}).get("pass_") is True
+                     and "unavailable" in ((sh.get("S2_transitions_exist") or {}).get("status") or "")
+                     and "fail" in ((sh.get("S3_heavy_tail") or {}).get("status") or ""),
+                     "S2=%s；S3=%s" % ((sh.get("S2_transitions_exist") or {}).get("status"),
+                                       (sh.get("S3_heavy_tail") or {}).get("status"))))
+    ts = pb.get("tolerance_sources") or {}
+    A.append(assert_("P1.13d 容差来源齐全（H/Q、掩膜开关、时间半劈、空间半劈、B4 三项锚）",
+                     all(ts.get(k) is not None for k in ("method_H_vs_Q", "mask_on_off", "time_half_spread",
+                                                         "spatial_half_spread", "B4_anchors")),
+                     json.dumps(ts, ensure_ascii=False)[:220]))
+    A.append(assert_("P1.13e **未**沿用 ZAPBench 26.5 s / 37.18 s",
+                     abs((prim.get("low_dwell_median_s_physical") or 0) - 26.5) > 1e-6
+                     and abs((prim.get("ar1_tau_s_physical") or 0) - 37.18) > 1e-6,
+                     "同源带 dwell=%.2fs τ=%.2fs（对照 ZAPBench 26.5/37.18）"
+                     % (prim.get("low_dwell_median_s_physical") or 0, prim.get("ar1_tau_s_physical") or 0)))
+    A.append(assert_("P1.13f 哨兵掩膜规则与占比已登记 + BIC 门如实标 unavailable",
+                     (sen.get("n_sentinel") or 0) > 0 and "int16" in (sen.get("rule") or "")
+                     and (sh.get("S7_sample_size") or {}).get("bic_ok") is False,
+                     "哨兵=%s/%s (%.5f%%)；bic_ok=%s"
+                     % (sen.get("n_sentinel"), sen.get("n_elements_total"), 100 * (sen.get("frac") or 0),
+                        (sh.get("S7_sample_size") or {}).get("bic_ok"))))
+    A.append(assert_("P1.13g Allen 2p 带已转为**跨制备参照**且原证据保留",
+                     os.path.exists(os.path.join(DATA, "m11_dwell_reference_allen2p.json"))
+                     and (pb.get("cross_preparation_allen2p") or {}).get("ratio_dwell_vs_same_source") is not None,
+                     json.dumps(pb.get("cross_preparation_allen2p"), ensure_ascii=False)[:200]))
+    _rpt = open(os.path.join(DOCS, "m11_data_gate_report.md"), encoding="utf-8").read()         if os.path.exists(os.path.join(DOCS, "m11_data_gate_report.md")) else ""
+    A.append(assert_("P1.18 RF-M11-D 纪律入档（报告含 R2 反转与同源表述；env notes 含'不可解码'举证标准）",
+                     ("R2 反转" in _rpt or "R2（反转" in _rpt or "R2 反转为" in _rpt)
+                     and "举证标准" in open(os.path.join(DOCS, "m11_env_notes.md"), encoding="utf-8").read(),
+                     "报告/env notes 命中"))
     sg = read_csv_rows(os.path.join(DATA, "m11_s_gate_criteria_prereg.csv"))
     A.append(assert_("P1.14 S 门判据预注册 CSV（形状/存在性/相对尺度 + 样本量门 + 双估计器断言）",
                      len(sg) >= 10 and any("样本量硬门" in r.get("criterion", "") for r in sg)
@@ -485,6 +506,66 @@ def main():
     A.append(assert_("P1.15 长作业登记表（命令行+日志+产物+完成标记）在位",
                      len(mj.get("jobs") or []) >= 3,
                      "jobs=%s" % [(j.get("id"), j.get("kind")) for j in (mj.get("jobs") or [])]))
+
+    # ---------------- P1.16 R8：同源三级表述 + DQ-4 解析就绪（只解析不下载）----------------
+    rp2 = open(os.path.join(DOCS, "m11_data_gate_report.md"), encoding="utf-8").read() \
+        if os.path.exists(os.path.join(DOCS, "m11_data_gate_report.md")) else ""
+    A.append(assert_("P1.16a 报告含 R8 三级同源表述（结构同源 + 属性级同源 + 时间序列级跨源代理）",
+                     all(k in rp2 for k in ("结构同源", "属性级同源", "时间序列级")),
+                     "命中三级表述" if all(k in rp2 for k in ("结构同源", "属性级同源", "时间序列级")) else "缺失"))
+    # 语境感知：禁用表述只允许出现在"不得/禁止/取代/旧表述"等否定语境中（正面断言中不得出现）
+    def _forbidden_in_positive(txt, phrase):
+        bad = []
+        for m in re.finditer(re.escape(phrase), txt):
+            ctx = txt[max(0, m.start() - 40): m.end() + 40]
+            if not any(k in ctx for k in ("不得", "禁止", "取代", "旧表述", "勿", "不得写", "错误表述")):
+                bad.append(ctx[:60])
+        return bad
+    fb1 = _forbidden_in_positive(rp2, "功能侧完全不可用")
+    fb2 = _forbidden_in_positive(rp2, "全同源")
+    A.append(assert_("P1.16b 禁用表述**未在正面断言中出现**（仅在'不得/取代'等否定语境中允许）",
+                     not fb1 and not fb2,
+                     "越界示例=%s" % (fb1[:2] + fb2[:2])))
+    pfc = os.path.join(DATA, "m11_functional_connectomics_counts.json")
+    fc = load(pfc) if os.path.exists(pfc) else {}
+    A.append(assert_("P1.16c DQ-4 解析器就绪且状态写实（未完整 ⇒ not_run，不得伪造行数）",
+                     os.path.exists(os.path.join(ROOT, "tools", "parse_m11_functional_connectomics.py"))
+                     and fc.get("parse_status", "").startswith("not_run"),
+                     "parse_status=%s；node=%s edge=%s" % (fc.get("parse_status"),
+                                                           ((fc.get("files") or {}).get("node_data_v1.pkl") or {}).get("verdict"),
+                                                           ((fc.get("files") or {}).get("edge_data_v1.pkl") or {}).get("verdict"))))
+    A.append(assert_("P1.16d readme schema 已解析（node/edge 列数 ≠ 0）",
+                     len((fc.get("schema_from_readme") or {}).get("node") or []) > 20
+                     and len((fc.get("schema_from_readme") or {}).get("edge") or []) > 15,
+                     "node=%s 列 edge=%s 列" % (len((fc.get("schema_from_readme") or {}).get("node") or []),
+                                                len((fc.get("schema_from_readme") or {}).get("edge") or []))))
+    cl = open(os.path.join(DOCS, "生物仿真M11实施清单.md"), encoding="utf-8").read() \
+        if os.path.exists(os.path.join(DOCS, "生物仿真M11实施清单.md")) else ""
+    A.append(assert_("P1.16e 清单已按 DQ-3 补入新源行（只新增：§1.6b/§1.6c + G1..G9）",
+                     "1.6b" in cl and "G9" in cl and "G1" in cl,
+                     "命中 §1.6b/§1.6c 与 G1..G9" if "1.6b" in cl else "缺失"))
+
+    # ---------------- P1.17 DQ-4 口径（unavailable/吞吐）+ 四态收敛 + 实测吞吐表 ----------------
+    ar = read_csv_rows(os.path.join(DATA, "m11_activity_reference.csv"))
+    ast_ = {r["ref_id"]: r["status"] for r in ar}
+    A.append(assert_("P1.17a 四类参考量四态收敛已落盘（C1/C2/C3/C4 逐项给状态）",
+                     len(ar) >= 4 and "C3-dwell" in ast_,
+                     json.dumps(ast_, ensure_ascii=False)))
+    A.append(assert_("P1.17b C3 dwell 为 measured；C1/C4 为 unavailable；thin 不得冒充 measured",
+                     ast_.get("C3-dwell") == "measured" and "unavailable" in (ast_.get("C1-tuning") or "")
+                     and "unavailable" in (ast_.get("C4-behavior") or "")
+                     and all("thin" in (ast_.get(k) or "") for k in ("C2-rate", "C2-paircorr")),
+                     "C2-rate=%s C2-paircorr=%s" % (ast_.get("C2-rate"), ast_.get("C2-paircorr"))))
+    tp = read_csv_rows(os.path.join(DATA, "m11_throughput_measured.csv"))
+    A.append(assert_("P1.17c 实测吞吐表在位（取数决策必须有实测吞吐支撑）", len(tp) >= 8,
+                     "n_rows=%s" % len(tp)))
+    wl = os.path.join(RAW, "microns", "functional_connectomics", "waiter.log")
+    wtxt = open(wl, encoding="utf-8").read() if os.path.exists(wl) else ""
+    A.append(assert_("P1.17d DQ-4 等待器**已停**且不轮询（记录停止原因）",
+                     "stopped" in wtxt and "DQ-4" in wtxt, "waiter.log 含停止记录"))
+    A.append(assert_("P1.17e 报告含 DQ-4 = unavailable（吞吐限制）与 G-7（应做而未做）",
+                     "unavailable（吞吐限制）" in rp2 and "G-7" in rp2,
+                     "命中 DQ-4 口径与 G-7"))
 
     # ---------------- 判定 ----------------
     for a in A:

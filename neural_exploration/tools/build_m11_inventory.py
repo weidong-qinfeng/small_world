@@ -178,7 +178,8 @@ def main():
     add("allen_bo_ecephys", os.path.join(RAW, "allen", "bo_ecephys", "probes.csv"),
         "https://allen-brain-observatory.s3.amazonaws.com/visual-coding-neuropixels/ecephys-cache/probes.csv",
         utcnow(), "measured(HTTP 200, 完整)", "**采样率读回**：spike 30 kHz / LFP 2.5 kHz（RF-M11-A 回退源）")
-    for extra in ("m11_dwell_reference.csv", "m11_dwell_reference.json",
+    for extra in ("m11_dwell_reference_allen2p.json", "m11_dwell_reference_allen2p.csv", "m11_activity_reference.csv", "m11_activity_reference.json", "m11_throughput_measured.csv",
+                  "m11_functional_connectomics_counts.json", "m11_dwell_reference.csv", "m11_dwell_reference.json",
                   "m11_s_gate_criteria_prereg.csv", "m11_b1_managed_jobs.json",
                   "m11_grid_alignment.json", "m11_allen_activity_fallback.json", "m11_allen_activity_objects.csv",
                   "m11_decode_proof.json",
@@ -426,6 +427,13 @@ def main():
         dwell_band=dict(
             evidence="measured(Allen 2p events) + 冻结管线复用",
             **(load_json(os.path.join(DATA, "m11_dwell_reference.json")) or {}).get("band", {})),
+        functional_connectomics_release_dq4=dict(
+            evidence="measured(readme schema) / unavailable（pkl 下载未完成）",
+            **(load_json(os.path.join(DATA, "m11_functional_connectomics_counts.json")) or {}).get("files", {})),
+        activity_reference=dict(
+            evidence="四态收敛（measured/thin/unavailable）",
+            rows=(load_json(os.path.join(DATA, "m11_activity_reference.json")) or {}).get("rows", [])),
+        throughput_measured_n=len(read_csv_rows(os.path.join(DATA, "m11_throughput_measured.csv"))),
         literature=dict(n_rows=len(lit_rows), by_status=lit_v,
                         evidence="literature=Europe PMC 题录实测命中；未命中=literature_unverified"),
         reachability=dict(n_sources=len(reach_rows), by_verdict=vc,

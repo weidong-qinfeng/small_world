@@ -1,6 +1,6 @@
 {
  "generated_by": "tools/build_m11_inventory.py",
- "generated_at": "2026-10-11T17:31:46Z",
+ "generated_at": "2026-10-11T18:59:00Z",
  "units": "bytes; evidence ∈ {measured, derived, literature, unavailable}",
  "microns_structure": {
   "evidence": "measured(元数据) + derived(chunk 计数); shard 清单 = measured(有界)",
@@ -739,70 +739,1507 @@
  },
  "dwell_band": {
   "evidence": "measured(Allen 2p events) + 冻结管线复用",
-  "n_experiments": 2,
-  "experiments": [
-   "577885923_events.npz",
-   "593887846_events.npz"
-  ],
-  "frame_rate_hz_primary": 30.9,
-  "frame_rate_source": "**NEEDS_VERIFY**（NWB `imaging_rate` 因网络未读回；文件帧数÷30.9 Hz = 61.4 min 属合理 session 长度，÷11 Hz = 2.87 h 不合理 ⇒ 采 30.9）",
-  "n_bins_0914s": 4070.5,
-  "occupancy_low_median": 0.6918679468934041,
-  "transition_rate_hz_median": 0.37655085876344535,
-  "low_dwell_median_s": 2.7414785707758385,
-  "low_dwell_p90_s": 9.732248926254233,
-  "low_dwell_p90_over_median": 3.2250000000000014,
-  "low_dwell_ks_p_max": null,
-  "ar1_tau_s_median": 6.456401129449646,
-  "ar1_tau_s_range": [
-   5.789362437127061,
-   7.123439821772231
-  ],
-  "ar1_phi_smoothed_median": 0.8667923470972487,
-  "ar1_phi_unsmoothed_median": 0.15344699139616796,
-  "spread_cross_experiment_low_dwell_median_s": 2.0,
-  "spread_cross_experiment_transition_rate_hz": 2.089,
-  "spread_cross_experiment_ar1_tau_s": 1.23,
-  "spread_cross_experiment_occupancy_low": 1.492,
-  "smoothed_vs_unsmoothed_phi_gap": 0.713345,
-  "shape_criterion": {
-   "n_evaluable": 2,
-   "n_runs_note": "**转换次数门**：low 态完整段 <5 时 KS 不可算 ⇒ 该实验的形状判据标 unavailable",
-   "per_experiment_status": {
-    "577885923_events.npz": "pass",
-    "593887846_events.npz": "pass"
-   },
-   "heavy_tail_all": true,
-   "ks_reject_exp_all": true,
-   "per_experiment": {
-    "577885923_events.npz": {
-     "p90_over_median": 2.25,
-     "ks_p": 1.58329737699236e-97
+  "source": "MICrONS functional_series/session4_scan7_field4（**同源**：与 EM/seg 同一动物同一制备）",
+  "coverage": "x∈[0,200)px × y∈[0,200)px（500×500 µm 子块）；t∈[0,2000) 帧 = **317.46 s**；该 field 全长 40,000 帧/105.8 min，本轮只用已落盘的前 2,000 帧",
+  "frame_rate_hz": 6.3000063000063,
+  "frame_interval_s": 0.15873,
+  "n_frames": 2000,
+  "n_chunks": 200,
+  "sentinel": {
+   "rule": "int16 < 0（⇔ uint16 > 65000；实测 min=−138 故两者等价）",
+   "n_sentinel": 10383,
+   "n_elements_total": 80000000,
+   "frac": 0.00012979,
+   "note": "**统计前置缺失并登记**（未处理 ≠ 无缺失）"
+  },
+  "primary": {
+   "label": "session4_scan7_field4 x[0,200)y[0,200) 全 2000 帧（哨兵掩膜）",
+   "n_frames": 333,
+   "pipeline": "0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)（与成像侧**同一管线**）",
+   "occupancy_low": 0.6306306306306306,
+   "occupancy_high": 0.36936936936936937,
+   "transition_rate_hz": 0.04600660660660661,
+   "low_dwell_median_s_module": 12.336653568491272,
+   "low_dwell_median_s_physical": 12.8571,
+   "low_dwell_p90_s_module": 71.27844284017179,
+   "low_dwell_p90_s_physical": 74.2856,
+   "low_dwell_p90_over_median": 5.777777777777778,
+   "low_dwell_n": 6,
+   "low_dwell_ks_p": 0.5575692302520915,
+   "q_low_dwell_median_s_module": 7.310609522068902,
+   "q_transition_rate_hz": 0.141306006006006,
+   "h_vs_q_dwell_ratio": 1.6875,
+   "ar1_phi_smoothed": 0.9711585391409305,
+   "ar1_phi_unsmoothed": 0.8875079084527993,
+   "ar1_tau_s_module": 31.22532098231812,
+   "ar1_tau_s_physical": 32.5427,
+   "ar1_tau_bias_corrected_s_physical": null,
+   "ar1_status": "measured",
+   "ljung_box_min_p": null,
+   "sample_size_gate": {
+    "n_frames": 333,
+    "valid": true,
+    "shape_ok": true,
+    "bic_ok": false,
+    "thresholds": {
+     "valid": 65,
+     "shape": 130,
+     "bic": 500
     },
-    "593887846_events.npz": {
-     "p90_over_median": 4.200000000000003,
-     "ks_p": 1.1171259364295439e-11
+    "note": "n_frames<65 ⇒ invalid（最短协议 T≥60 s）；形状判据需 ≥130（T≥120 s）；BIC 需 ≥500"
+   },
+   "best_K_by_BIC": "unavailable",
+   "BIC_note": "n_frames=333 < 500 ⇒ **K 选择结论标 unavailable**（BIC 在小样本上无意义，RF-18(4)）",
+   "internal_consistency": {
+    "applicable": true,
+    "predicted_dwell_s": 10.868004334147074,
+    "observed_dwell_s": 12.336653568491272,
+    "rel_diff": 0.119047619047619,
+    "pass_": true,
+    "note": "2 状态稳态近似；若状态数>2 或转移矩阵强非对称则本条不适用（须显式声明）"
+   },
+   "dwell_resolution_floor": {
+    "frame_s": 0.9138261902586128,
+    "q_median_s": null,
+    "h_median_s": 12.336653568491272,
+    "at_floor": true,
+    "note": "dwell 中位 ≤1.5 帧 ⇒ **触分辨率地板、无分辨力**：只能作为'未产生慢状态'的**旁证**，**不得**作为'×N 倍差距'引用（时间尺度应以 AR(1) τ 与转换率为准）"
+   },
+   "raw": {
+    "label": "session4_scan7_field4 x[0,200)y[0,200) 全 2000 帧（哨兵掩膜）",
+    "n_frames": 333,
+    "frame_s": 0.9138261902586128,
+    "n_neurons": 1,
+    "pop_rate_neuron_hz": 13681.960657704403,
+    "pop_rate_population_hz": 13681.960657704403,
+    "pop_rate_hz": 13681.960657704403,
+    "pop_rate_hz_total_method": 13681.960657704403,
+    "pop_rate_estimator_rel_diff": 0.0,
+    "pop_rate_field_assertion_rel_diff": 0.0,
+    "total_spikes": 4163477,
+    "fano": 370.54682538847203,
+    "H_K2": {
+     "occupancy": [
+      0.6306306306306306,
+      0.36936936936936937
+     ],
+     "transition_rate_hz": 0.04600660660660661,
+     "dwell": {
+      "low": {
+       "n": 6,
+       "median_s": 12.336653568491272,
+       "mean_s": 30.30856864357732,
+       "p90_s": 71.27844284017179,
+       "p90_over_median": 5.777777777777778,
+       "ks_vs_exp": {
+        "n": 6,
+        "D": 0.30285457461370735,
+        "p": 0.5575692302520915,
+        "pass_": false
+       }
+      },
+      "high": {
+       "n": 7,
+       "median_s": 15.535045234396417,
+       "mean_s": 16.057231628829907,
+       "p90_s": 27.23202046970666,
+       "p90_over_median": 1.7529411764705882,
+       "ks_vs_exp": {
+        "n": 7,
+        "D": 0.20359089680183795,
+        "p": 0.8995708973213734,
+        "pass_": false
+       }
+      }
+     },
+     "bic": 682.3710110527466,
+     "loglik": -323.7610780564319
+    },
+    "BIC_by_K": {
+     "1": {
+      "bic": 956.6293480942729,
+      "loglik": -472.506531557156,
+      "n_par": 2
+     },
+     "2": {
+      "bic": 682.3710110527466,
+      "loglik": -323.7610780564319,
+      "n_par": 6
+     },
+     "3": {
+      "bic": 653.622786204291,
+      "loglik": -291.96253816226283,
+      "n_par": 12
+     },
+     "4": {
+      "bic": 614.7232812765602,
+      "loglik": -249.28021573847568,
+      "n_par": 20
+     }
+    },
+    "sample_size_gate": {
+     "n_frames": 333,
+     "valid": true,
+     "shape_ok": true,
+     "bic_ok": false,
+     "thresholds": {
+      "valid": 65,
+      "shape": 130,
+      "bic": 500
+     },
+     "note": "n_frames<65 ⇒ invalid（最短协议 T≥60 s）；形状判据需 ≥130（T≥120 s）；BIC 需 ≥500"
+    },
+    "best_K_by_BIC": "unavailable",
+    "BIC_note": "n_frames=333 < 500 ⇒ **K 选择结论标 unavailable**（BIC 在小样本上无意义，RF-18(4)）",
+    "internal_consistency": {
+     "applicable": true,
+     "predicted_dwell_s": 10.868004334147074,
+     "observed_dwell_s": 12.336653568491272,
+     "rel_diff": 0.119047619047619,
+     "pass_": true,
+     "note": "2 状态稳态近似；若状态数>2 或转移矩阵强非对称则本条不适用（须显式声明）"
+    },
+    "AR1": {
+     "status": "measured",
+     "phi": 0.9711585391409303,
+     "tau_s": 31.22532098231812,
+     "holdout_ll_per_frame": -0.01701084516744265,
+     "ljung_box": {
+      "Q": 424.45793341287623,
+      "df": 9,
+      "p": 0.0,
+      "lags": 10
+     },
+     "rho1": 0.7885661922207335,
+     "rho1_ci": 0.1082228955533496,
+     "resid_whiten": false,
+     "n_frames": 333,
+     "pipeline": "0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)（平滑后 n=329 帧；未平滑 n=333 帧）",
+     "phi_smoothed": 0.9711585391409305,
+     "phi_unsmoothed": 0.8875079084527993,
+     "reference_tau_imaging_s": 37.18,
+     "tau_window_s": [
+      9.4,
+      146.3
+     ],
+     "reference_source": "B4 追加任务 G：data/m10_imaging_slow_tau_reference.json（φ=0.9757213, 全记录）",
+     "tau_ratio_vs_imaging": 0.8398418768778407,
+     "in_tau_window": true,
+     "honest_limit": "B4：Ljung-Box 在平滑/未平滑/AR(4) 三口径下**全部拒绝白噪**（p≈0）⇒ '单一慢时间尺度'仅为一阶近似，τ 只作**粗粒度**指标",
+     "min_frames_for_tau": 300,
+     "tau_criterion_status": "pass"
+    },
+    "dwell_resolution_floor": {
+     "frame_s": 0.9138261902586128,
+     "q_median_s": null,
+     "h_median_s": 12.336653568491272,
+     "at_floor": true,
+     "note": "dwell 中位 ≤1.5 帧 ⇒ **触分辨率地板、无分辨力**：只能作为'未产生慢状态'的**旁证**，**不得**作为'×N 倍差距'引用（时间尺度应以 AR(1) τ 与转换率为准）"
+    },
+    "pipeline": "0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)（与成像侧**同一管线**）",
+    "Q_method": {
+     "occupancy": [
+      0.5015015015015015,
+      0.4984984984984985
+     ],
+     "transition_rate_hz": 0.141306006006006,
+     "dwell": {
+      "low": {
+       "n": 21,
+       "median_s": 7.310609522068902,
+       "mean_s": 7.223578456329986,
+       "p90_s": 13.707392853879192,
+       "p90_over_median": 1.875,
+       "ks_vs_exp": {
+        "n": 21,
+        "D": 0.1603357714740069,
+        "p": 0.613985513801739,
+        "pass_": false
+       }
+      },
+      "high": {
+       "n": 21,
+       "median_s": 2.7414785707758385,
+       "mean_s": 7.18006292346053,
+       "p90_s": 19.190349995430868,
+       "p90_over_median": 6.999999999999999,
+       "ks_vs_exp": {
+        "n": 21,
+        "D": 0.20642867830618128,
+        "p": 0.2969619002434313,
+        "pass_": false
+       }
+      }
+     }
     }
    }
   },
+  "robustness": [
+   {
+    "label": "mask_off",
+    "n_frames": 333,
+    "pipeline": "0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)（与成像侧**同一管线**）",
+    "occupancy_low": 0.6306306306306306,
+    "occupancy_high": 0.36936936936936937,
+    "transition_rate_hz": 0.04600660660660661,
+    "low_dwell_median_s_module": 12.336653568491272,
+    "low_dwell_median_s_physical": 12.8571,
+    "low_dwell_p90_s_module": 71.27844284017179,
+    "low_dwell_p90_s_physical": 74.2856,
+    "low_dwell_p90_over_median": 5.777777777777778,
+    "low_dwell_n": 6,
+    "low_dwell_ks_p": 0.5575692302520915,
+    "q_low_dwell_median_s_module": 7.310609522068902,
+    "q_transition_rate_hz": 0.141306006006006,
+    "h_vs_q_dwell_ratio": 1.6875,
+    "ar1_phi_smoothed": 0.971164005474068,
+    "ar1_phi_unsmoothed": 0.8875082579415406,
+    "ar1_tau_s_module": 31.231327717675093,
+    "ar1_tau_s_physical": 32.549,
+    "ar1_tau_bias_corrected_s_physical": null,
+    "ar1_status": "measured",
+    "ljung_box_min_p": null,
+    "sample_size_gate": {
+     "n_frames": 333,
+     "valid": true,
+     "shape_ok": true,
+     "bic_ok": false,
+     "thresholds": {
+      "valid": 65,
+      "shape": 130,
+      "bic": 500
+     },
+     "note": "n_frames<65 ⇒ invalid（最短协议 T≥60 s）；形状判据需 ≥130（T≥120 s）；BIC 需 ≥500"
+    },
+    "best_K_by_BIC": "unavailable",
+    "BIC_note": "n_frames=333 < 500 ⇒ **K 选择结论标 unavailable**（BIC 在小样本上无意义，RF-18(4)）",
+    "internal_consistency": {
+     "applicable": true,
+     "predicted_dwell_s": 10.868004334147074,
+     "observed_dwell_s": 12.336653568491272,
+     "rel_diff": 0.119047619047619,
+     "pass_": true,
+     "note": "2 状态稳态近似；若状态数>2 或转移矩阵强非对称则本条不适用（须显式声明）"
+    },
+    "dwell_resolution_floor": {
+     "frame_s": 0.9138261902586128,
+     "q_median_s": null,
+     "h_median_s": 12.336653568491272,
+     "at_floor": true,
+     "note": "dwell 中位 ≤1.5 帧 ⇒ **触分辨率地板、无分辨力**：只能作为'未产生慢状态'的**旁证**，**不得**作为'×N 倍差距'引用（时间尺度应以 AR(1) τ 与转换率为准）"
+    },
+    "raw": {
+     "label": "mask_off",
+     "n_frames": 333,
+     "frame_s": 0.9138261902586128,
+     "n_neurons": 1,
+     "pop_rate_neuron_hz": 13680.414265662073,
+     "pop_rate_population_hz": 13680.414265662073,
+     "pop_rate_hz": 13680.414265662073,
+     "pop_rate_hz_total_method": 13680.414265662073,
+     "pop_rate_estimator_rel_diff": 0.0,
+     "pop_rate_field_assertion_rel_diff": 0.0,
+     "total_spikes": 4163006,
+     "fano": 370.9070672286497,
+     "H_K2": {
+      "occupancy": [
+       0.6306306306306306,
+       0.36936936936936937
+      ],
+      "transition_rate_hz": 0.04600660660660661,
+      "dwell": {
+       "low": {
+        "n": 6,
+        "median_s": 12.336653568491272,
+        "mean_s": 30.30856864357732,
+        "p90_s": 71.27844284017179,
+        "p90_over_median": 5.777777777777778,
+        "ks_vs_exp": {
+         "n": 6,
+         "D": 0.30285457461370735,
+         "p": 0.5575692302520915,
+         "pass_": false
+        }
+       },
+       "high": {
+        "n": 7,
+        "median_s": 15.535045234396417,
+        "mean_s": 16.057231628829907,
+        "p90_s": 27.23202046970666,
+        "p90_over_median": 1.7529411764705882,
+        "ks_vs_exp": {
+         "n": 7,
+         "D": 0.20359089680183795,
+         "p": 0.8995708973213734,
+         "pass_": false
+        }
+       }
+      },
+      "bic": 682.4932617235983,
+      "loglik": -323.8222033918578
+     },
+     "BIC_by_K": {
+      "1": {
+       "bic": 956.6293480942728,
+       "loglik": -472.50653155715594,
+       "n_par": 2
+      },
+      "2": {
+       "bic": 682.4932617235983,
+       "loglik": -323.8222033918578,
+       "n_par": 6
+      },
+      "3": {
+       "bic": 653.8075757452926,
+       "loglik": -292.0549329327637,
+       "n_par": 12
+      },
+      "4": {
+       "bic": 614.8385776978511,
+       "loglik": -249.3378639491211,
+       "n_par": 20
+      }
+     },
+     "sample_size_gate": {
+      "n_frames": 333,
+      "valid": true,
+      "shape_ok": true,
+      "bic_ok": false,
+      "thresholds": {
+       "valid": 65,
+       "shape": 130,
+       "bic": 500
+      },
+      "note": "n_frames<65 ⇒ invalid（最短协议 T≥60 s）；形状判据需 ≥130（T≥120 s）；BIC 需 ≥500"
+     },
+     "best_K_by_BIC": "unavailable",
+     "BIC_note": "n_frames=333 < 500 ⇒ **K 选择结论标 unavailable**（BIC 在小样本上无意义，RF-18(4)）",
+     "internal_consistency": {
+      "applicable": true,
+      "predicted_dwell_s": 10.868004334147074,
+      "observed_dwell_s": 12.336653568491272,
+      "rel_diff": 0.119047619047619,
+      "pass_": true,
+      "note": "2 状态稳态近似；若状态数>2 或转移矩阵强非对称则本条不适用（须显式声明）"
+     },
+     "AR1": {
+      "status": "measured",
+      "phi": 0.9711640054740679,
+      "tau_s": 31.231327717675093,
+      "holdout_ll_per_frame": -0.016895527006365894,
+      "ljung_box": {
+       "Q": 424.443859978481,
+       "df": 9,
+       "p": 0.0,
+       "lags": 10
+      },
+      "rho1": 0.7885523202253693,
+      "rho1_ci": 0.1082228955533496,
+      "resid_whiten": false,
+      "n_frames": 333,
+      "pipeline": "0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)（平滑后 n=329 帧；未平滑 n=333 帧）",
+      "phi_smoothed": 0.971164005474068,
+      "phi_unsmoothed": 0.8875082579415406,
+      "reference_tau_imaging_s": 37.18,
+      "tau_window_s": [
+       9.4,
+       146.3
+      ],
+      "reference_source": "B4 追加任务 G：data/m10_imaging_slow_tau_reference.json（φ=0.9757213, 全记录）",
+      "tau_ratio_vs_imaging": 0.8400034351176733,
+      "in_tau_window": true,
+      "honest_limit": "B4：Ljung-Box 在平滑/未平滑/AR(4) 三口径下**全部拒绝白噪**（p≈0）⇒ '单一慢时间尺度'仅为一阶近似，τ 只作**粗粒度**指标",
+      "min_frames_for_tau": 300,
+      "tau_criterion_status": "pass"
+     },
+     "dwell_resolution_floor": {
+      "frame_s": 0.9138261902586128,
+      "q_median_s": null,
+      "h_median_s": 12.336653568491272,
+      "at_floor": true,
+      "note": "dwell 中位 ≤1.5 帧 ⇒ **触分辨率地板、无分辨力**：只能作为'未产生慢状态'的**旁证**，**不得**作为'×N 倍差距'引用（时间尺度应以 AR(1) τ 与转换率为准）"
+     },
+     "pipeline": "0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)（与成像侧**同一管线**）",
+     "Q_method": {
+      "occupancy": [
+       0.5015015015015015,
+       0.4984984984984985
+      ],
+      "transition_rate_hz": 0.141306006006006,
+      "dwell": {
+       "low": {
+        "n": 21,
+        "median_s": 7.310609522068902,
+        "mean_s": 7.223578456329986,
+        "p90_s": 13.707392853879192,
+        "p90_over_median": 1.875,
+        "ks_vs_exp": {
+         "n": 21,
+         "D": 0.1603357714740069,
+         "p": 0.613985513801739,
+         "pass_": false
+        }
+       },
+       "high": {
+        "n": 21,
+        "median_s": 2.7414785707758385,
+        "mean_s": 7.18006292346053,
+        "p90_s": 19.190349995430868,
+        "p90_over_median": 6.999999999999999,
+        "ks_vs_exp": {
+         "n": 21,
+         "D": 0.20642867830618128,
+         "p": 0.2969619002434313,
+         "pass_": false
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "label": "t_first_half",
+    "n_frames": 166,
+    "pipeline": "0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)（与成像侧**同一管线**）",
+    "occupancy_low": 0.6566265060240963,
+    "occupancy_high": 0.3433734939759036,
+    "transition_rate_hz": 0.05273734939759036,
+    "low_dwell_median_s_module": 13.707392853879192,
+    "low_dwell_median_s_physical": 14.2857,
+    "low_dwell_p90_s_module": 53.18468427305126,
+    "low_dwell_p90_s_physical": 55.4285,
+    "low_dwell_p90_over_median": 3.88,
+    "low_dwell_n": 3,
+    "low_dwell_ks_p": null,
+    "q_low_dwell_median_s_module": 3.655304761034451,
+    "q_transition_rate_hz": 0.20435722891566263,
+    "h_vs_q_dwell_ratio": 3.75,
+    "ar1_phi_smoothed": 0.9711073093962159,
+    "ar1_phi_unsmoothed": 0.8955448871957735,
+    "ar1_tau_s_module": 31.169137118370983,
+    "ar1_tau_s_physical": 32.4841,
+    "ar1_tau_bias_corrected_s_physical": null,
+    "ar1_status": "measured",
+    "ljung_box_min_p": null,
+    "sample_size_gate": {
+     "n_frames": 166,
+     "valid": true,
+     "shape_ok": true,
+     "bic_ok": false,
+     "thresholds": {
+      "valid": 65,
+      "shape": 130,
+      "bic": 500
+     },
+     "note": "n_frames<65 ⇒ invalid（最短协议 T≥60 s）；形状判据需 ≥130（T≥120 s）；BIC 需 ≥500"
+    },
+    "best_K_by_BIC": "unavailable",
+    "BIC_note": "n_frames=166 < 500 ⇒ **K 选择结论标 unavailable**（BIC 在小样本上无意义，RF-18(4)）",
+    "internal_consistency": {
+     "applicable": true,
+     "predicted_dwell_s": 9.480946723933108,
+     "observed_dwell_s": 13.707392853879192,
+     "rel_diff": 0.3083333333333333,
+     "pass_": true,
+     "note": "2 状态稳态近似；若状态数>2 或转移矩阵强非对称则本条不适用（须显式声明）"
+    },
+    "dwell_resolution_floor": {
+     "frame_s": 0.9138261902586128,
+     "q_median_s": null,
+     "h_median_s": 13.707392853879192,
+     "at_floor": true,
+     "note": "dwell 中位 ≤1.5 帧 ⇒ **触分辨率地板、无分辨力**：只能作为'未产生慢状态'的**旁证**，**不得**作为'×N 倍差距'引用（时间尺度应以 AR(1) τ 与转换率为准）"
+    },
+    "raw": {
+     "label": "t_first_half",
+     "n_frames": 166,
+     "frame_s": 0.9138261902586128,
+     "n_neurons": 1,
+     "pop_rate_neuron_hz": 13668.17726053264,
+     "pop_rate_population_hz": 13668.17726053264,
+     "pop_rate_hz": 13668.17726053264,
+     "pop_rate_hz_total_method": 13668.177260532639,
+     "pop_rate_estimator_rel_diff": 1.3308207589597587e-16,
+     "pop_rate_field_assertion_rel_diff": 0.0,
+     "total_spikes": 2073396,
+     "fano": 414.6842242637454,
+     "H_K2": {
+      "occupancy": [
+       0.6566265060240963,
+       0.3433734939759036
+      ],
+      "transition_rate_hz": 0.05273734939759036,
+      "dwell": {
+       "low": {
+        "n": 3,
+        "median_s": 13.707392853879192,
+        "mean_s": 27.414785707758384,
+        "p90_s": 53.18468427305126,
+        "p90_over_median": 3.88,
+        "ks_vs_exp": {
+         "n": 3,
+         "D": null,
+         "p": null,
+         "pass_": false
+        }
+       },
+       "high": {
+        "n": 4,
+        "median_s": 10.052088092844741,
+        "mean_s": 13.022023211185232,
+        "p90_s": 24.49054189893082,
+        "p90_over_median": 2.436363636363636,
+        "ks_vs_exp": {
+         "n": 4,
+         "D": null,
+         "p": null,
+         "pass_": false
+        }
+       }
+      },
+      "bic": 357.1108543305647,
+      "loglik": -163.2194638002127
+     },
+     "BIC_by_K": {
+      "1": {
+       "bic": 481.3115686006641,
+       "loglik": -235.5437965119755,
+       "n_par": 2
+      },
+      "2": {
+       "bic": 357.1108543305647,
+       "loglik": -163.2194638002127,
+       "n_par": 6
+      },
+      "3": {
+       "bic": 346.3133553269556,
+       "loglik": -142.48475093333855,
+       "n_par": 12
+      },
+      "4": {
+       "bic": 329.37844640932224,
+       "loglik": -113.56934532109568,
+       "n_par": 20
+      }
+     },
+     "sample_size_gate": {
+      "n_frames": 166,
+      "valid": true,
+      "shape_ok": true,
+      "bic_ok": false,
+      "thresholds": {
+       "valid": 65,
+       "shape": 130,
+       "bic": 500
+      },
+      "note": "n_frames<65 ⇒ invalid（最短协议 T≥60 s）；形状判据需 ≥130（T≥120 s）；BIC 需 ≥500"
+     },
+     "best_K_by_BIC": "unavailable",
+     "BIC_note": "n_frames=166 < 500 ⇒ **K 选择结论标 unavailable**（BIC 在小样本上无意义，RF-18(4)）",
+     "internal_consistency": {
+      "applicable": true,
+      "predicted_dwell_s": 9.480946723933108,
+      "observed_dwell_s": 13.707392853879192,
+      "rel_diff": 0.3083333333333333,
+      "pass_": true,
+      "note": "2 状态稳态近似；若状态数>2 或转移矩阵强非对称则本条不适用（须显式声明）"
+     },
+     "AR1": {
+      "status": "measured",
+      "phi": 0.9711073093962159,
+      "tau_s": 31.169137118370983,
+      "holdout_ll_per_frame": -0.325883199314525,
+      "ljung_box": {
+       "Q": 205.943907100395,
+       "df": 9,
+       "p": 0.0,
+       "lags": 10
+      },
+      "rho1": 0.8051055276250987,
+      "rho1_ci": 0.15446963962286372,
+      "resid_whiten": false,
+      "n_frames": 166,
+      "pipeline": "0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)（平滑后 n=162 帧；未平滑 n=166 帧）",
+      "phi_smoothed": 0.9711073093962159,
+      "phi_unsmoothed": 0.8955448871957735,
+      "reference_tau_imaging_s": 37.18,
+      "tau_window_s": [
+       9.4,
+       146.3
+      ],
+      "reference_source": "B4 追加任务 G：data/m10_imaging_slow_tau_reference.json（φ=0.9757213, 全记录）",
+      "tau_ratio_vs_imaging": 0.8383307455183159,
+      "in_tau_window": true,
+      "honest_limit": "B4：Ljung-Box 在平滑/未平滑/AR(4) 三口径下**全部拒绝白噪**（p≈0）⇒ '单一慢时间尺度'仅为一阶近似，τ 只作**粗粒度**指标",
+      "min_frames_for_tau": 300,
+      "tau_criterion_status": "unavailable（n_frames<300 ⇒ 短记录禁用 τ 判据）"
+     },
+     "dwell_resolution_floor": {
+      "frame_s": 0.9138261902586128,
+      "q_median_s": null,
+      "h_median_s": 13.707392853879192,
+      "at_floor": true,
+      "note": "dwell 中位 ≤1.5 帧 ⇒ **触分辨率地板、无分辨力**：只能作为'未产生慢状态'的**旁证**，**不得**作为'×N 倍差距'引用（时间尺度应以 AR(1) τ 与转换率为准）"
+     },
+     "pipeline": "0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)（与成像侧**同一管线**）",
+     "Q_method": {
+      "occupancy": [
+       0.5,
+       0.5
+      ],
+      "transition_rate_hz": 0.20435722891566263,
+      "dwell": {
+       "low": {
+        "n": 15,
+        "median_s": 3.655304761034451,
+        "mean_s": 4.508209205275824,
+        "p90_s": 8.224435712327516,
+        "p90_over_median": 2.25,
+        "ks_vs_exp": {
+         "n": 15,
+         "D": 0.2024219576634848,
+         "p": 0.5215148689327184,
+         "pass_": false
+        }
+       },
+       "high": {
+        "n": 15,
+        "median_s": 2.7414785707758385,
+        "mean_s": 4.99558317341375,
+        "p90_s": 12.793566663620576,
+        "p90_over_median": 4.666666666666665,
+        "ks_vs_exp": {
+         "n": 15,
+         "D": 0.16717090777825483,
+         "p": 0.7567798055312654,
+         "pass_": false
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "label": "t_second_half",
+    "n_frames": 166,
+    "pipeline": "0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)（与成像侧**同一管线**）",
+    "occupancy_low": 0.5843373493975904,
+    "occupancy_high": 0.41566265060240964,
+    "transition_rate_hz": 0.02636867469879518,
+    "low_dwell_median_s_module": 44.32057022754272,
+    "low_dwell_median_s_physical": 46.1904,
+    "low_dwell_p90_s_module": 72.46641688750799,
+    "low_dwell_p90_s_physical": 75.5237,
+    "low_dwell_p90_over_median": 1.6350515463917525,
+    "low_dwell_n": 2,
+    "low_dwell_ks_p": null,
+    "q_low_dwell_median_s_module": 8.681348807456821,
+    "q_transition_rate_hz": 0.11206686746987951,
+    "h_vs_q_dwell_ratio": 5.105263157894736,
+    "ar1_phi_smoothed": 0.9764428060730928,
+    "ar1_phi_unsmoothed": 0.8856750479274345,
+    "ar1_tau_s_module": 38.333081493348494,
+    "ar1_tau_s_physical": 39.9503,
+    "ar1_tau_bias_corrected_s_physical": null,
+    "ar1_status": "measured",
+    "ljung_box_min_p": null,
+    "sample_size_gate": {
+     "n_frames": 166,
+     "valid": true,
+     "shape_ok": true,
+     "bic_ok": false,
+     "thresholds": {
+      "valid": 65,
+      "shape": 130,
+      "bic": 500
+     },
+     "note": "n_frames<65 ⇒ invalid（最短协议 T≥60 s）；形状判据需 ≥130（T≥120 s）；BIC 需 ≥500"
+    },
+    "best_K_by_BIC": "unavailable",
+    "BIC_note": "n_frames=166 < 500 ⇒ **K 选择结论标 unavailable**（BIC 在小样本上无意义，RF-18(4)）",
+    "internal_consistency": {
+     "applicable": true,
+     "predicted_dwell_s": 18.961893447866217,
+     "observed_dwell_s": 44.32057022754272,
+     "rel_diff": 0.5721649484536082,
+     "pass_": true,
+     "note": "2 状态稳态近似；若状态数>2 或转移矩阵强非对称则本条不适用（须显式声明）"
+    },
+    "dwell_resolution_floor": {
+     "frame_s": 0.9138261902586128,
+     "q_median_s": null,
+     "h_median_s": 44.32057022754272,
+     "at_floor": true,
+     "note": "dwell 中位 ≤1.5 帧 ⇒ **触分辨率地板、无分辨力**：只能作为'未产生慢状态'的**旁证**，**不得**作为'×N 倍差距'引用（时间尺度应以 AR(1) τ 与转换率为准）"
+    },
+    "raw": {
+     "label": "t_second_half",
+     "n_frames": 166,
+     "frame_s": 0.9138261902586128,
+     "n_neurons": 1,
+     "pop_rate_neuron_hz": 13709.643830116938,
+     "pop_rate_population_hz": 13709.643830116938,
+     "pop_rate_hz": 13709.643830116938,
+     "pop_rate_hz_total_method": 13709.643830116936,
+     "pop_rate_estimator_rel_diff": 1.3267955215218317e-16,
+     "pop_rate_field_assertion_rel_diff": 0.0,
+     "total_spikes": 2079686,
+     "fano": 324.4232652728477,
+     "H_K2": {
+      "occupancy": [
+       0.5843373493975904,
+       0.41566265060240964
+      ],
+      "transition_rate_hz": 0.02636867469879518,
+      "dwell": {
+       "low": {
+        "n": 2,
+        "median_s": 44.32057022754272,
+        "mean_s": 44.32057022754272,
+        "p90_s": 72.46641688750799,
+        "p90_over_median": 1.6350515463917525,
+        "ks_vs_exp": {
+         "n": 2,
+         "D": null,
+         "p": null,
+         "pass_": false
+        }
+       },
+       "high": {
+        "n": 1,
+        "median_s": 26.50095951749977,
+        "mean_s": 26.50095951749977,
+        "p90_s": 26.50095951749977,
+        "p90_over_median": 1.0,
+        "ks_vs_exp": {
+         "n": 1,
+         "D": null,
+         "p": null,
+         "pass_": false
+        }
+       }
+      },
+      "bic": 336.0966192564449,
+      "loglik": -152.71234626315282
+     },
+     "BIC_by_K": {
+      "1": {
+       "bic": 481.3115686006639,
+       "loglik": -235.54379651197542,
+       "n_par": 2
+      },
+      "2": {
+       "bic": 336.0966192564449,
+       "loglik": -152.71234626315282,
+       "n_par": 6
+      },
+      "3": {
+       "bic": 329.5757102393764,
+       "loglik": -134.11592838954894,
+       "n_par": 12
+      },
+      "4": {
+       "bic": 322.5767902845583,
+       "loglik": -110.1685172587137,
+       "n_par": 20
+      }
+     },
+     "sample_size_gate": {
+      "n_frames": 166,
+      "valid": true,
+      "shape_ok": true,
+      "bic_ok": false,
+      "thresholds": {
+       "valid": 65,
+       "shape": 130,
+       "bic": 500
+      },
+      "note": "n_frames<65 ⇒ invalid（最短协议 T≥60 s）；形状判据需 ≥130（T≥120 s）；BIC 需 ≥500"
+     },
+     "best_K_by_BIC": "unavailable",
+     "BIC_note": "n_frames=166 < 500 ⇒ **K 选择结论标 unavailable**（BIC 在小样本上无意义，RF-18(4)）",
+     "internal_consistency": {
+      "applicable": true,
+      "predicted_dwell_s": 18.961893447866217,
+      "observed_dwell_s": 44.32057022754272,
+      "rel_diff": 0.5721649484536082,
+      "pass_": true,
+      "note": "2 状态稳态近似；若状态数>2 或转移矩阵强非对称则本条不适用（须显式声明）"
+     },
+     "AR1": {
+      "status": "measured",
+      "phi": 0.9764428060730928,
+      "tau_s": 38.333081493348494,
+      "holdout_ll_per_frame": 0.10170359006103587,
+      "ljung_box": {
+       "Q": 174.11212069014226,
+       "df": 9,
+       "p": 0.0,
+       "lags": 10
+      },
+      "rho1": 0.7206280732120212,
+      "rho1_ci": 0.15446963962286372,
+      "resid_whiten": false,
+      "n_frames": 166,
+      "pipeline": "0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)（平滑后 n=162 帧；未平滑 n=166 帧）",
+      "phi_smoothed": 0.9764428060730928,
+      "phi_unsmoothed": 0.8856750479274345,
+      "reference_tau_imaging_s": 37.18,
+      "tau_window_s": [
+       9.4,
+       146.3
+      ],
+      "reference_source": "B4 追加任务 G：data/m10_imaging_slow_tau_reference.json（φ=0.9757213, 全记录）",
+      "tau_ratio_vs_imaging": 1.0310134882557422,
+      "in_tau_window": true,
+      "honest_limit": "B4：Ljung-Box 在平滑/未平滑/AR(4) 三口径下**全部拒绝白噪**（p≈0）⇒ '单一慢时间尺度'仅为一阶近似，τ 只作**粗粒度**指标",
+      "min_frames_for_tau": 300,
+      "tau_criterion_status": "unavailable（n_frames<300 ⇒ 短记录禁用 τ 判据）"
+     },
+     "dwell_resolution_floor": {
+      "frame_s": 0.9138261902586128,
+      "q_median_s": null,
+      "h_median_s": 44.32057022754272,
+      "at_floor": true,
+      "note": "dwell 中位 ≤1.5 帧 ⇒ **触分辨率地板、无分辨力**：只能作为'未产生慢状态'的**旁证**，**不得**作为'×N 倍差距'引用（时间尺度应以 AR(1) τ 与转换率为准）"
+     },
+     "pipeline": "0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)（与成像侧**同一管线**）",
+     "Q_method": {
+      "occupancy": [
+       0.5,
+       0.5
+      ],
+      "transition_rate_hz": 0.11206686746987951,
+      "dwell": {
+       "low": {
+        "n": 8,
+        "median_s": 8.681348807456821,
+        "mean_s": 9.366718450150781,
+        "p90_s": 15.717810472448138,
+        "p90_over_median": 1.8105263157894735,
+        "ks_vs_exp": {
+         "n": 8,
+         "D": 0.2537412781924123,
+         "p": 0.6137066640430239,
+         "pass_": false
+        }
+       },
+       "high": {
+        "n": 8,
+        "median_s": 1.8276523805172256,
+        "mean_s": 6.168326784245637,
+        "p90_s": 16.448871424655024,
+        "p90_over_median": 8.999999999999996,
+        "ks_vs_exp": {
+         "n": 8,
+         "D": 0.3911803884299546,
+         "p": 0.13025141373696708,
+         "pass_": false
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "label": "x_left_half",
+    "n_frames": 333,
+    "pipeline": "0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)（与成像侧**同一管线**）",
+    "occupancy_low": 0.6366366366366366,
+    "occupancy_high": 0.3633633633633634,
+    "transition_rate_hz": 0.05586516516516517,
+    "low_dwell_median_s_module": 14.164305949008497,
+    "low_dwell_median_s_physical": 14.7619,
+    "low_dwell_p90_s_module": 61.13497212830119,
+    "low_dwell_p90_s_physical": 63.7142,
+    "low_dwell_p90_over_median": 4.316129032258065,
+    "low_dwell_n": 8,
+    "low_dwell_ks_p": 0.6220448295683768,
+    "q_low_dwell_median_s_module": 4.569130951293064,
+    "q_transition_rate_hz": 0.15445075075075076,
+    "h_vs_q_dwell_ratio": 3.0999999999999996,
+    "ar1_phi_smoothed": 0.9702830105473144,
+    "ar1_phi_unsmoothed": 0.8762436695812487,
+    "ar1_tau_s_module": 30.291757570732248,
+    "ar1_tau_s_physical": 31.5697,
+    "ar1_tau_bias_corrected_s_physical": null,
+    "ar1_status": "measured",
+    "ljung_box_min_p": null,
+    "sample_size_gate": {
+     "n_frames": 333,
+     "valid": true,
+     "shape_ok": true,
+     "bic_ok": false,
+     "thresholds": {
+      "valid": 65,
+      "shape": 130,
+      "bic": 500
+     },
+     "note": "n_frames<65 ⇒ invalid（最短协议 T≥60 s）；形状判据需 ≥130（T≥120 s）；BIC 需 ≥500"
+    },
+    "best_K_by_BIC": "unavailable",
+    "BIC_note": "n_frames=333 < 500 ⇒ **K 选择结论标 unavailable**（BIC 在小样本上无意义，RF-18(4)）",
+    "internal_consistency": {
+     "applicable": true,
+     "predicted_dwell_s": 8.950121216356413,
+     "observed_dwell_s": 14.164305949008497,
+     "rel_diff": 0.3681214421252372,
+     "pass_": true,
+     "note": "2 状态稳态近似；若状态数>2 或转移矩阵强非对称则本条不适用（须显式声明）"
+    },
+    "dwell_resolution_floor": {
+     "frame_s": 0.9138261902586128,
+     "q_median_s": null,
+     "h_median_s": 14.164305949008497,
+     "at_floor": true,
+     "note": "dwell 中位 ≤1.5 帧 ⇒ **触分辨率地板、无分辨力**：只能作为'未产生慢状态'的**旁证**，**不得**作为'×N 倍差距'引用（时间尺度应以 AR(1) τ 与转换率为准）"
+    },
+    "raw": {
+     "label": "x_left_half",
+     "n_frames": 333,
+     "frame_s": 0.9138261902586128,
+     "n_neurons": 1,
+     "pop_rate_neuron_hz": 10846.69690815583,
+     "pop_rate_population_hz": 10846.69690815583,
+     "pop_rate_hz": 10846.69690815583,
+     "pop_rate_hz_total_method": 10846.69690815583,
+     "pop_rate_estimator_rel_diff": 0.0,
+     "pop_rate_field_assertion_rel_diff": 0.0,
+     "total_spikes": 3300694,
+     "fano": 269.2440548057881,
+     "H_K2": {
+      "occupancy": [
+       0.6366366366366366,
+       0.3633633633633634
+      ],
+      "transition_rate_hz": 0.05586516516516517,
+      "dwell": {
+       "low": {
+        "n": 8,
+        "median_s": 14.164305949008497,
+        "mean_s": 23.87370922050626,
+        "p90_s": 61.13497212830119,
+        "p90_over_median": 4.316129032258065,
+        "ks_vs_exp": {
+         "n": 8,
+         "D": 0.25208029829910383,
+         "p": 0.6220448295683768,
+         "pass_": false
+        }
+       },
+       "high": {
+        "n": 8,
+        "median_s": 11.42282737823266,
+        "mean_s": 13.707392853879192,
+        "p90_s": 25.769898565292877,
+        "p90_over_median": 2.256,
+        "ks_vs_exp": {
+         "n": 8,
+         "D": 0.19830555424340324,
+         "p": 0.8741809089034768,
+         "pass_": false
+        }
+       }
+      },
+      "bic": 722.6878669196091,
+      "loglik": -343.9195059898632
+     },
+     "BIC_by_K": {
+      "1": {
+       "bic": 956.6293480942726,
+       "loglik": -472.5065315571558,
+       "n_par": 2
+      },
+      "2": {
+       "bic": 722.6878669196091,
+       "loglik": -343.9195059898632,
+       "n_par": 6
+      },
+      "3": {
+       "bic": 680.0119237438271,
+       "loglik": -305.1571069320309,
+       "n_par": 12
+      },
+      "4": {
+       "bic": 666.2870905252979,
+       "loglik": -275.0621203628445,
+       "n_par": 20
+      }
+     },
+     "sample_size_gate": {
+      "n_frames": 333,
+      "valid": true,
+      "shape_ok": true,
+      "bic_ok": false,
+      "thresholds": {
+       "valid": 65,
+       "shape": 130,
+       "bic": 500
+      },
+      "note": "n_frames<65 ⇒ invalid（最短协议 T≥60 s）；形状判据需 ≥130（T≥120 s）；BIC 需 ≥500"
+     },
+     "best_K_by_BIC": "unavailable",
+     "BIC_note": "n_frames=333 < 500 ⇒ **K 选择结论标 unavailable**（BIC 在小样本上无意义，RF-18(4)）",
+     "internal_consistency": {
+      "applicable": true,
+      "predicted_dwell_s": 8.950121216356413,
+      "observed_dwell_s": 14.164305949008497,
+      "rel_diff": 0.3681214421252372,
+      "pass_": true,
+      "note": "2 状态稳态近似；若状态数>2 或转移矩阵强非对称则本条不适用（须显式声明）"
+     },
+     "AR1": {
+      "status": "measured",
+      "phi": 0.9702830105473139,
+      "tau_s": 30.291757570732248,
+      "holdout_ll_per_frame": -0.05328051094260774,
+      "ljung_box": {
+       "Q": 420.960962357313,
+       "df": 9,
+       "p": 0.0,
+       "lags": 10
+      },
+      "rho1": 0.7765899180119132,
+      "rho1_ci": 0.1082228955533496,
+      "resid_whiten": false,
+      "n_frames": 333,
+      "pipeline": "0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)（平滑后 n=329 帧；未平滑 n=333 帧）",
+      "phi_smoothed": 0.9702830105473144,
+      "phi_unsmoothed": 0.8762436695812487,
+      "reference_tau_imaging_s": 37.18,
+      "tau_window_s": [
+       9.4,
+       146.3
+      ],
+      "reference_source": "B4 追加任务 G：data/m10_imaging_slow_tau_reference.json（φ=0.9757213, 全记录）",
+      "tau_ratio_vs_imaging": 0.8147325866253967,
+      "in_tau_window": true,
+      "honest_limit": "B4：Ljung-Box 在平滑/未平滑/AR(4) 三口径下**全部拒绝白噪**（p≈0）⇒ '单一慢时间尺度'仅为一阶近似，τ 只作**粗粒度**指标",
+      "min_frames_for_tau": 300,
+      "tau_criterion_status": "pass"
+     },
+     "dwell_resolution_floor": {
+      "frame_s": 0.9138261902586128,
+      "q_median_s": null,
+      "h_median_s": 14.164305949008497,
+      "at_floor": true,
+      "note": "dwell 中位 ≤1.5 帧 ⇒ **触分辨率地板、无分辨力**：只能作为'未产生慢状态'的**旁证**，**不得**作为'×N 倍差距'引用（时间尺度应以 AR(1) τ 与转换率为准）"
+     },
+     "pipeline": "0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)（与成像侧**同一管线**）",
+     "Q_method": {
+      "occupancy": [
+       0.5015015015015015,
+       0.4984984984984985
+      ],
+      "transition_rate_hz": 0.15445075075075076,
+      "dwell": {
+       "low": {
+        "n": 23,
+        "median_s": 4.569130951293064,
+        "mean_s": 6.555709625768312,
+        "p90_s": 11.696975235310244,
+        "p90_over_median": 2.56,
+        "ks_vs_exp": {
+         "n": 23,
+         "D": 0.1480047462240371,
+         "p": 0.6592655813098729,
+         "pass_": false
+        }
+       },
+       "high": {
+        "n": 23,
+        "median_s": 2.7414785707758385,
+        "mean_s": 6.515978052278806,
+        "p90_s": 23.576715708672218,
+        "p90_over_median": 8.600000000000003,
+        "ks_vs_exp": {
+         "n": 23,
+         "D": 0.2663042323805188,
+         "p": 0.06288396285529779,
+         "pass_": false
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "label": "x_right_half",
+    "n_frames": 333,
+    "pipeline": "0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)（与成像侧**同一管线**）",
+    "occupancy_low": 0.6276276276276276,
+    "occupancy_high": 0.37237237237237236,
+    "transition_rate_hz": 0.04929279279279279,
+    "low_dwell_median_s_module": 10.965914283103354,
+    "low_dwell_median_s_physical": 11.4286,
+    "low_dwell_p90_s_module": 69.08525998355113,
+    "low_dwell_p90_s_physical": 71.9999,
+    "low_dwell_p90_over_median": 6.3,
+    "low_dwell_n": 7,
+    "low_dwell_ks_p": 0.45235466077089453,
+    "q_low_dwell_median_s_module": 6.39678333181029,
+    "q_transition_rate_hz": 0.15773693693693694,
+    "h_vs_q_dwell_ratio": 1.7142857142857144,
+    "ar1_phi_smoothed": 0.9716853024956794,
+    "ar1_phi_unsmoothed": 0.8919277896675084,
+    "ar1_tau_s_module": 31.814816350899058,
+    "ar1_tau_s_physical": 33.1571,
+    "ar1_tau_bias_corrected_s_physical": null,
+    "ar1_status": "measured",
+    "ljung_box_min_p": null,
+    "sample_size_gate": {
+     "n_frames": 333,
+     "valid": true,
+     "shape_ok": true,
+     "bic_ok": false,
+     "thresholds": {
+      "valid": 65,
+      "shape": 130,
+      "bic": 500
+     },
+     "note": "n_frames<65 ⇒ invalid（最短协议 T≥60 s）；形状判据需 ≥130（T≥120 s）；BIC 需 ≥500"
+    },
+    "best_K_by_BIC": "unavailable",
+    "BIC_note": "n_frames=333 < 500 ⇒ **K 选择结论标 unavailable**（BIC 在小样本上无意义，RF-18(4)）",
+    "internal_consistency": {
+     "applicable": true,
+     "predicted_dwell_s": 10.143470711870602,
+     "observed_dwell_s": 10.965914283103354,
+     "rel_diff": 0.075,
+     "pass_": true,
+     "note": "2 状态稳态近似；若状态数>2 或转移矩阵强非对称则本条不适用（须显式声明）"
+    },
+    "dwell_resolution_floor": {
+     "frame_s": 0.9138261902586128,
+     "q_median_s": null,
+     "h_median_s": 10.965914283103354,
+     "at_floor": true,
+     "note": "dwell 中位 ≤1.5 帧 ⇒ **触分辨率地板、无分辨力**：只能作为'未产生慢状态'的**旁证**，**不得**作为'×N 倍差距'引用（时间尺度应以 AR(1) τ 与转换率为准）"
+    },
+    "raw": {
+     "label": "x_right_half",
+     "n_frames": 333,
+     "frame_s": 0.9138261902586128,
+     "n_neurons": 1,
+     "pop_rate_neuron_hz": 16516.82202049885,
+     "pop_rate_population_hz": 16516.82202049885,
+     "pop_rate_hz": 16516.82202049885,
+     "pop_rate_hz_total_method": 16516.82202049885,
+     "pop_rate_estimator_rel_diff": 0.0,
+     "pop_rate_field_assertion_rel_diff": 0.0,
+     "total_spikes": 5026137,
+     "fano": 487.5630625939343,
+     "H_K2": {
+      "occupancy": [
+       0.6276276276276276,
+       0.37237237237237236
+      ],
+      "transition_rate_hz": 0.04929279279279279,
+      "dwell": {
+       "low": {
+        "n": 7,
+        "median_s": 10.965914283103354,
+        "mean_s": 26.109319721674648,
+        "p90_s": 69.08525998355113,
+        "p90_over_median": 6.3,
+        "ks_vs_exp": {
+         "n": 7,
+         "D": 0.3058410786525293,
+         "p": 0.45235466077089453,
+         "pass_": false
+        }
+       },
+       "high": {
+        "n": 7,
+        "median_s": 10.052088092844741,
+        "mean_s": 12.532473466403832,
+        "p90_s": 22.11459380425843,
+        "p90_over_median": 2.1999999999999997,
+        "ks_vs_exp": {
+         "n": 7,
+         "D": 0.25298249968956743,
+         "p": 0.6941870997809731,
+         "pass_": false
+        }
+       }
+      },
+      "bic": 666.741447834616,
+      "loglik": -315.94629644736665
+     },
+     "BIC_by_K": {
+      "1": {
+       "bic": 956.6293480942725,
+       "loglik": -472.50653155715577,
+       "n_par": 2
+      },
+      "2": {
+       "bic": 666.741447834616,
+       "loglik": -315.94629644736665,
+       "n_par": 6
+      },
+      "3": {
+       "bic": 605.0380814470135,
+       "loglik": -267.6701857836241,
+       "n_par": 12
+      },
+      "4": {
+       "bic": 574.4707739360116,
+       "loglik": -229.15396206820137,
+       "n_par": 20
+      }
+     },
+     "sample_size_gate": {
+      "n_frames": 333,
+      "valid": true,
+      "shape_ok": true,
+      "bic_ok": false,
+      "thresholds": {
+       "valid": 65,
+       "shape": 130,
+       "bic": 500
+      },
+      "note": "n_frames<65 ⇒ invalid（最短协议 T≥60 s）；形状判据需 ≥130（T≥120 s）；BIC 需 ≥500"
+     },
+     "best_K_by_BIC": "unavailable",
+     "BIC_note": "n_frames=333 < 500 ⇒ **K 选择结论标 unavailable**（BIC 在小样本上无意义，RF-18(4)）",
+     "internal_consistency": {
+      "applicable": true,
+      "predicted_dwell_s": 10.143470711870602,
+      "observed_dwell_s": 10.965914283103354,
+      "rel_diff": 0.075,
+      "pass_": true,
+      "note": "2 状态稳态近似；若状态数>2 或转移矩阵强非对称则本条不适用（须显式声明）"
+     },
+     "AR1": {
+      "status": "measured",
+      "phi": 0.9716853024956794,
+      "tau_s": 31.814816350899058,
+      "holdout_ll_per_frame": 0.00816565564082287,
+      "ljung_box": {
+       "Q": 420.5231313213658,
+       "df": 9,
+       "p": 0.0,
+       "lags": 10
+      },
+      "rho1": 0.792075417816818,
+      "rho1_ci": 0.1082228955533496,
+      "resid_whiten": false,
+      "n_frames": 333,
+      "pipeline": "0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)（平滑后 n=329 帧；未平滑 n=333 帧）",
+      "phi_smoothed": 0.9716853024956794,
+      "phi_unsmoothed": 0.8919277896675084,
+      "reference_tau_imaging_s": 37.18,
+      "tau_window_s": [
+       9.4,
+       146.3
+      ],
+      "reference_source": "B4 追加任务 G：data/m10_imaging_slow_tau_reference.json（φ=0.9757213, 全记录）",
+      "tau_ratio_vs_imaging": 0.8556970508579629,
+      "in_tau_window": true,
+      "honest_limit": "B4：Ljung-Box 在平滑/未平滑/AR(4) 三口径下**全部拒绝白噪**（p≈0）⇒ '单一慢时间尺度'仅为一阶近似，τ 只作**粗粒度**指标",
+      "min_frames_for_tau": 300,
+      "tau_criterion_status": "pass"
+     },
+     "dwell_resolution_floor": {
+      "frame_s": 0.9138261902586128,
+      "q_median_s": null,
+      "h_median_s": 10.965914283103354,
+      "at_floor": true,
+      "note": "dwell 中位 ≤1.5 帧 ⇒ **触分辨率地板、无分辨力**：只能作为'未产生慢状态'的**旁证**，**不得**作为'×N 倍差距'引用（时间尺度应以 AR(1) τ 与转换率为准）"
+     },
+     "pipeline": "0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)（与成像侧**同一管线**）",
+     "Q_method": {
+      "occupancy": [
+       0.5015015015015015,
+       0.4984984984984985
+      ],
+      "transition_rate_hz": 0.15773693693693694,
+      "dwell": {
+       "low": {
+        "n": 24,
+        "median_s": 6.39678333181029,
+        "mean_s": 6.3587072405495135,
+        "p90_s": 13.159097139724024,
+        "p90_over_median": 2.057142857142857,
+        "ks_vs_exp": {
+         "n": 24,
+         "D": 0.1832684149997421,
+         "p": 0.3605417881664088,
+         "pass_": false
+        }
+       },
+       "high": {
+        "n": 23,
+        "median_s": 1.8276523805172256,
+        "mean_s": 5.403493994572668,
+        "p90_s": 15.3522799963447,
+        "p90_over_median": 8.400000000000004,
+        "ks_vs_exp": {
+         "n": 23,
+         "D": 0.2347666274179706,
+         "p": 0.13589778154574056,
+         "pass_": false
+        }
+       }
+      }
+     }
+    }
+   }
+  ],
   "tolerance_sources": {
-   "method_ratio": 3.87,
-   "cross_condition": 6.9,
-   "tau_cross_condition": 3.94,
-   "source": "B4 实测（口径差 3.87× / 跨条件 dwell 6.9× / τ 跨条件 3.94×）",
-   "self_cross_experiment": 2.0,
-   "self_method_H_vs_Q": 1.0,
-   "note": "**绝对尺度不得按单点引用**：按 RF-M11-C §四.2 以'与自建目标带的比值'报告，并在报告中并列上述容差来源（B4 实测容差 + 本轮跨实验/跨口径实测容差）"
+   "method_H_vs_Q": 1.6875,
+   "mask_on_off": 1.0,
+   "time_half_spread": 3.233,
+   "spatial_half_spread": 1.292,
+   "phi_smoothed_vs_unsmoothed_gap": 0.08365063068813128,
+   "B4_anchors": {
+    "method_ratio": 3.87,
+    "cross_condition": 6.9,
+    "tau_cross_condition": 3.94
+   }
   },
-  "literature_fallback_s": {
-   "band": [
-    0.3,
-    3.0
-   ],
-   "pmid": "11017176",
-   "note": "文献档（up/down dwell 量级）—— **仅量级参考、非判据带**"
+  "literature_s": [
+   0.3,
+   3.0
+  ],
+  "caveats": [
+   "仅 **1 个 field** 的 **1 个子块**（第二个 field 无像素在盘；下载受吞吐限制 ⇒ 未取）",
+   "**箱宽口径差**：模块以 0.9138 s 为一箱，实际 6×0.15873=0.9524 s ⇒ 4.2% 系统偏差；已给两种时间基",
+   "**BIC 门未过**（333 箱 < 500）⇒ K 选择结论 `unavailable`（不得报 BIC 选 K）",
+   "**禁止**沿用 ZAPBench 26.5 s / 37.18 s（跨物种+跨帧率 5.8×+跨口径）"
+  ],
+  "cross_preparation_allen2p": {
+   "source": "Allen BO 2p（跨制备参照，非 S 门主目标）",
+   "dwell_median_s": 2.7414785707758385,
+   "tau_s": 6.456401129449646,
+   "n_bins": 4070.5,
+   "ratio_dwell_vs_same_source": 4.69,
+   "ratio_tau_vs_same_source": 5.04
+  },
+  "s_gate_health_check": {
+   "S1_occupancy_degenerate_free": {
+    "pass_": true,
+    "occupancy": [
+     0.6306306306306306,
+     0.36936936936936937
+    ]
+   },
+   "S2_transitions_exist": {
+    "status": "unavailable（每态完整段 <10）",
+    "low_state_complete_runs": 6,
+    "transition_rate_hz": 0.04600660660660661
+   },
+   "S3_heavy_tail": {
+    "p90_over_median": 5.777777777777778,
+    "heavy_tail_pass": true,
+    "ks_vs_exp_p": 0.5575692302520915,
+    "ks_reject_exp": false,
+    "status": "fail/thin（重尾✓ 但 KS 未拒指数；且完整段仅 6<30）"
+   },
+   "S7_sample_size": {
+    "n_frames": 333,
+    "valid": true,
+    "shape_ok": true,
+    "bic_ok": false,
+    "thresholds": {
+     "valid": 65,
+     "shape": 130,
+     "bic": 500
+    },
+    "note": "n_frames<65 ⇒ invalid（最短协议 T≥60 s）；形状判据需 ≥130（T≥120 s）；BIC 需 ≥500"
+   },
+   "window_length_note": "**窗口长度限制**：317.46 s 窗 vs 低态 dwell 中位 12.86 s ⇒ 约 **25 个低态周期**⇒ 时间半劈离散度 **3.23×**（13.7 s vs 44.3 s）⇒ 估计不稳，须随带登记"
   }
  },
+ "functional_connectomics_release_dq4": {
+  "evidence": "measured(readme schema) / unavailable（pkl 下载未完成）",
+  "node_data_v1.pkl": {
+   "expected_bytes": 294635032,
+   "url": "https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/functional_data/functional_connectomics/node_and_edge_properties/v1/node_data_v1.pkl",
+   "bytes": 2322432,
+   "sha256": null,
+   "verdict": "INCOMPLETE",
+   "note": "尺寸不符：2322432 / 294635032（**未完成**；不解析、不入统计）",
+   "parts_n": 8,
+   "parts_bytes": 10067968,
+   "parts_progress_pct": 3.417
+  },
+  "edge_data_v1.pkl": {
+   "expected_bytes": 201511086,
+   "url": "https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/functional_data/functional_connectomics/node_and_edge_properties/v1/edge_data_v1.pkl",
+   "bytes": 0,
+   "verdict": "INCOMPLETE",
+   "note": "本地不存在（下载未完成）"
+  },
+  "readme_v1.md": {
+   "expected_bytes": 5594,
+   "url": "https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/functional_data/functional_connectomics/node_and_edge_properties/v1/readme_v1.md",
+   "bytes": 5594,
+   "sha256": "15e2811596a0ca409dd5d95ea3272698a560c2e710433ef8cae975d30628dd11",
+   "verdict": "COMPLETE"
+  }
+ },
+ "activity_reference": {
+  "evidence": "四态收敛（measured/thin/unavailable）",
+  "rows": [
+   {
+    "ref_id": "C1-tuning",
+    "metric": "取向/方向调谐分布（OSI/DSI/半宽）",
+    "value_or_band": "",
+    "n": 0,
+    "sample_size_gate": "需刺激条件**时序**（在 NWB 内，读回受阻）",
+    "status": "unavailable",
+    "evidence": "unavailable",
+    "source": "",
+    "note": "同源属性表（node_data: osi_iv/pref_ori）**设计上可达、本轮因吞吐 unavailable**；Allen 2p events 无刺激标签 ⇒ 两条路皆不可算 ⇒ 不得写成'已具备'"
+   },
+   {
+    "ref_id": "C2-rate",
+    "metric": "逐细胞事件率（0.914 s 箱外的帧级事件幅度和 × 30.9 Hz，**帧率 NEEDS_VERIFY**）",
+    "value_or_band": "median=0.109555",
+    "n": 5,
+    "sample_size_gate": "形状类判据需 n≥130；此处 n=5",
+    "status": "thin（样本量远不足）",
+    "evidence": "measured(thin)",
+    "source": "Allen 2p events（2 件）",
+    "note": "只作**量级**参考；**不得**作为率分布判据带（n=5 ≪ 130）"
+   },
+   {
+    "ref_id": "C2-paircorr",
+    "metric": "成对相关（0.914 s 箱上，4-cell 件的 6 对）",
+    "value_or_band": "median=0.0538",
+    "n": 6,
+    "sample_size_gate": "需 ≥130 对（或足够配对结构）",
+    "status": "thin（仅 6 对）",
+    "evidence": "measured(thin)",
+    "source": "Allen 2p events（4-cell 件）",
+    "note": "有效维度/相位随机化代理地板**未算**（需更多细胞与同管线地板）"
+   },
+   {
+    "ref_id": "C3-dwell",
+    "metric": "状态结构 dwell 中位 / p90÷中位 / 转换率 / AR(1) τ",
+    "value_or_band": "dwell_med=2.74 s; p90/med=3.23; trans=0.3766 Hz; tau=6.46 s",
+    "n": 4070.5,
+    "sample_size_gate": "n_bins(0.914s)≥130 ✅（实测 4,070）；low 态完整段≥5 ✅",
+    "status": "measured",
+    "evidence": "measured（B4 冻结管线）",
+    "source": "data/m11_dwell_reference.json",
+    "note": "**S 门目标带**；形状判据（重尾∧拒指数）两实验均过；**帧率 30.9 Hz 为 NEEDS_VERIFY**（11 Hz 敏感性并列）"
+   },
+   {
+    "ref_id": "C4-behavior",
+    "metric": "正确率 / RT 分布 / psychometric / ramping",
+    "value_or_band": "",
+    "n": 0,
+    "sample_size_gate": "—",
+    "status": "unavailable（NEEDS_TOKEN）",
+    "evidence": "unavailable",
+    "source": "IBL OpenAlyx（403 需凭据）",
+    "note": "P12 需 token 或公开桶衍生统计（清单 §1.4 回退）"
+   }
+  ]
+ },
+ "throughput_measured_n": 11,
  "literature": {
   "n_rows": 37,
   "by_status": {
@@ -812,9 +2249,9 @@
   "evidence": "literature=Europe PMC 题录实测命中；未命中=literature_unverified"
  },
  "reachability": {
-  "n_sources": 73,
+  "n_sources": 76,
   "by_verdict": {
-   "REACHABLE": 56,
+   "REACHABLE": 59,
    "REACHABLE_NO_DATA": 3,
    "BLOCKED": 8,
    "NEEDS_VERIFY": 3,
@@ -892,8 +2329,8 @@
     "declared_bytes": null,
     "exists": true,
     "note": "",
-    "bytes_on_disk": 10679,
-    "sha256": "d2ad6a4c99356ed966f8e3a7759bc5ca84023f6b3d83ac7e6c0a8036c95042fb",
+    "bytes_on_disk": 11882,
+    "sha256": "19eed919ca7e2a47a697a9223e5a463fca5ba7d4547cf293b69fe62629ccfb75",
     "status": "COMPLETE"
    },
    {
@@ -909,9 +2346,9 @@
   ]
  },
  "inventory": {
-  "n_items": 240,
-  "total_bytes": 288506605,
-  "total_MB": 288.507
+  "n_items": 246,
+  "total_bytes": 288618935,
+  "total_MB": 288.619
  },
  "functional_connectomics_release": {
   "evidence": "measured(列举 200：KeyCount=4)",

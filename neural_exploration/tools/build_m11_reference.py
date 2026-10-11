@@ -206,6 +206,29 @@ def main():
             % (be, round(be[0] * be[1] * be[2], 4) if be else None, bs,
                round(bs[0] * bs[1] * bs[2], 4) if bs else None, oe, os_))
 
+    fcc = os.path.join(DATA, "m11_functional_connectomics_counts.json")
+    fc = json.load(open(fcc)) if os.path.exists(fcc) else {}
+    if fc:
+        node = (fc.get("files") or {}).get("node_data_v1.pkl", {})
+        edge = (fc.get("files") or {}).get("edge_data_v1.pkl", {})
+        sc = fc.get("schema_from_readme") or {}
+        add("R-30", "homology_level_definition",
+            "结构同源 + 属性级同源 + 时间序列级跨源代理", "levels",
+            "三级分别可核（结构 measured / 属性 measured / 时间序列 derived,cross_source）", "asserted",
+            "measured+derived", "data/m11_functional_connectomics_counts.json", fc.get("generated_at", ""),
+            "**R8 定稿表述**：结构同源（EM/seg）+ **属性级同源**（functional_connectomics 逐细胞/逐对表，"
+            "DOI 10.1038/s41586-025-08840-3；node %s 列 / edge %s 列）+ 时间序列级非同源（Allen 2p 代理）。"
+            "**不得**写'功能侧完全不可用'，**不得**写'全同源'。"
+            % (len(sc.get("node") or []), len(sc.get("edge") or [])))
+        add("R-31", "functional_connectomics_tables", "node %s / edge %s"
+            % (node.get("verdict"), edge.get("verdict")), "-",
+            "尺寸==期望（294,635,032 / 201,511,086）才解析", "unverified", "unavailable(下载未完成)",
+            fc.get("url_base", "") + "node_data_v1.pkl", fc.get("generated_at", ""),
+            "DQ-4：**主 agent 托管作业实测停滞**（node 本地 %s B = %s%%；edge %s B）；"
+            "本节点按指示**只解析不下载**（`tools/parse_m11_functional_connectomics.py`）+ 等待器（`/tmp/m11_fc_waiter.sh`）；"
+            "readme schema 已落盘（node 26 / edge 19 列）"
+            % (node.get("bytes"), node.get("parts_progress_pct"), edge.get("bytes")))
+
     with open(OUT, "w", newline="", encoding="utf-8") as f:
         f.write("# M11 参考锚（generated_by=tools/build_m11_reference.py；**只允许新增行**；"
                 "status ∈ {asserted, NEEDS_VERIFY, unverified}；**unverified 行不得作为判据带**）\n")

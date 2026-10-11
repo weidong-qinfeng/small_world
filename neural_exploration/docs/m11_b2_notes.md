@@ -706,3 +706,59 @@ RF-M11-K §一 的归因是"(b) 的翻转 = **引擎修复**（使 off 档与 M1
 
 > **本节点不改清单**（纪律：先改清单再改代码，落盘由主agent 执行）。AM 文本中的全部数值均可在
 > `data/m11_*` 产物中逐项核对。
+
+---
+
+## B2-L19 — P5/G1 **跑臂生产者**（`tools/run_m11_p5_arms.py`）：交付 + 端到端自检 + 定价
+
+> 背景（主agent 指派）：`validate_p11_resting.py`（B3）是**纯离线评估器**（只比较、不产生仿真）⇒
+> G1 缺"能跑出臂的入口"。本节点作为引擎所有者交付生产者并把链路跑通。
+
+### B2-L19.1 交付
+| 件 | 说明 |
+|---|---|
+| `tools/run_m11_p5_arms.py` | 生产者：`--plan <plan.json>`（**逐臂 spawn 新进程**、串行、写 protocol）/ `--arm <spec.json>`（单臂，供逐档放行）/ `--make-plan p0|p2`（生成 plan）|
+| 引擎侧新增 | `MouseCortexEngine.run(ei_integrals=True)` → **引擎侧实测 E/I 电流积分**（`i_exc_integral`/`i_inh_integral`/`ei_ratio`/`by_class{P,PV,SST,VIP}`/`sign_convention`/`i_inh_integral_signed_raw`）；**设备侧累积 + 每 1000 步同步一次到 float64**（禁每步 `.item()`）|
+| 产物（B3 §10.3） | `<run_id>.json`（完成即写）+ `.done`（mtime=完成时刻）+ `.fail`（含 stderr 尾部，不计入分母）+ `_poptrace.npy`（float32 逐步群体脉冲数）+ `_counts.csv`（`neuron_id,count,cell_type`）；JSON 内含评估器所需全部字段 + R34 §12.4 的 `host/python/numpy/torch/ms_per_step_steady/event_seed/spikes_total/sha256_of_trace` + `delivery` |
+
+**口径登记（必读）**：`ei_ratio` 报 **|I_inh|/|I_exc|**（抑制电流本身为负，判据带 [0.5,3.0] 是**量值比**）；
+原始带符号值在 `i_inh_integral_signed_raw`（不隐藏信息）。E/I 积分**由引擎注入实测**，**不从发放率反推**。
+
+### B2-L19.2 端到端自检（N=1,000 / T=1 s / settle=200 ms / dose{0,1} / CPU）——**链路无口径错**
+```bash
+export PYTHONPATH=/Users/weidong/ai/small_world OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONHASHSEED=0
+./.venv-m9/bin/python -m neural_exploration.tools.run_m11_p5_arms --make-plan p0 \
+    --n 1000 --T-ms 1000 --settle-ms 200 --doses 0,1 --seed 0 --device cpu --out-json /tmp/p5_smoke_plan.json
+./.venv-m9/bin/python -m neural_exploration.tools.run_m11_p5_arms --plan /tmp/p5_smoke_plan.json --out-dir /tmp/p5_smoke_runs
+./.venv-m11/bin/python -m neural_exploration.tools.validate_p11_resting \
+    --protocol-json neural_exploration/data/m11_p5_protocol_p0_n1000_T1000_s0.json \
+    --out-csv /tmp/p5_smoke_eval.csv --out-json /tmp/p5_smoke_eval.json      # ← 评估器侧解释器（R34 §12.2）
+```
+**输出摘要（逐项）**：2 臂 `[DONE]`（spk=70 / 393；`ei_ratio` 8.86 / 2.10）→ 评估器：
+- **三估计器全部可用、两两相对差 = 0.0000**（`trace_sum = counts_sum = agg_spk_total` = 70 / 393）⇒ **硬门③通过**（≤0.02）；
+- **量纲自检**：`trace_len = steps_expected = 20000`、`counts_n = 1000 = n_neuron`、`dim_check_counts = 0.0`、`dim_check_trace = 0.0`；
+- **`hard_fail = []`、`output_invariants` 通过**（12 行 / 1 单元 / 10 条子判据 / 8 个口径字段）⇒ **无结构性报错、无字段缺失**；
+- **可判性**：(f) `bounded` = **pass**（无非有限值）；(e) `ei_balance` = **fail（value 5.481，带 [0.5,3.0]）**——
+  这是**真实测量**（小夹具未标定工作点，E 抑制偏强）；标定属 **G1 的 L0 杠杆（压自持/E-I 相对强度）**，非生产者缺陷；
+  其余（a)(b)(c)(d)(g)(h)(i) 因 **role/seed/T 阶梯/replica 未提供** ⇒ `unavailable`（小样本可接受，**未出现结构性错误**）；
+- **单臂模式**（`--arm`）独立复现同一臂：`spk = 393` **与 plan 模式逐位相同**（跨进程确定性）。
+
+### B2-L19.3 🔴 定价（MPS，N=31,000，dose=1，T=1 s，settle 0.5 s）——**step 与 chunk 差 2.58×，数值逐位相同**
+| 口径 | ms/step（稳态） | wall（settle 10k + 测量 20k 步） | spk | `ei_ratio` |
+|---|---|---|---|---|
+| `delivery=step`（判据口径）| **5.4163** | 180.7 s | 10795 | 1.76972 |
+| `delivery=chunk`（仅对照）| **2.0955** | 111.7 s | 10795 | 1.76972 |
+⇒ **逐神经元计数逐位相同**（ndiff=0）、**pop_trace 逐位相同**、`cell_type` 一致
+⇒ 在**该工作点（0.35 Hz/神经元）**下 chunk 与 step **数值等价**，但**墙钟快 2.58×**。
+（对照 G0 探针同档 1.1362 ms/step 是 **chunk + λ=2 Hz/神经元（本次的 1/4 事件率）** ⇒ **不可直接互引**。）
+
+**P0 定价（N=31k，T=10 s，dose{0,1,4}，seed 0；每 run = 10,000 settle + 200,000 测量步）**：
+
+| 口径 | 单 run wall | P0（3 run）| GPU-h（3 run）|
+|---|---|---|---|
+| `step` | ≈ 1,137 s ≈ **19.0 min** | ≈ **57 min** | ≈ **0.95** |
+| `chunk` | ≈ 440 s ≈ **7.3 min** | ≈ **22 min** | ≈ **0.37** |
+
+⇒ **>10 min ⇒ 交主agent 托管**（本节点不自行启动）。**P2 阶梯（T={10,20,40}s × 3 dose = 9 run）**：
+step ≈ **5.7 h**、chunk ≈ **2.2 h** ⇒ 口径选择对预算影响 **≈2.6×** ⇒ 请按本轮实测裁决
+（若采纳 chunk：须登记"在该工作点 step≡chunk 逐位"的证据——本表已给——并保留 step 口径的**首臂/末臂校验**）。

@@ -243,6 +243,16 @@ class MouseCortexEngine(LarvalZFEngine):
         # ---- E4c：外部事件表按绝对步号索引（修正冻结件分段重放缺陷）----
         self.ext_abs_index = bool(ext_abs_index)
 
+        # ---- E/I 电流积分（P5/G1 门条件 (e) 的唯一来源：**引擎侧实测**）----
+        # 定义（与 data/m11_p5_targets.csv::ei_ratio_definition 一致）：
+        #   I_exc = ∫ Σ_i g_e,i(t)·(E_e − v_i(t)) dt ；I_inh = ∫ Σ_i Σ_c g_c,i(t)·(E_c − v_i(t)) dt
+        # 其中 g 为**该步驱动所用**的电导（= 上一步步末存储迹 + 本步事件），v 为步起点电位；
+        # 逐亚型槽分别累积（按类求和后再比）。单位 = mV·(1/s)·ms（逐神经元求和后的积分）。
+        self._ei_on = False
+        self._ei_exc = 0.0
+        self._ei_inh = 0.0
+        self._ei_by_class = None
+
         # ---- 双估计器 / 积分累积 ----
         self._tr_on = False
         self._tr_ge = None
@@ -542,7 +552,8 @@ class MouseCortexEngine(LarvalZFEngine):
             delivery: Optional[str] = None, pop_trace: bool = False,
             chunk_steps: Optional[int] = None, record_from: int = 0,
             progress=None, progress_every: int = 20000, cache_clear_every: int = 0,
-            keep_state: bool = True, trace_integrals: bool = False) -> Dict[str, Any]:
+            keep_state: bool = True, trace_integrals: bool = False,
+            ei_integrals: bool = False) -> Dict[str, Any]:
         if fidelity == "two_comp":
             raise NotImplementedError(
                 "E4b 层特异双房室档未实现（清单 §2.2 标『复用+扩展』，属 P-EXT1 预算门控）"
@@ -583,6 +594,7 @@ class MouseCortexEngine(LarvalZFEngine):
         rec_base = 0
 
         core = self._cores["point"]
+        dt_s_ei = float(dt_ms) * 1e-3          # E/I 积分的时间步（s）
         n_slot = self.n_slot
         t_count = self.t_count
         zero_iext = self.t_iext
@@ -629,6 +641,15 @@ class MouseCortexEngine(LarvalZFEngine):
         t_u = getattr(self, "t_u", None)
         stp_on = bool(self.stp_enabled) and t_u is not None
 
+        ei_on = bool(ei_integrals)
+        if ei_on:
+            # **设备侧累积 + 周期同步**：严禁每步 `.item()`（那会引入 host 同步，实测把 N=31k 的
+            # ms/step 从 ~1.2 抬到 7.0）；又因 **MPS 不支持 float64**，故设备侧用 self.dtype 累积，
+            # 每 `ei_sync_every` 步同步一次到 Python float64（同步次数 = 步数/1000 ⇒ 可忽略）。
+            self._ei_acct = torch.zeros(1 + max(1, nc - 1), dtype=self.dtype, device=self.device)
+            self._ei_sum64 = [0.0] * (1 + max(1, nc - 1))
+            _ei_sync_every = 1000
+            _ei_by_cls = None
         tr_on = bool(trace_integrals)
         if tr_on:
             self._tr_ge = torch.zeros(n, dtype=torch.float64, device=self.device)
@@ -653,6 +674,13 @@ class MouseCortexEngine(LarvalZFEngine):
             for k in range(w):
                 s = step + k
                 _sl = ((abs0 + s) if self.use_abs_slots else s) % n_slot
+                if ei_on:
+                    _v_prev = t_v
+                    _ge_prev = t_ge
+                    _g1_prev = t_g1
+                    _g2_prev = t_g2
+                    _g3_prev = t_g3
+                    _gi_prev = t_gi
                 ev0 = rv[0][_sl]
                 ev1 = rv[1][_sl]
                 if nc4:
@@ -676,6 +704,22 @@ class MouseCortexEngine(LarvalZFEngine):
                     else:
                         t_v, t_ge, t_gi, t_ahp, t_cool, spk = core(
                             t_v, t_ge, t_gi, t_cool, t_ahp, ev0, ev1, iext)
+                if ei_on:
+                    # **引擎侧实测 E/I 电流积分**（用驱动实际使用的电导与步起点电位；设备侧累积、零同步）
+                    _v_pre = _v_prev
+                    _acct = self._ei_acct
+                    _acct[0].add_(((_ge_prev + ev0) * (self.point.e_exc - _v_pre)).sum() * dt_s_ei)
+                    if nc4:
+                        _acct[1].add_(((_g1_prev + ev1) * (self.sub["e_pv"] - _v_pre)).sum() * dt_s_ei)
+                        _acct[2].add_(((_g2_prev + ev2) * (self.sub["e_sst"] - _v_pre)).sum() * dt_s_ei)
+                        _acct[3].add_(((_g3_prev + ev3) * (self.sub["e_vip"] - _v_pre)).sum() * dt_s_ei)
+                    else:
+                        _acct[1].add_(((_gi_prev + ev1) * (self.point.e_inh - _v_pre)).sum() * dt_s_ei)
+                    if (step + k) % _ei_sync_every == 0:
+                        _part = _acct.detach().cpu().numpy().astype(np.float64)
+                        for _i, _pv in enumerate(_part):
+                            self._ei_sum64[_i] += float(_pv)
+                        _acct.zero_()
                 if tr_on:
                     self._tr_ge.add_(t_ge)
                     if nc4:
@@ -798,6 +842,15 @@ class MouseCortexEngine(LarvalZFEngine):
             "双估计器不一致（spk_total vs counts.sum）：%.4f%%" % (100 * dual["rel_diff_count_vs_total"]))
         dual["wall_s"] = float(wall)
         dual["wall_from_ms_per_step_s"] = float(res["ms_per_step"]) * n_steps / 1e3
+        if ei_on:
+            _part = self._ei_acct.detach().cpu().numpy().astype(np.float64)
+            for _i, _pv in enumerate(_part):
+                self._ei_sum64[_i] += float(_pv)
+            self._ei_on = True
+            self._ei_exc = float(self._ei_sum64[0])
+            _ei_by_cls = [float(x) for x in self._ei_sum64[1:]]
+            self._ei_inh = float(sum(_ei_by_cls))
+            res["ei_integrals"] = self.ei_readback()
         if tr_on:
             res["trace_integrals"] = self.trace_integrals()
         self._last_run_dual = dual
@@ -969,6 +1022,30 @@ class MouseCortexEngine(LarvalZFEngine):
                 "该实验判 invalid（M10 L21 同类静默失效）" % bad)
         return dict(ok=True, class_slot_counts=actual,
                     expected={k: int(v) for k, v in expected_class_counts.items()})
+
+    def ei_readback(self) -> Dict[str, Any]:
+        """**E/I 突触电流积分**（P5 门条件 (e) 的唯一来源；不从发放率反推）。
+
+        口径（`data/m11_p5_targets.csv::ei_ratio_definition`）：
+          `I_exc = ∫ Σ_i g_e(t)(E_e − v_i(t)) dt`；`I_inh = ∫ Σ_i Σ_c g_c(t)(E_c − v_i(t)) dt`；
+          `g` 为该步驱动实际使用的电导（上一步步末迹 + 本步事件），`v` 为步起点电位；
+          **逐亚型槽分别累积**；测量窗 = `run()` 的本次调用（调用方须在 settle 后 `reset_counts()` 再调用）。
+        """
+        by_class = None
+        if self._ei_by_class is not None:
+            names = SUB_NAMES[1:int(self.n_ch)] if int(self.n_ch) == N_CH_ON else ("I",)
+            by_class = {nm: v for nm, v in zip(names, self._ei_by_class)}
+        # **符号约定（口径登记，必读）**：抑制电流本身为负（E_inh < v），而判据带
+        # `ei_ratio_lo/hi = [0.5, 3.0]` 是**量值比** ⇒ `i_inh_integral` 报**绝对值**；
+        # 原始带符号值另存 `i_inh_integral_signed_raw`（不隐藏任何信息）。
+        exc = abs(float(self._ei_exc))
+        inh_raw = float(self._ei_inh)
+        ratio = (abs(inh_raw) / exc) if exc else None
+        return dict(i_exc_integral=exc, i_inh_integral=abs(inh_raw),
+                    ei_ratio=ratio, by_class=by_class, measured_by="engine",
+                    sign_convention="|I_inh|/|I_exc|（抑制电流为负 ⇒ 报绝对值；带 [0.5,3.0] 为量值比）",
+                    i_inh_integral_signed_raw=inh_raw,
+                    definition="i_inh_integral/i_exc_integral（电流积分比，非权重比）")
 
     def trace_integrals(self, dt_ms: Optional[float] = None) -> Dict[str, Any]:
         """**逐类电导积分** ∫g_c(t)dt（动态，引擎侧独立估计器）。"""

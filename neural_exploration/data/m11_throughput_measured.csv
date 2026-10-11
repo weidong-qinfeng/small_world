@@ -1,0 +1,13 @@
+# M11 取数决策的**实测吞吐**依据（口径：取数决策必须有实测吞吐支撑，不得凭'应该很快'）
+source,measured,note,method
+S3 bossdb-open-data（MICrONS 功能 chunk 685 KB）,194–349 KB/s（早时段）→ 16 KB/s（退化）,同一小时内波动 ≥20×,curl -w speed_download
+S3 bossdb-open-data（shard 前缀 Range 1 KB）,206 OK；info 首字节 5.6–8.9 s,小对象亦慢,curl -w time_total
+api.brain-map.org（per-cell NWB 91.5 MB）,33–58 KB/s → 16 KB/s → **1.6 KB/s**,停滞 48 min 零增长（已停）,curl 全程 + 文件增长监测
+api.brain-map.org（Cell Types 表 0.68 MB/页）,1.7–28 KB/s,分页 5 页成功,curl
+DANDI 000021（NWB 71.8 MB，Range 1 MB）,"**7,237 B/s**",120 s 未完；ETA 2.8 h,curl -w speed_download
+allen-brain-observatory（2p events 913 KB）,**28 KB/s**,32.6 s 完成,curl -w
+allen-brain-observatory（2p events 3.64 MB）,**32 KB/s**,113.8 s 完成,curl -w
+allen-brain-observatory（2p events 16.4 MB）,**1.6 KB/s**（掉速）,16 min 仅 1.5 MB ⇒ 已停,curl 文件增长监测
+allen-brain-observatory（2p NWB 176 MB，Range 6 MB）,"**3,310 B/s**",1540 s 取 5.1 MB 后超时,curl -w
+主 agent 实测：S3 单连接 / 8 路并发（DQ-4）,17 KB/s / 聚合 10–16 KB/s,**294 MB ⇒ 5–8 h ⇒ DQ-4 = unavailable（吞吐限制）**,主 agent 亲测
+GCS 镜像（MICrONS 功能数据）,**HTTP 404**,功能数据**未镜像**到 GCS（结构侧有镜像）,curl

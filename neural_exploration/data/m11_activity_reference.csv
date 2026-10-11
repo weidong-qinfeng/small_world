@@ -1,0 +1,7 @@
+# M11 活动通道参考量（generated_by=tools/build_m11_activity_reference.py；**四态如实**：measured/thin/unavailable；样本量门逐行标注；不得把 thin 记 pass）
+ref_id,metric,value_or_band,n,sample_size_gate,status,evidence,source,note
+C1-tuning,取向/方向调谐分布（OSI/DSI/半宽）,,0,需刺激条件**时序**（在 NWB 内，读回受阻）,unavailable,unavailable,,同源属性表（node_data: osi_iv/pref_ori）**设计上可达、本轮因吞吐 unavailable**；Allen 2p events 无刺激标签 ⇒ 两条路皆不可算 ⇒ 不得写成'已具备'
+C2-rate,逐细胞事件率（0.914 s 箱外的帧级事件幅度和 × 30.9 Hz，**帧率 NEEDS_VERIFY**）,median=0.109555,5,形状类判据需 n≥130；此处 n=5,thin（样本量远不足）,measured(thin),Allen 2p events（2 件）,只作**量级**参考；**不得**作为率分布判据带（n=5 ≪ 130）
+C2-paircorr,成对相关（0.914 s 箱上，4-cell 件的 6 对）,median=0.0538,6,需 ≥130 对（或足够配对结构）,thin（仅 6 对）,measured(thin),Allen 2p events（4-cell 件）,有效维度/相位随机化代理地板**未算**（需更多细胞与同管线地板）
+C3-dwell,状态结构 dwell 中位 / p90÷中位 / 转换率 / AR(1) τ,dwell_med=2.74 s; p90/med=3.23; trans=0.3766 Hz; tau=6.46 s,4070.5,"n_bins(0.914s)≥130 ✅（实测 4,070）；low 态完整段≥5 ✅",measured,measured（B4 冻结管线）,data/m11_dwell_reference.json,**S 门目标带**；形状判据（重尾∧拒指数）两实验均过；**帧率 30.9 Hz 为 NEEDS_VERIFY**（11 Hz 敏感性并列）
+C4-behavior,正确率 / RT 分布 / psychometric / ramping,,0,—,unavailable（NEEDS_TOKEN）,unavailable,IBL OpenAlyx（403 需凭据）,P12 需 token 或公开桶衍生统计（清单 §1.4 回退）

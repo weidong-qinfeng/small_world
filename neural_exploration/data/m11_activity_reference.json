@@ -1,0 +1,65 @@
+{
+ "generated_by": "tools/build_m11_activity_reference.py",
+ "generated_at": "2026-10-11T18:07:13Z",
+ "n_event_files": 2,
+ "n_cells_total": 5,
+ "n_pairs": 6,
+ "rows": [
+  {
+   "ref_id": "C1-tuning",
+   "metric": "取向/方向调谐分布（OSI/DSI/半宽）",
+   "value_or_band": "",
+   "n": 0,
+   "sample_size_gate": "需刺激条件**时序**（在 NWB 内，读回受阻）",
+   "status": "unavailable",
+   "evidence": "unavailable",
+   "source": "",
+   "note": "同源属性表（node_data: osi_iv/pref_ori）**设计上可达、本轮因吞吐 unavailable**；Allen 2p events 无刺激标签 ⇒ 两条路皆不可算 ⇒ 不得写成'已具备'"
+  },
+  {
+   "ref_id": "C2-rate",
+   "metric": "逐细胞事件率（0.914 s 箱外的帧级事件幅度和 × 30.9 Hz，**帧率 NEEDS_VERIFY**）",
+   "value_or_band": "median=0.109555",
+   "n": 5,
+   "sample_size_gate": "形状类判据需 n≥130；此处 n=5",
+   "status": "thin（样本量远不足）",
+   "evidence": "measured(thin)",
+   "source": "Allen 2p events（2 件）",
+   "note": "只作**量级**参考；**不得**作为率分布判据带（n=5 ≪ 130）"
+  },
+  {
+   "ref_id": "C2-paircorr",
+   "metric": "成对相关（0.914 s 箱上，4-cell 件的 6 对）",
+   "value_or_band": "median=0.0538",
+   "n": 6,
+   "sample_size_gate": "需 ≥130 对（或足够配对结构）",
+   "status": "thin（仅 6 对）",
+   "evidence": "measured(thin)",
+   "source": "Allen 2p events（4-cell 件）",
+   "note": "有效维度/相位随机化代理地板**未算**（需更多细胞与同管线地板）"
+  },
+  {
+   "ref_id": "C3-dwell",
+   "metric": "状态结构 dwell 中位 / p90÷中位 / 转换率 / AR(1) τ",
+   "value_or_band": "dwell_med=2.74 s; p90/med=3.23; trans=0.3766 Hz; tau=6.46 s",
+   "n": 4070.5,
+   "sample_size_gate": "n_bins(0.914s)≥130 ✅（实测 4,070）；low 态完整段≥5 ✅",
+   "status": "measured",
+   "evidence": "measured（B4 冻结管线）",
+   "source": "data/m11_dwell_reference.json",
+   "note": "**S 门目标带**；形状判据（重尾∧拒指数）两实验均过；**帧率 30.9 Hz 为 NEEDS_VERIFY**（11 Hz 敏感性并列）"
+  },
+  {
+   "ref_id": "C4-behavior",
+   "metric": "正确率 / RT 分布 / psychometric / ramping",
+   "value_or_band": "",
+   "n": 0,
+   "sample_size_gate": "—",
+   "status": "unavailable（NEEDS_TOKEN）",
+   "evidence": "unavailable",
+   "source": "IBL OpenAlyx（403 需凭据）",
+   "note": "P12 需 token 或公开桶衍生统计（清单 §1.4 回退）"
+  }
+ ],
+ "evidence_level": "mixed（measured/thin/unavailable）"
+}

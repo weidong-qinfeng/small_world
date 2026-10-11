@@ -1,0 +1,92 @@
+{
+ "generated_by": "tools/parse_m11_functional_connectomics.py",
+ "generated_at": "2026-10-11T17:51:58Z",
+ "rule": "**只解析不下载**（DQ-4：下载由主 agent 托管）；文件缺失/尺寸不符一律 INCOMPLETE 且退出非零",
+ "expected_bytes": {
+  "node_data_v1.pkl": 294635032,
+  "edge_data_v1.pkl": 201511086,
+  "readme_v1.md": 5594
+ },
+ "url_base": "https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/functional_data/functional_connectomics/node_and_edge_properties/v1/",
+ "readme_present": true,
+ "coverage_note": "逐细胞/逐对表 = **属性级同源**（R8）：提供 P7 调谐分布 / P8 层·区差异 / P14 群体相关的 `measured` 依据，并自带 `population` 匹配负对照（Connected/ADP/Same region）；**但不含时间序列** ⇒ S 门与 dwell/τ 目标带仍走 Allen 2p（R6 不变）",
+ "schema_from_readme": {
+  "node": [
+   "nucleus_id",
+   "animal_id",
+   "scan_session",
+   "scan_idx",
+   "unit_id",
+   "hva",
+   "brain_area",
+   "layer",
+   "cc_max_cvt",
+   "cc_abs_cvt",
+   "cc_norm_cvt",
+   "readout_cvt",
+   "position_stim_cvt",
+   "sta_mu_comb",
+   "mei",
+   "mask",
+   "pref_ori",
+   "pref_dir",
+   "gosi_cvt_monet_full",
+   "osi_cvt_monet_full",
+   "pref_ori_cvt_monet_full",
+   "gosi_iv",
+   "osi_iv",
+   "pref_ori_iv",
+   "in_silico_resp",
+   "in_vivo_mean_resp"
+  ],
+  "edge": [
+   "pre_nucleus_id",
+   "post_nucleus_id",
+   "population",
+   "n_synapses",
+   "synapse_size",
+   "dend_len",
+   "pre_hva",
+   "post_hva",
+   "pre_layer",
+   "post_layer",
+   "proj_hva",
+   "proj_hva_layer",
+   "in_silico_sig_corr_cvt",
+   "in_vivo_sig_corr_iv",
+   "readout_similarity_cvt",
+   "readout_location_distance_cvt",
+   "readout_location_distance_sta",
+   "delta_ori_cvt_monet_full",
+   "delta_ori_iv"
+  ]
+ },
+ "files": {
+  "node_data_v1.pkl": {
+   "expected_bytes": 294635032,
+   "url": "https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/functional_data/functional_connectomics/node_and_edge_properties/v1/node_data_v1.pkl",
+   "bytes": 2322432,
+   "sha256": null,
+   "verdict": "INCOMPLETE",
+   "note": "尺寸不符：2322432 / 294635032（**未完成**；不解析、不入统计）",
+   "parts_n": 8,
+   "parts_bytes": 10067968,
+   "parts_progress_pct": 3.417
+  },
+  "edge_data_v1.pkl": {
+   "expected_bytes": 201511086,
+   "url": "https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/functional_data/functional_connectomics/node_and_edge_properties/v1/edge_data_v1.pkl",
+   "bytes": 0,
+   "verdict": "INCOMPLETE",
+   "note": "本地不存在（下载未完成）"
+  },
+  "readme_v1.md": {
+   "expected_bytes": 5594,
+   "url": "https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/functional_data/functional_connectomics/node_and_edge_properties/v1/readme_v1.md",
+   "bytes": 5594,
+   "sha256": "15e2811596a0ca409dd5d95ea3272698a560c2e710433ef8cae975d30628dd11",
+   "verdict": "COMPLETE"
+  }
+ },
+ "parse_status": "not_run（文件未完整）"
+}
