@@ -566,3 +566,26 @@ B3b 另指出**被比对记录内部不一致**（`A=[[0.9798,0.0202],[0.0375,0.
 **③ B3b 的边界与纪律均合规**：只写 2 个自有产物；未改 `src/mouse_cortex_*` / `tools/fetch_m11_*` / `tools/build_m11_*` / `data/m11_*` / `validate_p11_resting.py` 与任何冻结件；
 **跑了进度日志并带完成块**（`logs/m11_b3b_verify.log`，CPU 23.1 s / 墙钟 23.2 s = 比值 1.00）；工具**确定性**（gzip + HMM seed=0 + 无随机采样）；
 **F 序轴序缺陷 + 错误结论撤回**已如实登记（`assert` + 报告）。**"2 field"中的第二个 field 未测 ⇒ 只报 1 field，不外推** ✓。
+
+## 3y. R29（终稿）：G0 的"修引擎 vs 放松判据"质询**答复成立** —— 三样证据齐备
+
+节点就 RF-M11-H 交出三样证据，**主agent 采信**：
+1. **引擎侧改动**：`src/mouse_cortex_engine.py` **L211** 新增形参 `ext_abs_index: bool=True`、**L244** 属性、**L707–715** 改为 `_eid = (abs0+s) if self.ext_abs_index else s`、**L939** `assert_composable_for_segmentation()` 守卫。
+   **修改前行为**（即我引用的 172/11 与 165/28）：步模式按 `ext_off[s]`（**局部**步号）取事件 ⇒ 分段**重放** ⇒ 与其**逐位一致** ⇒ 确认我引用的数字来自**修复前快照**。
+2. **(f) 引擎未改**：改的是**夹具臂定义**（`t2_sync` 按臂选定编码：M9/M10/冻结档→E/I 两槽、修正档→四槽）；原异常 = 配置守卫在 `finalize()` L450 拒绝 ⇒ 该臂 **`invalid`**，**与 (e) 不同源**（栈顶 L450 vs L709；配置校验 vs 运行时事件索引）。
+3. **判据未改的证据**：(e) 仍是 `tot==base[0] ∧ np.array_equal(cnt, base[1])` —— **零容差**；且 **k 由 {1,2,5} 扩到 {1,2,3,5,10}（更严）**；(f) 阈值未改（实测 rel_diff 全 0）。
+
+**`off_state_equivalence` 的量化与处置（§三）**：
+| 臂 | 差异神经元 | `max\|Δcounts\|` | `max\|Δv\|` | 判定 |
+|---|---|---|---|---|
+| 三延迟档**无** ext（含密集 5639） | **0** | **0** | **0 mV** | **逐位** |
+| 单延迟档**含** ext | **0** | **0** | — | **逐位** |
+| 三延迟档**含** ext（无效比较臂） | 102/200 | 3 | **9.64 mV** | **语义级**（M10 丢事件，E-M10-2） |
+
+- **定性**：**不是浮点累加序** —— 差异量级 9.64 mV 是 `spacing(50mV)=3.81e−06 mV` 的 **2.5×10⁶ 倍**；且已验证"M10 含 ext ≡ M10 不含 ext"逐位相同 ⇒ 冻结件**丢弃全部外部事件**。
+- **处置 = 选 (a)：修到逐位一致，且不引入容差** —— 理由极重要：**为上游缺陷设容差，等于把缺陷固化成"可接受偏差"**（本项目的判据哲学正是"失败即反证、不静默"）。**主agent 完全同意**，并确认 `m11_*` 清单/notes **无需为此加容差行**。
+- **比较对象变更已显式登记**（`criteria_adjustments`）：三延迟档臂由"含 ext"改为"**纯网络**" + **新增**"密集 × 三延迟档逐位臂"（**此前从未测过**）+ 含 ext 单列为 **E-M10-2 诊断臂** ⇒ **属"把无效比较替换为有效且更严的比较"，不是放宽**。
+
+**独立复算入口（节点给出，主agent 已记录）**：
+`scan_m11_compose_matrix`（96 格矩阵 → `data/m11_compose_matrix.csv`）｜`minrepro_m11_delivery`（MR1–MR6）｜`scan_m11_engine --which t3`（(e) k∈{1,2,3,5,10} × step/chunk）｜`--which t6`（off_state_equivalence 四臂）｜`pytest tests/neuro/test_mouse_cortex_smoke.py -q`（**11 passed**）。
+**2026-10-11 会话终态：M11 G0 = `pass`（11/11 measured、11/11 pass、0 fail、0 unavailable），证据链含 96 格矩阵 + 域守卫 + 11 测试 + MR1–MR6 + 陈旧快照防护 + `defect_log`/`criteria_adjustments` 双登记。**
