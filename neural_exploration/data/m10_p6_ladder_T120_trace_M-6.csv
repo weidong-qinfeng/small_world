@@ -1,0 +1,3 @@
+# M10 P6 机制阶梯判决表（逐级：自检门三条 + 结论；结构证据级别 = 抽象/Fish1-partial 锚定）
+level,desc,selfsustain_ratio,selfsustain_pass,elasticity_4x,elasticity_monotone,elasticity_pass,bout_fraction,n_bouts,bout_pass,gate_all_pass,outcome,pop_rate_hz,rate_median_hz,silent_frac,wall_s_total
+M-6,慢恢复组分（主agent 裁决 3 指定候选）：STP τ_rec=26 s（= 成像 dwell 中位 26.5 s）+ GABA_B 慢组分 τ_slow=2 s,0.171909,0,8.329773,1,1,0.0,0,0,0,partial,0.227833,0.0,0.9,8073.6
