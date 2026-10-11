@@ -1,0 +1,130 @@
+{
+ "generated_by": "tools/build_m11_calcium_silence.py",
+ "generated_at": "2026-10-11T22:53:13Z",
+ "purpose": "J2（RF-M11-F §一）：把 P5 (b) 的**钙域静默比例口径**从 final=0 推向可定稿",
+ "frame_interval_s": 0.15873,
+ "frame_rate_hz": 6.300006,
+ "silence_definitions": {
+  "zero_activity": "观测窗内从未出现 > (ΔF/F 中位 + 3·MAD) 的事件",
+  "below_baseline": "单元时间均值 < 0（低于自身 F0=20 分位）",
+  "low_activity": "单元活动 p95 低于 **0.2 × 全单元 p95 中位**（固定阈值，**非自指分位**）",
+  "note": "早先两处退化口径（自指 p20、FOV 均值 vs 全局阈值）已修正并留档"
+ },
+ "unit_definitions": {
+  "per_roi_proxy": "20×20 px 空间分箱（50×50 µm @2.5 µm/px）——**非真实 ROI**（掩膜未解码）",
+  "full_fov": "全视野逐帧（200×200 px = 500×500 µm）"
+ },
+ "limitation": "**钙事件口径 ≠ spike rate**：钙域事件率与电生理发放率不同量纲；B3 代理行量化——以 in vitro 17.4/17.6 Hz 作 (a) 带会**高 8.7–34.8×** ⇒ 本条随每行出现",
+ "rows": [
+  {
+   "label": "field4 session4_scan7_field4 x[0,200)y[0,200)（200 片/2000 帧）",
+   "n_frames": 2000,
+   "shape": [
+    2000,
+    200,
+    200
+   ],
+   "frame_rate_hz": 6.300006,
+   "duration_s": 317.46,
+   "event_threshold_dff": 1.57847,
+   "dff_median": 0.423285,
+   "dff_mad": 0.385062,
+   "n_units_proxy": 100,
+   "unit_bin_px": 20,
+   "unit_area_um2": 2500.0,
+   "silent_frac_zero_activity": 0.49,
+   "silent_frac_below_baseline": 0.0,
+   "silent_frac_low_percentile": 0.0,
+   "fullfov_frame_no_event_frac": 0.8915,
+   "fullfov_frame_weak_frac": 0.0465,
+   "fullfov_fov_weak_threshold": 0.157106,
+   "unit_weak_threshold_p95": 0.216656,
+   "degenerate_check": "两处早先的**构造性退化**口径已修正（p20 自指 ⇒ 恒 20%；FOV 均值 vs 全局阈值 ⇒ 恒 1.0）",
+   "pixel_zero_event_frac": 0.005175,
+   "mean_events_per_unit": 10.3,
+   "median_events_per_unit": 1.0,
+   "source_dir": "data/m11_raw/microns/functional_subset",
+   "evidence_level": "measured",
+   "sentinel_rule": "int16-BE 直读 + **无掩膜**（低于基线样本保留并登记；哨兵仅指 32767 饱和）",
+   "note": "单元 = **空间分箱代理（proxy，非真实 ROI）**（无真实 ROI 掩膜：`field_seg_masks` 的 `compressed_segmentation` 本节点未自证解码）；**钙事件口径 ≠ spike rate**：钙域事件率与电生理发放率不同量纲；B3 代理行量化——以 in vitro 17.4/17.6 Hz 作 (a) 带会**高 8.7–34.8×** ⇒ 本条随每行出现"
+  },
+  {
+   "label": "field2 session5_scan3_field1 (0,0,0)（200 片/2000 帧）",
+   "n_frames": 2000,
+   "shape": [
+    2000,
+    100,
+    100
+   ],
+   "frame_rate_hz": 6.300006,
+   "duration_s": 317.46,
+   "event_threshold_dff": 2.308268,
+   "dff_median": 0.606383,
+   "dff_mad": 0.567295,
+   "n_units_proxy": 25,
+   "unit_bin_px": 20,
+   "unit_area_um2": 2500.0,
+   "silent_frac_zero_activity": 0.48,
+   "silent_frac_below_baseline": 0.0,
+   "silent_frac_low_percentile": 0.0,
+   "fullfov_frame_no_event_frac": 0.1465,
+   "fullfov_frame_weak_frac": 0.0005,
+   "fullfov_fov_weak_threshold": 0.224607,
+   "unit_weak_threshold_p95": 0.332784,
+   "degenerate_check": "两处早先的**构造性退化**口径已修正（p20 自指 ⇒ 恒 20%；FOV 均值 vs 全局阈值 ⇒ 恒 1.0）",
+   "pixel_zero_event_frac": 0.0,
+   "mean_events_per_unit": 98.68,
+   "median_events_per_unit": 1.0,
+   "source_dir": "data/m11_raw/microns/functional_subset_f2",
+   "evidence_level": "measured",
+   "sentinel_rule": "int16-BE 直读 + **无掩膜**（低于基线样本保留并登记；哨兵仅指 32767 饱和）",
+   "note": "单元 = **空间分箱代理（proxy，非真实 ROI）**（无真实 ROI 掩膜：`field_seg_masks` 的 `compressed_segmentation` 本节点未自证解码）；**钙事件口径 ≠ spike rate**：钙域事件率与电生理发放率不同量纲；B3 代理行量化——以 in vitro 17.4/17.6 Hz 作 (a) 带会**高 8.7–34.8×** ⇒ 本条随每行出现"
+  }
+ ],
+ "band_rows": [
+  {
+   "band_id": "P5b-silent-ca-perroi-proxy-field4",
+   "criterion": "P5 (b) 静默比例（钙域 · per-ROI 代理 · field4）",
+   "value_or_band": "zero_activity=0.4900; below_baseline=0.0000; low_activity=0.0000",
+   "n": 100,
+   "unit": "fraction of units",
+   "evidence": "measured",
+   "source": "data/m11_raw/microns/functional_subset",
+   "status": "measured（新增行；原行保留）",
+   "note": "**新行**（不改原 (b) 行）；**proxy 单元**（20 px 分箱 = 2500.0 µm²，非真实 ROI）；**钙事件口径 ≠ spike rate**：钙域事件率与电生理发放率不同量纲；B3 代理行量化——以 in vitro 17.4/17.6 Hz 作 (a) 带会**高 8.7–34.8×** ⇒ 本条随每行出现"
+  },
+  {
+   "band_id": "P5b-silent-ca-fullfov-field4",
+   "criterion": "P5 (b) 静默比例（钙域 · full-FOV · field4）",
+   "value_or_band": "frame_no_event_frac=0.8915; frame_weak_frac=0.0465; pixel_zero_frac=0.0052",
+   "n": 2000,
+   "unit": "fraction of frames/pixels",
+   "evidence": "measured",
+   "source": "data/m11_raw/microns/functional_subset",
+   "status": "measured（新增行）",
+   "note": "两口径并列（RF-M11-F §一.①）；**不得**与电生理静默比例混用（口径不同）"
+  },
+  {
+   "band_id": "P5b-silent-ca-perroi-proxy-field2",
+   "criterion": "P5 (b) 静默比例（钙域 · per-ROI 代理 · field2）",
+   "value_or_band": "zero_activity=0.4800; below_baseline=0.0000; low_activity=0.0000",
+   "n": 25,
+   "unit": "fraction of units",
+   "evidence": "measured",
+   "source": "data/m11_raw/microns/functional_subset_f2",
+   "status": "measured（新增行；原行保留）",
+   "note": "**新行**（不改原 (b) 行）；**proxy 单元**（20 px 分箱 = 2500.0 µm²，非真实 ROI）；**钙事件口径 ≠ spike rate**：钙域事件率与电生理发放率不同量纲；B3 代理行量化——以 in vitro 17.4/17.6 Hz 作 (a) 带会**高 8.7–34.8×** ⇒ 本条随每行出现"
+  },
+  {
+   "band_id": "P5b-silent-ca-fullfov-field2",
+   "criterion": "P5 (b) 静默比例（钙域 · full-FOV · field2）",
+   "value_or_band": "frame_no_event_frac=0.1465; frame_weak_frac=0.0005; pixel_zero_frac=0.0000",
+   "n": 2000,
+   "unit": "fraction of frames/pixels",
+   "evidence": "measured",
+   "source": "data/m11_raw/microns/functional_subset_f2",
+   "status": "measured（新增行）",
+   "note": "两口径并列（RF-M11-F §一.①）；**不得**与电生理静默比例混用（口径不同）"
+  }
+ ]
+}
