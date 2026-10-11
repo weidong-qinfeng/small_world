@@ -208,3 +208,52 @@
 - M10 的内核用 `assert` 直接抛异常（`larval_zf_circuit.py::run_protocol` 的双估计器断言）：优点是"当场炸"，缺点是**整轮输出（含 JSON/CSV）全部丢失**，事后无法审计是哪一段口径错了。
 - 本工具的选择：**记录到 `hard_failures` + 总判定置 `invalid` + exit=2**，输出照常落盘（S4 实测：`rel_diff=0.1304` ⇒ `invalid`、CSV/JSON 完整可用）。
 - 代价：脚本本身**不会非零退出以外的"硬停止"**（若调用方忽略 exit code 就可能漏掉）⇒ 规避方式：① exit code 语义固定并写入 docstring；② `hard_failures` 在 `print_summary` 与 JSON 顶层各出现一次；③ 只有**输出不变式**（硬门⑥/带纪律/子判据完整性）用 `raise`（那三类一旦违反，输出本身不可信）。
+
+## L19 — 🔴 清单 §10.1 的 GPU-h 公式常数偏大 **12.96×**（预算级发现）
+
+- 清单 §10.1 原文：`GPU-h = Σ_条件 Σ_试次 [ N_steps(T, dt) × ms_per_step(实测) × 3.6e-6 × (1+消融臂数) ]`。
+- **物理正确式**：`GPU-h = Σ (steps × ms_per_step) / 3.6e6`（1 h = 3.6e6 ms；即常数应为 **2.7778e-7**）。
+- **自相矛盾证据（同节内）**：该节同时写「单试次（T=30 s, dt=0.05 ms ⇒ 600,000 步）：N_mid **0.05–0.15 GPU-h**」。
+  用 0.3 ms/step 代入**清单的常数** ⇒ 600,000×0.3×3.6e-6 = **0.648 h**（是 0.05 的 12.96×）；
+  用**正确常数** ⇒ 600,000×0.3/3.6e6 = **0.05 h** ✅ 与该节的单试次行一致。
+- **影响**：若按清单常数做预算 ⇒ G1 段（本节点估 ≈8.9 GPU-h）会被算成 **115 GPU-h**，直接触发不必要的 NG 降档/云 GPU 裁决。
+- **处置**：本节点在 `m11_b3_g1_design.md` §9 明确采用 **1/3.6e6** 并逐条给算式；**建议主agent 把清单 §10.1 的常数更正为 `2.7778e-7` 或 `/3.6e6`**（按「先改清单再改代码」由您落）。**未擅自改清单。**
+
+## L20 — 🔴 R10 目标带的**样本范围实测更正**：落盘数据来自**单一 field**（不是 2 field）
+
+- 主agent 本轮表述：「2 field、317.5 s/**field**」。三处**独立实测证据**表明并非如此：
+
+| 证据 | 实测内容 |
+|---|---|
+| `data/m11_functional_subset_manifest.csv` | **200/200** 对象，url 前缀**唯一 = `session4_scan7_field4`**，`t_chunk` 0–199，verdict 全 `REACHABLE` |
+| 磁盘 `data/m11_raw/microns/functional_subset/` | **200 个文件**，前缀全部为 `session4_scan7_field4_*` |
+| `data/_mainagent_m11_same_source_band.json` | `n_frames = 2000`、`duration_s = 317.46001511744595`、`frame_hz = 6.300006`（**单一序列**） |
+| `data/m11_microns_protocol.json` | **声明** 2 个 series（`session4_scan7_field4` / `session5_scan3_field1`），**第 2 个未取数** |
+
+- ⇒ **正确的样本范围 = 1 field × 200 chunk × 10 帧 = 2,000 帧 = 317.46 s**；R10 的「两个」指的是**两条分析管线**
+  （`frame_mean` / `high_pixel_frac`），**不是两个 field**。
+- **连带后果（重要）**：R10 自己列的「**节点须做：① 两个 field 都建带 ② 给跨 field 离散度**」**仍然 open**
+  ⇒ 该带**跨 field 通用性未测**、**跨 field 离散度 unavailable** ⇒ **RF-M11-2 的「同阶窗」目前只能取跨条件离散度**
+  （Q/H 双法 2.6–6×、跨平滑 3.29×、跨箱宽 4.2×）作依据，**不得**声称来自跨 field。
+- **处置**：新增 `microns_functional_calcium_sample_scope_perfield_measured`（measured）；旧行
+  `microns_functional_calcium_sample_scope` **value 逐字保留**、`final` 置 0、note 追加实测更正指针（append-only）。
+  已同步写入 `m11_p5_targets.json::sample_scope_correction`。
+- **同时补入**（主agent 本轮要求）：`microns_same_source_tau_band_smoothed_ref`（5 帧平滑 τ 29.68/30.48 s，放大 3.29×）
+  与 `microns_same_source_dwell_anchors`（Q：中位 1.11–1.27 s、p90 7.0–7.6 s、n=69/63；H：3.17–6.67 s、p90 32.6–34.2 s、n=17/16）。
+  后者的 H 法 **n=17/16 接近 RF-M11-4「bout 数 ≥10」下限** ⇒ 再少即须判 `unavailable`。
+
+## L21 — 收尾状态（G0 阻塞下的"待命"定义）
+
+| 项 | 状态 |
+|---|---|
+| 设计与工具 | **验收通过**（主agent 代码级核对）；`--check-targets` 自检 OK（97/97 行，CSV⟺JSON 一致） |
+| 冒烟 | S1–S6 全过（见 L13 / §8）；M10 数值与 SYNTHETIC 计数**一律不作 M11 判据** |
+| G1 执行 | **不得启动**（G0 = fail，R11）；协议矩阵与预算已在 `m11_b3_g1_design.md` §9 待命 |
+| 判据带待定稿 | `silent_frac_lo/hi`（钙/电生理两域）、`rate_median_hz_measured_calcium_band_lo/hi`、`ei_ratio_measured`、`single_trial_wall_s_max`、`microns_sentinel_mask_policy` 等 **14 行 final=0** |
+| 未做（≠未命中） | 钙口径带的逐 ROI 事件率管线（J2）、Allen in vivo 率带（J1）、G1 全矩阵（J3–J5） |
+
+## L22 — 教训沉淀（补充）
+
+6. **"声明" ≠ "落盘"**：`protocol.json` 声明 2 个 functional_series，但 manifest/磁盘只有 1 个 ⇒ **凡"数据来自 N 个 X"的表述必须回溯到 manifest/磁盘逐件核**（本次差 2× 的样本范围与「跨 field」结论）。
+7. **公式常数也要做量纲自检**：清单 §10.1 的 `3.6e-6` 与同节单试次行相差 12.96× ⇒ **凡预算公式必须与同文档的"示例单值"交叉验算**（本工作包的"双估计器"律在**预算文本**上的又一次实例化）。
+8. **"两个口径"与"两个样本"是两件事**：R10 的 2 条管线被读成 2 个 field ⇒ 把**方法学口径差**误当**生物学变异**（与既有口径纪律同源）。

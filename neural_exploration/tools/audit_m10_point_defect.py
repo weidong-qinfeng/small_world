@@ -40,7 +40,12 @@ def rss_mb() -> float:
 
 
 def run_arm(n, lam, T_s, seed, form, device="cpu"):
-    """M10 P5 的配置语义：N 点神经元 / indegree 20 / bias 亚阈 / λ0=8 Hz 外部事件。"""
+    """配置语义尽量贴近 M10 P5 工作点（N / indegree 20 / 亚阈 bias 150 / 抑制 g_inh 档）。
+
+    ⚠️ **参数需按 M10 的 `m10_calibration_scan.csv` 工作点核对**：本工具的目的是**两档内核语义的
+    相对差**（同网络/同事件表），但若工作点落在饱和/静默区，差异会被掩盖 ⇒ 先跑 `--lam 0,1,4`
+    确认 pop 落 0.1–10 Hz 区再放大规模。
+    """
     T = int(T_s / 0.05e-3)
     e = MouseCortexEngine(n, device=device, use_compile=False, verbose=False)
     e.configure_refractory(form)
@@ -48,13 +53,13 @@ def run_arm(n, lam, T_s, seed, form, device="cpu"):
     E = int(n * 20)
     pre = rng.integers(0, n, E)
     post = rng.integers(0, n, E)
-    g = rng.uniform(6.0, 18.0, E).astype(np.float32)
+    g = rng.uniform(2.0, 7.0, E).astype(np.float32)
     inh = rng.random(E) < 0.2
     e.add_synapses(pre, post, g, np.full(E, 40, dtype=np.int32), inhibitory=inh,
                    syn_class=inh.astype(np.int8))
     e.finalize()
-    e.set_neuron_heterogeneity(np.exp(rng.normal(np.log(230.0), 0.30, n)).astype(np.float32))
-    n_ev = int(8.0 * lam * T * 0.05e-3 * n)
+    e.set_neuron_heterogeneity(np.exp(rng.normal(np.log(150.0), 0.30, n)).astype(np.float32))
+    n_ev = int(2.0 * lam * T * 0.05e-3 * n)
     st = rng.integers(0, T, max(0, n_ev))
     ne = rng.integers(0, n, max(0, n_ev))
     gg = rng.uniform(17.0, 23.0, max(0, n_ev)).astype(np.float32)
