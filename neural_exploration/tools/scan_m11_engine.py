@@ -1478,6 +1478,14 @@ def make_plot(res: dict, path: str) -> str:
     return "ok"
 
 
+def _sha256(path: str) -> str:
+    try:
+        with open(path, "rb") as f:
+            return hashlib.sha256(f.read()).hexdigest()[:32]
+    except Exception:  # noqa: BLE001
+        return "unavailable"
+
+
 def _probe_fit(t10: dict) -> dict:
     """三档 ms/step 的 `t = a + b·N` 最小二乘拟合（与 M9/M10 锚同形式；**禁用段 0 预热值**）。"""
     out = {}
@@ -1513,6 +1521,7 @@ def build_summary(res: dict) -> dict:
 
     crit = {}
     crit["a_spike_time_alignment"] = dict(
+        reference="解析闭式（与引擎同一 Euler 递推）首发放步 + 链式延迟语义 + M9 冻结内核（稀疏链逐位）",
         **st(t1.get("crit_a_pass"), bool(t1),
              "解析（Euler 离散闭式）首发放步误差 ≤1 步 + 链式延迟语义 + M9 稀疏逐位"),
         detail=dict(chain_m9_vs_m11_frozen=t1.get("chain", {}).get(
@@ -1523,6 +1532,7 @@ def build_summary(res: dict) -> dict:
                          for k, v in t1.items() if isinstance(v, dict) and k.startswith("I_")}))
     pb = [p.get("crit_b_pass") for p in t5.get("points", [])]
     crit["b_state_fraction"] = dict(
+        reference="M10 修正内核（同网络/同事件表/同 seed，机制全关 + REF_FROZEN 档）",
         **st(bool(pb) and all(pb), bool(pb),
              "静默比差 <1pp 且发放率分布 KS p>0.05（在 3 档目标密度下）"),
         detail=[dict(target_hz=p.get("target_hz"), achieved_hz=p.get("achieved_hz"),
@@ -1531,32 +1541,38 @@ def build_summary(res: dict) -> dict:
                      bit_identical=p.get("off_vs_m10_bit_identical"))
                 for p in t5.get("points", [])])
     crit["c_mechanism_metrics"] = dict(
+        reference="逐类电导积分的闭式重算（由 spike 时刻 + 边表 + 逐类 τ 独立算出，含外部事件）",
         **st(t7.get("dual_estimator_pass"), bool(t7),
              "逐类电导积分：引擎累积（动态）vs 闭式（由 spike 时刻+边表独立算出）≤2%"),
         detail=dict(integral_rel_diff=t7.get("integral_rel_diff"),
                     accumulated=t7.get("integrals_accumulated"),
                     closed_form=t7.get("integrals_closed_form")))
     crit["d_determinism"] = dict(
+        reference="同引擎同参数重跑 + 分段（k 扫描）+ 跨进程（3 新进程）逐位",
         **st(t9.get("sparse", {}).get("bit_identical"), bool(t9),
              "同引擎同参数重跑 + 分段/跨进程逐位（(e)(h) 更严）"),
         detail=dict(sparse_step_chunk=t9.get("sparse"), high_event_rate=t9.get("high_event_rate")))
     crit["e_segment_composability"] = dict(
+        reference="同一配置仅改分段策略 k（1/2/5 与 3/10 扩展扫描）× step/chunk 两路径",
         **st(t3.get("crit_e_pass"), bool(t3),
              "k=1/2/5 总脉冲与逐神经元计数逐位相同（step/chunk 两口径）；反例臂必现差异"),
         detail=dict(step=t3.get("step"), chunk=t3.get("chunk"),
                     control_falsifiable=t3.get("control_falsifiable")))
     crit["f_synchronous_firing"] = dict(
+        reference="M9 冻结内核（判别对照：同步发放必抛 IndexError）+ 逐类落槽的独立期望",
         **st(t2.get("crit_f_pass"), bool(t2),
              "M9 抛错 / M11 正常；且逐类环槽残量与独立重算一致（≤2%）"),
         detail=dict(m9_raises=t2.get("m9_raises"), m11_ok=t2.get("m11_ok"),
                     slot_check=t2.get("slot_check")))
     crit["g_target_density"] = dict(
+        reference="Allen ephys 密度锚（口径受限）+ 2 档灵敏度点，被测对象同上（M10 修正内核）",
         **st(t5.get("crit_g_pass"), bool(t5.get("points")),
              "3 档密度（含 Allen 中位带；口径受限）下的 (a)–(c) 类对齐复测；"
              "MICrONS 钙域密度锚 = unavailable（B1 L11.3/L11.5 未决）⇒ 如实登记、不计 fail"),
         detail=dict(density_anchored_points=t5.get("density_anchored_points"),
                     anchors=t5.get("anchors", {}).get("allen")))
     crit["h_cross_process"] = dict(
+        reference="3 个全新进程（显式 venv 解释器）逐位 SHA-256",
         **st(t4.get("crit_h_pass"), bool(t4),
              "3 个全新进程 × 2 档（on / off_frozen）→ 脉冲总数与逐神经元计数逐位相同"),
         detail={a: {k: v for k, v in t4.get(a, {}).items() if k != "runs"}
@@ -1579,21 +1595,47 @@ def build_summary(res: dict) -> dict:
                  "MECHANISM_NOT_IMPLEMENTED）"),
             detail=t8),
         upstream_defect_E_M9_4=dict(
-            status=("registered" if t11 else "unavailable"),
+            # R14 裁定：`registered` 非法 ⇒ 该字段**不是判据**，标 `informational` 且**不进判据集合**
+            status=("informational" if t11 else "unavailable"),
             note=(t11.get("conclusion") or "本轮未运行"), detail=t11),
         no_leak=dict(**st(t12.get("crit_pass"), bool(t12), "分段 RSS 增长有界 + 单一 arange 缓冲"),
                      detail=t12),
     )
-    states = [crit[k]["status"] for k in crit] + [ext["off_state_equivalence"]["status"],
-                                                 ext["slot_encoding_assertions"]["status"],
-                                                 ext["positive_controls"]["status"]]
-    ran = [s for s in states if s != "unavailable"]
-    verdict = ("pass" if states and all(s == "pass" for s in states)
-               else ("partial" if any(s == "pass" for s in states)
-                     else ("unavailable" if not ran else "fail")))
+    # ---- G0 通过条件（主agent RF-M11-F 第 4 条：不允许"两项 fail + 其余未跑 ⇒ partial"的模糊表述）----
+    judge_keys = ["crit." + k for k in crit] + ["ext.off_state_equivalence",
+                                                "ext.slot_encoding_assertions",
+                                                "ext.positive_controls"]
+    all_states = {k: (crit[k[5:]]["status"] if k.startswith("crit.") else ext[k[4:]]["status"])
+                  for k in judge_keys}
+    measured = [k for k, v in all_states.items() if v not in ("unavailable",)]
+    failed = [k for k, v in all_states.items() if v == "fail"]
+    missing = [k for k, v in all_states.items() if v == "unavailable"]
+    # **硬条件**：全部判据项（(a)–(h) + 三项扩展）均须 `measured 且 pass`
+    verdict = "pass" if (not failed and not missing) else (
+        "fail" if failed else ("invalid" if not measured else "incomplete"))
+    gate_pass_condition = ("pass ⟺ 全部判据项 {crit.a..crit.h, ext.off_state_equivalence, "
+                           "ext.slot_encoding_assertions, ext.positive_controls} 均 `pass`"
+                           "（无 `fail`、无 `unavailable`）；"
+                           "存在 `unavailable` ⇒ `incomplete`（**不得**写成 pass 或 partial）；"
+                           "存在 `fail` ⇒ `fail`")
     return dict(generated_by="tools/scan_m11_engine.py", gate="G0/P3",
                 engine_version="m11e-1.0-4slot+laminar-delay-pack+slowvar",
                 criteria=crit, extensions=ext,
+                gate_pass_condition=gate_pass_condition,
+                criterion_states=all_states,
+                criterion_counts=dict(n_total=len(judge_keys), n_measured=len(measured),
+                                      n_pass=len([v for v in all_states.values() if v == "pass"]),
+                                      n_fail=len(failed), n_unavailable=len(missing)),
+                evidence=dict(alignment_json_sha256=_sha256(os.path.join(
+                                  DATA_DIR, "m11_engine_alignment.json")),
+                              engine_src_sha256=_sha256(os.path.join(
+                                  PROJECT_ROOT, "neural_exploration", "src",
+                                  "mouse_cortex_engine.py")),
+                              tool_sha256=_sha256(os.path.abspath(__file__)),
+                              minrepro=os.path.join(DATA_DIR, "m11_minrepro_delivery.json"),
+                              stale_guard="本 summary 由本轮实跑生成；"
+                                          "若与 `criterion_states` 不一致，以本文件为准"
+                                          "（旧快照的 (e) step/（f) m11_ok 值见 RF-M11-F 引用，已作废）"),
                 gate_verdict=verdict,
                 note="四态：pass/fail/invalid/unavailable；未运行项一律 unavailable，不计 fail",
                 probe=dict(rows=t10.get("rows", []), device=t10.get("device"),

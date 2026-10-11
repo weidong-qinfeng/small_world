@@ -1,12 +1,12 @@
 {
  "generated_by": "M11 执行节点 B3（工作包 G1：P5 判据/协议设计与工具骨架）",
- "generated_at": "2026-10-11（收口轮：主agent 六项裁决落盘）",
+ "generated_at": "2026-10-11（掩膜裁决 + J2 归 B1 + 探针级方案）",
  "policy": {
   "rule": "本节点**不启动任何仿真或 >10 min 的作业**（纪律）；以下作业一律由主agent 以**托管后台作业**启动并回传日志",
   "thread_discipline": "CPU 作业必须 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1；MPS 作业**串行**（禁并发）",
   "progress_rule": "长作业进度必须看「累计 CPU 时间 / 墙钟」之比，**不得**只看 `ps %CPU`（M10 L46/L50：实测占空比 ≈10%，曾导致误杀）",
   "kill_rule": "终止前必须看进度",
-  "g0_blocker": "R11 → G0 现状 = **partial**（(a)(e)(f) pass；off_state_equivalence 已由 fail 转 pass；(b)(c)(d)(g)(h) 与 4 项 extensions 仍 unavailable）⇒ **G0 通过条件 = 全项 measured 且全过** ⇒ **G1 暂不得启动**。J3–J5（需仿真的 P5 运行）在 G0 全项通过前**不要启动**；J2 已批准但执行归 B1。"
+  "g0_blocker": "R13 后：节点报 G0 = pass，但 (b) 出现 fail→pass 的极端翻转（0.5 Hz 档 14.0 pp/KS p=6.8e-4 → 0.0 pp/p=1.0/逐位相同）⇒ 主agent 暂缓采信，要求交「翻转解释 + root_cause/fix 字段 + registered 四态归一」⇒ 未解释前 G0 不算通过 ⇒ G1 继续停在设计/工具态。J3–J5（需仿真的 P5 运行）不要启动；先按 design §10 跑三档探针（P0/P1/P2）。"
  },
  "common_env": {
   "cwd": "/Users/weidong/ai/small_world",
@@ -67,11 +67,12 @@
    "reserved_keys_in_targets_table": [
     "rate_median_hz_measured_calcium_band_lo",
     "rate_median_hz_measured_calcium_band_hi",
-    "silent_frac_lo",
-    "silent_frac_hi",
+    "silent_frac_calcium_band_lo",
+    "silent_frac_calcium_band_hi",
     "microns_functional_calcium_crossfield_dispersion"
    ],
-   "acceptance_in_table": "见 m11_p5_targets.csv::j2_reserved_keys_and_acceptance（5 条验收条件 a–e）"
+   "acceptance_in_table": "见 m11_p5_targets.csv::j2_reserved_keys_and_acceptance（5 条验收条件 a–e）",
+   "owner": "M11-B1（主agent 已直接派给 B1；本节点不动 J2）"
   },
   {
    "job_id": "J3",
@@ -157,6 +158,10 @@
  ],
  "not_requested": [
   {
+   "item": "由本节点跑任何探针/仿真",
+   "reason": "主agent 明确「不要真跑」；三档探针方案已写入 design §10 与本节，等 G0 解释落盘并通过后由主agent 排算力"
+  },
+  {
    "item": "任何 MPS 作业",
    "reason": "本节点现无需求；纪律要求串行且 MPS 仅由主agent 调度"
   },
@@ -172,5 +177,50 @@
    "item": "S 门（P6）目标带与机制阶梯",
    "reason": "归属 S 门；本工作包只登记边界（microns_same_source_tau_band_ref 标为 S 门所有）"
   }
- ]
+ ],
+ "probe_plan": {
+  "principle": "先探针 → 裁决 → 再烧（清单 §0.9 纪律 7）；三档可逐档裁决，任一档 hard_failures 非空即停",
+  "P0_minimal_probe": {
+   "runs": 3,
+   "spec": "N=31k, T=10 s, dose {0,1,4}, seed 0",
+   "est_gpu_h": 0.1,
+   "est_wall": "≈5–10 min",
+   "decides": "实测 ms/step 与 RSS；零驱动臂 10 s 内脉冲数 ⇒ 定 T_min（>=300 ⇒ T_min=10 s；300>S0>=75 ⇒ 20 s；S0<75 ⇒ 40 s）"
+  },
+  "P1_dose_sweep": {
+   "runs": 6,
+   "spec": "N=31k, T=T_min, dose {0,0.5,1,2,4,8}, seed 0",
+   "est_gpu_h": "0.20（T_min=10 s）/ 0.40（20 s）",
+   "est_wall": "≈12–30 min",
+   "decides": "(a)(b)(c)(d) 首读 + 张力三点（n_both_in_band + 两条 Spearman）⇒ 若已见「无一剂量同时落带且单调对立」⇒ 提前换杠杆"
+  },
+  "P2_duration_ladder": {
+   "runs": 9,
+   "spec": "N=31k, T={T_min,2T_min,4T_min}, dose {0,1,4}, seed 0",
+   "est_gpu_h": "0.30（T_min=10 s）",
+   "est_wall": "≈18–30 min",
+   "decides": "硬门④ 机器校验 + 漂移量（对照 A12 更正后的 +1.4% 受控口径）"
+  },
+  "probe_total": {
+   "runs": 18,
+   "est_gpu_h": 0.6,
+   "est_wall": "≈35–60 min"
+  },
+  "if_Tmin_rises_to_20s": {
+   "escalation": "阶梯 {20,40,80} s 使正式矩阵升到 ≈13.2–13.6 GPU-h（超 <=10 包络）⇒ 预注册降档菜单待裁决：N1 剂量减到 5 档（推荐，≈11.8）／N2 T 用 {20,40}+10 s 作描述性／N3 包络临时提到 14 GPU-h"
+  },
+  "incremental_log_spec": {
+   "dir": "neural_exploration/data/m11_p5_runs/",
+   "per_run_files": [
+    "<run_id>.json（完成即写：status/ms_per_step_steady/n_spikes/rate_median/silent_frac/wall_s/pid/host/device）",
+    "<run_id>.done（mtime = 完成时刻）",
+    "<run_id>.fail（含 stderr 尾部；不计入分母，四态 invalid）",
+    "<run_id>_poptrace.npy",
+    "<run_id>_counts.csv（含 cell_type）"
+   ],
+   "run_id": "{stage}_{N}_{T}ms_d{dose}_s{seed}",
+   "progress_one_liner": "ls -t neural_exploration/data/m11_p5_runs/*.done | head -1 （mtime = 最近完成）；ls .../*.done | wc -l（已完成数）",
+   "starvation_check": "以累计 CPU/墙钟比判（M10 L46/L50：ps %CPU 不可信，曾实测占空比 10%）"
+  }
+ }
 }

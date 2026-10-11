@@ -178,7 +178,33 @@ def main():
             except Exception as e:
                 nwb_head = dict(prefix_bytes=os.path.getsize(p), status="open_failed", error=str(e)[:120])
 
+    # units.csv 行数：**派生外推**（1 MB 前缀内的行数 × 全量/前缀比）——明确标 derived，非 measured
+    derived = None
+    up = os.path.join(BO, "units_prefix_1MB.csv")
+    if os.path.exists(up):
+        n_pref = sum(1 for _ in open(up, encoding="utf-8", errors="replace"))
+        bytes_pref = os.path.getsize(up)
+        full = 51439189
+        derived = dict(
+            evidence="**derived（外推，不是 measured）**",
+            method="行数 ≈ 前缀行数 × (全量字节 / 前缀字节)；假设行均长在文件内近似constant",
+            prefix_bytes=bytes_pref, prefix_rows=n_pref,
+            est_total_rows=int(round(n_pref * full / bytes_pref)),
+            note="**精确 units 数需全量 units.csv（DQ-6）**；此处仅供量级参考，**不得**作为 P7/P8 的计数带",
+            cross_check="probes.csv 的 332 probe × 384 channel ≈ 127,488 个通道（通道≠unit，仅作量级一致性参考）")
+
+    dandi_route = dict(
+        dandiset="DANDI 000021（Allen Visual Coding Neuropixels）",
+        n_assets=214, total_bytes=477562344354,
+        smallest_asset=dict(path="sub-703279277/sub-703279277_ses-719161530_probe-729445654_ecephys.nwb",
+                            size=71781159,
+                            url="https://api.dandiarchive.org/api/assets/11646673-ac9a-42a0-b768-470af79ff4bc/download/"),
+        throughput_measured="**7,237 B/s**（1 MB Range 实测，120 s 未取完）",
+        verdict="unavailable（**本轮不取**：71.8 MB @7 KB/s ≈ 2.8 h ⇒ 违反 >30 min 纪律）",
+        note="DANDI 路由已探明并登记；作为 DQ-7 的托管候选（比 brain-map 的 91.5 MB 更小）")
+
     out = dict(generated_by="tools/build_m11_allen_activity.py", generated_at=utcnow(),
+               units_count_derived=derived, dandi_route=dandi_route,
                ruling="RF-M11-A：P2 功能通道回退到自描述源（HDF5/CSV）",
                channel_priority=dict(
                    a="Allen Brain Observatory Neuropixels ecephys-cache（**本轮已落**：自描述 CSV + NWB/HDF5）",
