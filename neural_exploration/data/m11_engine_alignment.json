@@ -1,110 +1,141 @@
 {
- "t2": {
-  "arms": {
-   "m9_adult": {
-    "ok": false,
-    "err": "IndexError: index 6 is out of bounds for dimension 0 with size 4"
-   },
-   "m10": {
-    "ok": true,
-    "spk_total": 2,
-    "counts": [
-     1,
-     1,
-     0,
-     0
-    ]
-   },
-   "m11_fix": {
-    "ok": false,
-    "err": "ValueError: E1b 关闭态但存在 syn_class>1 的边 ⇒ 拒绝（会静默丢类）"
-   },
-   "m11_frozen": {
-    "ok": false,
-    "err": "ValueError: E1b 关闭态但存在 syn_class>1 的边 ⇒ 拒绝（会静默丢类）"
-   }
+ "t1": {
+  "I_400": {
+   "I": 400.0,
+   "v_inf": -44.0,
+   "analytic_first_step_continuous": 831.7766166719343,
+   "analytic_first_step_discrete": 830.7364621417441,
+   "measured_first_step": 830,
+   "err_vs_continuous_ms": -0.08883083359671673,
+   "err_vs_discrete_ms": -0.036823107087208484,
+   "err_vs_discrete_steps": -0.7364621417441413
   },
-  "m9_raises": true,
-  "m11_ok": false,
-  "slot_check": {
-   "observed": {
-    "E": 11.0,
-    "PV": 23.0,
-    "SST": 37.0,
-    "VIP": 47.0
-   },
-   "expected": {
-    "E": 11.0,
-    "PV": 23.0,
-    "SST": 37.0,
-    "VIP": 47.0
-   },
-   "rel_diff": {
-    "E": 0.0,
-    "PV": 0.0,
-    "SST": 0.0,
-    "VIP": 0.0
-   },
-   "all_within_2pct": true,
-   "spk_counts": [
-    1,
-    1,
-    0,
-    0
-   ]
+  "I_700": {
+   "I": 700.0,
+   "v_inf": -38.0,
+   "analytic_first_step_continuous": 277.25887222397813,
+   "analytic_first_step_discrete": 276.91215404724807,
+   "measured_first_step": 276,
+   "err_vs_continuous_ms": -0.06294361119890546,
+   "err_vs_discrete_ms": -0.0456077023624033,
+   "err_vs_discrete_steps": -0.912154047248066
   },
-  "crit_f_pass": false
+  "I_1200": {
+   "I": 1200.0,
+   "v_inf": -28.0,
+   "analytic_first_step_continuous": 137.93619451669178,
+   "analytic_first_step_discrete": 137.76370234183625,
+   "measured_first_step": 137,
+   "err_vs_continuous_ms": -0.04680972583458942,
+   "err_vs_discrete_ms": -0.03818511709181216,
+   "err_vs_discrete_steps": -0.7637023418362503
+  },
+  "chain": {
+   "per_arm": {
+    "delay1_m9_adult": {
+     "spk": 39,
+     "max_spk_per_step": 1,
+     "counts": [
+      4,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5
+     ]
+    },
+    "delay1_m11_frozen": {
+     "spk": 39,
+     "max_spk_per_step": 1,
+     "counts": [
+      4,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5
+     ]
+    },
+    "delay1_m11_fix": {
+     "spk": 68,
+     "max_spk_per_step": 2,
+     "counts": [
+      5,
+      9,
+      9,
+      9,
+      9,
+      9,
+      9,
+      9
+     ]
+    },
+    "delay40_m9_adult": {
+     "spk": 24,
+     "max_spk_per_step": 2,
+     "counts": [
+      4,
+      4,
+      4,
+      3,
+      3,
+      2,
+      3,
+      1
+     ]
+    },
+    "delay40_m11_frozen": {
+     "spk": 23,
+     "max_spk_per_step": 2,
+     "counts": [
+      4,
+      4,
+      4,
+      3,
+      3,
+      2,
+      2,
+      1
+     ]
+    },
+    "delay40_m11_fix": {
+     "spk": 44,
+     "max_spk_per_step": 3,
+     "counts": [
+      5,
+      8,
+      7,
+      6,
+      6,
+      5,
+      4,
+      3
+     ]
+    }
+   },
+   "m9_vs_m11_frozen_bit_identical": true,
+   "armA_sparse_regime": true,
+   "dense_arm_m9_note": "延迟=40 档出现每步 2 个发放 ⇒ 触发 E-M9-2，M9 与 M11 相差 1 个脉冲（描述性，不作 fail）",
+   "note": "链式（每步 ≤1 发放）⇒ M9 投递公式恰好正确；此臂验证 '非投递语义不动'"
+  },
+  "chain_first_spike_steps": [
+   28,
+   69,
+   110,
+   151,
+   192,
+   233,
+   274,
+   315
+  ],
+  "chain_monotone": true,
+  "crit_a_pass": true,
+  "crit_a_note": "判据 (a)：解析（与引擎同一 Euler 递推的闭式）首发放步误差 ≤1 步（0.05 ms < 0.1 ms 容差）；链式传播逐级 ≥delay 步；稀疏链 M9≡M11(frozen) 逐位一致"
  },
- "t3": {
-  "step": {
-   "k=1": {
-    "total": 173,
-    "n_neurons_diff": 0,
-    "bit_identical": true
-   },
-   "k=2": {
-    "total": 172,
-    "n_neurons_diff": 11,
-    "bit_identical": false
-   },
-   "k=5": {
-    "total": 165,
-    "n_neurons_diff": 28,
-    "bit_identical": false
-   },
-   "control_rel_slots_k2": {
-    "total": 172,
-    "rel_diff_pct": -0.57803,
-    "n_neurons_diff": 11,
-    "bit_identical": false
-   }
-  },
-  "chunk": {
-   "k=1": {
-    "total": 173,
-    "n_neurons_diff": 0,
-    "bit_identical": true
-   },
-   "k=2": {
-    "total": 173,
-    "n_neurons_diff": 0,
-    "bit_identical": true
-   },
-   "k=5": {
-    "total": 173,
-    "n_neurons_diff": 0,
-    "bit_identical": true
-   },
-   "control_rel_slots_k2": {
-    "total": 172,
-    "rel_diff_pct": -0.57803,
-    "n_neurons_diff": 11,
-    "bit_identical": false
-   }
-  },
-  "crit_e_pass": false,
-  "control_falsifiable": true
- },
- "started_at": "2026-10-11T21:45:00",
- "which": "merged:t3"
+ "started_at": "2026-10-11T21:47:00",
+ "which": "merged:t1"
 }

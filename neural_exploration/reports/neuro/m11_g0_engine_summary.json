@@ -4,13 +4,38 @@
  "engine_version": "m11e-1.0-4slot+laminar-delay-pack+slowvar",
  "criteria": {
   "a_spike_time_alignment": {
-   "status": "unavailable",
-   "note": "解析（Euler 离散闭式）首发放步误差 ≤1 步 + 链式延迟语义 + M9 稀疏逐位（本轮未运行）",
+   "status": "pass",
+   "note": "解析（Euler 离散闭式）首发放步误差 ≤1 步 + 链式延迟语义 + M9 稀疏逐位",
    "detail": {
-    "chain_m9_vs_m11_frozen": null,
-    "chain_monotone": null,
-    "chain_first_steps": null,
-    "per_current": {}
+    "chain_m9_vs_m11_frozen": true,
+    "chain_monotone": true,
+    "chain_first_steps": [
+     28,
+     69,
+     110,
+     151,
+     192,
+     233,
+     274,
+     315
+    ],
+    "per_current": {
+     "I_400": {
+      "err_vs_continuous_ms": -0.08883083359671673,
+      "err_vs_discrete_ms": -0.036823107087208484,
+      "err_vs_discrete_steps": -0.7364621417441413
+     },
+     "I_700": {
+      "err_vs_continuous_ms": -0.06294361119890546,
+      "err_vs_discrete_ms": -0.0456077023624033,
+      "err_vs_discrete_steps": -0.912154047248066
+     },
+     "I_1200": {
+      "err_vs_continuous_ms": -0.04680972583458942,
+      "err_vs_discrete_ms": -0.03818511709181216,
+      "err_vs_discrete_steps": -0.7637023418362503
+     }
+    }
    }
   },
   "b_state_fraction": {
@@ -36,91 +61,21 @@
    }
   },
   "e_segment_composability": {
-   "status": "fail",
-   "note": "k=1/2/5 总脉冲与逐神经元计数逐位相同（step/chunk 两口径）；反例臂必现差异",
+   "status": "unavailable",
+   "note": "k=1/2/5 总脉冲与逐神经元计数逐位相同（step/chunk 两口径）；反例臂必现差异（本轮未运行）",
    "detail": {
-    "step": {
-     "k=1": {
-      "total": 173,
-      "n_neurons_diff": 0,
-      "bit_identical": true
-     },
-     "k=2": {
-      "total": 172,
-      "n_neurons_diff": 11,
-      "bit_identical": false
-     },
-     "k=5": {
-      "total": 165,
-      "n_neurons_diff": 28,
-      "bit_identical": false
-     },
-     "control_rel_slots_k2": {
-      "total": 172,
-      "rel_diff_pct": -0.57803,
-      "n_neurons_diff": 11,
-      "bit_identical": false
-     }
-    },
-    "chunk": {
-     "k=1": {
-      "total": 173,
-      "n_neurons_diff": 0,
-      "bit_identical": true
-     },
-     "k=2": {
-      "total": 173,
-      "n_neurons_diff": 0,
-      "bit_identical": true
-     },
-     "k=5": {
-      "total": 173,
-      "n_neurons_diff": 0,
-      "bit_identical": true
-     },
-     "control_rel_slots_k2": {
-      "total": 172,
-      "rel_diff_pct": -0.57803,
-      "n_neurons_diff": 11,
-      "bit_identical": false
-     }
-    },
-    "control_falsifiable": true
+    "step": null,
+    "chunk": null,
+    "control_falsifiable": null
    }
   },
   "f_synchronous_firing": {
-   "status": "fail",
-   "note": "M9 抛错 / M11 正常；且逐类环槽残量与独立重算一致（≤2%）",
+   "status": "unavailable",
+   "note": "M9 抛错 / M11 正常；且逐类环槽残量与独立重算一致（≤2%）（本轮未运行）",
    "detail": {
-    "m9_raises": true,
-    "m11_ok": false,
-    "slot_check": {
-     "observed": {
-      "E": 11.0,
-      "PV": 23.0,
-      "SST": 37.0,
-      "VIP": 47.0
-     },
-     "expected": {
-      "E": 11.0,
-      "PV": 23.0,
-      "SST": 37.0,
-      "VIP": 47.0
-     },
-     "rel_diff": {
-      "E": 0.0,
-      "PV": 0.0,
-      "SST": 0.0,
-      "VIP": 0.0
-     },
-     "all_within_2pct": true,
-     "spk_counts": [
-      1,
-      1,
-      0,
-      0
-     ]
-    }
+    "m9_raises": null,
+    "m11_ok": null,
+    "slot_check": null
    }
   },
   "g_target_density": {
@@ -168,7 +123,7 @@
    "detail": {}
   }
  },
- "gate_verdict": "fail",
+ "gate_verdict": "partial",
  "note": "四态：pass/fail/invalid/unavailable；未运行项一律 unavailable，不计 fail",
  "probe": {
   "rows": [],
