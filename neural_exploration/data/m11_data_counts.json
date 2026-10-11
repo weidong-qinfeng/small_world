@@ -1,6 +1,6 @@
 {
  "generated_by": "tools/build_m11_inventory.py",
- "generated_at": "2026-10-11T23:07:31Z",
+ "generated_at": "2026-10-11T23:09:35Z",
  "units": "bytes; evidence ∈ {measured, derived, literature, unavailable}",
  "microns_structure": {
   "evidence": "measured(元数据) + derived(chunk 计数); shard 清单 = measured(有界)",
@@ -3026,8 +3026,8 @@
     "declared_bytes": null,
     "exists": true,
     "note": "",
-    "bytes_on_disk": 18041,
-    "sha256": "b52869354082f6bdcd314e8a3cc0d5744dc98a54e7771319b765b0da805e00ae",
+    "bytes_on_disk": 19288,
+    "sha256": "a513a6f9ef17a38909030ee0c0c5b7f83bd7b6d076d24f7edde92b95b8772734",
     "status": "COMPLETE"
    },
    {
@@ -3043,9 +3043,9 @@
   ]
  },
  "inventory": {
-  "n_items": 257,
-  "total_bytes": 346752726,
-  "total_MB": 346.753
+  "n_items": 258,
+  "total_bytes": 346775880,
+  "total_MB": 346.776
  },
  "functional_connectomics_release": {
   "evidence": "measured(列举 200：KeyCount=4)",

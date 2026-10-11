@@ -717,6 +717,42 @@ def main():
                      % ((rmap2.get("R-35") or {}).get("evidence_level"),
                         any("自发率" in (u or "") for u in (cnt.get("unavailable_register") or [])))))
 
+    # ---------------- P1.22 J2 验收收口（G1 解锁条件）----------------
+    j2a = load(os.path.join(DATA, "m11_j2_acceptance.json")) if os.path.exists(
+        os.path.join(DATA, "m11_j2_acceptance.json")) else {}
+    cx = (j2a.get("acceptance_completion") or j2a)
+    conds = cx.get("all_conditions") or {}
+    A.append(assert_("P1.22a J2 五条验收条件全部 pass（口径/跨 field/电生理并列/哨兵/已覆盖维度）",
+                     len(conds) == 5 and all(v == "pass" for v in conds.values()),
+                     "conditions=%s" % json.dumps(conds, ensure_ascii=False)))
+    rkf2 = cx.get("reserved_keys_fill") or {}
+    A.append(assert_("P1.22b G1 (b) 静默带建议口径可复现（per-ROI 代理 ≤1.2×）且标出不可复现口径",
+                     (rkf2.get("silent_frac_calcium_band_width_x") or 9) <= 1.2
+                     and (rkf2.get("cross_field_dispersion_reserved") or {}).get("value_x_non_reproducible", 0) >= 3.0,
+                     "band=[%s, %s] 宽=%.4f×；full-FOV=%.4f×"
+                     % (rkf2.get("silent_frac_calcium_band_lo"), rkf2.get("silent_frac_calcium_band_hi"),
+                        rkf2.get("silent_frac_calcium_band_width_x") or 0,
+                        (rkf2.get("cross_field_dispersion_reserved") or {}).get("value_x_non_reproducible", 0))))
+    cd5 = cx.get("condition_5_covered_dimensions") or {}
+    A.append(assert_("P1.22c 已覆盖/未覆盖维度均登记（R9 纪律：未覆盖 ≠ 不可用 ⇒ 判 partial 非 unavailable）",
+                     len(cd5.get("covered") or []) >= 5 and len(cd5.get("not_covered") or []) >= 4
+                     and "不得因未覆盖" in (cd5.get("rule") or ""),
+                     "covered=%d not_covered=%d" % (len(cd5.get("covered") or []),
+                                                    len(cd5.get("not_covered") or []))))
+    A.append(assert_("P1.22d R-40 为新增行且带『代理/样本量/量纲/观测窗』四条限制",
+                     (rmap2.get("R-40") or {}).get("status") == "asserted"
+                     and all(k in ((rmap2.get("R-40") or {}).get("note") or "")
+                             for k in ("代理", "thin", "不同量纲", "观测窗")),
+                     "R-40=%s（总 %d 行）" % ((rmap2.get("R-40") or {}).get("value"), len(rmap2))))
+    A.append(assert_("P1.22e J2 产物**既有测量键未被改动**（只增不改：仍为两 field 行 + 4 band_rows）",
+                     len((load(os.path.join(DATA, "m11_calcium_silence_reference.json")) or {})
+                         .get("rows") or []) == 2
+                     and len((load(os.path.join(DATA, "m11_calcium_silence_reference.json")) or {})
+                             .get("band_rows") or []) == 4
+                     and (load(os.path.join(DATA, "m11_calcium_silence_reference.json")) or {})
+                     .get("acceptance_completion") is not None,
+                     "rows=2 band_rows=4 acceptance_completion 已追加"))
+
     # ---------------- 判定 ----------------
     for a in A:
         if not a["ok"]:

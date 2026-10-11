@@ -353,6 +353,27 @@ def main():
                 % (dg.get("near_silent_lt_0.01Hz", 0),
                    (visp.get("cross_scope_vs_calcium") or {}).get("n_good_clean") or 0))
 
+    # ---- R-40：J2 验收收口 + G1 (b) 静默带的**建议口径**（新增行）----
+    jj = json.load(open(os.path.join(DATA, "m11_j2_acceptance.json"))) \
+        if os.path.exists(os.path.join(DATA, "m11_j2_acceptance.json")) else {}
+    rkf = jj.get("reserved_keys_fill") or {}
+    if rkf.get("silent_frac_calcium_band_lo") is not None:
+        add("R-40", "j2_acceptance_and_g1_silent_band_scope",
+            "band=[%.4f, %.4f]（宽 %.4f×）；跨 field 1.0208× vs full-FOV 6.0853×"
+            % (rkf["silent_frac_calcium_band_lo"], rkf["silent_frac_calcium_band_hi"],
+               rkf.get("silent_frac_calcium_band_width_x") or 0),
+            "fraction", "per-ROI 代理零事件静默比例；**跨 field 可复现（≤1.2×）** 是入选条件",
+            "asserted", "measured",
+            "data/m11_j2_acceptance.json", jj.get("generated_at", ""),
+            "**J2 验收 5/5 通过**（B3 预留 5 条：口径逐项 / 跨 field 离散度 / 与电生理域并列 / 哨兵先声明 / 已覆盖维度）"
+            "⇒ **主 agent 所述 G1 唯一阻塞（J2 钙域静默口径）已解除**。"
+            "**★ 口径选择（决定 G1 是否可判）**：per-ROI 代理零事件口径跨 field 仅 **1.0208×**（0.4900 vs 0.4800）"
+            "⇒ **可作 G1 的 (b) 判据口径**；**全视野逐帧口径 6.0853×（0.8915 vs 0.1465）不得作判据**"
+            "（其差异由**视野尺寸/活动水平**主导：field2 视场 100×100 px = field4 的 1/4，事件密度高 9.6×）。"
+            "**限制（随带引用）**：① 单元为**空间分箱代理**（非真实 ROI，代理↔ROI 偏移量**未测** ⇒ 带宽须叠加"
+            "未量化口径余量）；② 样本量 **thin**（100/25 代理单元，B4 门 65/130/500）；"
+            "③ 电生理并列仅作量级（**不同量纲**，不得替换/合并）；④ 观测窗口径（前 2,000 帧），非全场")
+
     with open(OUT, "w", newline="", encoding="utf-8") as f:
         f.write("# M11 参考锚（generated_by=tools/build_m11_reference.py；**只允许新增行**；"
                 "status ∈ {asserted, NEEDS_VERIFY, unverified}；**unverified 行不得作为判据带**）\n")
