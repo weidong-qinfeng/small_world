@@ -75,6 +75,8 @@ def main(argv=None) -> int:
     ap.add_argument("--lam0", type=float, default=2.0)
     ap.add_argument("--g-ext", type=float, default=20.0)
     ap.add_argument("--bias-median", type=float, default=250.0)
+    ap.add_argument("--g-exc", type=float, default=9.0)
+    ap.add_argument("--g-inh", type=float, default=22.0)
     ap.add_argument("--out-json", default=None)
     ap.add_argument("--out-csv", default=os.path.join(DATA_DIR, "m10_p6_levels.csv"))
     args = ap.parse_args(argv)
@@ -82,7 +84,8 @@ def main(argv=None) -> int:
     bands = load_bands()
     cfg = LEVELS[args.level]
     Pm = ZFNetParams(n_neuron=args.n_neuron, indegree=args.indegree,
-                     bias_median_mv_s=args.bias_median)
+                     bias_median_mv_s=args.bias_median,
+                     g_exc=args.g_exc, g_inh=args.g_inh)
     T = int(round(args.T_ms / DT_MS)); settle = int(round(args.settle_ms / DT_MS))
     t0 = time.time()
     print(f"[P6 {args.level}] {cfg['desc']}", flush=True)

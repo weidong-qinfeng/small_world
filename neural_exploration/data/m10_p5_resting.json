@@ -1,0 +1,436 @@
+{
+ "generated_by": "tools/validate_p10_resting.py",
+ "generated_at": "2026-10-11T15:10:00",
+ "structure_evidence_level": "abstract(anchored_on_fish1_partial)",
+ "fish1_anchors": {
+  "source": "data/m10_connectome_counts.json",
+  "roster": 180782,
+  "cells": 13813,
+  "synapses": 23987,
+  "cell_type_counts": {
+   "exc": 2763,
+   "inh": 2384,
+   "na": 25199
+  },
+  "completeness": "partial"
+ },
+ "net_params": {
+  "n_neuron": 1000,
+  "indegree": 20,
+  "inh_frac": 0.3,
+  "g_exc": 1.0,
+  "g_inh": 22.0,
+  "delay_max": 40,
+  "bias_median_mv_s": 150.0,
+  "bias_cv": 0.3,
+  "seed": 0
+ },
+ "bands_used": {
+  "rate_band_lo": "0.30",
+  "rate_band_hi": "1.50",
+  "silent_band_lo": "0.50",
+  "silent_band_hi": "0.95",
+  "selfsustain_ratio_max": "0.10",
+  "drive_elasticity_min": "0.30",
+  "drive_monotone_required": "1",
+  "single_trial_gpu_h_max": "0.50",
+  "settle_window_ms": "500",
+  "n_trials_min": "3"
+ },
+ "drive_sweep": [
+  {
+   "n_neuron": 1000,
+   "T_ms": 2000.0,
+   "settle_ms": 300.0,
+   "lam_hz": 0.0,
+   "n_events": 0,
+   "g_ext": 20.0,
+   "spk_total": 60.0,
+   "pop_rate_hz": 0.03,
+   "rate_median_hz": 0.0,
+   "rate_mean_hz": 0.03,
+   "rate_p95_hz": 0.0,
+   "silent_frac": 0.998,
+   "n_nan": 0,
+   "wall_s": 3.5,
+   "ms_per_step_steady": 0.0759,
+   "segments": [
+    {
+     "step": 0,
+     "w": 10000,
+     "wall_s": 0.766,
+     "ms_per_step": 0.0766
+    },
+    {
+     "step": 10000,
+     "w": 10000,
+     "wall_s": 0.765,
+     "ms_per_step": 0.0764
+    },
+    {
+     "step": 20000,
+     "w": 10000,
+     "wall_s": 0.759,
+     "ms_per_step": 0.0759
+    },
+    {
+     "step": 30000,
+     "w": 10000,
+     "wall_s": 0.758,
+     "ms_per_step": 0.0757
+    },
+    {
+     "step": 40000,
+     "w": 6000,
+     "wall_s": 0.455,
+     "ms_per_step": 0.0759
+    }
+   ],
+   "bout_fraction": 0.0,
+   "n_bouts": 0,
+   "silent_bin_frac": 0.0,
+   "bout_median_s": 0.0,
+   "nbins": 20,
+   "mean_bin_spikes": 2.6500000953674316,
+   "pop_trace_mean_hz": 0.026499999221414328,
+   "drive_mult": 0.0
+  },
+  {
+   "n_neuron": 1000,
+   "T_ms": 2000.0,
+   "settle_ms": 300.0,
+   "lam_hz": 4.0,
+   "n_events": 8000,
+   "g_ext": 20.0,
+   "spk_total": 285.0,
+   "pop_rate_hz": 0.1425,
+   "rate_median_hz": 0.0,
+   "rate_mean_hz": 0.1425,
+   "rate_p95_hz": 0.0,
+   "silent_frac": 0.964,
+   "n_nan": 0,
+   "wall_s": 3.65,
+   "ms_per_step_steady": 0.07919999999999999,
+   "segments": [
+    {
+     "step": 0,
+     "w": 10000,
+     "wall_s": 0.8,
+     "ms_per_step": 0.08
+    },
+    {
+     "step": 10000,
+     "w": 10000,
+     "wall_s": 0.789,
+     "ms_per_step": 0.0789
+    },
+    {
+     "step": 20000,
+     "w": 10000,
+     "wall_s": 0.795,
+     "ms_per_step": 0.0794
+    },
+    {
+     "step": 30000,
+     "w": 10000,
+     "wall_s": 0.794,
+     "ms_per_step": 0.0793
+    },
+    {
+     "step": 40000,
+     "w": 6000,
+     "wall_s": 0.475,
+     "ms_per_step": 0.0791
+    }
+   ],
+   "bout_fraction": 0.0,
+   "n_bouts": 0,
+   "silent_bin_frac": 0.0,
+   "bout_median_s": 0.0,
+   "nbins": 20,
+   "mean_bin_spikes": 12.449999809265137,
+   "pop_trace_mean_hz": 0.12450000271201134,
+   "drive_mult": 0.5
+  },
+  {
+   "n_neuron": 1000,
+   "T_ms": 2000.0,
+   "settle_ms": 300.0,
+   "lam_hz": 8.0,
+   "n_events": 16000,
+   "g_ext": 20.0,
+   "spk_total": 612.0,
+   "pop_rate_hz": 0.306,
+   "rate_median_hz": 0.0,
+   "rate_mean_hz": 0.306,
+   "rate_p95_hz": 2.0,
+   "silent_frac": 0.921,
+   "n_nan": 0,
+   "wall_s": 3.8,
+   "ms_per_step_steady": 0.0819,
+   "segments": [
+    {
+     "step": 0,
+     "w": 10000,
+     "wall_s": 0.808,
+     "ms_per_step": 0.0808
+    },
+    {
+     "step": 10000,
+     "w": 10000,
+     "wall_s": 0.872,
+     "ms_per_step": 0.0872
+    },
+    {
+     "step": 20000,
+     "w": 10000,
+     "wall_s": 0.809,
+     "ms_per_step": 0.0809
+    },
+    {
+     "step": 30000,
+     "w": 10000,
+     "wall_s": 0.827,
+     "ms_per_step": 0.0827
+    },
+    {
+     "step": 40000,
+     "w": 6000,
+     "wall_s": 0.487,
+     "ms_per_step": 0.0811
+    }
+   ],
+   "bout_fraction": 0.0,
+   "n_bouts": 0,
+   "silent_bin_frac": 0.0,
+   "bout_median_s": 0.0,
+   "nbins": 20,
+   "mean_bin_spikes": 27.149999618530273,
+   "pop_trace_mean_hz": 0.27149999514222145,
+   "drive_mult": 1.0
+  },
+  {
+   "n_neuron": 1000,
+   "T_ms": 2000.0,
+   "settle_ms": 300.0,
+   "lam_hz": 16.0,
+   "n_events": 32000,
+   "g_ext": 20.0,
+   "spk_total": 1590.0,
+   "pop_rate_hz": 0.795,
+   "rate_median_hz": 0.0,
+   "rate_mean_hz": 0.795,
+   "rate_p95_hz": 4.5,
+   "silent_frac": 0.79,
+   "n_nan": 0,
+   "wall_s": 3.89,
+   "ms_per_step_steady": 0.08445,
+   "segments": [
+    {
+     "step": 0,
+     "w": 10000,
+     "wall_s": 0.841,
+     "ms_per_step": 0.0841
+    },
+    {
+     "step": 10000,
+     "w": 10000,
+     "wall_s": 0.844,
+     "ms_per_step": 0.0844
+    },
+    {
+     "step": 20000,
+     "w": 10000,
+     "wall_s": 0.854,
+     "ms_per_step": 0.0854
+    },
+    {
+     "step": 30000,
+     "w": 10000,
+     "wall_s": 0.841,
+     "ms_per_step": 0.0841
+    },
+    {
+     "step": 40000,
+     "w": 6000,
+     "wall_s": 0.507,
+     "ms_per_step": 0.0845
+    }
+   ],
+   "bout_fraction": 0.0,
+   "n_bouts": 0,
+   "silent_bin_frac": 0.0,
+   "bout_median_s": 0.0,
+   "nbins": 20,
+   "mean_bin_spikes": 69.75,
+   "pop_trace_mean_hz": 0.6975000351667404,
+   "drive_mult": 2.0
+  },
+  {
+   "n_neuron": 1000,
+   "T_ms": 2000.0,
+   "settle_ms": 300.0,
+   "lam_hz": 32.0,
+   "n_events": 64000,
+   "g_ext": 20.0,
+   "spk_total": 4159.0,
+   "pop_rate_hz": 2.0795,
+   "rate_median_hz": 0.0,
+   "rate_mean_hz": 2.0795,
+   "rate_p95_hz": 8.5,
+   "silent_frac": 0.512,
+   "n_nan": 0,
+   "wall_s": 4.15,
+   "ms_per_step_steady": 0.0904,
+   "segments": [
+    {
+     "step": 0,
+     "w": 10000,
+     "wall_s": 0.897,
+     "ms_per_step": 0.0896
+    },
+    {
+     "step": 10000,
+     "w": 10000,
+     "wall_s": 0.907,
+     "ms_per_step": 0.0907
+    },
+    {
+     "step": 20000,
+     "w": 10000,
+     "wall_s": 0.904,
+     "ms_per_step": 0.0904
+    },
+    {
+     "step": 30000,
+     "w": 10000,
+     "wall_s": 0.904,
+     "ms_per_step": 0.0904
+    },
+    {
+     "step": 40000,
+     "w": 6000,
+     "wall_s": 0.542,
+     "ms_per_step": 0.0903
+    }
+   ],
+   "bout_fraction": 0.0,
+   "n_bouts": 0,
+   "silent_bin_frac": 0.0,
+   "bout_median_s": 0.0,
+   "nbins": 20,
+   "mean_bin_spikes": 182.8000030517578,
+   "pop_trace_mean_hz": 1.8279999494552612,
+   "drive_mult": 4.0
+  },
+  {
+   "n_neuron": 1000,
+   "T_ms": 2000.0,
+   "settle_ms": 300.0,
+   "lam_hz": 64.0,
+   "n_events": 128000,
+   "g_ext": 20.0,
+   "spk_total": 10470.0,
+   "pop_rate_hz": 5.235,
+   "rate_median_hz": 4.5,
+   "rate_mean_hz": 5.235,
+   "rate_p95_hz": 14.0,
+   "silent_frac": 0.123,
+   "n_nan": 0,
+   "wall_s": 4.56,
+   "ms_per_step_steady": 0.09920000000000001,
+   "segments": [
+    {
+     "step": 0,
+     "w": 10000,
+     "wall_s": 0.988,
+     "ms_per_step": 0.0988
+    },
+    {
+     "step": 10000,
+     "w": 10000,
+     "wall_s": 0.996,
+     "ms_per_step": 0.0995
+    },
+    {
+     "step": 20000,
+     "w": 10000,
+     "wall_s": 0.989,
+     "ms_per_step": 0.0989
+    },
+    {
+     "step": 30000,
+     "w": 10000,
+     "wall_s": 0.99,
+     "ms_per_step": 0.0989
+    },
+    {
+     "step": 40000,
+     "w": 6000,
+     "wall_s": 0.601,
+     "ms_per_step": 0.1001
+    }
+   ],
+   "bout_fraction": 0.0,
+   "n_bouts": 0,
+   "silent_bin_frac": 0.0,
+   "bout_median_s": 0.0,
+   "nbins": 20,
+   "mean_bin_spikes": 457.3500061035156,
+   "pop_trace_mean_hz": 4.573499858379364,
+   "drive_mult": 8.0
+  }
+ ],
+ "verdict": {
+  "p5_c_selfsustain": {
+   "value": 0.09803921568627451,
+   "limit": 0.1,
+   "pass_": true,
+   "m9_baseline": 0.9853
+  },
+  "p5_d_elasticity": {
+   "value": 5.795751633986928,
+   "limit": 0.3,
+   "monotone": true,
+   "pass_": true,
+   "m9_baseline": 0.0725
+  },
+  "p5_a_rate_median": {
+   "value": 0.0,
+   "band": [
+    0.3,
+    1.5
+   ],
+   "pass_": false,
+   "imaging_note": ""
+  },
+  "p5_b_silent": {
+   "value": 0.921,
+   "band": [
+    0.5,
+    0.95
+   ],
+   "pass_": true
+  },
+  "p5_bout_present": {
+   "value": 0.0,
+   "pass_": false,
+   "m9_baseline": 0.0
+  },
+  "p5_e_bounded": {
+   "nan": 0,
+   "pass_": true
+  },
+  "p5_g_determinism": {
+   "run1_spk": 612.0,
+   "run2_spk": 612.0,
+   "bit_identical": true
+  }
+ },
+ "G1_gate": {
+  "pass_": true,
+  "rule": "(c) 自持比 ≤ 上限 ∧ (d) 4× 驱动增幅 ≥ 下限（清单 §4.2 G1 门判定）"
+ },
+ "all_pass": false,
+ "elapsed_s": 31.7
+}

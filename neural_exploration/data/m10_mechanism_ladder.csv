@@ -1,0 +1,20 @@
+# M10 判据带 —— 运行前定稿（生成器 tools/build_m10_reference_bands.py）；不事后调
+# 修改纪律：只允许**新增行**，原行保留（M9 L36.3）
+level,mechanism,param,lo,hi,unit,note
+M-1,STP 抑制型（Tsodyks–Markram）,u0,0.30,0.70,,M10 §4.1.1；语义复用 M2 冻结件 src/synapse_model.py
+M-1,STP 抑制型,tau_rec_s,0.10,2.00,s,M10 §4.1.1
+M-1,STP 抑制型,tau_fac_s,0.01,0.10,s,M10 §4.1.1（短易化）
+M-2,STP 易化型,u0,0.05,0.30,,M10 §4.1.1
+M-2,STP 易化型,tau_fac_s,0.10,1.00,s,M10 §4.1.1
+M-2,STP 易化型,tau_rec_s,0.05,0.50,s,M10 §4.1.1
+M-3,GABA 亚型异质（A 快 + B 慢）,tau_A_ms,5,20,ms,M10 §4.1.1；**数据侧无亚型标注** → 类级文献先验 + 测量限制（§1.1.2 允许）
+M-3,GABA 亚型异质,tau_B_ms,80,400,ms,M10 §4.1.1
+M-3,GABA 亚型异质,frac_B,0.05,0.50,,亚型比例扫描范围（无标注 → 扫描 + 登记为非数据驱动）
+M-4,调质增益（tonic→phasic）,g_mod,0.50,2.00,,M10 §4.1.1；须作用于**状态变量**而非仅背景率（M9 R2 教训）
+M-4,调质增益,tau_mod_s,0.50,10.00,s,M10 §4.1.1
+M-5,组合（M-1..M-4 最优子集）,n_global_params_max,8,8,,M10 §4.1.1 组合上限（防组合爆炸式拟合）
+GATE,自检门 1：无输入不得自持,selfsustain_ratio_max,0.10,0.10,,零驱动群率/基准群率上限；M9 实测 0.9853 → 反证基线
+GATE,自检门 2：驱动弹性,drive_elasticity_min,0.30,0.30,,4× 驱动增幅下限；M9 实测 +0.0725 → 反证基线
+GATE,自检门 3：双态存在,bout_fraction_min,0.05,1.0,,活动 bout 占比须 >0（带下界 0.05）；M9 实测 0.0000 → 反证基线
+GATE,现象级：慢变量相关,slow_var_corr_min,0.30,1.0,,机制内部慢变量轨迹 vs 群率慢涨落 |r| 下限（机制归属证据链，双轨）
+GATE,消融：关闭机制 → 双态消失,ablation_bout_fraction_max,0.00,0.02,,关闭态须回到 M9 语义（bout≈0）且逐 spike 等价（§2.3 关闭态等价）

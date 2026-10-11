@@ -70,7 +70,10 @@ def build_engine(p: ZFNetParams, device: str = "cpu", use_abs_slots: bool = True
     gmax = np.where(inh, rng.uniform(0.8, 1.2, E) * p.g_inh,
                     rng.uniform(0.8, 1.2, E) * p.g_exc).astype(np.float32)
     dly = np.full(E, max(2, int(p.delay_max)), dtype=np.int32)   # 统一延迟（单组 ⇒ chunk 快路径）
-    e.add_synapses(pre, post, gmax, dly, inhibitory=inh)
+    # **必须同时传 `syn_class`**：冻结内核的投递槽由 `syn_class>0` 决定（`t_post_off =
+    # post + n*(cls>0)`）；只传 `inhibitory=` 会让抑制边走**兴奋槽** ⇒ 静默失效（M10 L21 实测）。
+    cls = np.where(inh, 1, 0).astype(np.int8)
+    e.add_synapses(pre, post, gmax, dly, inhibitory=inh, syn_class=cls)
     e.finalize()
     bias = np.exp(rng.normal(math.log(p.bias_median_mv_s), p.bias_cv,
                              p.n_neuron)).astype(np.float32)
