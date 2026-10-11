@@ -587,6 +587,60 @@ def main(argv=None) -> int:
                  cross["parse_metrics"]["mine"]["structure_pooled"]["px_h"],
                  cross["parse_metrics"]["theirs"]["lat_x_mean"], 100 * ag["rel_lat_x"]))
 
+    # ---------------- RF-33 §二 要求的"一张表"（自包含：解码复核 + 两口径 AR(1)+状态结构 + 并列对照）----------------
+    def _fmt(v, nd=3):
+        return ("%.*f" % (nd, v)) if isinstance(v, (int, float)) else "n/a"
+
+    md = []
+    md.append("### ① 解码复核（独立；含 `<i2` 对照）")
+    md.append("| 量 | `>i2`（正解） | `<i2`（对照） |")
+    md.append("|---|---|---|")
+    md.append("| 横向相邻像素 r | **%.4f** | %.5f |" % (st[">i2（正解）"]["px_h"], st["<i2（对照）"]["px_h"]))
+    md.append("| 纵向相邻像素 r | **%.4f** | %.5f |" % (st[">i2（正解）"]["px_v"], st["<i2（对照）"]["px_v"]))
+    md.append("| 相邻帧 r | **%.4f** | %.5f |" % (st[">i2（正解）"]["ft"], st["<i2（对照）"]["ft"]))
+    md.append("| p50 中位（区间） | %.1f（%.0f–%.0f） | %.1f |" % (
+        st[">i2（正解）"]["p50_median"], st[">i2（正解）"]["p50_min"], st[">i2（正解）"]["p50_max"],
+        st["<i2（对照）"]["p50_median"]))
+    md.append("| 值域 min | %d | — |" % gmin)
+    md.append("| `int16<0` 比例 | **%d/%d = %.6f%%** | — |" % (
+        sentinels["neg16"], sentinels["total"], 100 * sentinels["ratio_of_total"]))
+    md.append("")
+    md.append("### ② 两口径 AR(1) + 状态结构（≥300 门显式打勾）")
+    md.append("| 口径 | n | dt(s) | φ未平滑 | τ未平滑(s) | φ平滑 | **τ平滑(s)** | Q低dwell/p90(s) | H低dwell/p90(s) | "
+              "Q转换(Hz) | H转换(Hz) | H占用低 | 内部一致性 | ≥300门 |")
+    md.append("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
+    for b in bands:
+        ar, q, h = b["AR1"], b["Q_method"], b["H_K2"]
+        md.append("| %s | %d | %.6f | %.5f | %s | %.5f | **%s** | %.3f/%.3f | %.3f/%.3f | %.4f | %.4f | %.3f | rel=%.3f %s | %s |" % (
+            b["label"], b["n_frames_binned"], b["dt_bin_s"], ar["phi_unsmoothed"], _fmt(ar["tau_unsmoothed_s"]),
+            ar["phi_smoothed"], _fmt(ar["tau_s"]),
+            q["dwell"]["low"]["median_s"], q["dwell"]["low"]["p90_s"],
+            h["dwell"]["low"]["median_s"], h["dwell"]["low"]["p90_s"],
+            q["transition_rate_hz"], h["transition_rate_hz"], h["occupancy"][0],
+            b["internal_consistency"]["rel_diff"], "pass" if b["internal_consistency"]["pass_"] else "FAIL",
+            "✓" if b["sample_size_gate"]["valid"] else "✗"))
+    md.append("")
+    md.append("### ③ 与对照源并列（>5%% 必须定位口径维度）")
+    md.append("| pipeline | φ 我方/对方（Δ） | τ 我方/对方 | Δτ | 归因 |")
+    md.append("|---|---|---|---|---|")
+    for c in cross["comparisons"]:
+        att = ("dt 口径归因后残差 %+.3f%%" % (100 * c["tau_nominal_vs_theirs"])) if c["tau_nominal_vs_theirs"] else "同口径"
+        md.append("| %s | %.6f / %.6f（%+.4f%%） | %s / %s | **%+.2f%%** | %s |" % (
+            c["theirs_key"], c["my_phi"], c["their_phi"], 100 * c["rel_phi"],
+            _fmt(c["my_tau_s"]), _fmt(c["their_tau_s"]), 100 * c["rel_tau"], att))
+    md.append("")
+    md.append("### ④ 对照（该 τ 非块伪影）")
+    md.append("| 对照 | τ平滑(s) | τ未平滑(s) | Q低dwell(s) |")
+    md.append("|---|---|---|---|")
+    for k in ("real_argv_order", "block_shuffled", "within_block_shuffled", "white_noise_null"):
+        c = controls[k]
+        md.append("| %s | %s | %s | %s |" % (k, _fmt(c["tau_smoothed_s"]), _fmt(c["tau_unsmoothed_s"]), _fmt(c["Q_dwell_low_s"])))
+    md.append("")
+    md.append("> 判定：%s" % controls["_verdict"]["text"])
+    summary_table = "\n".join(md)
+    print("\n" + "=" * 30 + " 一张表（RF-33 §二） " + "=" * 30)
+    print(summary_table)
+
     payload = dict(
         task="M11-B3b 独立复核：MICrONS 功能体素序列解码 + 同源成像目标带",
         independence="本工具未参照 M11-B1 实现；解码路径独立写就并自证；下游估计器复用 M10 冻结口径",
@@ -606,6 +660,7 @@ def main(argv=None) -> int:
         contiguity=contig,
         controls=controls,
         crosscheck=cross,
+        summary_table_markdown=summary_table,
         bands=bands,
         gates=dict(MIN_FRAMES_VALID=MIN_FRAMES_VALID, MIN_FRAMES_SHAPE=MIN_FRAMES_SHAPE,
                    TAU_MIN_FRAMES=TAU_MIN_FRAMES, MIN_FRAMES_BIC=MIN_FRAMES_BIC),

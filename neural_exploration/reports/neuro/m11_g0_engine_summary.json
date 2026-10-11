@@ -302,9 +302,9 @@
      "spk_total": 244,
      "sha256": "3d7a2b56707a29d3c3369610206697419437cd9f815fa7130c227b8f3a2e8df8",
      "pids": [
-      40868,
-      40869,
-      40886
+      41173,
+      41174,
+      41185
      ]
     },
     "off_frozen": {
@@ -313,9 +313,9 @@
      "spk_total": 3730,
      "sha256": "c29dd7a0ee3a7f74f4064db92cb28c859345a11cbbd1285460949abcc6dd41ea",
      "pids": [
-      40887,
-      40888,
-      40889
+      41201,
+      41203,
+      41209
      ]
     }
    }
@@ -475,8 +475,8 @@
      "spk_total": 244.0,
      "counts_sum": 244.0,
      "rel_diff_count_vs_total": 0.0,
-     "wall_s": 1.945880334,
-     "wall_from_ms_per_step_s": 1.9458803339999997
+     "wall_s": 1.7636381659999998,
+     "wall_from_ms_per_step_s": 1.763638166
     },
     "core_readback": {
      "core_key": "nc4_slow1_semantic_fix",
@@ -745,31 +745,31 @@
     "rows": [
      {
       "seg": 0,
-      "rss_mb": 190.2,
+      "rss_mb": 190.22,
       "ar_buf_numel": 4096
      },
      {
       "seg": 1,
-      "rss_mb": 190.41,
+      "rss_mb": 190.44,
       "ar_buf_numel": 4096
      },
      {
       "seg": 2,
-      "rss_mb": 190.59,
+      "rss_mb": 190.55,
       "ar_buf_numel": 4096
      },
      {
       "seg": 3,
-      "rss_mb": 190.77,
+      "rss_mb": 190.7,
       "ar_buf_numel": 4096
      },
      {
       "seg": 4,
-      "rss_mb": 190.77,
+      "rss_mb": 190.7,
       "ar_buf_numel": 4096
      }
     ],
-    "rss_growth_mb": 0.5700000000000216,
+    "rss_growth_mb": 0.47999999999998977,
     "ar_buf_numel_last": 4096,
     "crit_pass": true,
     "note": "禁以动态规模为缓存键（M9 真 bug）；`_ar_buf` 必须保持**单一**增长缓冲"
@@ -843,7 +843,7 @@
   "n_unavailable": 0
  },
  "evidence": {
-  "alignment_json_sha256": "54ec78e98fe8d85dfe752592775b4286",
+  "alignment_json_sha256": "bba3d3a3c70b3e4cd81ed65c8c32e2af",
   "engine_src_sha256": "6feb61291ad336e8048b1411c2169252",
   "tool_sha256": "ffe7b771041b2a788080fcdb543d3364",
   "minrepro": "/Users/weidong/ai/small_world/neural_exploration/data/m11_minrepro_delivery.json",
