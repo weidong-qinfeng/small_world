@@ -1,0 +1,6 @@
+# M10 追加要求 1：在修正内核上复测 M9 关键反证（同一 M9 定稿网络/参数/协议）
+# 协议：T=1000ms settle=300ms segment=2000 g_ext=19.230769（tools/diag_p7_drive_sensitivity.py 原协议）
+# 口径：bout = 可证伪 interior 口径（100 ms 分箱，两侧须有静默箱，≥2 箱）
+engine,lam0,n_events,pop_rate_hz,rate_mean_hz,rate_median_hz,silent_frac,bout_fraction,n_bouts,silent_bin_frac,ms_per_step,wall_s
+m10,0.0,0,4.502065,4.502065,0.0,0.758156,0.0,0,0.0,2.8151,67.7
+m10,0.5,90140,4.636939,4.636939,0.0,0.686352,0.0,0,0.0,2.8889,67.3
