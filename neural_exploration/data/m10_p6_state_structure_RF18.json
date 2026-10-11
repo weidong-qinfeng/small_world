@@ -1,0 +1,166 @@
+{
+ "config": {
+  "arms": "lamx0.0, n=250, T=120 s",
+  "frame_s": 0.9138261902586128,
+  "min_frames_shape": 130,
+  "tau_ref_s": 37.18,
+  "tau_window_s": [
+   9.4,
+   146.3
+  ]
+ },
+ "results": {
+  "M-1": {
+   "n_frames": 131,
+   "pop_rate_hz": 9.6148,
+   "H_occ": [
+    0.214,
+    0.786
+   ],
+   "H_trans": 0.46779,
+   "H_dwell_low_med": 0.914,
+   "consistency": {
+    "applicable": true,
+    "predicted_dwell_s": 1.0688502761060559,
+    "observed_dwell_s": 0.9138261902586128,
+    "rel_diff": 0.16964285714285698,
+    "pass_": true,
+    "note": "2 状态稳态近似；若状态数>2 或转移矩阵强非对称则本条不适用（须显式声明）"
+   },
+   "AR1_phi": -0.09564567624482072,
+   "AR1_tau_s": null,
+   "AR1_tau_in_window": null,
+   "AR1_ll": null,
+   "AR1_resid_whiten": null,
+   "AR1_lb_p": null,
+   "sample_gate": {
+    "n_frames": 131,
+    "valid": true,
+    "shape_ok": true,
+    "bic_ok": false,
+    "thresholds": {
+     "valid": 65,
+     "shape": 130,
+     "bic": 500
+    },
+    "note": "n_frames<65 ⇒ invalid（最短协议 T≥60 s）；形状判据需 ≥130（T≥120 s）；BIC 需 ≥500"
+   },
+   "best_K": "unavailable",
+   "gate3_status": "measured",
+   "gate3_pass": false
+  },
+  "M-4": {
+   "n_frames": 131,
+   "pop_rate_hz": 9.6148,
+   "H_occ": [
+    0.214,
+    0.786
+   ],
+   "H_trans": 0.46779,
+   "H_dwell_low_med": 0.914,
+   "consistency": {
+    "applicable": true,
+    "predicted_dwell_s": 1.0688502761060559,
+    "observed_dwell_s": 0.9138261902586128,
+    "rel_diff": 0.16964285714285698,
+    "pass_": true,
+    "note": "2 状态稳态近似；若状态数>2 或转移矩阵强非对称则本条不适用（须显式声明）"
+   },
+   "AR1_phi": -0.09564567624482072,
+   "AR1_tau_s": null,
+   "AR1_tau_in_window": null,
+   "AR1_ll": null,
+   "AR1_resid_whiten": null,
+   "AR1_lb_p": null,
+   "sample_gate": {
+    "n_frames": 131,
+    "valid": true,
+    "shape_ok": true,
+    "bic_ok": false,
+    "thresholds": {
+     "valid": 65,
+     "shape": 130,
+     "bic": 500
+    },
+    "note": "n_frames<65 ⇒ invalid（最短协议 T≥60 s）；形状判据需 ≥130（T≥120 s）；BIC 需 ≥500"
+   },
+   "best_K": "unavailable",
+   "gate3_status": "measured",
+   "gate3_pass": false
+  },
+  "M-6": {
+   "n_frames": 131,
+   "pop_rate_hz": 9.79023,
+   "H_occ": [
+    1.0,
+    0.0
+   ],
+   "H_trans": 0.0,
+   "H_dwell_low_med": 0.0,
+   "consistency": {
+    "applicable": false,
+    "reason": "dwell 或转换率为 0/缺失（样本不足）"
+   },
+   "AR1_phi": 0.7427193484761723,
+   "AR1_tau_s": 3.0723349433140954,
+   "AR1_tau_in_window": false,
+   "AR1_ll": -1.0468259041732129,
+   "AR1_resid_whiten": false,
+   "AR1_lb_p": 0.00033462706547804366,
+   "sample_gate": {
+    "n_frames": 131,
+    "valid": true,
+    "shape_ok": true,
+    "bic_ok": false,
+    "thresholds": {
+     "valid": 65,
+     "shape": 130,
+     "bic": 500
+    },
+    "note": "n_frames<65 ⇒ invalid（最短协议 T≥60 s）；形状判据需 ≥130（T≥120 s）；BIC 需 ≥500"
+   },
+   "best_K": "unavailable",
+   "gate3_status": "measured",
+   "gate3_pass": false
+  },
+  "M0": {
+   "n_frames": 131,
+   "pop_rate_hz": 9.6148,
+   "H_occ": [
+    0.214,
+    0.786
+   ],
+   "H_trans": 0.46779,
+   "H_dwell_low_med": 0.914,
+   "consistency": {
+    "applicable": true,
+    "predicted_dwell_s": 1.0688502761060559,
+    "observed_dwell_s": 0.9138261902586128,
+    "rel_diff": 0.16964285714285698,
+    "pass_": true,
+    "note": "2 状态稳态近似；若状态数>2 或转移矩阵强非对称则本条不适用（须显式声明）"
+   },
+   "AR1_phi": -0.09564567624482072,
+   "AR1_tau_s": null,
+   "AR1_tau_in_window": null,
+   "AR1_ll": null,
+   "AR1_resid_whiten": null,
+   "AR1_lb_p": null,
+   "sample_gate": {
+    "n_frames": 131,
+    "valid": true,
+    "shape_ok": true,
+    "bic_ok": false,
+    "thresholds": {
+     "valid": 65,
+     "shape": 130,
+     "bic": 500
+    },
+    "note": "n_frames<65 ⇒ invalid（最短协议 T≥60 s）；形状判据需 ≥130（T≥120 s）；BIC 需 ≥500"
+   },
+   "best_K": "unavailable",
+   "gate3_status": "measured",
+   "gate3_pass": false
+  }
+ }
+}

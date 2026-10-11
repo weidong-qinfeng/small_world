@@ -1,0 +1,220 @@
+{
+ "generated_by": "tools/fetch_m11_allen.py",
+ "generated_at": "2026-10-11T11:16:53Z",
+ "per_cell_nwb": {
+  "url": "https://api.brain-map.org/api/v2/well_known_file_download/664222041",
+  "wkf_id": "664222041",
+  "retrieved_at": "2026-10-11T11:00:53Z",
+  "head_http_code": 200,
+  "head_content_length": 91560414,
+  "head_content_disposition": "attachment; filename=\"486940961_ephys.nwb\"",
+  "head_content_type": "application/octet-stream",
+  "range_0_99_http_code": 206,
+  "range_0_99_bytes": 100,
+  "nwb_expected_bytes": 91560414,
+  "size_match_expect": true,
+  "local_full_bytes": 44695552,
+  "local_partial_bytes": 8388608,
+  "prefix_bytes_used": 44695552,
+  "header_source": "sparse(prefix 44695552 B + holes)",
+  "nwb_header": {
+   "path": "neural_exploration/data/m11_raw/allen/head_sparse.nwb",
+   "status": "partial",
+   "errors": [
+    "visititems 提前终止：Object visitation failed (free block size is zero?)",
+    "timeseries.keys(): Unable to get group info (bad symbol table node signature)"
+   ],
+   "groups": [
+    "/acquisition",
+    "/acquisition/images",
+    "/acquisition/timeseries",
+    "/acquisition/timeseries/Sweep_10"
+   ],
+   "datasets": [],
+   "n_groups": 4,
+   "n_datasets": 0,
+   "root_attrs": {},
+   "root_keys": [
+    "acquisition",
+    "analysis",
+    "epochs",
+    "file_create_date",
+    "general",
+    "identifier",
+    "nwb_version",
+    "processing",
+    "session_description",
+    "session_start_time",
+    "stimulus"
+   ],
+   "root_objects": {
+    "acquisition": {
+     "kind": "group",
+     "n_keys": 2,
+     "keys": [
+      "images",
+      "timeseries"
+     ]
+    },
+    "analysis": {
+     "kind": "error",
+     "error": "Unable to get group info (bad symbol table node signature)"
+    },
+    "epochs": {
+     "kind": "error",
+     "error": "'Unable to synchronously open object (unable to determine object type)'"
+    },
+    "file_create_date": {
+     "kind": "dataset",
+     "shape": [
+      1
+     ],
+     "dtype": "object",
+     "value": "array([b'Wed Feb 28 16:57:03 2018'], dtype=object)"
+    },
+    "general": {
+     "kind": "error",
+     "error": "Unable to get group info (bad symbol table node signature)"
+    },
+    "identifier": {
+     "kind": "dataset",
+     "shape": [],
+     "dtype": "object",
+     "value": "b'P.edit'"
+    },
+    "nwb_version": {
+     "kind": "dataset",
+     "shape": [],
+     "dtype": "object",
+     "value": "b'NWB-1.0.5'"
+    },
+    "processing": {
+     "kind": "group",
+     "n_keys": 0,
+     "keys": []
+    },
+    "session_description": {
+     "kind": "dataset",
+     "shape": [],
+     "dtype": "object",
+     "value": "b'C'"
+    },
+    "session_start_time": {
+     "kind": "dataset",
+     "shape": [],
+     "dtype": "|S1",
+     "value": "np.bytes_(b'M')"
+    },
+    "stimulus": {
+     "kind": "group",
+     "n_keys": 2,
+     "keys": [
+      "presentation",
+      "templates"
+     ]
+    }
+   },
+   "visit_complete": false,
+   "timeseries_keys": [
+    "acquisition/timeseries/Sweep_10"
+   ],
+   "first_sweep": {
+    "name": "acquisition/timeseries/Sweep_10",
+    "attrs": {
+     "ancestry": "[b'TimeSeries' b'PatchClampSeries' b'CurrentClampSeries']",
+     "comments": "",
+     "description": "",
+     "help": "Voltage recorded from cell during current-clamp recording",
+     "missing_fields": "[b'capacitance_compensation' b'gain']",
+     "neurodata_type": "TimeSeries",
+     "source": ""
+    }
+   }
+  }
+ },
+ "last_run_argv": "--celltypes --timeout 120 --page-size 400",
+ "celltypes_api": {
+  "species": "Mus musculus",
+  "retrieved_at": "2026-10-11T11:16:53Z",
+  "pages": [
+   {
+    "start_row": 0,
+    "num_rows": 400,
+    "http_code": 200,
+    "bytes": 608891,
+    "curl_exit": 28,
+    "time_total_s": 120.006,
+    "rows_returned": 0,
+    "ok": false
+   }
+  ],
+  "count_url": "https://api.brain-map.org/api/v2/data/query.json?criteria=model%3A%3AApiCellTypesSpecimenDetail%2Crma%3A%3Acriteria%5Bdonor__species%24eq%27Mus%20musculus%27%5D%2Crma%3A%3Aoptions%5Bnum_rows%24eq1%5D%5Bcount%24eqtrue%5D",
+  "count_http_code": 200,
+  "count_bytes": 1777,
+  "count_curl_exit": 0,
+  "total_rows": 1920,
+  "n_fields": 54,
+  "fields_sample": [
+   "cell_reporter_status",
+   "csl__normalized_depth",
+   "csl__x",
+   "csl__y",
+   "csl__z",
+   "donor__age",
+   "donor__disease_state",
+   "donor__id",
+   "donor__name",
+   "donor__race",
+   "donor__sex",
+   "donor__species",
+   "donor__years_of_seizure_history",
+   "ef__adaptation",
+   "ef__avg_firing_rate",
+   "ef__avg_isi",
+   "ef__f_i_curve_slope",
+   "ef__fast_trough_v_long_square",
+   "ef__peak_t_ramp",
+   "ef__ri",
+   "ef__tau",
+   "ef__threshold_i_long_square",
+   "ef__upstroke_downstroke_ratio_long_square",
+   "ef__vrest",
+   "ephys_inst_thresh_thumb_path",
+   "ephys_thumb_path",
+   "erwkf__id",
+   "line_name",
+   "m__biophys",
+   "m__biophys_all_active",
+   "m__biophys_perisomatic",
+   "m__glif",
+   "morph_thumb_path",
+   "nr__average_contraction",
+   "nr__average_parent_daughter_ratio",
+   "nr__max_euclidean_distance",
+   "nr__number_bifurcations",
+   "nr__number_stems",
+   "nr__reconstruction_type",
+   "nrwkf__id",
+   "si__height",
+   "si__path",
+   "si__width",
+   "specimen__hemisphere",
+   "specimen__id",
+   "specimen__name",
+   "structure__acronym",
+   "structure__id",
+   "structure__layer",
+   "structure__name",
+   "structure_parent__acronym",
+   "structure_parent__id",
+   "tag__apical",
+   "tag__dendrite_type"
+  ],
+  "n_ef_fields": 11,
+  "n_wkf_download_paths": 2,
+  "num_rows_returned": 0,
+  "download_complete": false,
+  "verdict": "REACHABLE_NO_DATA",
+  "note": "**未取全**：total_rows=1920，仅落 0 行（分页上限/超时）→ 该表按 partial 使用，禁止把未取行写成 0/未命中"
+ }
+}

@@ -1,0 +1,10 @@
+# M10 RF-3：P7 ④ 替代可分性（ZAPBench；跨条件 vs 条件内漂移地板）
+pair,frame_centered,cross_accuracy,cross_n_test,cross_n_correct,cross_ci95_lo,cross_ci95_hi,cross_perm_p,cross_perm_null_max,within_condition_drift_floor,drift_ci95_lo,drift_ci95_hi,margin,separable,nonstationary
+taxis_vs_dark,False,1.0,157,157,1.0,1.0,0.0,0.6051,0.72545,0.4997,0.7561,0.27455,True,True
+taxis_vs_dark,True,0.47771,157,75,0.38854,0.56704,1.0,0.47771,0.5061,0.39024,0.62226,-0.02839,False,True
+gain_vs_dark,False,1.0,157,157,1.0,1.0,0.0,0.61783,0.77423,0.64604,0.80488,0.22577,True,True
+gain_vs_dark,True,0.47771,157,75,0.40111,0.55414,1.0,0.47771,0.5,0.40244,0.59756,-0.02229,False,True
+dots_vs_dark,False,0.9697,297,288,0.94613,0.98662,0.0,0.70034,0.75231,0.617,0.73446,0.21739,True,True
+dots_vs_dark,True,0.25253,297,75,0.20539,0.31322,1.0,0.25253,0.5,0.45034,0.56757,-0.24747,False,True
+rotation_vs_position,False,0.98718,156,154,0.96779,1.0,0.0,0.60256,0.68457,0.46341,0.69512,0.3026,True,True
+rotation_vs_position,True,0.47436,156,74,0.39744,0.55144,1.0,0.47436,0.5,0.39024,0.59756,-0.02564,False,True

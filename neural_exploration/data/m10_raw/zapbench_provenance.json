@@ -1,0 +1,56 @@
+{
+ "generated_by": "tools/fetch_m10_imaging.py",
+ "source": {
+  "bucket": "zapbench-release",
+  "prefix": "volumes/20240930/traces",
+  "zarr_json": {
+   "chunk_grid": {
+    "configuration": {
+     "chunk_shape": [
+      512,
+      512
+     ]
+    },
+    "name": "regular"
+   },
+   "chunk_key_encoding": {
+    "name": "default"
+   },
+   "codecs": [
+    {
+     "configuration": {
+      "endian": "little"
+     },
+     "name": "bytes"
+    }
+   ],
+   "data_type": "float32",
+   "fill_value": 0.0,
+   "node_type": "array",
+   "shape": [
+    7879,
+    71721
+   ],
+   "zarr_format": 3
+  },
+  "license": "CC-BY-4.0",
+  "citation": "ZAPBench (arXiv:2503.02618); recordings by Ahrens lab, HHMI Janelia"
+ },
+ "array": {
+  "path": "/Users/weidong/ai/small_world/data/m10_raw/zapbench_traces_8192.f32.npy",
+  "dtype": "float32",
+  "shape": [
+   7879,
+   8192
+  ],
+  "n_neurons_kept": 8192,
+  "n_time_steps": 7879
+ },
+ "checks": {
+  "nan_count": 0,
+  "min": -0.19786980748176575,
+  "max": 1.4977728128433228
+ },
+ "elapsed_s": 94.7,
+ "fetched_at": "2026-10-11T10:45:25"
+}

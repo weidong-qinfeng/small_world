@@ -1,0 +1,47 @@
+{
+ "generated_by": "tools/ablate_m10_gaba.py",
+ "arms": [
+  {
+   "arm": "GABA_B_off(fast_only)",
+   "frac_slow": 0.0,
+   "pop_rate_hz": 1.8933333333333333,
+   "rate_median_hz": 0.0,
+   "silent_frac": 0.528,
+   "bout_fraction": 0.0,
+   "n_bouts": 0,
+   "elasticity_4x": 3.7058098591549293,
+   "gis_mean_1x": 0.0,
+   "gis_mean_4x": 0.0
+  },
+  {
+   "arm": "both_on(0.35)",
+   "frac_slow": 0.35,
+   "pop_rate_hz": 0.9420000000000001,
+   "rate_median_hz": 0.0,
+   "silent_frac": 0.71,
+   "bout_fraction": 0.0,
+   "n_bouts": 0,
+   "elasticity_4x": 3.3481953290870483,
+   "gis_mean_1x": 8.001392364501953,
+   "gis_mean_4x": 34.821571350097656
+  },
+  {
+   "arm": "GABA_A_off(slow_only)",
+   "frac_slow": 1.0,
+   "pop_rate_hz": 0.852,
+   "rate_median_hz": 0.0,
+   "silent_frac": 0.695,
+   "bout_fraction": 0.0,
+   "n_bouts": 0,
+   "elasticity_4x": 3.233568075117371,
+   "gis_mean_1x": 21.10232925415039,
+   "gis_mean_4x": 86.67688751220703
+  }
+ ],
+ "conclusion": {
+  "gaba_b_contribution": "GABA_B 通路对群率的影响 = both_on 与 GABA_B_off 的差；对慢时间尺度结构的贡献看 bout/转换率（本协议下均为 0）",
+  "attribution_strength": "参数级/类级（RF-1）",
+  "measurement_limitation": "Fish1 无 GABA_A/B 亚型标注 → 类级文献先验（RF-2③）"
+ },
+ "elapsed_s": 44.8
+}

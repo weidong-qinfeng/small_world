@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hmi-analysis"
+version = "0.1.0"
+description = "Utilities and figure-generation code for HMI zebrafish EM graph analyses."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    { name = "HMI analysis contributors" }
+]
+dependencies = [
+    "numpy",
+    "pandas",
+    "openpyxl",
+    "networkx",
+    "matplotlib",
+    "scipy",
+    "pyvis",
+    "caveclient",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]

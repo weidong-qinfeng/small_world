@@ -1,0 +1,19 @@
+{
+ "tag": "MBON|activation",
+ "mode": "activation",
+ "pool": "MBON",
+ "factor": 1.0,
+ "delta_bias_mult": 1.0,
+ "n_target": 1374,
+ "n_target_edges": 183316,
+ "target_nt_class": 0,
+ "n_partner": 12259,
+ "self_rate_hz": 38.27583697234352,
+ "partner_rate_hz": 10.891997715963782,
+ "pop_rate_hz": 5.06584323722667,
+ "n_spikes": 705444.0,
+ "counts_hash": "94819d1dd9f9c62d",
+ "wall_s": 146.67415158300003,
+ "ms_per_step": 5.5171702208,
+ "task": "MBON|activation"
+}

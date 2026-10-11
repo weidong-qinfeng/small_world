@@ -1,0 +1,15 @@
+# M10 P5 产物（结构证据级别 = 抽象/Fish1-partial 锚定；判据带见 m10_calibration_targets.csv）
+key,value,unit,pass
+p5_rate_median_hz,0.0,Hz,False
+p5_silent_frac,0.872,,True
+p5_selfsustain_ratio,0.0,,True
+p5_elasticity_4x,6.314948,,True
+p5_elasticity_monotone,1,bool,True
+p5_bout_fraction,0.0,,False
+p5_bout_count,0,,False
+p5_pop_rate_hz,0.241733,Hz,True
+p5_n_nan,0,,True
+p5_ms_per_step_steady,0.0786,ms/step,True
+p5_wall_s_total,1846.7,s,True
+p5_determinism_bit_identical,1,bool,True
+G1_gate_pass,1,bool,True

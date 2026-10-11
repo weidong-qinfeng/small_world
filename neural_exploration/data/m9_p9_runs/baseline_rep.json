@@ -1,0 +1,19 @@
+{
+ "tag": "baseline_rep",
+ "mode": "none",
+ "pool": "None",
+ "factor": 0.0,
+ "delta_bias_mult": 0.0,
+ "n_target": 0,
+ "n_target_edges": 0,
+ "target_nt_class": -1,
+ "n_partner": 0,
+ "self_rate_hz": 0.0,
+ "partner_rate_hz": 0.0,
+ "pop_rate_hz": 4.778155182937776,
+ "n_spikes": 665382.0,
+ "counts_hash": "88383b3e133b740a",
+ "wall_s": 34.748644291999994,
+ "ms_per_step": 1.3642897020999996,
+ "task": "baseline_rep"
+}

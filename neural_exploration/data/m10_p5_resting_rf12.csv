@@ -1,0 +1,7 @@
+key,value
+p5_rate_median_hz,0.0
+p5_silent_frac,0.92
+p5_selfsustain_ratio,0.0976
+p5_elasticity_4x,5.7311
+p5_gate1_pass,1
+estimator_rel_diff,0.0

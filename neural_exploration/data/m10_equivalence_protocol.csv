@@ -10,3 +10,7 @@ p7_surrogate_floor,相位随机化代理零分布,同管线计算（禁止引用
 p7_evidence_level,L1/L2/L3 标注,L1=measured（本次实测）,measured,裁决 3(3),ZAPBench 为 L1；报告中必须标注
 p7_idealization,无噪声/无运动伪影/无神经域污染,理想上限制声明,—,M9 L42,数值不可与文献成像直接等价比较；仅承诺统计级
 p7_cell_identity,逐神经元对应,**不声称**（仅区域级）,—,§0.7 #4 + 数据门事实（Fish1 与 ZAPBench 不同动物）,第三方数据源文档亦确认 'no cell-level correspondence'
+p7_tost_unified_form,**统一判据形式**：Welch TOST,"等价 ⟺ max(p_low,p_high) < 0.05（两侧 p 都拒绝『差异 ≥ margin』）",逐指标 margin（下列各行）,主agent 复核要求：各指标都须给 margin + CI95 + p,"worked example（成像分裂半自检通过）：margin=0.05 Hz、diff=-0.000194、se=0.00277、p_low=4.1e-13、p_high=1.5e-13、CI95=[-0.00562,0.00523] ⇒ ok=TRUE"
+p7_m1_tost_rate,逐神经元率中位差,TOST |Δ| < margin,0.05 Hz,P7 ① 的等价形式（与 KS D<d_eq 并列）,CI95 与两侧 p 必须落盘
+p7_m3_tost_occupancy,状态占用差,TOST |Δ| < margin,0.10（=20 pp）,P7 ③,模型与数据同一 HMM/分位法同一参数
+p7_attenuation_correction,低采样衰减修正,est_rate = est_spikes/T；attenuation = est/true,1.004–1.016（≤1.6%）,P7 ① 口径修正依据（主agent 复核项）,见 m10_sampling_attenuation.csv（含量纲自检断言 + correction_factor 列 + 衰减曲线图）

@@ -1,0 +1,88 @@
+{
+ "generated_by": "(RF-12 correction)",
+ "protocol": "n=1000 ind20 T=2000ms settle=300ms lam0=8 bias150 g_exc1.0 g_inh22",
+ "arms": [
+  [
+   0.0,
+   0.0265,
+   0.0,
+   0.998
+  ],
+  [
+   0.5,
+   0.123,
+   0.0,
+   0.964
+  ],
+  [
+   1.0,
+   0.2715,
+   0.0,
+   0.92
+  ],
+  [
+   2.0,
+   0.697,
+   0.0,
+   0.789
+  ],
+  [
+   4.0,
+   1.8275,
+   0.0,
+   0.505
+  ],
+  [
+   8.0,
+   4.554,
+   4.0,
+   0.131
+  ]
+ ],
+ "old_inflated": {
+  "0.0": 0.03,
+  "0.5": 0.1425,
+  "1.0": 0.306,
+  "2.0": 0.795,
+  "4.0": 2.0795,
+  "8.0": 5.235
+ },
+ "verdicts": {
+  "selfsustain": 0.09760589318600367,
+  "selfsustain_pass": true,
+  "elasticity_4x": 5.731123388581951,
+  "elasticity_pass": true,
+  "silent_1x": 0.92,
+  "silent_band": [
+   0.5,
+   0.95
+  ],
+  "silent_pass": true,
+  "rate_median_1x": 0.0,
+  "rate_band": [
+   0.3,
+   1.5
+  ],
+  "rate_pass": false,
+  "gate1_criterion": "点估计≤0.10 且 CI 上界≤0.12（RF-11(ii)）"
+ },
+ "dual_estimator": {
+  "criterion": "|pop_rate - pop_trace_mean|/pop_rate ≤ 0.02（RF-12(2) 硬断言）",
+  "before_fix_ratio_range": [
+   1.127,
+   1.145
+  ],
+  "after_fix": 0.0,
+  "note": "该交叉校验量一直存在于 JSON 中（13–15%），此前无断言 ⇒ 本可当天抓错"
+ },
+ "impact": {
+  "ratio_metrics_unchanged": true,
+  "absolute_metrics_corrected": [
+   "P5 pop_rate/rate_mean/rate_median/rate_p95/silent_frac",
+   "P6 T=60s 族 ×1.0167",
+   "P6 T=2/12/20s 族按各自 settle 比例",
+   "GABA 消融",
+   "慢变量三档"
+  ]
+ }
+}

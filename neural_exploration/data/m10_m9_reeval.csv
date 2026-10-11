@@ -1,6 +1,15 @@
 # M10 追加要求 1：在修正内核上复测 M9 关键反证（同一 M9 定稿网络/参数/协议）
 # 协议：T=1000ms settle=300ms segment=2000 g_ext=19.230769（tools/diag_p7_drive_sensitivity.py 原协议）
 # 口径：bout = 可证伪 interior 口径（100 ms 分箱，两侧须有静默箱，≥2 箱）
+# ⚠️ **口径警告（RF-9，主agent 独立探针否证）**：本文件首版的 `run_arm` 与 `AdultCircuit.run_resting`
+#    在**两处**不一致 ⇒ **绝对速率类数值被放大 (settle+T)/T = 1.3004 倍**：
+#    ① reset_counts() 被放在 settle 之前（计数含 settle 窗却按 1.0 s 归一）；
+#    ② 初值未复刻 run_resting 的 v0 = v_rest + 2·N(0,1)（rng(1)）。
+#    ⇒ **本文件中的 pop_rate_hz 一律视为 INFLATED(×1.3004)**；修正后估计值与同口径复跑见
+#      m10_m9_reeval_correction.json。**相对量（自持比 0.9709 / 4× 弹性 1.0749）为比值，不受影响**。
+#    主agent A_frozen 臂（走 M9 自己入口）实测 4.678288 Hz vs 记录 4.6783 Hz ⇒ **M9 记录值完全可复现**。
 engine,lam0,n_events,pop_rate_hz,rate_mean_hz,rate_median_hz,silent_frac,bout_fraction,n_bouts,silent_bin_frac,ms_per_step,wall_s
 m10,0.0,0,4.502065,4.502065,0.0,0.758156,0.0,0,0.0,2.8151,67.7
 m10,0.5,90140,4.636939,4.636939,0.0,0.686352,0.0,0,0.0,2.8889,67.3
+m10,2.0,363557,4.984238,4.984238,0.0,0.585875,0.0,0,0.0,2.8853,66.2
+m9,0.0,0,6.00321,6.00321,0.0,0.574292,0.0,0,0.0,3.2293,74.3

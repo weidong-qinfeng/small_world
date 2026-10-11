@@ -1,0 +1,44 @@
+{
+ "M-1": {
+  "pop": 2.4531,
+  "bout": 0.0,
+  "H_occ": [
+   0.059,
+   0.941
+  ],
+  "H_trans": 0.06437,
+  "H_dwell_low_med": 0.0,
+  "p90_over_med": null,
+  "ks_exp_p": null,
+  "bestK": 2,
+  "slow_state_corr": null,
+  "gate3": false,
+  "gate3_detail": {
+   "c1_occupancy": true,
+   "c2_transitions": true,
+   "c3_heavy_tail": false,
+   "c4_mechanism_attribution": false
+  }
+ },
+ "M-4slow": {
+  "pop": 8.4576,
+  "bout": 0.0,
+  "H_occ": [
+   0.471,
+   0.529
+  ],
+  "H_trans": 0.06437,
+  "H_dwell_low_med": 0.0,
+  "p90_over_med": null,
+  "ks_exp_p": null,
+  "bestK": 2,
+  "slow_state_corr": 0.8850480299654753,
+  "gate3": false,
+  "gate3_detail": {
+   "c1_occupancy": true,
+   "c2_transitions": true,
+   "c3_heavy_tail": false,
+   "c4_mechanism_attribution": true
+  }
+ }
+}

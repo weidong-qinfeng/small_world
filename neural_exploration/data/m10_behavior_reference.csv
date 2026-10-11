@@ -1,0 +1,19 @@
+# M10 判据带 —— 运行前定稿（生成器 tools/build_m10_reference_bands.py）；不事后调
+# 修改纪律：只允许**新增行**，原行保留（M9 L36.3）
+key,value_lo,value_hi,unit,dpf,protocol,provenance_class,source,note
+swim_freq_lo,20,40,Hz,5-7,fictive/自由游泳自发 bout,pre_registered_draft,M10 §1.3,游泳模态弯曲波频率（swim）
+struggle_freq_lo,40,60,Hz,5-7,强持续刺激,pre_registered_draft,M10 §1.3,挣扎（struggle）
+escape_freq_lo,40,80,Hz,5-7,突发听/触觉刺激,pre_registered_draft,M10 §1.3,逃逸（escape）
+amplitude_order,escape>struggle>swim,,ordering,5-7,三模态并测,pre_registered_draft,M10 §1.3,模态间有序差异（峰值角）
+escape_latency_lo,4,10,ms,5-7,听觉/触觉惊吓,literature_anchor,M10 §1.3 + 领域通行量级（Mauthner C-start）,刺激→反应潜伏期；DOI 级 provenance 化待补（数据门限制 L13）
+escape_response_prob_lo,0.80,1.0,,5-7,同上,pre_registered_draft,M10 §1.3 / §3.5,反应概率下限（sanity）
+okr_gain_lo,0.30,0.90,,5-7,光流条纹闭环,pre_registered_draft,M10 §1.3,OKR 增益（<1），分光流速度档
+okr_phase_lag_lo,5,90,deg,5-7,同上,pre_registered_draft,M10 §1.3,相位滞后带（粗带，执行时按文献分档细化）
+phototaxis_turn_rate_lo,0.05,2.0,1/s,5-7,亮/暗选择,pre_registered_draft,M10 §1.3,转弯速率带 + 方向正确性
+prey_success_lo,0.20,0.90,,>=5,小目标（猎物）刺激,pre_registered_draft,M10 §1.3,捕食成功率（逐 dpf 登记）
+prey_approach_latency_lo,0.1,5.0,s,>=5,同上,pre_registered_draft,M10 §1.3,接近潜伏期带
+habituation_index_lo,0.20,0.90,,5-7,重复同强度刺激,pre_registered_draft,M10 §1.3,习惯化指数（响应递减）
+habituation_recovery_lo,1.0,600,s,5-7,同上,pre_registered_draft,M10 §1.3,恢复时间常数带
+rest_bout_median_lo,10,600,s,5-7,自发（压缩协议）,measured_derived,m10_imaging_reference.csv ③（ZAPBench 实测 2 状态 HMM）,静息 bout 时长中位带；成像实测低活动态 dwell 中位见 imaging reference
+active_bout_median_lo,5,300,s,5-7,自发（压缩协议）,measured_derived,m10_imaging_reference.csv ③,活动 bout 时长中位带
+state_occupancy_lo_lo,0.10,0.90,,5-7,自发,measured_derived,m10_imaging_reference.csv ③（实测占用）,两状态占用比例（低/高活动态皆须非零）

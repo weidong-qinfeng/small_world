@@ -56,7 +56,10 @@ class ZFNetParams:
 def build_engine(p: ZFNetParams, device: str = "cpu", use_abs_slots: bool = True,
                  stp: Optional[Dict[str, Any]] = None,
                  gaba: Optional[Dict[str, Any]] = None,
-                 g_mod: float = 1.0, use_compile: bool = False):
+                 g_mod: Any = 1.0, use_compile: bool = False,
+                 mod_slow: bool = False, tau_mod_ms: float = 2000.0,
+                 gain_hi: float = 1.3, gain_lo: float = 0.8,
+                 rate_ref_hz: float = 5.0):
     """装配类级递归网络（确定性：固定 seed；无逐突触拟合）。"""
     from ..src.larval_zf_engine import LarvalZFEngine  # noqa: F401
     e = LarvalZFEngine(p.n_neuron, device=device, use_compile=use_compile,
@@ -82,8 +85,23 @@ def build_engine(p: ZFNetParams, device: str = "cpu", use_abs_slots: bool = True
         e.configure_stp(**stp)
     if gaba is not None:
         e.configure_gaba(**gaba)
-    if g_mod != 1.0:
-        e.configure_mod(g_mod=g_mod)
+    if g_mod is not None and (isinstance(g_mod, dict) or float(g_mod) != 1.0
+                              or mod_slow):
+        # D1：**必须传 slow=True 且把 τ_mod 提到预注册范围**，否则调质退化为静态乘性增益
+        if isinstance(g_mod, dict):
+            cfg = dict(g_mod)
+        else:
+            cfg = dict(g_mod=float(g_mod), slow=bool(mod_slow),
+                       tau_mod_ms=float(tau_mod_ms), gain_hi=float(gain_hi),
+                       gain_lo=float(gain_lo), rate_ref_hz=float(rate_ref_hz))
+        e.configure_mod(**cfg)
+        # 读回断言：**参数是活的**（M9 B3 / M10 L21 教训的机制级版本）
+        assert abs(e.g_mod - float(cfg.get("g_mod", 1.0))) < 1e-12, "g_mod 未生效"
+        assert e.mod_slow == bool(cfg.get("slow", False)), "mod_slow 未生效"
+        assert abs(e.mod["tau_mod_ms"] - float(cfg.get("tau_mod_ms", 2000.0))) < 1e-9, \
+            "tau_mod_ms 未生效"
+        if e.mod_slow:
+            assert e.t_mmod is not None, "slow=True 但慢变量状态未分配"
     return e
 
 
@@ -134,36 +152,56 @@ def bout_stats(pop_counts: np.ndarray, dt_ms: float = DT_MS, bin_ms: float = 100
 
 
 def run_protocol(engine, T_steps: int, settle_steps: int = 0, segment_steps: int = 20_000,
+                 save_pop_to: Optional[str] = None,
+                 save_slow_to: Optional[str] = None,
                  lam_hz: float = 0.0, ev_seed: int = 3, g_ext: float = 20.0,
                  record_pop: bool = True, progress=None) -> Dict[str, Any]:
     """分段执行协议（settle 亦分段）；返回判据量 + 逐段墙钟。"""
     n = engine.n
     ev = make_events(T_steps, lam_hz, n, seed=ev_seed, g_ext=g_ext)
     engine.set_external_events(ev["steps"], ev["neurons"], ev["gmax"], n_steps=T_steps)
-    engine.reset(seed=1)
-    engine.reset_counts()
+    # **RF-12 口径修正**：settle 段**结束后**才清零计数（此前在 settle 之前清零 ⇒ counts 覆盖
+    # settle+T 却按 T 归一 ⇒ 绝对速率被放大 (T+settle)/T）。并复刻 `AdultCircuit.run_resting`
+    # 的初值语义（v0 = v_rest + 2·N(0,1)，rng(1)）。
+    rng0 = np.random.default_rng(1)
+    v0 = (float(engine.point.v_rest) + 2.0 * rng0.standard_normal(n)).astype(np.float32)
+    engine.reset(v0=v0, seed=1)
     segs = []
     pop_chunks = []
-    total = settle_steps + T_steps
-    done = 0
     t_all = time.time()
-    while done < total:
-        w = min(segment_steps, total - done)
+    done = 0
+    settle_steps = int(settle_steps)
+    while done < settle_steps:                       # ---- settle 段（丢弃）----
+        w = min(segment_steps, settle_steps - done)
+        engine.run(w, delivery="step", record="counts", pop_trace=False)
+        done += w
+    engine.reset_counts()                            # ★ 测量窗起点
+    _spk_at_meas_start = float(engine.t_count.detach().sum().item())
+    done = 0
+    while done < T_steps:                            # ---- 测量窗 ----
+        w = min(segment_steps, T_steps - done)
         t0 = time.time()
-        r = engine.run(w, delivery="step", record="counts",
-                       pop_trace=record_pop)
+        r = engine.run(w, delivery="step", record="counts", pop_trace=record_pop)
         segs.append(dict(step=done, w=w, wall_s=round(time.time() - t0, 3),
                          ms_per_step=round(r["ms_per_step"], 4)))
         if record_pop and r["pop"] is not None:
             pop_chunks.append(r["pop"])
         done += w
         if progress:
-            progress(done, total, time.time() - t_all)
+            progress(done, T_steps, time.time() - t_all)
     counts = engine.t_count.detach().cpu().numpy().astype(np.float64)
     t_meas_s = T_steps * DT_MS * 1e-3
     rate = counts / t_meas_s
     pop = np.concatenate(pop_chunks) if pop_chunks else np.zeros(0)
-    pop_meas = pop[settle_steps:] if pop.size >= settle_steps else pop
+    pop_meas = pop
+    # ================== **RF-12(1) 断言：counts 只覆盖测量窗** ==================
+    assert _spk_at_meas_start == 0.0, \
+        f"测量窗起点计数未清零：{_spk_at_meas_start}"
+    assert pop.size == (T_steps if record_pop else 0) or not record_pop, \
+        f"pop 轨迹长度 {pop.size} != 测量窗 {T_steps}"
+    if record_pop and pop.size:
+        assert abs(float(pop.sum()) - float(counts.sum())) < 1e-6 * max(1.0, float(counts.sum())), \
+            f"**双估计器不一致**：pop.sum()={pop.sum()} vs counts.sum()={counts.sum()}"
     out = dict(
         n_neuron=int(n), T_ms=T_steps * DT_MS, settle_ms=settle_steps * DT_MS,
         lam_hz=lam_hz, n_events=ev["n_events"], g_ext=g_ext,
@@ -177,7 +215,25 @@ def run_protocol(engine, T_steps: int, settle_steps: int = 0, segment_steps: int
         ms_per_step_steady=float(np.median([s["ms_per_step"] for s in segs[1:]] or
                                            [s["ms_per_step"] for s in segs])),
         segments=segs,
+        pop_trace_mean_hz=float(pop_meas.mean() / (DT_MS * 1e-3) / n) if pop_meas.size else float("nan"),
     )
+    # ============ **RF-12(2) 硬断言：同一物理量的两个独立估计器必须一致（≤2%）** ============
+    if record_pop and pop_meas.size and out["pop_rate_hz"] > 0:
+        _rel = abs(out["pop_rate_hz"] - out["pop_trace_mean_hz"]) / out["pop_rate_hz"]
+        out["estimator_rel_diff"] = float(_rel)
+        assert _rel <= 0.02, (f"**双估计器一致性硬断言失败**：pop_rate_hz={out['pop_rate_hz']:.6f} "
+                              f"vs pop_trace_mean_hz={out['pop_trace_mean_hz']:.6f} "
+                              f"（相对差 {_rel:.4f} > 0.02）")
+    if save_slow_to:
+        _mt = getattr(engine, "mod_trace", None) or []
+        if _mt:
+            os.makedirs(os.path.dirname(os.path.abspath(save_slow_to)), exist_ok=True)
+            np.save(save_slow_to, np.asarray(_mt, dtype=np.float32))
+            out["slow_trace_file"] = save_slow_to
+    if save_pop_to and pop.size:
+        os.makedirs(os.path.dirname(os.path.abspath(save_pop_to)), exist_ok=True)
+        np.save(save_pop_to, pop)
+        out["pop_trace_file"] = save_pop_to
     out.update(bout_stats(pop_meas))
     out["pop_trace_mean_hz"] = float(pop_meas.mean() / (DT_MS * 1e-3) / n) if pop_meas.size else 0.0
     return out

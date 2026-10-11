@@ -1,0 +1,10 @@
+{
+ "tools/validate_p10_slow_variable.py": "04f5ea8757a8931d",
+ "tools/validate_p10_state_structure.py": "9d9ef2e4ae9571d8",
+ "tools/validate_p10_mechanism_ladder.py": "e7a5df53aba3f878",
+ "src/larval_zf_circuit.py": "6c4c6aefeceedc86",
+ "src/larval_zf_engine.py": "5cb7c456e9097a05",
+ "_note_RF15": "validate_p10_slow_variable.py 新增 criterion_b_analysis（去趋势+lead-lag）",
+ "_note_RF16": "state_structure: τ 基准改 37.180 s + 窗 [9.4,146.3]；ladder CSV 列名改 tau_ar1_s/tau_window_lo/hi；M-6 criterion_B=invalid",
+ "_concurrency_rule": "改动被引用文件后须记录 sha256 前缀并在下次汇报声明；引用方须重读确认（L42/L45）"
+}

@@ -1,0 +1,2 @@
+# M10 P6 慢变量硬判据（主agent 裁决 2；结构证据级别=抽象 ⇒ 归属降级）
+level,tau_setting_ms,tau_in_range,tau_est_s,slow_var_corr_max_var,slow_var_corr,tau_activity_s,tau_ratio,same_order_pass,closed_state_bit_identical,hard_criterion_pass,zap_dwell_median_s,model_hmm_transition_rate_hz,model_hmm_dwell_low_median_s,tau_over_zap_dwell,same_order_vs_zapbench

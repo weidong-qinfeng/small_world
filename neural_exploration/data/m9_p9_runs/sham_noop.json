@@ -1,0 +1,19 @@
+{
+ "tag": "sham_noop",
+ "mode": "silence",
+ "pool": "MBON",
+ "factor": 1.0,
+ "delta_bias_mult": 0.0,
+ "n_target": 1374,
+ "n_target_edges": 183316,
+ "target_nt_class": 0,
+ "n_partner": 12259,
+ "self_rate_hz": 8.71033478893741,
+ "partner_rate_hz": 7.577290154172445,
+ "pop_rate_hz": 4.778155182937776,
+ "n_spikes": 665382.0,
+ "counts_hash": "88383b3e133b740a",
+ "wall_s": 32.551035208,
+ "ms_per_step": 1.2524109020499998,
+ "task": "sham_noop"
+}

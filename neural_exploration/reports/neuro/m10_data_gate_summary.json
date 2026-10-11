@@ -1,0 +1,219 @@
+{
+ "generated_by": "tools/validate_p10_data_gate.py",
+ "generated_at": "2026-10-11T14:46:51",
+ "P1": {
+  "verdict": "PASS(partial)",
+  "completeness_level": "partial",
+  "evidence": {
+   "csv_sha256_now": "726685e3fafbc2184605286d4dfa2db11d14102519f7429d245c094b6a074e37",
+   "csv_sha256_recorded": "726685e3fafbc2184605286d4dfa2db11d14102519f7429d245c094b6a074e37",
+   "sha_match": true,
+   "independent_recount": {
+    "n_neuron": 180782,
+    "n_chem": 13813,
+    "n_gap": 0,
+    "syn_sum": 23987
+   },
+   "counts_json": {
+    "n_roster": 180782,
+    "n_roster_unique_lore": 187052,
+    "n_soma_table": 30346,
+    "soma_table_in_roster": 30346,
+    "cell_type_counts": {
+     "exc": 2763,
+     "inh": 2384,
+     "na": 25199
+    },
+    "n_chem_pairs_released": 14008,
+    "n_chem_pairs_in_roster": 13813,
+    "n_chem_synapses_in_roster": 23987,
+    "n_chem_pairs_released_all": 14008,
+    "n_chem_synapses_released_all": 24302,
+    "n_synapse_size_rows": 83323,
+    "n_synapse_rows_raw": 83426,
+    "n_missing_partner_ids": 103,
+    "n_synapse_size_pairs": 69029,
+    "self_chem_pairs": 0,
+    "gap_rows": 0,
+    "edge_nodes": 7989,
+    "typed_edge_nodes": 2801,
+    "typed_edge_node_coverage_pct": 35.06,
+    "n_edges_pre_type_known": 3874,
+    "n_edges_inhibitory_pre": 263,
+    "n_roster_rows": 187052,
+    "cell_type_coverage_of_roster_pct": 2.847
+   },
+   "recompute_matches_json": true,
+   "determinism_rerun": {
+    "skipped": true
+   },
+   "authoritative_anchors": {
+    "n_soma": ">180,000 (发布原文)",
+    "n_synapses": "~30 million (发布原文)",
+    "n_molecularly_annotated": ">40,000 (发布原文)",
+    "age": "7 dpf",
+    "scope": "brain + anterior spinal cord",
+    "source": "Petkova et al. 2025 bioRxiv 2025.06.10.658982 (PMC12259123); fish1-release GCS 官方发布页"
+   }
+  },
+  "failed_anchors": [
+   "全脑突触计数锚 ~30M：**未测**（CAVE token 门控）→ 不入分母、不写成未命中",
+   "缝隙连接：官方包与 CAVE 表清单均无此表 → 0 行 + 测量限制（M9 R8 语义）",
+   "区域分配 / 递质亚型：官方未发布 → 不臆造（M8 B1a）"
+  ],
+  "adjudication_requests": [
+   {
+    "id": "RF-1",
+    "question": "是否提供 CAVE token（浏览器交互）以取得全脑逐突触表（synapses_axde_label，~30M 行）？",
+    "impact": "取得 → P1 完整度可升自 partial 至 full（全脑逐突触 + 逐突触 tag 兴奋/抑制）",
+    "fallback": "不提供 → P1 判 partial：判据带按子图重新定稿（§1.1.3），报告标结构证据级别=partial"
+   },
+   {
+    "id": "RF-2",
+    "question": "P6 的 GABA 亚型异质（M-3）在无亚型标注下是否接受「类级文献先验 + 测量限制登记」实现？",
+    "impact": "接受 → M-3 可按 τ_A∈[5,20]ms / τ_B∈[80,400]ms 类级扫描；不接受 → M-3 不可启动，机制阶梯缺一级",
+    "fallback": "按 §1.5「递质/调质标注缺」行：类级文献先验注入 + 标注测量限制（不臆造逐突触）"
+   }
+  ]
+ },
+ "P2": {
+  "verdict": "PASS(measured, 3/4 指标)",
+  "evidence_level": "measured",
+  "dataset": {
+   "name": "ZAPBench",
+   "n_neurons": 71721,
+   "n_time_steps": 7879,
+   "duration_s": 7200.0,
+   "condition_names": [
+    "gain",
+    "dots",
+    "flash",
+    "taxis",
+    "turning",
+    "position",
+    "open loop",
+    "rotation",
+    "dark"
+   ],
+   "condition_offsets": [
+    0,
+    649,
+    2422,
+    3078,
+    3735,
+    5047,
+    5638,
+    6623,
+    7279,
+    7879
+   ],
+   "license": "CC-BY-4.0",
+   "citation": "ZAPBench (arXiv:2503.02618, ICLR 2025); recordings by Ahrens lab, HHMI Janelia; CC-BY-4.0",
+   "subset_neurons": 8192,
+   "frame_rate_hz": 1.0943055555555554,
+   "dt_s": 0.9138215509582435
+  },
+  "metrics": {
+   "firing_rate": {
+    "primary": "event_rate_k3mad(refractory=2 frames)",
+    "median_hz": 0.007916666666666667,
+    "mean_hz": 0.008588290744357638,
+    "p25_hz": 0.005277777777777778,
+    "p75_hz": 0.010972222222222222,
+    "p95_hz": 0.017083333333333332,
+    "silent_fraction": 0.001220703125,
+    "frac_below_0p1hz": 1.0,
+    "secondary_integral_hz": {
+     "median_hz": 0.07192051410675049,
+     "mean_hz": 0.10645699501037598,
+     "note": "口径 = M10 §6.1 正向模型反演，A=0.15、τ_ca=1.0s；ZAPBench 未发布单脉冲幅度标定 → 该列只在**同口径模型侧**比较有意义"
+    },
+    "n_neurons": 8192
+   },
+   "correlation": {
+    "n_neurons_sampled": 1200,
+    "mean_pairwise_r": 0.12732336151814808,
+    "eigenvalue_top5": [
+     0.1562941952015575,
+     0.06718876315292309,
+     0.03613706809758343,
+     0.027961776542842518,
+     0.025523015687202874
+    ],
+    "effective_dimension": 28.802183166119637,
+    "surrogate_phase_randomized": 0.000134404445660114,
+    "note": "同一管线（同帧率/同窗长）计算；代理零分布为同口径地板"
+   },
+   "states": {
+    "occupancy": [
+     0.6719126792740195,
+     0.32808732072598046
+    ],
+    "dwell": {
+     "low": {
+      "n_bouts": 71,
+      "median_s": 26.500824977789062,
+      "mean_s": 68.13762381370339,
+      "p90_s": 196.47163345602235,
+      "max_s": 455.08313237720523
+     },
+     "high": {
+      "n_bouts": 71,
+      "median_s": 21.0178956720396,
+      "mean_s": 33.27082689052197,
+      "p90_s": 53.001649955578124,
+      "max_s": 279.6293945932225
+     },
+     "transition_rate_hz": 0.019583333333333335,
+     "n_switches": 141
+    }
+   },
+   "decoding_status": "not_established_drift_confounded",
+   "decoding_diag": {
+    "raw": 0.8551437460996947,
+    "raw_null_max": 0.9238432798312441,
+    "fc": 0.8602138830823762,
+    "fc_null_max": 0.9192563602065503
+   }
+  },
+  "consistency_checks": [
+   [
+    "frame_rate",
+    true
+   ],
+   [
+    "rate_median_matches_stats",
+    true
+   ],
+   [
+    "occupancy_matches_stats",
+    true
+   ],
+   [
+    "decode_status_recorded",
+    true
+   ],
+   [
+    "evidence_level_measured",
+    true
+   ],
+   [
+    "rate_dist_file_exists",
+    true
+   ]
+  ],
+  "failed_or_degraded": [
+   "P7 ④ 刺激解码参考带 **未建立**（条件块与慢漂移完全混淆；零分布 ≥ 数据）→ 登记 `unavailable` 请求裁决，不静默删除",
+   "Zenodo 吞吐 56 KB/s → 380 MB 以上的公开成像数据集（如 left/right 交错刺激档 Zenodo 19598932、DFF 矩阵 1009488）**本次未下载**（未测 ≠ 不可得）",
+   "文献带的 DOI 级 provenance 化未完成（science.org 403 / cell.com 超时 / biorxiv 429）"
+  ],
+  "outputs": [
+   "/Users/weidong/ai/small_world/neural_exploration/data/m10_imaging_reference.csv",
+   "/Users/weidong/ai/small_world/neural_exploration/data/m10_imaging_stats.json",
+   "/Users/weidong/ai/small_world/neural_exploration/data/m10_imaging_rate_dist.csv",
+   "/Users/weidong/ai/small_world/neural_exploration/reports/neuro/m10_imaging_reference.png"
+  ]
+ },
+ "reachability_table": "/Users/weidong/ai/small_world/neural_exploration/data/m10_source_reachability.csv",
+ "elapsed_s": 0.1
+}

@@ -1,0 +1,55 @@
+{
+ "generated_by": "(RF-9 correction)",
+ "defect": "measurement-window口径 + v0 语义（run_arm vs run_resting）",
+ "inflation_factor": 1.3004,
+ "m9_recorded_hz": 4.678288,
+ "mainagent_A_frozen_hz": 4.678288,
+ "mainagent_A_frozen_dev_ppm": 2.6e-06,
+ "corrected_estimates_hz": {
+  "m10_lam0": 3.4620616733312826,
+  "m10_lam0_5": 3.5657789910796676,
+  "m10_lam2": 3.8328498923408185
+ },
+ "note_corrected_estimates": "**估算值**（仅按放大因子折算；v0 语义差异仍存在）→ 待同口径复跑确认",
+ "relative_quantities_unaffected": {
+  "selfsustain_ratio": 0.9709,
+  "elasticity_4x": 1.0749,
+  "R3_verdict": "保持（比值为同口径量，放大因子抵消）"
+ },
+ "status": "修正代码已落地；同口径 MPS 复跑**排队中**（遵守 MPS 串行纪律，主agent B_patched 臂运行期间不并发）",
+ "RF9_final": {
+  "A_frozen_hz": 4.678288,
+  "A_frozen_silent": 0.5854,
+  "B_patched_hz": 3.522538,
+  "B_patched_silent": 0.7622,
+  "m10_fixed_hz_corrected": 3.462,
+  "cross_implementation_agreement_pct": 1.7,
+  "group_rate_change_pct": -24.7,
+  "verdict": "M9 记录 4.6783 Hz = **缺陷档**；修正档 ≈3.46–3.52 Hz",
+  "ratio_metrics_unaffected": [
+   "自持比 0.9709",
+   "4× 弹性 1.0749",
+   "bout=0"
+  ],
+  "absolute_metrics_needing_defect_flag": [
+   "P4 静默(0.585→0.762)",
+   "R4 的 4.77 Hz",
+   "P10 活动统计"
+  ]
+ },
+ "discipline_L26": "复现性与正确性必须分开报告（reproducible 与 correct 两行）",
+ "E_M9_1_final_wording": "M9 记录绝对值在同口径下可复现到 2.6e-6（4.678288 vs 4.6783 Hz）；“不可复现 +28%”系复核工具口径缺陷（放大 1.3004、v0 语义不同）已被否证。但“可复现≠正确”：**只修 CSR 公式即得群率 −24.7%、静默 0.585→0.762（B_patched=3.5225377903845465 Hz、n_spikes=490531、bug_trigger mean 24.53 spike/step、p99=38），两个独立修正实现交叉一致到 1.7%**（3.523 vs M10 折算 3.462）⇒ M9 绝对值为**缺陷档**；比值类（R3 自持 0.9709 / 弹性 1.0749）不受影响。",
+ "B_patched_arm": {
+  "pop_rate_hz": 3.5225377903845465,
+  "silent_frac": 0.7622,
+  "n_spikes": 490531,
+  "bug_trigger": {
+   "frac_steps_ge2_spikes": 1.0,
+   "mean_spikes_per_step": 24.53,
+   "p99": 38
+  },
+  "wall_s": 184.5,
+  "cross_impl_agreement_pct": 1.7,
+  "m10_kernel_converted_hz": 3.462
+ }
+}

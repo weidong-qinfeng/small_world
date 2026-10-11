@@ -1,0 +1,167 @@
+{
+ "generated_by": "tools/fetch_m11_microns.py --verify-subset",
+ "generated_at": "2026-10-11T09:39:04Z",
+ "n_chunks_in_manifest": 200,
+ "checks": [
+  {
+   "t_chunk": "0",
+   "url": "https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/functional_data/functional_series/session4_scan7_field4/0/0/0/0",
+   "gz_bytes": 685768,
+   "chunk_prefix_bytes": 20,
+   "chunk_prefix_words": [
+    4,
+    200,
+    200,
+    1,
+    10
+   ],
+   "decompress_codec": "gzip(at offset 20)",
+   "decompress_ok": true,
+   "raw_bytes": 800000,
+   "expected_raw_bytes": 800000,
+   "bytes_match": true,
+   "n_voxels": 400000,
+   "int16_min": -32768,
+   "int16_max": 32584,
+   "int16_mean": -105.6656,
+   "nonzero_frac": 0.999,
+   "dtype_declared": "int16（attributes.json dataType）",
+   "uint16_alt": {
+    "min": 0,
+    "max": 65343,
+    "mean": 32637.431
+   },
+   "frac_negative_int16": 0.4996,
+   "note": "⚠️ **量纲/口径待核（NEEDS_VERIFY）**：按 int16 解释均值≈-106 且 50% 为负，按 uint16 解释均值≈32637 —— 两解均自洽；attributes.json 声明 int16 ⇒ P2 定稿前必须核对（本节点不裁决）",
+   "verdict": "REACHABLE(可解压+字节数精确匹配)"
+  },
+  {
+   "t_chunk": "1",
+   "url": "https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/functional_data/functional_series/session4_scan7_field4/0/0/0/1",
+   "gz_bytes": 675629,
+   "chunk_prefix_bytes": 20,
+   "chunk_prefix_words": [
+    4,
+    200,
+    200,
+    1,
+    10
+   ],
+   "decompress_codec": "gzip(at offset 20)",
+   "decompress_ok": true,
+   "raw_bytes": 800000,
+   "expected_raw_bytes": 800000,
+   "bytes_match": true,
+   "n_voxels": 400000,
+   "int16_min": -32768,
+   "int16_max": 32544,
+   "int16_mean": -128.7219,
+   "nonzero_frac": 1.0,
+   "dtype_declared": "int16（attributes.json dataType）",
+   "uint16_alt": {
+    "min": 0,
+    "max": 65535,
+    "mean": 32614.374
+   },
+   "frac_negative_int16": 0.4996,
+   "note": "⚠️ **量纲/口径待核（NEEDS_VERIFY）**：按 int16 解释均值≈-129 且 50% 为负，按 uint16 解释均值≈32614 —— 两解均自洽；attributes.json 声明 int16 ⇒ P2 定稿前必须核对（本节点不裁决）",
+   "verdict": "REACHABLE(可解压+字节数精确匹配)"
+  },
+  {
+   "t_chunk": "2",
+   "url": "https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/functional_data/functional_series/session4_scan7_field4/0/0/0/2",
+   "gz_bytes": 672063,
+   "chunk_prefix_bytes": 20,
+   "chunk_prefix_words": [
+    4,
+    200,
+    200,
+    1,
+    10
+   ],
+   "decompress_codec": "gzip(at offset 20)",
+   "decompress_ok": true,
+   "raw_bytes": 800000,
+   "expected_raw_bytes": 800000,
+   "bytes_match": true,
+   "n_voxels": 400000,
+   "int16_min": -32768,
+   "int16_max": 32571,
+   "int16_mean": -121.3812,
+   "nonzero_frac": 0.999,
+   "dtype_declared": "int16（attributes.json dataType）",
+   "uint16_alt": {
+    "min": 0,
+    "max": 65535,
+    "mean": 32608.608
+   },
+   "frac_negative_int16": 0.4994,
+   "note": "⚠️ **量纲/口径待核（NEEDS_VERIFY）**：按 int16 解释均值≈-121 且 50% 为负，按 uint16 解释均值≈32609 —— 两解均自洽；attributes.json 声明 int16 ⇒ P2 定稿前必须核对（本节点不裁决）",
+   "verdict": "REACHABLE(可解压+字节数精确匹配)"
+  },
+  {
+   "t_chunk": "3",
+   "url": "https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/functional_data/functional_series/session4_scan7_field4/0/0/0/3",
+   "gz_bytes": 668313,
+   "chunk_prefix_bytes": 20,
+   "chunk_prefix_words": [
+    4,
+    200,
+    200,
+    1,
+    10
+   ],
+   "decompress_codec": "gzip(at offset 20)",
+   "decompress_ok": true,
+   "raw_bytes": 800000,
+   "expected_raw_bytes": 800000,
+   "bytes_match": true,
+   "n_voxels": 400000,
+   "int16_min": -32768,
+   "int16_max": 32550,
+   "int16_mean": -89.0163,
+   "nonzero_frac": 1.0,
+   "dtype_declared": "int16（attributes.json dataType）",
+   "uint16_alt": {
+    "min": 0,
+    "max": 65535,
+    "mean": 32615.25
+   },
+   "frac_negative_int16": 0.499,
+   "note": "⚠️ **量纲/口径待核（NEEDS_VERIFY）**：按 int16 解释均值≈-89 且 50% 为负，按 uint16 解释均值≈32615 —— 两解均自洽；attributes.json 声明 int16 ⇒ P2 定稿前必须核对（本节点不裁决）",
+   "verdict": "REACHABLE(可解压+字节数精确匹配)"
+  },
+  {
+   "t_chunk": "4",
+   "url": "https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/functional_data/functional_series/session4_scan7_field4/0/0/0/4",
+   "gz_bytes": 665092,
+   "chunk_prefix_bytes": 20,
+   "chunk_prefix_words": [
+    4,
+    200,
+    200,
+    1,
+    10
+   ],
+   "decompress_codec": "gzip(at offset 20)",
+   "decompress_ok": true,
+   "raw_bytes": 800000,
+   "expected_raw_bytes": 800000,
+   "bytes_match": true,
+   "n_voxels": 400000,
+   "int16_min": -32768,
+   "int16_max": 32545,
+   "int16_mean": -101.9643,
+   "nonzero_frac": 0.9999,
+   "dtype_declared": "int16（attributes.json dataType）",
+   "uint16_alt": {
+    "min": 0,
+    "max": 65535,
+    "mean": 32619.669
+   },
+   "frac_negative_int16": 0.4993,
+   "note": "⚠️ **量纲/口径待核（NEEDS_VERIFY）**：按 int16 解释均值≈-102 且 50% 为负，按 uint16 解释均值≈32620 —— 两解均自洽；attributes.json 声明 int16 ⇒ P2 定稿前必须核对（本节点不裁决）",
+   "verdict": "REACHABLE(可解压+字节数精确匹配)"
+  }
+ ]
+}

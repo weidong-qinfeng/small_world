@@ -1,0 +1,343 @@
+{
+ "generated_by": "tools/build_m11_inventory.py",
+ "generated_at": "2026-10-11T11:01:04Z",
+ "units": "bytes; evidence ∈ {measured, derived, literature, unavailable}",
+ "microns_structure": {
+  "evidence": "measured(元数据) + derived(chunk 计数); shard 清单 = measured(有界)",
+  "volumes": {
+   "em": {
+    "host_gcs_verdict": "REACHABLE",
+    "host_s3_verdict": "REACHABLE",
+    "data_type": "uint8",
+    "type": "image",
+    "n_scales": 11,
+    "finest_scale": "8x8x40",
+    "resolution_nm": [
+     8.0,
+     8.0,
+     40.0
+    ],
+    "size_voxels": [
+     212992,
+     180224,
+     13088
+    ],
+    "bbox_nm": [
+     1703936.0,
+     1441792.0,
+     523520.0
+    ],
+    "bbox_mm": [
+     1.7039,
+     1.4418,
+     0.5235
+    ],
+    "volume_mm3": 1.2861,
+    "chunk_sizes_voxels": [
+     128,
+     128,
+     32
+    ],
+    "encoding": "raw",
+    "n_chunks_derived": 958251008,
+    "raw_bytes_per_chunk_derived": 524288,
+    "full_volume_raw_bytes_derived": 502399504482304,
+    "n_chunks_all_scales_derived": 1335146480
+   },
+   "seg": {
+    "host_gcs_verdict": "REACHABLE",
+    "host_s3_verdict": "REACHABLE",
+    "data_type": "uint64",
+    "type": "segmentation",
+    "n_scales": 11,
+    "finest_scale": "8x8x40",
+    "resolution_nm": [
+     8.0,
+     8.0,
+     40.0
+    ],
+    "size_voxels": [
+     192424,
+     131051,
+     13008
+    ],
+    "bbox_nm": [
+     1539392.0,
+     1048408.0,
+     520320.0
+    ],
+    "bbox_mm": [
+     1.5394,
+     1.0484,
+     0.5203
+    ],
+    "volume_mm3": 0.8397,
+    "chunk_sizes_voxels": [
+     128,
+     128,
+     32
+    ],
+    "encoding": "compressed_segmentation",
+    "n_chunks_derived": 626819072,
+    "raw_bytes_per_chunk_derived": 4194304,
+    "full_volume_raw_bytes_derived": 2629069740965888,
+    "n_chunks_all_scales_derived": 873293206
+   },
+   "seg_m1300": {
+    "host_gcs_verdict": "REACHABLE",
+    "host_s3_verdict": "REACHABLE_NO_DATA",
+    "data_type": "uint64",
+    "type": "segmentation",
+    "n_scales": 11,
+    "finest_scale": "8.0x8.0x40.0",
+    "resolution_nm": [
+     8.0,
+     8.0,
+     40.0
+    ],
+    "size_voxels": [
+     218809,
+     161359,
+     27858
+    ],
+    "bbox_nm": [
+     1750472.0,
+     1290872.0,
+     1114320.0
+    ],
+    "bbox_mm": [
+     1.7505,
+     1.2909,
+     1.1143
+    ],
+    "volume_mm3": 2.518,
+    "chunk_sizes_voxels": [
+     128,
+     128,
+     32
+    ],
+    "encoding": "compressed_segmentation",
+    "n_chunks_derived": 1878146010,
+    "raw_bytes_per_chunk_derived": 4194304,
+    "full_volume_raw_bytes_derived": 7877515322327040,
+    "n_chunks_all_scales_derived": 2616982716
+   }
+  },
+  "shard_inventory_measured_bounded": {
+   "em": {
+    "scale": "8x8x40",
+    "n_objects_measured": 3000,
+    "bytes_measured": 20056798614991,
+    "pages": 3,
+    "truncated": true,
+    "size_min": 4044,
+    "size_max": 11374538382,
+    "size_mean": 6685599538,
+    "evidence": "measured(有界列举)"
+   },
+   "seg": {
+    "scale": "8x8x40",
+    "n_objects_measured": 3000,
+    "bytes_measured": 1153504931766,
+    "pages": 3,
+    "truncated": true,
+    "size_min": 1789,
+    "size_max": 634708923,
+    "size_mean": 384501643,
+    "evidence": "measured(有界列举)"
+   },
+   "seg_m1300": {
+    "scale": "8.0x8.0x40.0",
+    "n_objects_measured": 3000,
+    "bytes_measured": 1043457169905,
+    "pages": 3,
+    "truncated": true,
+    "size_min": 1993,
+    "size_max": 622582249,
+    "size_mean": 347819056,
+    "evidence": "measured(有界列举)"
+   }
+  },
+  "unavailable": [
+   "逐 chunk 键清单：precomputed+sharded 存储 ⇒ 单 chunk 对象不可逐键列举（见 shard 级实测）",
+   "EM/seg 全量下载：TB 级 → 明令禁止（清单 §1.1.2）"
+  ]
+ },
+ "microns_functional": {
+  "evidence": "measured(元数据+有界子集)",
+  "n_fields_enumerated": 144,
+  "n_field_attributes_fetched": 144,
+  "n_fields_with_functional_series": 2,
+  "n_fields_with_seg_masks": 144,
+  "n_platinum_stimulus_movies": 22,
+  "n_platinum_camovies": 23,
+  "n_stimulus_movies": 58,
+  "n_raw_scan_tifs": 39,
+  "raw_scan_tif_bytes_total": 2686299523965,
+  "series": [
+   {
+    "field": "session4_scan7_field4",
+    "frame_interval_s": 0.15873,
+    "frame_rate_hz": 6.300006,
+    "n_timepoints": 40000,
+    "duration_s": 6349.2,
+    "n_planes": 1,
+    "volume_rate_hz": 6.300006,
+    "voxel_um_xyz": [
+     2.5,
+     2.5,
+     10.0
+    ],
+    "fov_um": [
+     620.0,
+     1100.0
+    ],
+    "block_size": [
+     200,
+     200,
+     1,
+     10
+    ],
+    "data_type": "int16",
+    "source_url": "https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/functional_data/functional_series/session4_scan7_field4/attributes.json",
+    "retrieved_at": "2026-10-11T09:13:20Z"
+   },
+   {
+    "field": "session5_scan3_field1",
+    "frame_interval_s": 0.15873,
+    "frame_rate_hz": 6.300006,
+    "n_timepoints": 40000,
+    "duration_s": 6349.2,
+    "n_planes": 1,
+    "volume_rate_hz": 6.300006,
+    "voxel_um_xyz": [
+     2.5,
+     2.5,
+     10.0
+    ],
+    "fov_um": [
+     620.0,
+     1100.0
+    ],
+    "block_size": [
+     100,
+     100,
+     1,
+     10
+    ],
+    "data_type": "int16",
+    "source_url": "https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/functional_data/functional_series/session5_scan3_field1/attributes.json",
+    "retrieved_at": "2026-10-11T09:13:21Z"
+   }
+  ],
+  "seg_mask_grid": {
+   "n_masks_infos": 144,
+   "resolution_nm": [
+    2500,
+    2500,
+    10000
+   ],
+   "size_voxels": [
+    248,
+    440,
+    1
+   ],
+   "encoding": "compressed_segmentation"
+  },
+  "raw_bigtiff": {
+   "url": "https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/functional_data/two_photon_functional_scans/functional_scan_17797_4_10_v1.tif",
+   "frame_shape": {
+    "shape": [
+     320000,
+     440,
+     248
+    ]
+   },
+   "bits_per_sample": 16,
+   "strip_bytes": 218240,
+   "evidence": "measured(Range 0-65535, HTTP 206)"
+  },
+  "bounded_subset": {
+   "series": "session4_scan7_field4",
+   "t_chunk_range": [
+    0,
+    200
+   ],
+   "n_objects": 200,
+   "bytes": 136348754,
+   "frames": 2000,
+   "evidence": "measured(逐对象 HTTP 200)"
+  }
+ },
+ "allen": {
+  "evidence": "measured",
+  "celltypes_total_rows_reported": null,
+  "celltypes_rows_landed": null,
+  "celltypes_download_complete": null,
+  "celltypes_n_fields": null,
+  "celltypes_n_ef_fields": null,
+  "celltypes_n_unique_donors": 772,
+  "ef_avg_firing_rate": {
+   "n": 1808,
+   "min": 1.985,
+   "median": 17.438,
+   "max": 261.21,
+   "evidence": "measured(API 返回的 ef__ 特征字段，逐标本一行)"
+  },
+  "per_cell_nwb": {
+   "head_http_code": 200,
+   "content_length": 91560414,
+   "filename": "\"486940961_ephys.nwb\"",
+   "range_0_99_http_code": 206,
+   "local_full_bytes": 44695552,
+   "local_partial_bytes": 8388608,
+   "header_status": "partial",
+   "header_source": "sparse(prefix 44695552 B + holes)",
+   "header_groups": [
+    "/acquisition",
+    "/acquisition/images",
+    "/acquisition/timeseries",
+    "/acquisition/timeseries/Sweep_10"
+   ],
+   "n_datasets": 0
+  },
+  "bo_neuropixels": {
+   "n_objects": null,
+   "bytes": null,
+   "truncated": null,
+   "object_probe": null
+  }
+ },
+ "literature": {
+  "n_rows": 37,
+  "by_status": {
+   "literature": 31,
+   "literature_unverified": 6
+  },
+  "evidence": "literature=Europe PMC 题录实测命中；未命中=literature_unverified"
+ },
+ "reachability": {
+  "n_sources": 68,
+  "by_verdict": {
+   "REACHABLE": 51,
+   "REACHABLE_NO_DATA": 3,
+   "BLOCKED": 8,
+   "NEEDS_VERIFY": 3,
+   "NOT_EXIST": 2,
+   "NEEDS_TOKEN": 1
+  },
+  "evidence": "measured(curl 两次探测)"
+ },
+ "inventory": {
+  "n_items": 224,
+  "total_bytes": 285924156,
+  "total_MB": 285.924
+ },
+ "unavailable_register": [
+  "MICrONS 逐细胞 ΔF/F 与 ROI 轨迹：仅存在于 v8 DataJoint MySQL 数据库（103.8 GB docker tar 或 116.2 GB SQL dump）→ 本轮未取（超预算）⇒ unavailable（非 0、非未命中）",
+  "MICrONS 全 144 field 的扫描级 fps/nframes/nfields：在数据库 Scan 表内 → 本轮 unavailable；框架内时间口径由 field_summaries（无时间轴）+ functional_series（仅 2 field，6.3001 Hz）给出",
+  "Allen synphys 桶对象级读取：403 AccessDenied（桶存在、不可 list）→ NEEDS_VERIFY",
+  "IBL OpenAlyx 数据集表：403 需凭据 → NEEDS_TOKEN（P12 走公开桶 + 论文档回退）",
+  "MICrONS minnie CAVE 表 API（info/materialize）：404 / 503 → REACHABLE_NO_DATA / BLOCKED"
+ ]
+}

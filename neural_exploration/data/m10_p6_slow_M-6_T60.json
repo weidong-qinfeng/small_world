@@ -1,0 +1,149 @@
+{
+ "level": "M-6",
+ "desc": "慢恢复组分（主agent 裁决 3 指定候选）：STP τ_rec=26 s（= 成像 dwell 中位 26.5 s）+ GABA_B 慢组分 τ_slow=2 s",
+ "n_meas_bins": 6000,
+ "meas_duration_s": 60.0,
+ "dt_bin_s": 0.01,
+ "mechanism_params": {
+  "stp": {
+   "enabled": true,
+   "u0": 0.5,
+   "tau_fac_ms": 50.0,
+   "tau_rec_ms": 26000.0,
+   "mode": "depress"
+  },
+  "gaba": {
+   "enabled": true,
+   "tau_fast_ms": 8.0,
+   "tau_slow_ms": 2000.0,
+   "frac_slow": 0.35
+  },
+  "g_mod": 1.0,
+  "desc": "慢恢复组分（主agent 裁决 3 指定候选）：STP τ_rec=26 s（= 成像 dwell 中位 26.5 s）+ GABA_B 慢组分 τ_slow=2 s"
+ },
+ "attribution_strength": "abstract_only（Fish1 连接组 partial/CAVE 门控 ⇒ 消融归属降级为抽象网络内归属）",
+ "stop_condition": "按主agent 裁决 2：不做“扫参数直到 bout 出现”的搜索；参数取预注册范围中点",
+ "slow_variable": {
+  "traces_summary": {
+   "stp_u": {
+    "mean": 0.05196020818005005,
+    "std": 0.0015222490612951615,
+    "min": 0.04225422814488411,
+    "max": 0.05394802242517471
+   },
+   "stp_x": {
+    "mean": 0.7827273562550545,
+    "std": 0.005508580487427325,
+    "min": 0.7813482880592346,
+    "max": 0.820877730846405
+   },
+   "gaba_b_conductance": {
+    "mean": 0.1613492861886819,
+    "std": 0.12677957905908163,
+    "min": 0.1273808777332306,
+    "max": 1.1127798557281494
+   }
+  },
+  "tau_est_s": {
+   "stp_u": 1.08,
+   "stp_x": 1.58,
+   "gaba_b_conductance": 1.97
+  },
+  "tau_pre_registered": {
+   "param": "tau_rec_ms",
+   "lo_ms": 10000.0,
+   "hi_ms": 60000.0
+  },
+  "tau_setting_in_physiological_range": {
+   "param": "tau_rec_ms",
+   "value_ms": 26000.0,
+   "lo_ms": 10000.0,
+   "hi_ms": 60000.0,
+   "pass_": true
+  }
+ },
+ "slow_vs_poprate_corr": {
+  "stp_u": 0.8466984788601017,
+  "stp_x": -0.9815658646097438,
+  "gaba_b_conductance": -0.9915988527749602
+ },
+ "slow_var_corr_min": 0.3,
+ "slow_var_corr_pass": true,
+ "bout_stats_same_bins": {
+  "bout_fraction": 0.9553333333333334,
+  "n_bouts": 48,
+  "silent_bin_frac": 0.008166666666666666,
+  "bout_median_s": 1.29,
+  "nbins": 6000,
+  "mean_bin_spikes": 2.300733333333333
+ },
+ "criterion_C_same_pipeline_dwell": {
+  "criterion": "model_dwell_low_median_s 与 imaging_dwell_low_median_s **同方法（分位法）** 同阶（比值落 [1/3×, 3×]，等价 log10 距离 ≤ log10 3）",
+  "status": "measured",
+  "model_dwell_low_median_s": 0.02,
+  "imaging_dwell_low_median_s": 6.853661632186825,
+  "imaging_reference_source": "m10_imaging_dwell_reference.json",
+  "log10_distance": 2.53489266367971,
+  "pass_": false,
+  "descriptive_only": {
+   "tau_slow_s": 26.0,
+   "tau_activity_autocorr_s": 0.01,
+   "ratio_tau_over_activity": 2600.0,
+   "note": "**RF-6**：本行仅描述性；τ_activity 为箱宽量级 ⇒ 该比值不进 hard_criterion_pass"
+  }
+ },
+ "zapbench_timescale_comparison": {
+  "status": "measured",
+  "imaging_reference_status": "measured",
+  "model": {
+   "occupancy": [
+    0.6031666666666666,
+    0.3968333333333333
+   ],
+   "transition_rate_hz": 57.733333333333334,
+   "n_switches": 3464,
+   "dwell_low_median_s": 0.02,
+   "dwell_high_median_s": 0.01,
+   "method": "quantile_median_split_2state"
+  },
+  "imaging_reference": {
+   "source": "m10_imaging_dwell_reference.json",
+   "generated_by": "tools/build_m10_imaging_dwell_reference.py",
+   "dwell_low_median_s": 6.853661632186825,
+   "dwell_low_median_s_interior": 6.396750856707704,
+   "method": "quantile_median_split_2state (与模型侧同一实现)",
+   "dwell_low_median_s_method_H": 26.50082497778906
+  },
+  "method_note": "两侧**同一方法**（分位法 `_hmm_states`）；成像侧由 M10-B4 以同法复算并落盘 `m10_imaging_dwell_reference.json`（RF-8：同一方法下比较，禁止跨口径比）",
+  "c2_invalid_reason": null
+ },
+ "wall_s": 131.7,
+ "closed_state_equivalence": {
+  "sparse_regime_bit_identical": true,
+  "sparse_regime": {
+   "m9_spk": 39,
+   "m10_spk": 39,
+   "bit_identical": true,
+   "n_neurons_counts_differ": 0,
+   "note": "稀疏工况（每步 ≤1 发放）⇒ M9 公式精确 ⇒ 可作语义参照（RF-7）"
+  },
+  "dense_regime_m9_comparison": {
+   "bit_identical_counts": false,
+   "m9_spk": 869,
+   "m10_off_spk": 863,
+   "n_neurons_counts_differ": 30
+  },
+  "dense_regime_role": "defect_reproducibility_only（E-M9-2 的又一实测证据：M9 在密集工况静默越界读 ⇒ 与修正内核不一致是**修正生效**的签名，不作判据）",
+  "criterion_reference": "M9 语义在**稀疏工况**（RF-7 明确允许）；密集工况参照应为 Brian2，本轮未做（登记）"
+ },
+ "verdict": {
+  "C_same_pipeline_dwell_status": "measured",
+  "C_same_pipeline_dwell_pass": false,
+  "C2_model_dwell_low_median_s": 0.02,
+  "C2_model_transition_rate_hz": 57.733333333333334,
+  "A_tau_in_phys_range": true,
+  "B_slow_var_corr_pass": true,
+  "D_sparse_regime_equiv": true,
+  "hard_criterion_pass": false
+ }
+}

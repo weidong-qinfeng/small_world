@@ -1,0 +1,4 @@
+# M10 P5 标定扫描（结构证据级别 = 抽象/Fish1-partial 锚定；判据带 = 预注册）
+g_exc,g_inh,bias_median,lam_hz,pop_rate_hz,rate_median_hz,silent_frac,bout_fraction,n_bouts,wall_s
+1.5,22.0,150.0,0.0,0.0365,0.0,0.997,0.0,0,3.84
+1.5,22.0,150.0,8.0,0.609,0.0,0.819,0.0,0,4.05

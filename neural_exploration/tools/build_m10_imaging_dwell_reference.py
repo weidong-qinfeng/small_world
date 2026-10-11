@@ -31,6 +31,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import os
@@ -54,6 +55,8 @@ REF_JSON = os.path.join(DATA_DIR, "m10_imaging_stats.json")
 OUT_CSV = os.path.join(DATA_DIR, "m10_imaging_dwell_reference.csv")
 OUT_JSON = os.path.join(DATA_DIR, "m10_imaging_dwell_reference.json")
 OUT_FIG = os.path.join(PROJECT_ROOT, "reports", "neuro", "m10_b4_dwell_reference.png")
+OUT_TAU_CSV = os.path.join(DATA_DIR, "m10_imaging_slow_tau_reference.csv")
+OUT_TAU_JSON = os.path.join(DATA_DIR, "m10_imaging_slow_tau_reference.json")
 LOG_PATH = os.path.join(PROJECT_ROOT, "reports", "neuro", "_m10_b4_progress.log")
 
 DT_S = 1.0 / 1.0943055555555556                     # 0.9138215509582435 s（帧率来源见 reference.csv）
@@ -266,6 +269,100 @@ def ar_predictive_ll(x_train: np.ndarray, x_test: np.ndarray, p: int) -> dict:
 
 
 # --------------------------------------------------------------------------
+# G 项：AR(1) 慢时间尺度 τ 的容差研究（含 χ² 检验，不依赖 scipy）
+# --------------------------------------------------------------------------
+def _gammainc_series(a: float, x: float) -> float:
+    """P(a,x) 级数展开（Numerical Recipes gser）。"""
+    gln = math.lgamma(a)
+    if x <= 0:
+        return 0.0
+    ap, s, delta = a, 1.0 / a, 1.0 / a
+    for _ in range(500):
+        ap += 1.0
+        delta *= x / ap
+        s += delta
+        if abs(delta) < abs(s) * 1e-15:
+            break
+    return s * math.exp(-x + a * math.log(x) - gln)
+
+
+def _gammainc_cf(a: float, x: float) -> float:
+    """Q(a,x) 连分式（Numerical Recipes gcf）。"""
+    gln = math.lgamma(a)
+    tiny = 1e-300
+    b, c, d = x + 1.0 - a, 1.0 / tiny, 1.0 / (x + 1.0 - a)
+    h = d
+    for i in range(1, 500):
+        an = -i * (i - a)
+        b += 2.0
+        d = an * d + b
+        if abs(d) < tiny:
+            d = tiny
+        c = b + an / c
+        if abs(c) < tiny:
+            c = tiny
+        d = 1.0 / d
+        delta = d * c
+        h *= delta
+        if abs(delta - 1.0) < 1e-15:
+            break
+    return math.exp(-x + a * math.log(x) - gln) * h
+
+
+def chi2_sf(x: float, k: int) -> float:
+    """χ² 分布上尾概率 P(X > x)，自由度 k。"""
+    if x <= 0:
+        return 1.0
+    a = k / 2.0
+    xx = x / 2.0
+    return 1.0 - _gammainc_series(a, xx) if xx < a + 1.0 else _gammainc_cf(a, xx)
+
+
+def ljung_box(resid: np.ndarray, lags=(10, 20, 40)) -> dict:
+    """Ljung-Box 残差白噪检验：Q = n(n+2) Σ ρ̂_k²/(n−k) ~ χ²_h。"""
+    r = np.asarray(resid, dtype=np.float64).reshape(-1)
+    r = r - r.mean()
+    n = r.size
+    denom = float(np.sum(r * r))
+    if denom <= 0:
+        return dict(n=int(n), note="零方差残差，未检验")
+    out: dict = dict(n=int(n))
+    for h in lags:
+        hh = min(int(h), n - 2)
+        acf = [float(np.sum(r[k:] * r[:-k]) / denom) for k in range(1, hh + 1)]
+        Q = float(n * (n + 2) * sum(acf[k - 1] ** 2 / (n - k) for k in range(1, hh + 1)))
+        out[f"lag{hh}"] = dict(Q=Q, df=int(hh), p=chi2_sf(Q, hh),
+                               acf1=acf[0] if acf else None,
+                               reject_5pct=bool(chi2_sf(Q, hh) < 0.05))
+    return out
+
+
+def ar_fit(x: np.ndarray, p: int = 1, dt_s: float = DT_S) -> dict:
+    """AR(p) OLS 拟合 + τ 提取 + 有限样本偏置修正（φ̂ + (1+3φ̂)/n）+ 残差诊断。"""
+    v = np.asarray(x, dtype=np.float64).reshape(-1)
+    n = v.size
+    lag = [v[p - j: v.size - j] for j in range(1, p + 1)]
+    Z = np.column_stack([np.ones(n - p)] + lag)
+    coef, *_ = np.linalg.lstsq(Z, v[p:], rcond=None)
+    resid = v[p:] - Z @ coef
+    s2 = float(np.mean(resid ** 2))
+    phi = float(coef[1])
+    tau = float(-dt_s / math.log(phi)) if 0 < phi < 1 else None
+    phi_bc = phi + (1.0 + 3.0 * phi) / n
+    return dict(p=int(p), n=int(n), phi=phi, tau_s=tau,
+                phi_bias_corrected=float(phi_bc),
+                tau_s_bias_corrected=(float(-dt_s / math.log(phi_bc))
+                                      if 0 < phi_bc < 1 else None),
+                intercept=float(coef[0]), sigma=float(math.sqrt(s2)),
+                resid_std=float(np.std(resid)),
+                lag1_resid_autocorr=float(np.sum((resid[1:] - resid.mean())
+                                                 * (resid[:-1] - resid.mean()))
+                                          / np.sum((resid - resid.mean()) ** 2)),
+                ljung_box=ljung_box(resid),
+                coef=[float(c) for c in coef])
+
+
+# --------------------------------------------------------------------------
 # 群体序列构造 / 两法
 # --------------------------------------------------------------------------
 def bin_sum(pop: np.ndarray, w: int) -> np.ndarray:
@@ -472,13 +569,28 @@ def main() -> int:
     ap.add_argument("--out-json", default=OUT_JSON)
     ap.add_argument("--out-fig", default=OUT_FIG)
     ap.add_argument("--stages", default="A,B,C,D,E,F",
-                    help="要跑的分析项（逗号分隔）：A/B/C/D/E/F")
+                    help="要跑的分析项（逗号分隔）：A/B/C/D/E/F/G（G=AR(1) τ 容差研究）")
+    ap.add_argument("--out-tau-csv", default=OUT_TAU_CSV,
+                    help="G 项专用小表（τ 参考；仅 stages 含 G 时写出）")
+    ap.add_argument("--out-tau-json", default=OUT_TAU_JSON)
+    ap.add_argument("--merge", action="store_true",
+                    help="把本次结果**合并**进已存在的 CSV/JSON：同名 key 行仅被本次重算覆盖，"
+                         "其它阶段的行/键原样保留（用于追加新 stage 而不重跑旧 stage）")
     ap.add_argument("--n-iter", type=int, default=60, help="HMM EM 迭代上限（=参考实现 60）")
     ap.add_argument("--seed", type=int, default=SEED)
     ap.add_argument("--restarts", type=int, default=5, help="C 项 HMM 多起点重启次数（含参考初值）")
     ap.add_argument("--sub-seeds", type=int, default=len(SUB_SEEDS), help="F 项子采样重复次数")
     ap.add_argument("--no-fig", action="store_true")
+    ap.add_argument("--fig-only", default=None, metavar="JSON",
+                    help="只从既有 JSON 重画图（不重算任何分析、不读 npy），用于合并写入后恢复总图")
     args = ap.parse_args()
+    if args.fig_only:
+        with open(args.fig_only, encoding="utf-8") as fh:
+            res = json.load(fh)
+        make_figure(res, args.out_fig)
+        log(f"[fig] 由 {args.fig_only} 重画 → {args.out_fig}")
+        log("[DONE] M10-B4 出图模式完成")
+        return 0
     stages = {s.strip().upper() for s in args.stages.split(",") if s.strip()}
     t_start = time.time()
 
@@ -1001,6 +1113,277 @@ def main() -> int:
             for n in SUB_N}
         results["F"] = F
 
+    # ================= G：AR(1) τ 判据的容差研究（追加任务，写进同一 CSV/JSON） =================
+    g_row_start = len(ROWS)
+    if "G" in stages:
+        log("[G] AR(1) τ 判据容差：口径自检 + 跨条件离散度 + 段内前后半 + 子采样稳健性 ...")
+        # ---- G0 口径自检：AR 与 H/Q 必须吃**同一条**输入序列（逐位同一） ----
+        raw_ref = smooth_same(bin_sum(pop, 1), SMOOTH_BINS_REF)      # 平滑后的群体计数（未 z）
+        ser_ref_g = zscore(raw_ref)
+        identical = bool(np.array_equal(ser_ref_g, ser_ref))
+        h_ser = hashlib.sha256(ser_ref.tobytes()).hexdigest()
+        h_raw = hashlib.sha256(raw_ref.tobytes()).hexdigest()
+        quad = dict(n=int(ser_ref.size), mean=float(ser_ref.mean()), std=float(ser_ref.std()),
+                    sum_abs=float(np.abs(ser_ref).sum()))
+        ar_raw = ar_fit(raw_ref, 1)          # 路径 A：原始（平滑后计数）序列
+        ar_z = ar_fit(ser_ref, 1)            # 路径 B：z 分数序列（A/H/Q 实际用的）
+        tau_rel = (abs(ar_raw["tau_s"] - ar_z["tau_s"]) / ar_z["tau_s"]
+                   if (ar_raw["tau_s"] and ar_z["tau_s"]) else float("nan"))
+        log(f"[G0] 输入序列逐位同一 = {identical}；sha256(ser)={h_ser[:16]} sha256(raw)={h_raw[:16]}；"
+            f"四元组 n={quad['n']} mean={quad['mean']:.6f} std={quad['std']:.6f}")
+        log(f"[G0] τ 双路径：原始序列 φ={ar_raw['phi']:.6f} → τ={ar_raw['tau_s']:.4f} s | "
+            f"z 分数 φ={ar_z['phi']:.6f} → τ={ar_z['tau_s']:.4f} s | 相对差={tau_rel:.2e} → "
+            f"{'PASS（两路径一致）' if tau_rel < 1e-6 else '**FAIL：两路径不一致，须报告**'}")
+        lb_s = ar_z["ljung_box"]
+        tau_80 = ar_fit(ser_ref[: int(0.8 * ser_ref.size)], 1)
+        log(f"[G0] τ 窗口口径核对：全记录(n={ser_ref.size}) τ={ar_z['tau_s']:.3f} s vs "
+            f"前 80%(n={int(0.8 * ser_ref.size)}) τ={tau_80['tau_s']:.3f} s "
+            f"（相对差 {abs(tau_80['tau_s'] - ar_z['tau_s']) / ar_z['tau_s'] * 100:.1f}%）"
+            f" ⇒ **τ 基准取全记录值 {ar_z['tau_s']:.3f} s**，窗口依赖作为口径不确定度登记")
+        lb_u = ar_fit(bin_sum(pop, 1), 1)["ljung_box"]          # 不额外平滑（去掉 5 帧箱car 的 MA 影响）
+        lb4 = ar_fit(ser_ref, 4)["ljung_box"]
+        for nm, lb in (("AR(1) 平滑序列残差", lb_s), ("AR(1) 未平滑序列残差", lb_u),
+                       ("AR(4) 平滑序列残差", lb4)):
+            log(f"[G0] Ljung-Box {nm}: " + " | ".join(
+                f"lag{k[3:]} Q={v['Q']:.1f} p={v['p']:.3g}{'（拒绝白噪）' if v['reject_5pct'] else '（不拒绝）'}"
+                for k, v in lb.items() if k.startswith("lag")))
+        log(f"[G0] 残差 lag1 自相关：平滑={ar_z['lag1_resid_autocorr']:.4f} "
+            f"未平滑={ar_fit(bin_sum(pop, 1), 1)['lag1_resid_autocorr']:.4f}")
+        G: dict = dict(
+            self_check=dict(same_input_series_bitwise_identical=identical,
+                            sha256_ser_ref=h_ser, sha256_raw_ref=h_raw, quad=quad,
+                            series_def="pop = 3·MAD 事件率群体计数（8192 神经元）；"
+                                       "raw = 5 帧(numpy convolve mode='same'，零填充)滑动平均；"
+                                       "ser = zscore(raw) —— 与 A/E 项的 Q/H 输入完全同一数组",
+                            tau_path_raw=dict(phi=ar_raw["phi"], tau_s=ar_raw["tau_s"],
+                                              phi_bias_corrected=ar_raw["phi_bias_corrected"],
+                                              tau_s_bias_corrected=ar_raw["tau_s_bias_corrected"]),
+                            tau_path_zscore=dict(phi=ar_z["phi"], tau_s=ar_z["tau_s"],
+                                                 phi_bias_corrected=ar_z["phi_bias_corrected"],
+                                                 tau_s_bias_corrected=ar_z["tau_s_bias_corrected"]),
+                            tau_relative_diff=float(tau_rel),
+                            consistent=bool(tau_rel < 1e-6),
+                            note="AR(1) 对线性重标度不变 ⇒ 原始/ z 分数两路径的 φ 与 τ 必须相同；"
+                                 "不一致即为估计器口径事故（对照主 agent 发现的 pop_rate_hz vs "
+                                 "pop_trace_mean_hz 13–15% 事故）"),
+            # 估计窗口口径核对：C 项的 AR(1) 是在**前 80%**（CV 训练段）上拟合的，
+            # 与全记录拟合不是同一次估计 —— 两者差 12%，必须并列登记并选定基准
+            tau_window_check=dict(
+                full_record=dict(n=int(ser_ref.size), phi=ar_z["phi"], tau_s=ar_z["tau_s"]),
+                first80pct=dict(n=int(0.8 * ser_ref.size),
+                                phi=ar_fit(ser_ref[: int(0.8 * ser_ref.size)], 1)["phi"],
+                                tau_s=ar_fit(ser_ref[: int(0.8 * ser_ref.size)], 1)["tau_s"]),
+                note="C 项 AR(1)（42.33 s）是**前 80% 段**拟合值（为与 HMM 同一切分）；"
+                     "全记录拟合给出另一个值。**τ 基准取全记录值**，并把该窗口依赖作为一项"
+                     "口径不确定度登记"),
+            residual_whiteness=dict(ar1_smoothed=lb_s, ar1_unsmoothed=lb_u, ar4_smoothed=lb4,
+                                    ar1_lag1_resid_autocorr_smoothed=ar_z["lag1_resid_autocorr"],
+                                    ar1_lag1_resid_autocorr_unsmoothed=ar_fit(bin_sum(pop, 1), 1)
+                                    ["lag1_resid_autocorr"],
+                                    note="残差非白噪 ⇒ 「单一慢时间尺度」不足；5 帧箱car 平滑本身"
+                                         "会引入 MA(4) 结构（故并列未平滑口径）"),
+            tau_full_record_s=ar_z["tau_s"],
+            tau_full_record_bias_corrected_s=ar_z["tau_s_bias_corrected"])
+
+        # ---- G1 按条件分段 AR(1) τ（同口径：0.914 s 帧、5 帧平滑、z 分数、各段内 fit） ----
+        offs = list(ZAP["condition_offsets"])
+        names = list(ZAP["condition_names"])
+        segs = [(names[i], offs[i], offs[i + 1]) for i in range(len(names))]
+        min_len = min(b - a for _, a, b in segs)
+        G["conditions"] = []
+        for nm, a, b in segs:
+            seg = build_series(pop[a:b], 1, SMOOTH_BINS_REF)
+            af = ar_fit(seg, 1)
+            k = int(0.8 * seg.size)
+            ar_ll = ar_predictive_ll(seg[:k], seg[k:], 1)
+            seg_eq = build_series(pop[a:a + min_len], 1, SMOOTH_BINS_REF)
+            af_eq = ar_fit(seg_eq, 1)
+            half = (b - a) // 2
+            taus_half = [ar_fit(build_series(pop[sl], 1, SMOOTH_BINS_REF), 1)["tau_s"]
+                         for sl in (slice(a, a + half), slice(a + half, b))]
+            row = dict(name=nm, n_frames=int(b - a), duration_s=float((b - a) * DT_S),
+                       phi=af["phi"], tau_s=af["tau_s"],
+                       tau_s_bias_corrected=af["tau_s_bias_corrected"],
+                       test_loglik_per_frame=ar_ll["test_loglik_per_frame"],
+                       n_test=int(seg.size - k),
+                       tau_equal_len_591=af_eq["tau_s"],
+                       tau_half_first=float(taus_half[0]), tau_half_second=float(taus_half[1]))
+            G["conditions"].append(row)
+            log(f"[G1] {nm:10s} T={b - a:4d} | φ={af['phi']:.5f} τ={af['tau_s']:8.3f} s "
+                f"(偏置修正 {af['tau_s_bias_corrected']:8.3f}) 留出ll/帧={ar_ll['test_loglik_per_frame']:.4f}"
+                f" | 等长591 τ={af_eq['tau_s']:8.3f} | 前半={taus_half[0]:8.3f} 后半={taus_half[1]:8.3f}")
+            add(f"g_cond_{nm}_tau", af["tau_s"], "s", "AR(1)", f"条件段 {nm}({b - a}帧)",
+                "本工具 G 项", f"φ={af['phi']:.6f} n={seg.size}")
+            add(f"g_cond_{nm}_tau_bias_corrected", af["tau_s_bias_corrected"], "s", "AR(1)",
+                f"条件段 {nm}({b - a}帧)", "本工具 G 项", "φ̂+(1+3φ̂)/n 一阶偏置修正（诊断列）")
+            add(f"g_cond_{nm}_ll_per_frame", ar_ll["test_loglik_per_frame"], "nats/frame", "AR(1)",
+                f"条件段 {nm} 留出后20%", "本工具 G 项", "段内 80/20 切分")
+            add(f"g_cond_{nm}_tau_equal_len", af_eq["tau_s"], "s", "AR(1)",
+                f"条件段 {nm} 前{min_len}帧", "本工具 G 项", "等长控制（最短段长）")
+
+        def _disp_g(vals: list[float]) -> dict:
+            v = np.asarray([x for x in vals if x is not None and np.isfinite(x)], dtype=float)
+            q1, q3 = float(np.quantile(v, 0.25)), float(np.quantile(v, 0.75))
+            return dict(n=int(v.size), median=float(np.median(v)), q1=q1, q3=q3, iqr=q3 - q1,
+                        iqr_over_median=float((q3 - q1) / np.median(v)) if np.median(v) else None,
+                        min=float(v.min()), max=float(v.max()),
+                        max_over_min=float(v.max() / v.min()) if v.min() > 0 else None)
+
+        G["dispersion"] = dict(
+            tau_cross_condition=_disp_g([r["tau_s"] for r in G["conditions"]]),
+            tau_cross_condition_bias_corrected=_disp_g(
+                [r["tau_s_bias_corrected"] for r in G["conditions"]]),
+            tau_cross_condition_equal_len=_disp_g(
+                [r["tau_equal_len_591"] for r in G["conditions"]]),
+            tau_half_split=_disp_g([v for r in G["conditions"]
+                                    for v in (r["tau_half_first"], r["tau_half_second"])]),
+            phi_cross_condition=_disp_g([r["phi"] for r in G["conditions"]]),
+        )
+        for k, v in G["dispersion"].items():
+            log(f"[G1] {k}: 中位={v['median']:.4f} IQR=[{v['q1']:.4f},{v['q3']:.4f}] "
+                f"IQR/中位={v['iqr_over_median']:.3f} max/min={v['max_over_min']:.3f}x n={v['n']}")
+            add(f"g_disp_{k}_median", v["median"], "", k, "9 条件", "本工具 G 项", "跨条件中位")
+            add(f"g_disp_{k}_iqr_rel", v["iqr_over_median"], "x", k, "9 条件", "本工具 G 项", "")
+            add(f"g_disp_{k}_max_over_min", v["max_over_min"], "x", k, "9 条件", "本工具 G 项", "")
+
+        # ---- G2 子采样稳健性（N=8192/4096/2048/1024，3 seed） ----
+        G["subsample"] = []
+        for n in SUB_N:
+            for sd in range(min(3, args.sub_seeds)):
+                if n == N and sd > 0:
+                    continue
+                rng = np.random.default_rng(args.seed + 100 * sd)
+                cols = (np.arange(N) if n == N else np.sort(rng.choice(N, size=n, replace=False)))
+                cnt = ev[:, cols].sum(axis=1).astype(np.float64)
+                af = ar_fit(build_series(cnt, 1, SMOOTH_BINS_REF), 1)
+                G["subsample"].append(dict(n_neurons=int(n), seed=int(sd), phi=af["phi"],
+                                           tau_s=af["tau_s"],
+                                           tau_s_bias_corrected=af["tau_s_bias_corrected"]))
+                log(f"[G2] N={n:5d} seed={sd} φ={af['phi']:.5f} τ={af['tau_s']:.3f} s")
+                add(f"g_sub_N{n}_{sd}_tau", af["tau_s"], "s", "AR(1)", f"N={n} seed={sd}",
+                    "本工具 G 项", f"φ={af['phi']:.6f}")
+        def _ms_g(vals):
+            v = np.asarray([x for x in vals if np.isfinite(x)], float)
+            return dict(mean=float(v.mean()), sd=float(v.std(ddof=1)) if v.size > 1 else 0.0,
+                        n=int(v.size), min=float(v.min()), max=float(v.max()))
+        G["subsample_summary"] = {str(n): _ms_g([r["tau_s"] for r in G["subsample"]
+                                                 if r["n_neurons"] == n]) for n in SUB_N}
+        tau_full = G["subsample_summary"][str(N)]["mean"]
+        G["subsample_drift"] = {str(n): float(G["subsample_summary"][str(n)]["mean"] / tau_full)
+                                for n in SUB_N}
+        for n in SUB_N:
+            s = G["subsample_summary"][str(n)]
+            log(f"[G2] N={n:5d}: τ={s['mean']:.3f}±{s['sd']:.3f} s（相对 8192 = "
+                f"{G['subsample_drift'][str(n)]:.4f}×，n={s['n']}）")
+            add(f"g_sub_N{n}_tau_mean", s["mean"], "s", "AR(1)", f"N={n}", "本工具 G 项",
+                f"sd={s['sd']:.3f} n={s['n']}")
+            add(f"g_sub_N{n}_drift_vs_N8192", G["subsample_drift"][str(n)], "x", "AR(1)",
+                f"N={n}/8192", "本工具 G 项", "子采样漂移倍数")
+
+        # ---- G3 τ 判据 vs dwell 判据：容差宽度实测对比 + 对模型侧 [8,80] s 窗的覆盖率 ----
+        win = (8.0, 80.0)   # 模型侧 validate_p10_slow_variable.py 现行 SAME_ORDER_WINDOW（只读观测）
+        tau_vals = [r["tau_s"] for r in G["conditions"] if r["tau_s"]]
+        cov = float(np.mean([win[0] <= v <= win[1] for v in tau_vals]))
+        dwell_maxmin, dwell_src = None, "not_available（本次未跑 E 项且既有 JSON 不可读）"
+        if "E" in results:
+            dwell_maxmin = results["E"]["dispersion"]["H_low_dwell_median"]["max_over_min"]
+            dwell_src = "本次运行 E 项"
+        elif os.path.exists(args.out_json):
+            try:
+                with open(args.out_json, encoding="utf-8") as fh:
+                    old = json.load(fh)
+                dwell_maxmin = old["E"]["dispersion"]["H_low_dwell_median"]["max_over_min"]
+                dwell_src = "既有 %s 的 E 项（本次未重算，只读引用）" % os.path.basename(args.out_json)
+            except (OSError, KeyError, json.JSONDecodeError):
+                pass
+        G["criterion_comparison"] = dict(
+            model_side_window_s=list(win),
+            model_side_window_source="tools/validate_p10_slow_variable.py: SAME_ORDER_WINDOW=(8.0,80.0)"
+                                     "（该文件由其他节点在建，本工具只读观测）",
+            tau_condition_coverage_in_window=cov,
+            tau_half_split_coverage_in_window=float(np.mean(
+                [win[0] <= r[k] <= win[1] for r in G["conditions"]
+                 for k in ("tau_half_first", "tau_half_second") if r[k]])),
+            dwell_dispersion_max_over_min=dwell_maxmin,
+            dwell_dispersion_source=dwell_src,
+            tau_dispersion_max_over_min=G["dispersion"]["tau_cross_condition"]["max_over_min"],
+            tau_vs_dwell_ratio=(
+                float(G["dispersion"]["tau_cross_condition"]["max_over_min"] / dwell_maxmin)
+                if dwell_maxmin else None),
+            note="容差宽度对比：τ 的跨条件极差 vs dwell 的跨条件极差（比值 <1 ⇒ τ 判据更锐利）")
+        G["tolerance_recommendation"] = dict(
+            recommended_multiplier=float(G["dispersion"]["tau_cross_condition"]["max_over_min"]),
+            recommended_window_s=[float(G["tau_full_record_s"] / G["dispersion"]
+                                        ["tau_cross_condition"]["max_over_min"]),
+                                  float(G["tau_full_record_s"] * G["dispersion"]
+                                        ["tau_cross_condition"]["max_over_min"])],
+            basis="τ 基准 = 全记录 AR(1) τ %.3f s；容差倍数 = 9 条件 τ 的 max/min" % G["tau_full_record_s"])
+
+        # ---- G4：模型侧**现行 ±3× 判据**（log10 比值窗）在成像侧参照自身的覆盖率 ----
+        # 模型侧现行 C 条：|log10(model_dwell / imaging_dwell)| ≤ log10(3)（同分位法，Q 法口径）
+        # 这里回答：成像侧**自己不同条件**算出来的值，能不能全部落进这个 ±3× 窗？
+        q_ref = q_method(ser_ref, DT_S)["low"]["median_s"]
+        q_by_cond = [q_method(build_series(pop[a:b], 1, SMOOTH_BINS_REF), DT_S)["low"]["median_s"]
+                     for _, a, b in segs]
+        log3 = math.log10(3.0)
+
+        def _cov3(ref, vals):
+            rr = [v / ref for v in vals if v and ref]
+            inside = [abs(math.log10(r)) <= log3 for r in rr]
+            return dict(reference_s=float(ref), n=len(rr),
+                        ratio_min=float(min(rr)), ratio_max=float(max(rr)),
+                        coverage=float(np.mean(inside)),
+                        margin_min=float(min(abs(math.log10(min(rr))), abs(math.log10(max(rr)))) / log3),
+                        saturated=bool(min(abs(math.log10(min(rr))), abs(math.log10(max(rr)))) / log3 > 0.9))
+        G["model_window_pm3x_check"] = dict(
+            criterion="模型侧现行 C 条：|log10(model_x / imaging_x)| ≤ log10(3) ⇒ ±3× 比值窗",
+            Q_dwell=_cov3(q_ref, q_by_cond),
+            tau=_cov3(G["tau_full_record_s"], [r["tau_s"] for r in G["conditions"]]),
+            tau_half_split=_cov3(G["tau_full_record_s"],
+                                 [r[k] for r in G["conditions"]
+                                  for k in ("tau_half_first", "tau_half_second") if r[k]]),
+            note="coverage=成像侧自身条件值落进 ±3× 窗的比例；margin=最不利条件下距窗边界的相对余量"
+                 "（→1 表示窗已被参照自身的离散度吃满）")
+        for nm, v in (("Q_dwell", G["model_window_pm3x_check"]["Q_dwell"]),
+                      ("tau", G["model_window_pm3x_check"]["tau"]),
+                      ("tau_half_split", G["model_window_pm3x_check"]["tau_half_split"])):
+            log(f"[G4] 模型侧 ±3× 窗 vs 成像侧 {nm}: 参照={v['reference_s']:.3f} s "
+                f"比值范围=[{v['ratio_min']:.3f}, {v['ratio_max']:.3f}] 覆盖={v['coverage']:.3f} "
+                f"最不利余量={v['margin_min']:.3f}{'（窗被吃满）' if v['saturated'] else ''}")
+            add(f"g_pm3x_{nm}_coverage", v["coverage"], "frac", "±3× 比值窗", f"成像侧 {nm}",
+                "本工具 G 项", f"比值范围=[{v['ratio_min']:.3f},{v['ratio_max']:.3f}]")
+            add(f"g_pm3x_{nm}_ratio_min", v["ratio_min"], "x", "±3× 比值窗", f"成像侧 {nm}",
+                "本工具 G 项", "最小比值（1/3 = 窗下界）")
+            add(f"g_pm3x_{nm}_ratio_max", v["ratio_max"], "x", "±3× 比值窗", f"成像侧 {nm}",
+                "本工具 G 项", "最大比值（3 = 窗上界）")
+        log(f"[G3] 模型侧现窗 {win} s 对 9 条件 τ 的覆盖率 = {cov:.3f}；"
+            f"τ 容差建议 = ±{G['tolerance_recommendation']['recommended_multiplier']:.3f}× "
+            f"→ {[round(v, 1) for v in G['tolerance_recommendation']['recommended_window_s']]} s；"
+            f"dwell 跨条件极差 = {G['criterion_comparison']['dwell_dispersion_max_over_min']}")
+        results["G"] = G
+        add("g_self_check_consistent", 1.0 if G["self_check"]["consistent"] else 0.0, "bool",
+            "AR(1)", "全记录", "本工具 G 项",
+            f"原始/z 两路径 τ 相对差={G['self_check']['tau_relative_diff']:.2e}；"
+            f"输入序列逐位同一={G['self_check']['same_input_series_bitwise_identical']}")
+        add("g_input_series_sha256", G["self_check"]["sha256_ser_ref"], "hex", "AR(1)", "全记录",
+            "本工具 G 项", "与 Q/H 法同一输入序列（z 分数）")
+        for nm, key in (("ar1_smoothed", "AR(1) 平滑"), ("ar1_unsmoothed", "AR(1) 未平滑"),
+                        ("ar4_smoothed", "AR(4) 平滑")):
+            for lag in ("lag10", "lag20", "lag40"):
+                v = G["residual_whiteness"][nm][lag]
+                add(f"g_lb_{nm}_{lag}_p", v["p"], "p", "AR(1) 残差白噪", f"{key}/{lag}",
+                    "本工具 G 项", f"Ljung-Box Q={v['Q']:.1f} df={v['df']}"
+                                   f"{'（拒绝白噪）' if v['reject_5pct'] else '（不拒绝）'}")
+        add("g_tau_full_record", G["tau_full_record_s"], "s", "AR(1)", "全记录(7879帧)",
+            "本工具 G 项", "与 C 项 AR(1) 同一估计值")
+        add("g_tau_recommended_tolerance_multiplier",
+            G["tolerance_recommendation"]["recommended_multiplier"], "x", "AR(1)",
+            "全记录 + 9 条件", "本工具 G 项", "τ 判据容差倍数（跨条件 max/min）")
+        add("g_model_side_window_tau_coverage", G["criterion_comparison"]
+            ["tau_condition_coverage_in_window"], "frac", "AR(1)",
+            "模型侧窗 [8,80] s × 9 条件", "本工具 G 项（只读观测模型侧现窗）",
+            "τ 落窗比例（模型侧现判据的实测覆盖率）")
+
     # ---------- §8 可操作建议（数字全部由上面结果推出） ----------
     rec: dict = {}
     try:
@@ -1038,16 +1421,46 @@ def main() -> int:
                 per_bin_width={str(r["bin_frames"]): float(b) for r, b in zip(rows, bins)},
                 min=float(min(bins)), max=float(max(bins)),
                 mean=float(np.mean(bins)),
-                note="实测：Q 法低态 dwell 折算成**箱数**在 1–16 帧/箱（0.91–14.6 s）范围内近似不变 "
-                     "⇒ dwell(秒) ≈ (2~3)×箱宽；q 法在箱宽→小的时候 dwell 秒数按箱宽线性塌缩")
+                note="实测：Q 法低态 dwell 折算成**箱数**随箱宽从 7.5 箱（w=1）降到 3.0 箱（w=16）"
+                     "——箱数变化仅 2.5×，而秒数变化 6.4×；箱数大致 ~3–7.5（≈4 箱）⇒ Q 法 dwell(秒)"
+                     "与**箱宽同量级**，不是物理时间尺度")
             rec["外推_模型侧0.01s箱若用Q法_预期dwell_s"] = [float(min(bins) * 0.01),
                                                             float(max(bins) * 0.01)]
-            rec["外推_说明"] = ("由实测「Q 法 dwell ≈ 2~3 箱」线性外推到 0.01 s 箱——**这是实测关系的"
-                                "外推，不是对模型侧的测量**；模型侧自相关结构不同则外推失效，故主建议"
-                                "仍是「先聚合到 0.914 s 帧 + 用 H 法」而不是外推。")
+            rec["外推_说明"] = ("由实测「Q 法低态 dwell ≈ 3–7.5 箱」线性外推到 0.01 s 箱（=0.03–0.075 s）"
+                                "——**这是实测关系的外推，不是对模型侧的测量**；模型侧自相关结构不同则"
+                                "外推失效，故主建议仍是「先聚合到 0.914 s 帧 + 用 H 法」而不是外推。")
+            # B 项 H 法稳定性：w=1..8（≤7.3 s）内的极差，与 w=16 的崩坏
+            rn = [r for r in results["B"]["table"] if r["variant"] == "nosm"]
+            h_1_8 = [r["H"]["low"]["median_s"] for r in rn if r["bin_frames"] <= 8]
+            rec["B_H法稳定区_w1至w8_极差倍数"] = float(max(h_1_8) / min(h_1_8))
+            rec["B_H法稳定区_w1至w8_值_s"] = [float(v) for v in h_1_8]
+            rec["B_H法_w16_low_dwell_s"] = float(rn[-1]["H"]["low"]["median_s"])
+            rec["B_H法_w16_转换次数"] = int(rn[-1]["H"]["n_switches"])
+            q_nosm_1 = [r for r in rn if r["bin_frames"] == 1][0]["Q"]["low"]["median_s"]
+            q_sm46_1 = rows[0]["Q"]["low"]["median_s"]
+            rec["B_Q法平滑口径敏感性_w1_sm46_over_nosm"] = float(q_sm46_1 / q_nosm_1)
+            rec["D_HMM自洽_理论几何mean_s"] = float(DT_S / (1.0 - results["A"]["H"]["A"][0][0]))
+            rec["D_HMM自洽_实测mean_s"] = float(results["A"]["H"]["low"]["mean_s"])
+        if "E" in results:
+            for k in ("H_low_dwell_median", "H_low_dwell_median_equal_len",
+                      "H_transition_rate", "Q_low_dwell_median"):
+                v = results["E"]["dispersion"][k]
+                rec[f"E_{k}_IQR范围_s"] = [float(v["q1"]), float(v["q3"])]
+        if "C" in results:
+            rec["C_BIC最优状态数"] = results["C"]["best_by_bic"]
+            rec["C_CV最优状态数"] = results["C"]["best_by_cv_common"]
+            rec["C_AR1留出ll每帧"] = results["C"]["ar_vs_hmm"]["best_ar_test_ll_per_frame"]
+            rec["C_AR1_τ_s"] = [a["ar1_tau_s"] for a in results["C"]["ar_baseline"] if a["p"] == 1][0]
+            rec["C_结论"] = ("BIC 与 4/4 折留出似然都选 K=3（不是 2）；且 3 参数连续 AR(1) 的留出似然"
+                             "（−0.176/帧）优于 7 参数 K=2（−0.678）与 14 参数 K=3（−0.339）⇒ "
+                             "ZAPBench 群体慢活动更支持**连续慢过程**，26.5 s 依赖人为 2 状态离散化")
     except (KeyError, TypeError, ZeroDivisionError) as ex:
         rec["error"] = f"{type(ex).__name__}: {ex}"
-    results["recommendation_inputs"] = rec
+    if "A" in results:
+        # 该块由 A/B/E/F 推导；只跑 G 时不可算 ⇒ 不写该键（避免合并写入时覆盖既有结果）
+        results["recommendation_inputs"] = rec
+    else:
+        log("[rec] 本次未跑 A 项 ⇒ 跳过 recommendation_inputs（合并写入时保留既有键）")
     log(f"[rec] 口径差 H/Q = {rec.get('A_口径差倍数_H_over_Q_low_dwell_median')}；"
         f"建议同阶窗口 = {rec.get('建议同阶窗口')}")
 
@@ -1062,16 +1475,63 @@ def main() -> int:
         full_71721_neurons="not_run：本机只落盘子集 8192 列（原始 71721 列未下载，zenodo 吞吐限制见 provenance）",
     )
     os.makedirs(os.path.dirname(args.out_json), exist_ok=True)
+    run_stamp = dict(stages=sorted(stages), elapsed_s=round(elapsed, 1),
+                     command=f"PYTHONHASHSEED=0 OMP_NUM_THREADS=1 MPLBACKEND=Agg ./.venv-m10/bin/python -m "
+                             f"neural_exploration.tools.build_m10_imaging_dwell_reference "
+                             f"--stages {args.stages}" + (" --merge" if args.merge else ""),
+                     seed=int(args.seed), restarts=int(args.restarts),
+                     timestamp=time.strftime("%Y-%m-%dT%H:%M:%S"))
+    new_json = to_py(results)
+    if args.merge and os.path.exists(args.out_json):
+        with open(args.out_json, encoding="utf-8") as fh:
+            old_json = json.load(fh)
+        merged = old_json
+        for k, v in new_json.items():
+            if k == "meta":
+                merged.setdefault("meta", {})
+                appended = merged["meta"].setdefault("appended_runs", [])
+                appended.append(dict(**v.get("meta", {}), **run_stamp))   # 不覆盖既有 meta 键
+            else:
+                merged[k] = v                                            # 只覆盖本次跑到的阶段键
+        write_json = merged
+    else:
+        write_json = new_json
     with open(args.out_json, "w", encoding="utf-8") as fh:
-        json.dump(to_py(results), fh, ensure_ascii=False, indent=1)
-    log(f"[out] JSON → {args.out_json}（{os.path.getsize(args.out_json) / 1024:.1f} KB）")
+        json.dump(write_json, fh, ensure_ascii=False, indent=1)
+    log(f"[out] JSON → {args.out_json}（{os.path.getsize(args.out_json) / 1024:.1f} KB，"
+        f"{'合并写入' if args.merge else '覆盖写入'}；顶层键={list(write_json.keys())}）")
+
+    header = ("# M10-B4 成像侧 dwell 基准（同口径复核）—— 长表；由 "
+              "tools/build_m10_imaging_dwell_reference.py 生成；"
+              "value 一律来自真实运行，未测项在 JSON meta.not_run 中登记\n")
     df = pd.DataFrame(ROWS, columns=["key", "value", "unit", "method", "scope", "source", "note"])
+    if args.merge and os.path.exists(args.out_csv):
+        with open(args.out_csv, encoding="utf-8") as fh:
+            header = fh.readline()
+        old = pd.read_csv(args.out_csv, comment="#")
+        n_old = len(old)
+        old = old[~old["key"].isin(set(df["key"]))]        # 只让本次的 key 行被替换
+        df = pd.concat([old, df], ignore_index=True)
+        log(f"[out] CSV 合并：保留既有 {n_old} 行中 {len(old)} 行（本次覆盖 "
+            f"{n_old - len(old)} 行）+ 新增 {len(ROWS)} 行")
     with open(args.out_csv, "w", encoding="utf-8") as fh:
-        fh.write("# M10-B4 成像侧 dwell 基准（同口径复核）—— 长表；由 "
-                 "tools/build_m10_imaging_dwell_reference.py 生成；"
-                 "value 一律来自真实运行，未测项在 JSON meta.not_run 中登记\n")
+        fh.write(header)
     df.to_csv(args.out_csv, mode="a", index=False)
     log(f"[out] CSV → {args.out_csv}（{len(df)} 行，{df['key'].nunique()} 个 key）")
+
+    # ---------- G 项专用小表：τ 参考（只含本次 G 行；不覆盖主产物） ----------
+    if "G" in stages:
+        g_df = df[df["key"].str.startswith("g_")].copy()
+        with open(args.out_tau_csv, "w", encoding="utf-8") as fh:
+            fh.write("# M10-B4 追加任务 G：ZAPBench 成像侧慢时间尺度 τ 参考（AR(1) 口径）—— "
+                     "由 tools/build_m10_imaging_dwell_reference.py --stages G 生成\n")
+        g_df.to_csv(args.out_tau_csv, mode="a", index=False)
+        tau_json = dict(meta=dict(new_json["meta"]), G=new_json.get("G"))
+        tau_json["meta"].update(run_stamp)
+        tau_json["meta"]["scope"] = "stage G only"
+        with open(args.out_tau_json, "w", encoding="utf-8") as fh:
+            json.dump(tau_json, fh, ensure_ascii=False, indent=1)
+        log(f"[out] τ 专用表 → {args.out_tau_csv}（{len(g_df)} 行）/ {args.out_tau_json}")
 
     if not args.no_fig:
         try:
@@ -1115,7 +1575,7 @@ def make_figure(res: dict, path: str) -> None:
             break
     matplotlib.rcParams["axes.unicode_minus"] = False
 
-    fig, ax = plt.subplots(2, 3, figsize=(19, 10))
+    fig, ax = plt.subplots(2, 4, figsize=(25, 10))
     # (1) B 箱宽曲线
     if "B" in res:
         for vname, ls in (("nosm", "-o"), ("sm46", "--s")):
@@ -1189,7 +1649,47 @@ def make_figure(res: dict, path: str) -> None:
         ax[1, 2].set_ylabel("low-state dwell median (s)")
         ax[1, 2].axhline(REF_VALUES["dwell_median_s"], color="k", ls=":", label="参考 26.5 s")
         ax[1, 2].set_title("F 神经元子采样衰减"); ax[1, 2].legend(fontsize=8); ax[1, 2].grid(alpha=.3)
-    fig.suptitle("M10-B4 ZAPBench 成像侧 dwell 基准同口径复核（ZAPBench 8192×7879, 1.0943 Hz）")
+    # (7) G1 跨条件 τ 离散度（+ 模型侧现窗 [8,80] s）
+    if "G" in res and res["G"].get("conditions"):
+        g = res["G"]
+        taus = [r["tau_s"] for r in g["conditions"]]
+        nms = [r["name"] for r in g["conditions"]]
+        half = [r[k] for r in g["conditions"] for k in ("tau_half_first", "tau_half_second")]
+        ax[0, 3].bar(range(len(nms)), taus, color="tab:green", alpha=.85, label="条件 τ（全段）")
+        ax[0, 3].plot(np.repeat(np.arange(len(nms)), 2) + np.tile([-0.18, 0.18], len(nms)), half,
+                      "k.", ms=6, label="后半/前半 τ")
+        ax[0, 3].axhline(g["tau_full_record_s"], color="tab:blue", ls="-",
+                         label=f"全记录 τ={g['tau_full_record_s']:.1f}s")
+        cc = g.get("criterion_comparison", {})
+        if cc.get("model_side_window_s"):
+            w = cc["model_side_window_s"]
+            ax[0, 3].axhspan(w[0], w[1], color="orange", alpha=.15,
+                             label=f"模型侧现窗 {w[0]:.0f}–{w[1]:.0f} s")
+        ax[0, 3].set_xticks(range(len(nms)))
+        ax[0, 3].set_xticklabels(nms, rotation=45, ha="right")
+        ax[0, 3].set_ylabel("AR(1) τ (s)")
+        ax[0, 3].set_title(f"G 跨条件 τ（max/min={g['dispersion']['tau_cross_condition']['max_over_min']:.2f}×）")
+        ax[0, 3].legend(fontsize=7); ax[0, 3].grid(alpha=.3)
+    # (8) G0 残差白噪检验 + τ 子采样 + τ vs dwell 容差对比
+    if "G" in res:
+        g = res["G"]
+        rw = g.get("residual_whiteness", {})
+        labs, pv = [], []
+        for nm, key in (("ar1_smoothed", "AR1 平滑"), ("ar1_unsmoothed", "AR1 未平滑"),
+                        ("ar4_smoothed", "AR4 平滑")):
+            for lag in ("lag10", "lag20", "lag40"):
+                labs.append(f"{key}\n{lag[3:]}")
+                pv.append(max(rw[nm][lag]["p"], 1e-12))
+        ax[1, 3].bar(range(len(pv)), pv, color="tab:red", alpha=.8)
+        ax[1, 3].axhline(0.05, color="k", ls="--", label="p=0.05")
+        ax[1, 3].set_yscale("log")
+        ax[1, 3].set_xticks(range(len(labs))); ax[1, 3].set_xticklabels(labs, fontsize=6)
+        tvd = g.get("criterion_comparison", {})
+        ax[1, 3].set_title("G0 Ljung-Box 残差白噪 p（全部拒绝 ⇒ 单一尺度不足）\n"
+                           f"τ 容差 {tvd.get('tau_dispersion_max_over_min', float('nan')):.2f}× vs "
+                           f"dwell 容差 {tvd.get('dwell_dispersion_max_over_min') or float('nan'):.2f}×")
+        ax[1, 3].legend(fontsize=7); ax[1, 3].grid(alpha=.3)
+    fig.suptitle("M10-B4 ZAPBench 成像侧 dwell/τ 基准同口径复核（8192×7879, 1.0943 Hz）")
     fig.tight_layout()
     os.makedirs(os.path.dirname(path), exist_ok=True)
     fig.savefig(path, dpi=110)

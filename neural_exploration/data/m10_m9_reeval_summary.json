@@ -1,0 +1,107 @@
+{
+ "generated_by": "tools/reeval_m10_m9_rebuttals.py（对照表汇总）",
+ "protocol": "M9 定稿网络 m9_network.npz + validate_p9_resting.PARAMS（ahp_g=25 等）+ 原协议 T=1000ms/settle=300ms/segment=2000/g_ext=19.230769",
+ "raw_arms": {
+  "m10_lam0.0": {
+   "pop": 4.502065,
+   "median": 0.0,
+   "silent": 0.758156,
+   "bout": 0.0,
+   "nbouts": 0,
+   "msp": 0.0
+  },
+  "m10_lam0.5": {
+   "pop": 4.636939,
+   "median": 0.0,
+   "silent": 0.686352,
+   "bout": 0.0,
+   "nbouts": 0,
+   "msp": 0.0
+  },
+  "m10_lam2.0": {
+   "pop": 4.984238,
+   "median": 0.0,
+   "silent": 0.585875,
+   "bout": 0.0,
+   "nbouts": 0,
+   "msp": 0.0
+  },
+  "m9_lam0.0": {
+   "pop": 6.00321,
+   "median": 0.0,
+   "silent": 0.574292,
+   "bout": 0.0,
+   "nbouts": 0,
+   "msp": 0.0
+  }
+ },
+ "m9_recorded": {
+  "lam0_0.00_pop_rate_hz": 4.678288,
+  "lam0_0.50_pop_rate_hz": 4.7482,
+  "lam0_2.00_pop_rate_hz": 5.092521,
+  "lam0_0.00_silent": 0.585372,
+  "lam0_2.00_silent": 0.541762,
+  "rel_zero_drive": 0.9853,
+  "rel_4x_drive": 1.0725
+ },
+ "comparison": {
+  "R3_zero_drive_ratio": {
+   "m9_recorded": 0.9853,
+   "m10_fixed_engine": 0.9709131390341775,
+   "verdict": "KEPT（自持结论不被推翻；仍 ≫0.10）"
+  },
+  "R3_4x_drive_ratio": {
+   "m9_recorded": 1.0725,
+   "m10_fixed_engine": 1.07489833271475,
+   "verdict": "KEPT（输入增益过低结论不被推翻）"
+  },
+  "R3_zero_drive_pop_hz": {
+   "m9_recorded": 4.678288,
+   "m10_fixed_engine": 4.502065,
+   "m9_engine_rerun_this_harness": 6.00321,
+   "verdict": "**M9 冻结引擎在本机重跑其自身定稿配置得到 6.003 Hz，而其记录值为 4.678 Hz（+28%）→ M9 全规模数值**不可复现**；修正内核 4.502 Hz 反而更接近 M9 记录值（−3.8%）"
+  },
+  "silent_frac": {
+   "m9_recorded_lam0": 0.585372,
+   "m9_engine_rerun_lam0": 0.574292,
+   "m10_fixed_lam0": 0.758156
+  },
+  "P4d_bout": {
+   "m9_recorded": 0.0,
+   "m10_fixed": 0.0,
+   "verdict": "KEPT（两引擎在 100ms 分箱可证伪口径下 bout 均为 0）"
+  },
+  "P7b_daynight": {
+   "status": "not_run_direction_test_only",
+   "note": "P7(b) 需 λ(t) 正弦调制的完整节律协议；本轮以恒定 λ 的 0/0.5/2.0 三条剂量-响应替代（方向判别）：M10 修正内核 4.502→4.637→4.984 Hz（+10.7% 全程），与 M9 的 +8.7% 同向 ⇒ 昼夜无差异的结论**倾向保持**，但未做同协议复现"
+  },
+  "P10_activity_stats": {
+   "status": "not_run",
+   "note": "需完整钙正向模型 + 相关性管线（§6.1）；本轮预算不足 → 如实登记未测（≠未命中）"
+  }
+ },
+ "errata_for_m9": [
+  {
+   "id": "E-M9-1",
+   "item": "全规模 point 档数值可复现性",
+   "evidence": "同一 m9_network.npz + 同一 PARAMS + 同一协议，本机 MPS 重跑 M9 冻结引擎得 6.0032 Hz；M9 记录 4.6783 Hz（+28%）⇒ 在该发放密度下 M9 冻结引擎的投递索引越界（L17）导致 OOB 读/静默错投，数值**不可复现**（MPS 不抛错）",
+   "impact": "M9 全规模的**绝对数值**（pop rate、静默比例之外的速率类量）不可作为跨里程碑锚；**定性结论**（R3 自持/增益过低、bout=0）在修正内核上**复现成立**"
+  },
+  {
+   "id": "E-M9-2",
+   "item": "RB1 归因",
+   "evidence": "L17 最小复现 + T2 判别实验",
+   "impact": "RB1「全规模 CPU point 档路径不可用」的真实根因是引擎投递公式缺陷（非 CPU 后端问题）；修正后 M10 内核在 CPU/MPS 双路径均可运行"
+  },
+  {
+   "id": "E-M9-3",
+   "item": "对齐门的适用域",
+   "evidence": "T1（稀疏）M9≡M10 逐位一致；T2（同步发放）M9 抛错",
+   "impact": "M9 对齐门 100% 一致**仅对稀疏工况成立**；须补「目标发放密度下的对齐」判据"
+  }
+ ],
+ "g0_criterion_addendum": {
+  "f_synchronous_firing_discrimination": "T2 型最小复现（同一步 ≥2 神经元发放）——已通过（M9 报错/M10 正常）",
+  "dense_regime_alignment_required": "对齐门 (a)–(d) 必须**在目标工况的发放密度下**复测（ZAPBench 实测 147.7 Hz/神经元；M9 定稿密度 ~4.6 Hz/神经元）"
+ }
+}

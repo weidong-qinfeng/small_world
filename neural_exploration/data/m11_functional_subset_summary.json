@@ -1,0 +1,16 @@
+{
+ "block_shape_note": "functional_series blockSize=[200,200,1,10] \u21d2 \u6bcf\u7247 = 10 \u5e27\uff08\u9884\u6ce8\u518c\uff09",
+ "generated_at": "2026-10-11T09:54:49Z",
+ "generated_by": "tools/fetch_m11_microns.py --func-subset(+retry-missing)",
+ "manifest": "data/m11_functional_subset_manifest.csv",
+ "n_objects_landed": 200,
+ "n_ok": 200,
+ "n_requested": 200,
+ "series": "session4_scan7_field4",
+ "t_chunk_range": [
+  0,
+  200
+ ],
+ "total_MB": 136.349,
+ "total_bytes": 136348754
+}

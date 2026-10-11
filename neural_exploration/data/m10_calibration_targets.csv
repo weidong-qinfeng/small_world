@@ -1,0 +1,22 @@
+# M10 判据带 —— 运行前定稿（生成器 tools/build_m10_reference_bands.py）；不事后调
+# 修改纪律：只允许**新增行**，原行保留（M9 L36.3）
+key,value,unit,source,note
+rate_band_lo,0.30,Hz,m10_imaging_reference.csv::p5_rate_band_lo,P5 (a) 中位发放率带下界（文献量级 0.3–1.5 Hz；清单 §4.2 预注册）
+rate_band_hi,1.50,Hz,m10_imaging_reference.csv::p5_rate_band_hi,P5 (a) 上界
+silent_band_lo,0.50,,M10 §4.2 (b) 预注册,P5 (b) 静默比例带下界（草案，执行时以成像/电生理文献校准；成像事件率口径见 imaging reference）
+silent_band_hi,0.95,,M10 §4.2 (b) 预注册,P5 (b) 上界
+selfsustain_ratio_max,0.10,,M10 §4.2 (c) 预注册（G1 门硬判据）,零外部驱动 + 零背景率 → 群率/基准群率上限（M9 实测 0.9853 = 反证基线）
+drive_elasticity_min,0.30,,M10 §4.2 (d) 预注册（G1 门硬判据）,4× 驱动群率相对增幅下限（M9 实测 +0.0725 = 反证基线）
+drive_monotone_required,1,bool,M10 §4.2 (d) 预注册,"驱动倍数 {0,0.5,1,2,4,8} 群率单调不减"
+single_trial_gpu_h_max,0.50,GPU-h,M10 §0.7 #2 预注册（以 G0 探针实测修正）,P5 (f) 单试次墙钟预算；G0 探针后若实测偏离则**追加行**修正（不删原行）
+settle_window_ms,500,ms,M10 §4.2 预注册（M5 L37#2 教训）,t=0 初始化瞬态剔除窗；判据只看 settle 之后
+n_trials_min,3,,M10 §4.2 预注册（固定 seed）,P5 最少试次数
+p6_dwell_window_lo,8.0,s,m10_imaging_reference.csv ③（ZAPBench dwell 中位 26.5 s）,"**判据表述修正（主agent 采纳）**：慢变量 τ 须与成像 bout/dwell 时长分布同阶 = [0.3×,3×]×26.5 s"
+p6_dwell_window_hi,80.0,s,同上,同上
+p6_dwell_ref_s,26.5,s,ZAPBench 2 状态 HMM 低态停留中位,同口径（模型侧用同一分位/HMM 法）
+p6_slow_var_corr_min_rerun,0.30,,清单 §4.1.2 现象级判据,慢变量轨迹 vs 群率慢涨落 |r| 下限
+p5_selfsustain_ratio_max,0.10,,RF-11(ii) 预注册（统计可判版）,点估计 ≤0.10 **且** CI95 上界 ≤0.12；零驱动臂与基准臂各 ≥3 seed、T≥10 s，零驱动臂总脉冲 ≥300
+p5_selfsustain_ci_upper_max,0.12,,同上,CI 上界门限（Poisson 对数法）
+p5_selfsustain_measured,0.1015,,m10_p5_gate1_ci.json（3 seed × T=10 s × n=1000）,"**临界未过**：R=0.1015、CI95 [0.0945, 0.1091]（跨门限）⇒ 点估计超 0.10"
+p5_gate1_verdict,临界通过（统计未分辨）/ 点估计未过,,同上,逐 seed 比值 0.0987 / 0.1056 / 0.1005 ⇒ **同一门限在相邻配置间来回翻转**
+p6_gate12_discriminativeness,none,,跨配置表（RF-11(iii)）,门 1/2 在 n=300 配置下由**基线自身**通过（弹性 +579.6%）⇒ 对机制阶梯**无判别性**

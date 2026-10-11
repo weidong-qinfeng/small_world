@@ -241,7 +241,9 @@ def main() -> int:
         rows.append(["confound", "win%.0fs_frame%.0fHz" % (d["win_s"], d["frame_rate_hz"]),
                      "corr=%.4f surrogate=%.4f frames=%d" % (d["mean_pair_corr"],
                                                              d["surrogate"], d["n_frames"]),
-                     "窗长/帧率对相关估计的混淆诊断（同一记录，无额外运行）"])
+                     "窗长/帧率对相关估计的混淆诊断（同一记录，无额外运行）"
+                     + ("；**T=%.0f ms < 该窗 → 退化为全窗（该档不可解释，登记）**" % T_MS
+                        if d["win_s"] * 1000.0 > T_MS else "")])
     for k, v in crit.items():
         rows.append(["crit", k, str(bool(v)), ""])
     rows.append(["crit", "verdict", verdict, "P10 三态判定（%d/%d）" % (n_pass, len(crit))])

@@ -1,0 +1,100 @@
+{
+ "level": "M-2",
+ "desc": "STP 易化型（u0=0.15, τ_fac=0.5 s）",
+ "n_meas_bins": 500,
+ "meas_duration_s": 5.0,
+ "dt_bin_s": 0.01,
+ "mechanism_params": {
+  "stp": {
+   "enabled": true,
+   "u0": 0.15,
+   "tau_fac_ms": 500.0,
+   "tau_rec_ms": 100.0,
+   "mode": "facilitate"
+  },
+  "gaba": null,
+  "g_mod": 1.0,
+  "desc": "STP 易化型（u0=0.15, τ_fac=0.5 s）"
+ },
+ "attribution_strength": "abstract_only（Fish1 连接组 partial/CAVE 门控 ⇒ 消融归属降级为抽象网络内归属）",
+ "stop_condition": "按主agent 裁决 2：不做“扫参数直到 bout 出现”的搜索；参数取预注册范围中点",
+ "slow_variable": {
+  "traces_summary": {
+   "stp_u": {
+    "mean": 0.22501879304647446,
+    "std": 0.0009147787524945675,
+    "min": 0.2209712117910385,
+    "max": 0.22622528672218323
+   },
+   "stp_x": {
+    "mean": 0.9175683081150054,
+    "std": 0.002051908865567747,
+    "min": 0.9135909080505371,
+    "max": 0.9219375252723694
+   }
+  },
+  "tau_est_s": {
+   "stp_u": 0.13,
+   "stp_x": 0.05
+  },
+  "tau_pre_registered": {
+   "param": "tau_fac_ms",
+   "lo_ms": 100.0,
+   "hi_ms": 1000.0
+  },
+  "tau_setting_in_physiological_range": {
+   "param": "tau_fac_ms",
+   "value_ms": 500.0,
+   "lo_ms": 100.0,
+   "hi_ms": 1000.0,
+   "pass_": true
+  }
+ },
+ "slow_vs_poprate_corr": {
+  "stp_u": 0.5947911351536841,
+  "stp_x": -0.23041366075104755
+ },
+ "slow_var_corr_min": 0.3,
+ "slow_var_corr_pass": true,
+ "bout_stats_same_bins": {
+  "bout_fraction": 0.0,
+  "n_bouts": 0,
+  "silent_bin_frac": 0.0,
+  "bout_median_s": 0.0,
+  "nbins": 500,
+  "mean_bin_spikes": 1.9975999999999998
+ },
+ "timescale_same_order": {
+  "criterion": "τ_slow 须落在成像 dwell 窗 [0.3×, 3×] × 26.5 s = [8, 80] s（修正表述）",
+  "tau_slow_s": 0.5,
+  "tau_in_dwell_window": false,
+  "tau_activity_autocorr_s": 0.01,
+  "ratio_tau_over_dwell": 0.018867924528301886,
+  "window": [
+   8.0,
+   80.0
+  ],
+  "dwell_ref_s": 26.5,
+  "pass_": false
+ },
+ "zapbench_timescale_comparison": {
+  "error": "KeyError: 'high'"
+ },
+ "wall_s": 11.9,
+ "closed_state_equivalence": {
+  "bit_identical_counts": false,
+  "m9_spk": 869,
+  "m10_off_spk": 863,
+  "n_neurons_counts_differ": 30
+ },
+ "verdict": {
+  "C2_same_order_vs_zapbench": false,
+  "C3_transition_rate_model": null,
+  "C3_transition_rate_ratio_vs_zap": null,
+  "A_tau_in_phys_range": true,
+  "B_slow_var_corr_pass": true,
+  "C_same_order_pass": false,
+  "D_closed_state_equiv": false,
+  "hard_criterion_pass": false
+ }
+}

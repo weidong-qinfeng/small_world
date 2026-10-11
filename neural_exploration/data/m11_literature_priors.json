@@ -1,0 +1,890 @@
+{
+ "generated_by": "tools/build_m11_literature_priors.py",
+ "generated_at": "2026-10-11T11:18:37Z",
+ "n_rows": 37,
+ "n_literature": 31,
+ "n_literature_unverified": 6,
+ "status_vocab": [
+  "literature",
+  "literature_unverified"
+ ],
+ "caveat": "`literature` = Europe PMC 题录实测命中；参数值仅在摘要出现时标 value_in_abstract=yes，否则不得声称已核实（全文未读）",
+ "raw_queries": {
+  "P-1.3-01_extid": {
+   "query": "EXT_ID:18982117",
+   "http": {
+    "http_code": 200,
+    "nbytes": 4866
+   },
+   "hit": 1
+  },
+  "P-1.3-01_query": {
+   "query": "AUTH:\"Thomson AM\" AND \"neocortical\" AND \"local circuitry\"",
+   "http": {
+    "http_code": 200,
+    "nbytes": 17287
+   },
+   "hit": 3,
+   "top": [
+    {
+     "pmid": "20399808",
+     "doi": "10.1016/j.brainresrev.2010.04.004",
+     "title": "Biocytin-labelling and its impact on late 20th century studies of cortical circuitry."
+    },
+    {
+     "pmid": "18982117",
+     "doi": "10.3389/neuro.01.1.1.002.2007",
+     "title": "Functional maps of neocortical local circuitry."
+    },
+    {
+     "pmid": "12626012",
+     "doi": "10.1098/rstb.2002.1163",
+     "title": "Target and temporal pattern selection at neocortical synapses."
+    }
+   ]
+  },
+  "P-1.3-02_extid": {
+   "query": "EXT_ID:26612957",
+   "http": {
+    "http_code": 200,
+    "nbytes": 10708
+   },
+   "hit": 1
+  },
+  "P-1.3-02_query": {
+   "query": "TITLE:\"Principles of connectivity among morphologically defined cell types in adult neocortex\"",
+   "http": {
+    "http_code": 200,
+    "nbytes": 28406
+   },
+   "hit": 4,
+   "top": [
+    {
+     "pmid": "27609882",
+     "doi": "10.1126/science.aaf5663",
+     "title": "Comment on \"Principles of connectivity among morphologically defined cell types in adult neocortex\"."
+    },
+    {
+     "pmid": "26612957",
+     "doi": "10.1126/science.aac9462",
+     "title": "Principles of connectivity among morphologically defined cell types in adult neocortex."
+    },
+    {
+     "pmid": "27609883",
+     "doi": "10.1126/science.aaf6102",
+     "title": "Response to Comment on \"Principles of connectivity among morphologically defined cell types in adult neocortex\"."
+    }
+   ]
+  },
+  "P-1.3-03_extid": {
+   "query": "EXT_ID:15737062",
+   "http": {
+    "http_code": 200,
+    "nbytes": 6526
+   },
+   "hit": 1
+  },
+  "P-1.3-03_query": {
+   "query": "TITLE:\"Highly nonrandom features of synaptic connectivity in local cortical circuits\"",
+   "http": {
+    "http_code": 200,
+    "nbytes": 8403
+   },
+   "hit": 2,
+   "top": [
+    {
+     "pmid": "15737062",
+     "doi": "10.1371/journal.pbio.0030068",
+     "title": "Highly nonrandom features of synaptic connectivity in local cortical circuits."
+    },
+    {
+     "pmid": null,
+     "doi": null,
+     "title": "Correction: Highly Nonrandom Features of Synaptic Connectivity in Local Cortical Circuits"
+    }
+   ]
+  },
+  "P-1.3-04_extid": {
+   "query": "EXT_ID:26451489",
+   "http": {
+    "http_code": 200,
+    "nbytes": 32429
+   },
+   "hit": 1
+  },
+  "P-1.3-04_query": {
+   "query": "TITLE:\"Reconstruction and Simulation of Neocortical Microcircuitry\"",
+   "http": {
+    "http_code": 200,
+    "nbytes": 32425
+   },
+   "hit": 1,
+   "top": [
+    {
+     "pmid": "26451489",
+     "doi": "10.1016/j.cell.2015.09.029",
+     "title": "Reconstruction and Simulation of Neocortical Microcircuitry."
+    }
+   ]
+  },
+  "P-1.3-05_extid": {
+   "query": "EXT_ID:35271334",
+   "http": {
+    "http_code": 200,
+    "nbytes": 33189
+   },
+   "hit": 1
+  },
+  "P-1.3-05_query": {
+   "query": "TITLE:\"Local connectivity and synaptic dynamics in mouse and human neocortex\"",
+   "http": {
+    "http_code": 200,
+    "nbytes": 44649
+   },
+   "hit": 2,
+   "top": [
+    {
+     "pmid": "35271334",
+     "doi": "10.1126/science.abj5861",
+     "title": "Local connectivity and synaptic dynamics in mouse and human neocortex."
+    },
+    {
+     "pmid": null,
+     "doi": "10.1101/2021.03.31.437553",
+     "title": "Local Connectivity and Synaptic Dynamics in Mouse and Human Neocortex"
+    }
+   ]
+  },
+  "P-1.3-06_extid": {
+   "query": "EXT_ID:23817549",
+   "http": {
+    "http_code": 200,
+    "nbytes": 8942
+   },
+   "hit": 1
+  },
+  "P-1.3-06_query": {
+   "query": "TITLE:\"Inhibition of inhibition in visual cortex: the logic of connections between molecularly distinct interneurons\"",
+   "http": {
+    "http_code": 0,
+    "error": "[Errno 2] No such file or directory: '/Users/weidong/ai/small_world/neural_exploration/data/m11_raw/literature/_tmp_epmc"
+   },
+   "hit": null,
+   "top": []
+  },
+  "P-1.3-07_extid": {
+   "query": "EXT_ID:24097044",
+   "http": {
+    "http_code": 200,
+    "nbytes": 10195
+   },
+   "hit": 1
+  },
+  "P-1.3-07_query": {
+   "query": "TITLE:\"A disinhibitory circuit mediates motor integration in the somatosensory cortex\"",
+   "http": {
+    "http_code": 200,
+    "nbytes": 10210
+   },
+   "hit": 1,
+   "top": [
+    {
+     "pmid": "24097044",
+     "doi": "10.1038/nn.3544",
+     "title": "A disinhibitory circuit mediates motor integration in the somatosensory cortex."
+    }
+   ]
+  },
+  "P-1.3-08_extid": {
+   "query": "EXT_ID:11017176",
+   "http": {
+    "http_code": 200,
+    "nbytes": 5739
+   },
+   "hit": 1
+  },
+  "P-1.3-08_query": {
+   "query": "TITLE:\"Cellular and network mechanisms of rhythmic recurrent activity in neocortex\"",
+   "http": {
+    "http_code": 200,
+    "nbytes": 5751
+   },
+   "hit": 1,
+   "top": [
+    {
+     "pmid": "11017176",
+     "doi": "10.1038/79848",
+     "title": "Cellular and network mechanisms of rhythmic recurrent activity in neocortex."
+    }
+   ]
+  },
+  "P-1.3-09_extid": {
+   "query": "EXT_ID:21435553",
+   "http": {
+    "http_code": 200,
+    "nbytes": 6814
+   },
+   "hit": 1
+  },
+  "P-1.3-09_query": {
+   "query": "TITLE:\"Effects and mechanisms of wakefulness on local cortical networks\"",
+   "http": {
+    "http_code": 200,
+    "nbytes": 6815
+   },
+   "hit": 1,
+   "top": [
+    {
+     "pmid": "21435553",
+     "doi": "10.1016/j.neuron.2011.02.040",
+     "title": "Effects and mechanisms of wakefulness on local cortical networks."
+    }
+   ]
+  },
+  "P-1.3-10_extid": {
+   "query": "EXT_ID:32250724",
+   "http": {
+    "http_code": 200,
+    "nbytes": 6146
+   },
+   "hit": 1
+  },
+  "P-1.3-10_query": {
+   "query": "TITLE:\"Neuromodulation of brain state and behavior\"",
+   "http": {
+    "http_code": 200,
+    "nbytes": 6126
+   },
+   "hit": 1,
+   "top": [
+    {
+     "pmid": "32250724",
+     "doi": "10.1146/annurev-neuro-100219-105424",
+     "title": "Neuromodulation of Brain State and Behavior."
+    }
+   ]
+  },
+  "P-1.3-11_extid": {
+   "query": "EXT_ID:17507551",
+   "http": {
+    "http_code": 200,
+    "nbytes": 6245
+   },
+   "hit": 1
+  },
+  "P-1.3-11_query": {
+   "query": "TITLE:\"Inhibition dominates sensory responses in the awake cortex\"",
+   "http": {
+    "http_code": 200,
+    "nbytes": 6548
+   },
+   "hit": 1,
+   "top": [
+    {
+     "pmid": "23172139",
+     "doi": "10.1038/nature11665",
+     "title": "Inhibition dominates sensory responses in the awake cortex."
+    }
+   ]
+  },
+  "P-1.3-12_extid": {
+   "query": "EXT_ID:19396156",
+   "http": {
+    "http_code": 200,
+    "nbytes": 6591
+   },
+   "hit": 1
+  },
+  "P-1.3-12_query": {
+   "query": "TITLE:\"Driving fast-spiking cells induces gamma rhythm and controls sensory responses\"",
+   "http": {
+    "http_code": 200,
+    "nbytes": 6606
+   },
+   "hit": 1,
+   "top": [
+    {
+     "pmid": "19396156",
+     "doi": "10.1038/nature08002",
+     "title": "Driving fast-spiking cells induces gamma rhythm and controls sensory responses."
+    }
+   ]
+  },
+  "P-1.3-13_query": {
+   "query": "(\"parvalbumin\" AND \"somatostatin\" AND \"VIP\" AND \"visual cortex\") AND SRC:MED",
+   "http": {
+    "http_code": 200,
+    "nbytes": 26688
+   },
+   "hit": 836,
+   "top": [
+    {
+     "pmid": "27477017",
+     "doi": "10.1016/j.neuron.2016.06.033",
+     "title": "GABAergic Interneurons in the Neocortex: From Cellular Properties to Circuits."
+    },
+    {
+     "pmid": "26727548",
+     "doi": "10.1038/nn.4216",
+     "title": "Adult mouse cortical cell taxonomy revealed by single cell transcriptomics."
+    },
+    {
+     "pmid": "23817549",
+     "doi": "10.1038/nn.3446",
+     "title": "Inhibition of inhibition in visual cortex: the logic of connections between molecularly distinct interneurons."
+    }
+   ]
+  },
+  "P-1.3-14_query": {
+   "query": "TITLE:\"Survey of spiking in the mouse visual cortex\"",
+   "http": {
+    "http_code": 200,
+    "nbytes": 238
+   },
+   "hit": 0,
+   "top": []
+  },
+  "P-1.3-15_query": {
+   "query": "AUTH:\"Siegle\" AND TITLE:\"functional hierarchy\" AND SRC:MED",
+   "http": {
+    "http_code": 200,
+    "nbytes": 28231
+   },
+   "hit": 1,
+   "top": [
+    {
+     "pmid": "33473216",
+     "doi": "10.1038/s41586-020-03171-x",
+     "title": "Survey of spiking in the mouse visual system reveals functional hierarchy."
+    }
+   ]
+  },
+  "P-1.3-16_query": {
+   "query": "TITLE:\"Standardized and reproducible measurement of decision-making in mice\" AND SRC:MED AND NOT TITLE:\"Correction\"",
+   "http": {
+    "http_code": 200,
+    "nbytes": 18120
+   },
+   "hit": 1,
+   "top": [
+    {
+     "pmid": "34011433",
+     "doi": "10.7554/elife.63711",
+     "title": "Standardized and reproducible measurement of decision-making in mice."
+    }
+   ]
+  },
+  "C-1-a_extid": {
+   "query": "EXT_ID:26451489",
+   "http": {
+    "http_code": 200,
+    "nbytes": 32429
+   },
+   "hit": 1
+  },
+  "C-1-a_query": {
+   "query": "TITLE:\"Reconstruction and Simulation of Neocortical Microcircuitry\"",
+   "http": {
+    "http_code": 200,
+    "nbytes": 32425
+   },
+   "hit": 1,
+   "top": [
+    {
+     "pmid": "26451489",
+     "doi": "10.1016/j.cell.2015.09.029",
+     "title": "Reconstruction and Simulation of Neocortical Microcircuitry."
+    }
+   ]
+  },
+  "C-1-b_extid": {
+   "query": "EXT_ID:11017176",
+   "http": {
+    "http_code": 200,
+    "nbytes": 5739
+   },
+   "hit": 1
+  },
+  "C-1-b_query": {
+   "query": "TITLE:\"Cellular and network mechanisms of rhythmic recurrent activity in neocortex\"",
+   "http": {
+    "http_code": 200,
+    "nbytes": 5751
+   },
+   "hit": 1,
+   "top": [
+    {
+     "pmid": "11017176",
+     "doi": "10.1038/79848",
+     "title": "Cellular and network mechanisms of rhythmic recurrent activity in neocortex."
+    }
+   ]
+  },
+  "C-2-a_extid": {
+   "query": "EXT_ID:35271334",
+   "http": {
+    "http_code": 200,
+    "nbytes": 33189
+   },
+   "hit": 1
+  },
+  "C-2-a_query": {
+   "query": "TITLE:\"Local connectivity and synaptic dynamics in mouse and human neocortex\"",
+   "http": {
+    "http_code": 200,
+    "nbytes": 44649
+   },
+   "hit": 2,
+   "top": [
+    {
+     "pmid": "35271334",
+     "doi": "10.1126/science.abj5861",
+     "title": "Local connectivity and synaptic dynamics in mouse and human neocortex."
+    },
+    {
+     "pmid": null,
+     "doi": "10.1101/2021.03.31.437553",
+     "title": "Local Connectivity and Synaptic Dynamics in Mouse and Human Neocortex"
+    }
+   ]
+  },
+  "C-2-b_query": {
+   "query": "(\"recovery time constant\" OR \"recovery from depression\") AND \"inhibitory synapse\" AND (\"neocortex\" OR \"cortex\")",
+   "http": {
+    "http_code": 200,
+    "nbytes": 22963
+   },
+   "hit": 37,
+   "top": [
+    {
+     "pmid": "26743822",
+     "doi": "10.1038/ncomms10020",
+     "title": "Repetitive magnetic stimulation induces plasticity of inhibitory synapses."
+    },
+    {
+     "pmid": "19889989",
+     "doi": "10.1523/jneurosci.3285-09.2009",
+     "title": "Reliability and precision of the mouse calyx of Held synapse."
+    },
+    {
+     "pmid": "14724240",
+     "doi": "10.1523/jneurosci.4452-03.2004",
+     "title": "Competition between phasic and asynchronous release for recovered synaptic vesicles at developing hippocampal autaptic synapses."
+    }
+   ]
+  },
+  "C-3-a_extid": {
+   "query": "EXT_ID:35271334",
+   "http": {
+    "http_code": 200,
+    "nbytes": 33189
+   },
+   "hit": 1
+  },
+  "C-3-a_query": {
+   "query": "TITLE:\"Local connectivity and synaptic dynamics in mouse and human neocortex\"",
+   "http": {
+    "http_code": 200,
+    "nbytes": 44649
+   },
+   "hit": 2,
+   "top": [
+    {
+     "pmid": "35271334",
+     "doi": "10.1126/science.abj5861",
+     "title": "Local connectivity and synaptic dynamics in mouse and human neocortex."
+    },
+    {
+     "pmid": null,
+     "doi": "10.1101/2021.03.31.437553",
+     "title": "Local Connectivity and Synaptic Dynamics in Mouse and Human Neocortex"
+    }
+   ]
+  },
+  "C-4-a_extid": {
+   "query": "EXT_ID:23817549",
+   "http": {
+    "http_code": 200,
+    "nbytes": 8942
+   },
+   "hit": 1
+  },
+  "C-4-a_query": {
+   "query": "TITLE:\"Inhibition of inhibition in visual cortex: the logic of connections between molecularly distinct interneurons\"",
+   "http": {
+    "http_code": 200,
+    "nbytes": 8988
+   },
+   "hit": 1,
+   "top": [
+    {
+     "pmid": "23817549",
+     "doi": "10.1038/nn.3446",
+     "title": "Inhibition of inhibition in visual cortex: the logic of connections between molecularly distinct interneurons."
+    }
+   ]
+  },
+  "C-4-b_extid": {
+   "query": "EXT_ID:24097044",
+   "http": {
+    "http_code": 200,
+    "nbytes": 10195
+   },
+   "hit": 1
+  },
+  "C-4-b_query": {
+   "query": "TITLE:\"A disinhibitory circuit mediates motor integration in the somatosensory cortex\"",
+   "http": {
+    "http_code": 200,
+    "nbytes": 10210
+   },
+   "hit": 1,
+   "top": [
+    {
+     "pmid": "24097044",
+     "doi": "10.1038/nn.3544",
+     "title": "A disinhibitory circuit mediates motor integration in the somatosensory cortex."
+    }
+   ]
+  },
+  "C-4-c_extid": {
+   "query": "EXT_ID:26612957",
+   "http": {
+    "http_code": 200,
+    "nbytes": 10708
+   },
+   "hit": 1
+  },
+  "C-4-c_query": {
+   "query": "TITLE:\"Principles of connectivity among morphologically defined cell types in adult neocortex\"",
+   "http": {
+    "http_code": 200,
+    "nbytes": 28406
+   },
+   "hit": 4,
+   "top": [
+    {
+     "pmid": "27609882",
+     "doi": "10.1126/science.aaf5663",
+     "title": "Comment on \"Principles of connectivity among morphologically defined cell types in adult neocortex\"."
+    },
+    {
+     "pmid": "26612957",
+     "doi": "10.1126/science.aac9462",
+     "title": "Principles of connectivity among morphologically defined cell types in adult neocortex."
+    },
+    {
+     "pmid": "27609883",
+     "doi": "10.1126/science.aaf6102",
+     "title": "Response to Comment on \"Principles of connectivity among morphologically defined cell types in adult neocortex\"."
+    }
+   ]
+  },
+  "C-5-a_extid": {
+   "query": "EXT_ID:11017176",
+   "http": {
+    "http_code": 200,
+    "nbytes": 5739
+   },
+   "hit": 1
+  },
+  "C-5-a_query": {
+   "query": "TITLE:\"Cellular and network mechanisms of rhythmic recurrent activity in neocortex\"",
+   "http": {
+    "http_code": 200,
+    "nbytes": 5751
+   },
+   "hit": 1,
+   "top": [
+    {
+     "pmid": "11017176",
+     "doi": "10.1038/79848",
+     "title": "Cellular and network mechanisms of rhythmic recurrent activity in neocortex."
+    }
+   ]
+  },
+  "C-5-b_query": {
+   "query": "AUTH:\"Steriade M\" AND (\"thalamocortical\" OR \"slow oscillation\")",
+   "http": {
+    "http_code": 200,
+    "nbytes": 17965
+   },
+   "hit": 113,
+   "top": [
+    {
+     "pmid": "8235588",
+     "doi": "10.1126/science.8235588",
+     "title": "Thalamocortical oscillations in the sleeping and aroused brain."
+    },
+    {
+     "pmid": "8340806",
+     "doi": "10.1523/jneurosci.13-08-03252.1993",
+     "title": "A novel slow (< 1 Hz) oscillation of neocortical neurons in vivo: depolarizing and hyperpolarizing components."
+    },
+    {
+     "pmid": "16343791",
+     "doi": "10.1016/j.neuroscience.2005.10.029",
+     "title": "Grouping of brain rhythms in corticothalamic systems."
+    }
+   ]
+  },
+  "C-6-a_query": {
+   "query": "TITLE:\"adenosine\" AND TITLE:\"synaptic\" AND SRC:MED",
+   "http": {
+    "http_code": 200,
+    "nbytes": 17869
+   },
+   "hit": 269,
+   "top": [
+    {
+     "pmid": "6170091",
+     "doi": "10.1016/0301-0082(81)90014-9",
+     "title": "The role of adenosine and its nucleotides in central synaptic transmission."
+    },
+    {
+     "pmid": "1358131",
+     "doi": "10.1016/0896-6273(92)90244-8",
+     "title": "Presynaptic inhibition of miniature excitatory synaptic currents by baclofen and adenosine in the hippocampus."
+    },
+    {
+     "pmid": "8185949",
+     "doi": "10.1016/0896-6273(94)90321-2",
+     "title": "Adenosine inhibits evoked synaptic transmission primarily by reducing presynaptic calcium influx in area CA1 of hippocampus."
+    }
+   ]
+  },
+  "C-6-b_query": {
+   "query": "(TITLE:\"adenosine\" AND (TITLE:\"sleep\" OR TITLE:\"wakefulness\" OR TITLE:\"cortex\")) AND SRC:MED",
+   "http": {
+    "http_code": 200,
+    "nbytes": 16953
+   },
+   "hit": 558,
+   "top": [
+    {
+     "pmid": "9157887",
+     "doi": "10.1126/science.276.5316.1265",
+     "title": "Adenosine: a mediator of the sleep-inducing effects of prolonged wakefulness."
+    },
+    {
+     "pmid": "4354003",
+     "doi": "10.1016/s0026-895x(25)15197-3",
+     "title": "The effect of adenosine and adenine nucleotides on the cyclic adenosine 3', 5'-phosphate content of guinea pig cerebral cortex slices."
+    },
+    {
+     "pmid": "15313333",
+     "doi": "10.1016/j.pneurobio.2004.06.004",
+     "title": "Adenosine and sleep-wake regulation."
+    }
+   ]
+  },
+  "C-7-a_extid": {
+   "query": "EXT_ID:21435553",
+   "http": {
+    "http_code": 200,
+    "nbytes": 6814
+   },
+   "hit": 1
+  },
+  "C-7-a_query": {
+   "query": "TITLE:\"Effects and mechanisms of wakefulness on local cortical networks\"",
+   "http": {
+    "http_code": 200,
+    "nbytes": 6815
+   },
+   "hit": 1,
+   "top": [
+    {
+     "pmid": "21435553",
+     "doi": "10.1016/j.neuron.2011.02.040",
+     "title": "Effects and mechanisms of wakefulness on local cortical networks."
+    }
+   ]
+  },
+  "C-7-b_extid": {
+   "query": "EXT_ID:32250724",
+   "http": {
+    "http_code": 200,
+    "nbytes": 6146
+   },
+   "hit": 1
+  },
+  "C-7-b_query": {
+   "query": "TITLE:\"Neuromodulation of brain state and behavior\"",
+   "http": {
+    "http_code": 200,
+    "nbytes": 6126
+   },
+   "hit": 1,
+   "top": [
+    {
+     "pmid": "32250724",
+     "doi": "10.1146/annurev-neuro-100219-105424",
+     "title": "Neuromodulation of Brain State and Behavior."
+    }
+   ]
+  },
+  "C-8-a_query": {
+   "query": "AUTH:\"Turrigiano GG\" AND (\"synaptic scaling\" OR \"homeostatic plasticity\" OR \"quantal amplitude\")",
+   "http": {
+    "http_code": 200,
+    "nbytes": 16638
+   },
+   "hit": 58,
+   "top": [
+    {
+     "pmid": "14735113",
+     "doi": "10.1038/nrn1327",
+     "title": "Homeostatic plasticity in the developing nervous system."
+    },
+    {
+     "pmid": "9495341",
+     "doi": "10.1038/36103",
+     "title": "Activity-dependent scaling of quantal amplitude in neocortical neurons."
+    },
+    {
+     "pmid": "18984155",
+     "doi": "10.1016/j.cell.2008.10.008",
+     "title": "The self-tuning neuron: synaptic scaling of excitatory synapses."
+    }
+   ]
+  },
+  "C-8-b_query": {
+   "query": "(\"synaptic scaling\" AND (\"time course\" OR \"hours\" OR \"homeostatic\")) AND SRC:MED",
+   "http": {
+    "http_code": 200,
+    "nbytes": 40180
+   },
+   "hit": 2156,
+   "top": [
+    {
+     "pmid": "25979354",
+     "doi": "10.3402/jev.v4.27066",
+     "title": "Biological properties of extracellular vesicles and their physiological functions."
+    },
+    {
+     "pmid": "20012068",
+     "doi": "10.1007/s00401-009-0619-8",
+     "title": "Astrocytes: biology and pathology."
+    },
+    {
+     "pmid": "28226226",
+     "doi": "10.1146/annurev-immunol-051116-052358",
+     "title": "Microglia Function in the Central Nervous System During Health and Neurodegeneration."
+    }
+   ]
+  },
+  "D-1_query": {
+   "query": "(\"mouse\" AND \"visual cortex\" AND \"spontaneous activity\" AND \"firing rate\" AND \"awake\")",
+   "http": {
+    "http_code": 200,
+    "nbytes": 21352
+   },
+   "hit": 531,
+   "top": [
+    {
+     "pmid": "23589831",
+     "doi": "10.1152/physrev.00032.2012",
+     "title": "About sleep's role in memory."
+    },
+    {
+     "pmid": "31000656",
+     "doi": "10.1126/science.aav7893",
+     "title": "Spontaneous behaviors drive multidimensional, brainwide activity."
+    },
+    {
+     "pmid": "20664082",
+     "doi": "10.1152/physrev.00035.2008",
+     "title": "Neurophysiological and computational principles of cortical rhythms in cognition."
+    }
+   ]
+  },
+  "D-2_query": {
+   "query": "(\"mouse\" AND \"visual cortex\" AND \"spontaneous\" AND (\"silent neurons\" OR \"low firing rate\"))",
+   "http": {
+    "http_code": 200,
+    "nbytes": 20174
+   },
+   "hit": 153,
+   "top": [
+    {
+     "pmid": "22595786",
+     "doi": "10.1038/nrn3241",
+     "title": "The origin of extracellular fields and currents--EEG, ECoG, LFP and spikes."
+    },
+    {
+     "pmid": "26841800",
+     "doi": "10.1124/pr.115.011478",
+     "title": "Psychedelics."
+    },
+    {
+     "pmid": "10024360",
+     "doi": "10.1523/jneurosci.19-05-01736.1999",
+     "title": "Competitive mechanisms subserve attention in macaque areas V2 and V4."
+    }
+   ]
+  },
+  "D-3_query": {
+   "query": "(\"orientation selectivity\" AND \"mouse\" AND \"V1\" AND (\"distribution\" OR \"index\")) AND SRC:MED",
+   "http": {
+    "http_code": 200,
+    "nbytes": 21141
+   },
+   "hit": 816,
+   "top": [
+    {
+     "pmid": "23868258",
+     "doi": "10.1038/nature12354",
+     "title": "Ultrasensitive fluorescent proteins for imaging neuronal activity."
+    },
+    {
+     "pmid": "27477017",
+     "doi": "10.1016/j.neuron.2016.06.033",
+     "title": "GABAergic Interneurons in the Neocortex: From Cellular Properties to Circuits."
+    },
+    {
+     "pmid": "20188652",
+     "doi": "10.1016/j.neuron.2010.01.033",
+     "title": "Modulation of visual responses by behavioral state in mouse visual cortex."
+    }
+   ]
+  },
+  "D-4_doi": {
+   "query": "DOI:\"10.1038/s41586-025-08790-w\"",
+   "http": {
+    "http_code": 200,
+    "nbytes": 16001
+   },
+   "hit": 1
+  },
+  "D-4_query": {
+   "query": "TITLE:\"Functional connectomics spanning multiple areas of mouse visual cortex\"",
+   "http": {
+    "http_code": 200,
+    "nbytes": 28334
+   },
+   "hit": 2,
+   "top": [
+    {
+     "pmid": "40205214",
+     "doi": "10.1038/s41586-025-08790-w",
+     "title": "Functional connectomics spanning multiple areas of mouse visual cortex."
+    },
+    {
+     "pmid": null,
+     "doi": "10.1101/2021.07.28.454025",
+     "title": "Functional connectomics spanning multiple areas of mouse visual cortex"
+    }
+   ]
+  },
+  "D-5_query": {
+   "query": "（数据侧，非文献：见 data/m11_microns_protocol.json）",
+   "http": {
+    "http_code": 200,
+    "nbytes": 248
+   },
+   "hit": 0,
+   "top": []
+  }
+ }
+}

@@ -1,4 +1,33 @@
+# RF-16-3 定稿：**P6 主判据 = AR(1) τ**（模型侧 0.914 s 箱 + 5 帧平滑 + z → AR(1)）
+#   成像基准 τ = **37.180 s**（B4 全记录；42.332 s 为前 80% 段值，已更正）+ 窗 **[9.4, 146.3] s**（±3.94×）
+#   列：tau_ar1_s / tau_window_lo / tau_window_hi（主）；dwell_Q_s / dwell_H_s / bic_K2 / bic_K3（并列次级）
+#   诚实上限：Ljung-Box 三口径**全部拒绝白噪** ⇒ τ 仅作粗粒度指标（B4 登记）
+# RF-16-2：M-6 的零滞后 |r|（+0.847/−0.982/−0.992）**不得计入判据 B**；B 一律标 invalid 直至
+#   去趋势相关 + lead-lag 峰值 lag + ≥3 seed + T≥126 s（清单 §4.3/§0.7#8）
+# RF-16-1：本表绝对值受 RF-12口径影响 ⇒ 已由修正档重算（ratio 类不受影响）
+# RF-15 判据 B 修正：机制归属 = **去趋势相关 + lead-lag 显著领先**（零滞后相关仅描述性、不得作判据）
+# 新增列：corr_detrended / peak_lag_bins / peak_lag_s / peak_corr / zero_lag_corr /
+#         boot_ci_lo_peak_minus_zero / mechanism_leads / criterion_B_status
+# M-6 的旧“B 通过”与“τ 参数在窗内⇒C 通过”**已撤回**（invalid，不计 pass）
+# RF-14 判据口径改定（主判据 = AR(1) 连续慢时间尺度）
+# 管线：0.914 s 箱 → 5 帧滑动平均 → z 分数 → AR(1)；成像侧同口径基准 τ_imaging = 42.33 s（B4）
+# 四态：pass / fail / invalid（口径或自检失败）/ unavailable（未测；**不得用别的量代填**）
+# 次级并列口径（必须同表）：dwell_Q（0.914 s 箱+5 帧平滑）、dwell_H(K=2)、BIC(K=2/K=3)
+# 禁止：用 0.01 s 箱的 Q 法 dwell 直接与 26.5/6.85 s 比较（B4：外推差 91–228×，纯箱宽口径）
+# 新增列：tau_ar1_s,ar1_phi,ar1_holdout_ll_per_frame,ar1_resid_whiten_p,tau_band_lo,tau_band_hi,dwell_Q_s,dwell_H_s,bic_K2,bic_K3
+# M10 P6 机制阶梯判决表（结构证据级别=抽象/Fish1-partial 锚定；归属=参数级/类级 RF-1）
+# 裁决 1 落实：partial ⇒ 归属降级为**参数级/类级**（RF-1），不得表述为连接组结构级归属
+# 裁决 2/D2/D3 落实：第三条门 = **状态结构判据（同法 2 状态 dwell/occupancy/转换率）**；bout 仅描述性
+# 状态列：VALID / INVALIDATED(原因) / MECHANISM_NOT_IMPLEMENTED(D1) / not_run（未测不入分母、不计 fail）
 # M10 P6 机制阶梯判决表（逐级：自检门三条 + 结论；结构证据级别 = 抽象/Fish1-partial 锚定）
-level,desc,selfsustain_ratio,selfsustain_pass,elasticity_4x,elasticity_monotone,elasticity_pass,bout_fraction,n_bouts,bout_pass,gate_all_pass,outcome,pop_rate_hz,rate_median_hz,silent_frac,wall_s_total
-M0,基线：无状态切换机制（M9 语义）,0.098039,1,5.795752,1,1,0.0,0,0,0,partial,0.306,0.0,0.921,12.0
-M-1,"STP 抑制型（Tsodyks–Markram；u0=0.5, τ_rec=1 s）",0.093897,1,7.683881,1,1,0.0,0,0,0,partial,0.3195,0.0,0.918,14.0
+level,desc,selfsustain_ratio,selfsustain_pass,elasticity_4x,elasticity_monotone,elasticity_pass,bout_fraction,n_bouts,bout_pass,gate_all_pass,outcome,pop_rate_hz,rate_median_hz,silent_frac,wall_s_total,status,evidence_note,tau_ar1_s,ar1_phi,ar1_holdout_ll_per_frame,ar1_resid_whiten_p,tau_band_lo,tau_band_hi,dwell_Q_s,dwell_H_s,bic_K2,bic_K3
+M0,基线：无状态切换机制（M9 语义）,0.098039,1,5.795752,1,1,0.0,0,0,0,partial,0.306,0.0,0.921,12.0,VALID(修复后重跑，T=2 s),VALID(修复后重跑，T=2 s),unavailable,unavailable,unavailable,unavailable,unavailable,unavailable,unavailable,unavailable,unavailable,unavailable
+M-1,"STP 抑制型（Tsodyks–Markram；u0=0.5, τ_rec=1 s）",0.093897,1,7.683881,1,1,0.0,0,0,0,partial,0.3195,0.0,0.918,14.0,"INVALIDATED(no_inhibition, L21","INVALIDATED(no_inhibition, L21；旧值见 _m10_p6_ladder_v2_pre_inhibition_fix.csv)",unavailable,unavailable,unavailable,unavailable,unavailable,unavailable,unavailable,unavailable,unavailable,unavailable
+M-1,RF-10 状态结构（H 法/0.9138s 箱，T=15s N=250）,2.4531(pop),,,,,0.0(bout 描述性),0,0,0,gate3_state_structure=False,2.4531,,,,VALID_RF10,"occ[0.059,0.941] trans 0.0644Hz dwell_low 0.0s ⇒ c3 重尾 ❌；c4 N/A",unavailable,unavailable,unavailable,unavailable,unavailable,unavailable,unavailable,unavailable,unavailable,unavailable
+M-4,RF-10 状态结构（H 法/0.9138s 箱，T=15s N=250）,8.4576(pop),,,,,0.0(bout 描述性),0,0,0,gate3_state_structure=False,8.4576,,,,VALID_RF10_D1,"occ[0.471,0.529] trans 0.0644Hz dwell_low 0.0s ⇒ c3 ❌；慢变量↔状态 +0.885 ✅（D4 解决）",unavailable,unavailable,unavailable,unavailable,unavailable,unavailable,unavailable,unavailable,unavailable,unavailable
+M-4,D1 修正版（慢变量 m(t)，τ_mod=5 s）@T=15s N=250,0.2431,,41.0600,,,0.0(描述性),0,0,0,invalid,8.4576,,,,INVALID_RF17,自持比 0.2431 ❌ 且 λ×4=8.65 Hz 远离校准工作点 ⇒ **invalid 非 fail**（四态纪律）
+M-5,D1 修正版组合 @T=15s N=250,0.1423,,9.3546,,,0.0(描述性),0,0,0,invalid,2.8965,,,,INVALID_RF17,自持比 0.1423 ❌ ⇒ **invalid 非 fail**；bout 非零仅出现在零驱动近静默臂（不作双态证据）
+M0,M0 @λ×1.0 (RF-18 达标样本),,,,,,0.0(描述性),0,0,0,not_passed,0.511,,,,MEASURED_RF18,"λ×1.0, n=250, T=120 s（131 帧 ≥130 ✅ 样本量达标）；AR(1) τ=1.840s vs 成像 37.180 s ⇒ **窗外**（差 20.2×）；转换率 0.835 Hz vs 0.0196 ⇒ ×43 过快；占用 0.511 与成像 0.672 **同量级**；p90/中位 2.0 vs 7.4（更轻尾）；残差非白噪（与成像一致）",1.8398,9.4,146.3,0.6085,,0.914,0.914,,
+M-1,M-1 @λ×1.0 (RF-18 达标样本),,,,,,0.0(描述性),0,0,0,not_passed,0.634,,,,MEASURED_RF18,"λ×1.0, n=250, T=120 s（131 帧 ≥130 ✅ 样本量达标）；AR(1) τ=1.581s vs 成像 37.180 s ⇒ **窗外**（差 23.5×）；转换率 0.785 Hz vs 0.0196 ⇒ ×40 过快；占用 0.634 与成像 0.672 **同量级**；p90/中位 4.0 vs 7.4（更轻尾）；残差非白噪（与成像一致）",1.5812,9.4,146.3,0.5611,,0.914,0.914,,
+M-4,M-4 @λ×1.0 (RF-18 达标样本),,,,,,0.0(描述性),0,0,0,not_passed,0.611,,,,MEASURED_RF18,"λ×1.0, n=250, T=120 s（131 帧 ≥130 ✅ 样本量达标）；AR(1) τ=2.311s vs 成像 37.180 s ⇒ **窗外**（差 16.1×）；转换率 0.727 Hz vs 0.0196 ⇒ ×37 过快；占用 0.611 与成像 0.672 **同量级**；p90/中位 3.8 vs 7.4（更轻尾）；残差非白噪（与成像一致）",2.3106,9.4,146.3,0.6734,,0.914,0.914,,
+M-6,M-6 @λ×1.0 (RF-18 达标样本),,,,,,0.0(描述性),0,0,0,not_passed,0.687,,,,MEASURED_RF18,"λ×1.0, n=250, T=120 s（131 帧 ≥130 ✅ 样本量达标）；AR(1) τ=2.210s vs 成像 37.180 s ⇒ **窗外**（差 16.8×）；转换率 0.677 Hz vs 0.0196 ⇒ ×35 过快；占用 0.687 与成像 0.672 **同量级**；p90/中位 4.0 vs 7.4（更轻尾）；残差非白噪（与成像一致）",2.2102,9.4,146.3,0.6614,,0.914,0.914,,

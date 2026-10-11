@@ -59,6 +59,8 @@ class LarvalZFEngine(AdultEngine):
         # ---- E3 调质增益 ----
         self.g_mod = 1.0
         self.mod_slow = False
+        self.t_mmod = None          # E3 慢变量 m(t)（标量）
+        self.mod_trace = []         # m(t) 采样（"参数是活的"自检用）
         self.mod = dict(tau_mod_ms=2000.0, gain_hi=1.3, gain_lo=0.8, source=None)
 
     # ------------------------------------------------------------------
@@ -89,13 +91,24 @@ class LarvalZFEngine(AdultEngine):
 
     def configure_mod(self, g_mod: float = 1.0, slow: bool = False,
                       tau_mod_ms: float = 2000.0, gain_hi: float = 1.3,
-                      gain_lo: float = 0.8) -> dict:
+                      gain_lo: float = 0.8, rate_ref_hz: float = 5.0) -> dict:
         self.g_mod = float(g_mod)
         self.mod_slow = bool(slow)
         self.mod = dict(tau_mod_ms=float(tau_mod_ms), gain_hi=float(gain_hi),
-                        gain_lo=float(gain_lo))
-        assert self.g_mod == float(g_mod)
+                        gain_lo=float(gain_lo), rate_ref_hz=float(rate_ref_hz))
+        # 读回断言（M9 B3 / M10 L21 教训）：写入值 == 读回值，且开关与实现一致
+        assert self.g_mod == float(g_mod), "g_mod 读回不一致"
+        assert self.mod_slow == bool(slow), "mod_slow 读回不一致"
+        assert self.mod["tau_mod_ms"] == float(tau_mod_ms), "tau_mod_ms 读回不一致"
+        if self.mod_slow:
+            assert self.mod["tau_mod_ms"] > 0, "slow=True 但 tau_mod_ms<=0"
+            if self._built:
+                self._init_mod_state()
         return dict(g_mod=self.g_mod, slow=self.mod_slow, **self.mod)
+
+    def _init_mod_state(self):
+        self.t_mmod = torch.zeros(1, dtype=self.dtype, device=self.device)
+        self.mod_trace = []
 
     # ------------------------------------------------------------------
     # 装配
@@ -109,8 +122,11 @@ class LarvalZFEngine(AdultEngine):
             self._init_stp_state()
         if self.gaba_split:
             self._alloc_gaba_state()
+        if self.mod_slow and self.t_mmod is None:
+            self._init_mod_state()
         st["m10"] = dict(use_abs_slots=self.use_abs_slots, stp=self.stp_enabled,
-                         gaba_split=self.gaba_split, g_mod=self.g_mod)
+                         gaba_split=self.gaba_split, g_mod=self.g_mod,
+                         mod_slow=self.mod_slow, tau_mod_ms=self.mod["tau_mod_ms"])
         return st
 
     def _init_stp_state(self):
@@ -204,6 +220,9 @@ class LarvalZFEngine(AdultEngine):
         if getattr(self, "t_gif", None) is not None:
             self.t_gif.zero_()
             self.t_gis.zero_()
+        if getattr(self, "t_mmod", None) is not None:
+            self.t_mmod.zero_()
+            self.mod_trace = []
 
     # ------------------------------------------------------------------
     # 运行（**派生自冻结内核 `AdultEngine.run`**，仅四处 delta：绝对槽/绝对事件/chunk 绝对栅格/STP 投递）
@@ -282,7 +301,15 @@ class LarvalZFEngine(AdultEngine):
         ext_slot = getattr(self, "_ext_slot", None)
         ext_slow_frac = float(getattr(self, "_ext_slow_frac", 0.0))
         gaba = self.gaba_split
+        mod_slow = bool(self.mod_slow) and getattr(self, "t_mmod", None) is not None
         mod_scale = float(self.g_mod)
+        dt_s_mod = dt_ms * 1e-3
+        _tau_mod_s = float(self.mod["tau_mod_ms"]) * 1e-3 if mod_slow else 0.0
+        _ghi, _glo = float(self.mod["gain_hi"]), float(self.mod["gain_lo"])
+        m_dev = self.t_mmod if mod_slow else None
+        self._gmod_step = mod_scale
+        mod_sample_every = max(1, int(round(50.0 / max(dt_ms, 1e-9))))   # 每 50 ms 采样一次
+        _mstep = [0]
 
         deliver_step = self._deliver_step
         chunk_mode = (delivery == "chunk")
@@ -321,6 +348,17 @@ class LarvalZFEngine(AdultEngine):
                         t_v, t_ge, t_gi, t_cool, t_ahp, spk = core(
                             t_v, t_ge, t_gi, t_cool, t_ahp, ev_e, ev_i,
                             t_stim[s][t_stim_col] if has_stim else zero_iext)
+                    if mod_slow:
+                        # E3：m ← m + (dt/τ)·(target − m)，target = 归一化群体发放率
+                        # **归一化（D1 自检的产物）**：target = 瞬时群体率(Hz) / rate_ref
+                        # 未归一化时 target ≈ rate·dt ≈ 3e-5 ⇒ m≈0 ⇒ 等效静态增益（"参数不活"）
+                        rate_inst = spk.to(self.dtype).mean() / dt_s_mod
+                        tgt = (rate_inst / float(self.mod["rate_ref_hz"])).reshape(1)
+                        m_dev.add_((dt_s_mod / _tau_mod_s) * (tgt - m_dev))
+                        self._gmod_step = float(_glo + (_ghi - _glo) * float(m_dev.item()))
+                        _mstep[0] += 1
+                        if _mstep[0] % mod_sample_every == 0:
+                            self.mod_trace.append(float(m_dev.item()))
                     ev_e.zero_()
                     ev_i.zero_()
                 else:  # pragma: no cover（多延迟分组：M9 路径，保持语义）
@@ -341,7 +379,8 @@ class LarvalZFEngine(AdultEngine):
                     if eb > ea:
                         ring_flat.index_put_(
                             (ext_neuron[ea:eb] + ext_slot[ea:eb],),
-                            ext_amp[ea:eb] * mod_scale, accumulate=True)
+                            ext_amp[ea:eb] * (self._gmod_step if mod_slow else mod_scale),
+                            accumulate=True)
                 if chunk_mode:
                     rec_rows_v[rec_ptr].copy_(spk)
                     rec_ptr += 1
@@ -361,7 +400,8 @@ class LarvalZFEngine(AdultEngine):
                     if eb > ea:
                         ring_flat.index_put_(
                             (ext_neuron[ea:eb] + ext_slot[ea:eb],),
-                            ext_amp[ea:eb] * mod_scale, accumulate=True)
+                            ext_amp[ea:eb] * (self._gmod_step if mod_slow else mod_scale),
+                            accumulate=True)
                 self._deliver_chunk(spk_ring, w, abs0 + step if self.use_abs_slots else step,
                                     t_count)
                 if pop_dev is not None:
@@ -404,6 +444,15 @@ class LarvalZFEngine(AdultEngine):
             "n_edge": self.n_edge, "n_neuron": n, "n_slot": n_slot,
             "abs_step_end": self.abs_step,
         }
+        if mod_slow and self.mod_trace:
+            _tr = np.asarray(self.mod_trace, dtype=float)
+            res["mod_trace"] = dict(n=len(self.mod_trace), mean=float(_tr.mean()),
+                                    std=float(_tr.std()), min=float(_tr.min()),
+                                    max=float(_tr.max()),
+                                    dynamic_range=float(_tr.max() - _tr.min()),
+                                    gain_range=[float(_glo + (_ghi - _glo) * _tr.min()),
+                                                float(_glo + (_ghi - _glo) * _tr.max())],
+                                    alive=bool(_tr.std() > 1e-3))   # **"参数是活的"门**（D1）
         if record == "full":
             res["spike_counts"] = None
             res["spk_total"] = float(res["spikes"][0].size) if res["spikes"] else 0.0
@@ -417,6 +466,9 @@ class LarvalZFEngine(AdultEngine):
     def _apply_stp_and_deliver(self, grp, base, dst):
         """按边更新 STP 状态并投递有效电导。`base` 已按 `_arange` 偏移就位。"""
         g = grp["t_gmax"][base]
+        gm = getattr(self, "_gmod_step", 1.0)
+        if gm != 1.0:
+            g = g * gm                    # E3：增益作用于**状态变量**（突触电导）
         if self.stp_enabled:
             eidx = grp["t_eidx"][base]
             u = self.t_u[eidx]; x = self.t_x[eidx]
@@ -500,5 +552,9 @@ class LarvalZFEngine(AdultEngine):
             rep = torch.repeat_interleave(packed, c, dim=0)
             base = self._arange(tot)[:tot] + rep[:, 0]
             dst = grp["t_post_off"][base] + rep[:, 1]
-            self._rings[grp["delay"]].index_add_(0, dst, grp["t_gmax"][base])
+            _gm = getattr(self, "_gmod_step", 1.0)
+            _gv = grp["t_gmax"][base]
+            if _gm != 1.0:
+                _gv = _gv * _gm           # E3（chunk 路径）
+            self._rings[grp["delay"]].index_add_(0, dst, _gv)
         return total

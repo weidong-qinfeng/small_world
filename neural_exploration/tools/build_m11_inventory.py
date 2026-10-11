@@ -1,0 +1,347 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""M11 数据门（G2/P1/P2）· 落盘数据清单 + 权威计数锚
+
+输出
+----
+- `data/m11_data_inventory.csv`  —— 逐**落盘对象**一行：artifact_path / bytes / SHA-256 /
+  `source_url` / `retrieved_at` / 证据级别 / note（**权威计数锚的载体**）
+- `data/m11_data_counts.json`    —— 分层计数锚（结构 / 功能 / Allen / 文献 / 可达性 / 下载量），
+  每项标注 `measured` 或 `derived`，并显式登记 `unavailable`（**未测 ≠ 未命中**）
+
+口径纪律
+--------
+- SHA-256 覆盖全量文件（≥1 MB 的分块读）；目录（如 functional_subset 帧）逐文件一行，
+  不聚合，便于复核。
+- `source_url` 必须来自真实探测/下载记录（本工具从各 fetch 工具产出的 JSON 读取，不臆造）。
+
+用法
+----
+    PYTHONHASHSEED=0 ./.venv-m11/bin/python neural_exploration/tools/build_m11_inventory.py
+"""
+
+from __future__ import annotations
+
+import csv
+import hashlib
+import json
+import os
+import sys
+from datetime import datetime, timezone
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA = os.path.join(ROOT, "data")
+RAW = os.path.join(DATA, "m11_raw")
+PROJ = os.path.dirname(ROOT)
+
+STRUCT_JSON = os.path.join(DATA, "m11_microns_structure.json")
+PROTO_JSON = os.path.join(DATA, "m11_microns_protocol.json")
+ALLEN_JSON = os.path.join(DATA, "m11_allen_sources.json")
+LIT_CSV = os.path.join(DATA, "m11_literature_priors.csv")
+REACH_CSV = os.path.join(DATA, "m11_source_reachability.csv")
+SUBSET_MANIFEST = os.path.join(DATA, "m11_functional_subset_manifest.csv")
+SUBSET_SUMMARY = os.path.join(DATA, "m11_functional_subset_summary.json")
+OUT_INV = os.path.join(DATA, "m11_data_inventory.csv")
+OUT_CNT = os.path.join(DATA, "m11_data_counts.json")
+
+INV_FIELDS = ["item_id", "category", "artifact_path", "bytes", "sha256", "source_url",
+              "retrieved_at", "evidence", "note"]
+
+
+def utcnow():
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def sha256_file(p, chunk=1 << 20):
+    h = hashlib.sha256()
+    with open(p, "rb") as f:
+        for b in iter(lambda: f.read(chunk), b""):
+            h.update(b)
+    return h.hexdigest()
+
+
+def rel(p):
+    return os.path.relpath(p, PROJ)
+
+
+def load_json(p):
+    try:
+        with open(p) as f:
+            return json.load(f)
+    except Exception:
+        return None
+
+
+def read_csv_rows(p):
+    if not os.path.exists(p):
+        return []
+    with open(p, newline="", encoding="utf-8") as f:
+        lines = [ln for ln in f if not ln.startswith("#")]
+    return list(csv.DictReader(lines))
+
+
+def main():
+    st = load_json(STRUCT_JSON) or {}
+    pr = load_json(PROTO_JSON) or {}
+    al = load_json(ALLEN_JSON) or {}
+    sub = load_json(SUBSET_SUMMARY) or {}
+    lit_rows = read_csv_rows(LIT_CSV)
+    reach_rows = read_csv_rows(REACH_CSV)
+    sub_rows = read_csv_rows(SUBSET_MANIFEST)
+
+    inv = []
+    n = [0]
+
+    def add(category, path, source_url, retrieved_at, evidence, note=""):
+        if not os.path.exists(path):
+            return
+        n[0] += 1
+        sz = os.path.getsize(path)
+        inv.append(dict(item_id="I%03d" % n[0], category=category, artifact_path=rel(path), bytes=sz,
+                        sha256=sha256_file(path) if sz < (256 << 20) else "skipped(large)",
+                        source_url=source_url, retrieved_at=retrieved_at, evidence=evidence, note=note))
+
+    # ---- (A) MICrONS 结构元数据 ----
+    for name in ("em", "seg", "seg_m1300"):
+        for host in ("gcs", "s3"):
+            p = os.path.join(RAW, "microns", "struct", "%s_info_%s.json" % (name, host))
+            src = st.get("sources", {}).get("%s_info_%s" % (name, host), {})
+            add("microns_structure_info", p, src.get("url", ""), src.get("retrieved_at", ""),
+                "measured(元数据)" if src.get("verdict") == "REACHABLE" else src.get("verdict", "unavailable"),
+                "precomputed CloudVolume info（分辨率/体素尺寸/bBox/channel）")
+
+    # ---- (B) MICrONS 功能元数据 ----
+    fmap = [
+        ("series_s4s7f4_attributes.json", 0, "functional_series attributes（采集参数）"),
+        ("summary_s4s7f4_attributes.json", None, "field_summaries attributes（field 网格）"),
+        ("mask_s4s7f4_info", 1, "field_seg_masks info（神经域掩膜格）"),
+    ]
+    for fn, idx, note in fmap:
+        p = os.path.join(RAW, "microns", fn)
+        if idx is None:
+            u = pr.get("fields", {}).get("attributes", [{}])
+            u = next((r for r in u if "session_4_scan_7_field_4" in (r.get("source_url") or "")), {})
+            add("microns_functional_meta", p, u.get("source_url", ""), u.get("retrieved_at", ""),
+                "measured(元数据, HTTP 200/223-230 B)", note)
+        elif idx == 0:
+            s0 = (pr.get("protocol", {}).get("functional_series") or [{}])[0]
+            add("microns_functional_meta", p, s0.get("source_url", ""), s0.get("retrieved_at", ""),
+                "measured(元数据, HTTP 200/223 B)", note)
+        else:
+            m0 = (pr.get("protocol", {}).get("field_seg_masks") or [{}])[0]
+            add("microns_functional_meta", p, m0.get("url", ""), m0.get("retrieved_at", ""),
+                "measured(元数据, HTTP 200/561 B)", note)
+
+    tf = pr.get("protocol", {}).get("tech_docs", [])
+    for i, ent in enumerate(tf):
+        p = os.path.join(PROJ, ent.get("local_path", "")) if ent.get("local_path") else None
+        if p:
+            add("microns_tech_doc", p, ent.get("url", ""), ent.get("retrieved_at", ""),
+                "measured(全文 PDF 落盘)", "采集参数 provenance（帧率/场/掩膜/刺激 30 Hz 插值）")
+    tifbin = os.path.join(RAW, "microns", "functional", "tif_head_17797_4_10_v1.bin")
+    rt = pr.get("protocol", {}).get("raw_scan_bigtiff", {})
+    add("microns_raw_scan_header", tifbin, rt.get("url", ""), rt.get("retrieved_at", ""),
+        "measured(Range 0-65535, HTTP 206)", "BigTIFF 头 → shape [320000,440,248]（**未下载 70 GB 大档**）")
+    for fn in ("access_v8_README.md", "filestructure.txt"):
+        p = os.path.join(RAW, "microns", fn)
+        add("microns_tech_doc", p, "", "", "measured(HTTP 200)", "功能数据管线/目录语义 provenance")
+
+    # ---- (C) Allen ----
+    ct = al.get("celltypes_api", {})
+    add("allen_celltypes", os.path.join(RAW, "allen", "celltypes_mouse_metadata.json"),
+        ct.get("count_url", ""), ct.get("retrieved_at", ""), "measured(HTTP 200)", "Cell Types API 原始返回")
+    add("allen_celltypes", os.path.join(DATA, "m11_allen_celltypes_metadata.csv"), ct.get("count_url", ""),
+        ct.get("retrieved_at", ""), "measured(分页全取)", "小鼠 %s 行" % ct.get("num_rows_returned"))
+    nwb = al.get("per_cell_nwb", {})
+    for fn, note in (("486940961_ephys.nwb", "per-cell ephys NWB（若已下完则为全量 91,560,414 B）"),
+                     ("486940961_ephys_head8MB.bin", "HTTP Range 0-8388607 前缀（验证对象级可取）"),
+                     ("head_sparse.nwb", "稀疏文件（前缀+洞；**仅用于读 HDF5 header**）")):
+        add("allen_nwb", os.path.join(RAW, "allen", fn), nwb.get("url", ""), nwb.get("retrieved_at", ""),
+            "measured" + ("(全量)" if "486940961_ephys.nwb" == fn and os.path.getsize(
+                os.path.join(RAW, "allen", fn)) == nwb.get("nwb_expected_bytes", 0) else "(部分)"), note)
+
+    # ---- (D) 探测/文献产物 ----
+    add("m11_csv", REACH_CSV, "（本工具产出）", utcnow(), "measured(逐源 curl 两次探测)", "51 清单源 + 17 补测源")
+    add("m11_csv", LIT_CSV, "https://www.ebi.ac.uk/europepmc/webservices/rest/search", utcnow(),
+        "measured(Europe PMC REST)", "%d 行 provenance" % len(lit_rows))
+    add("m11_json", STRUCT_JSON, "（本工具产出）", st.get("generated_at", ""), "measured+derived", "结构侧")
+    add("m11_json", PROTO_JSON, "（本工具产出）", pr.get("generated_at", ""), "measured", "采集参数读回")
+    add("m11_json", ALLEN_JSON, "（本工具产出）", al.get("generated_at", ""), "measured", "Allen 侧")
+    for p in (SUBSET_MANIFEST, SUBSET_SUMMARY):
+        add("m11_csv", p, "", sub.get("generated_at", ""), "measured", "功能有界子集清单")
+
+    # ---- (E) 功能子集帧（逐文件）----
+    for r in sub_rows:
+        lp = r.get("local_path") or ""
+        p = os.path.join(PROJ, lp)
+        if not os.path.exists(p):
+            continue
+        n[0] += 1
+        inv.append(dict(item_id="I%03d" % n[0], category="microns_functional_subset_frame",
+                        artifact_path=rel(p), bytes=os.path.getsize(p), sha256=r.get("sha256", ""),
+                        source_url=r.get("url", ""), retrieved_at=r.get("retrieved_at", ""),
+                        evidence="measured(HTTP %s)" % r.get("http_code", ""),
+                        note="t_chunk=%s（10 帧/片）" % r.get("t_chunk", "")))
+
+    with open(OUT_INV, "w", newline="", encoding="utf-8") as f:
+        f.write("# M11 落盘数据权威清单（generated_by=tools/build_m11_inventory.py；"
+                "每行 = 一个落盘对象；sha256 为全量哈希；source_url/retrieved_at 来自真实探测）\n")
+        w = csv.DictWriter(f, fieldnames=INV_FIELDS)
+        w.writeheader()
+        for r in inv:
+            w.writerow(r)
+
+    # ------------------------------------------------------------------
+    # 计数锚
+    # ------------------------------------------------------------------
+    def vol_mm3(sc):
+        bb = sc.get("bbox_mm") or []
+        return round(bb[0] * bb[1] * bb[2], 4) if len(bb) == 3 else None
+
+    struct_counts = {}
+    for name in ("em", "seg", "seg_m1300"):
+        v = st.get("volumes", {}).get(name, {}).get("gcs", {})
+        scs = v.get("scales", [])
+        finest = scs[0] if scs else {}
+        struct_counts[name] = dict(
+            host_gcs_verdict=st.get("sources", {}).get("%s_info_gcs" % name, {}).get("verdict"),
+            host_s3_verdict=st.get("sources", {}).get("%s_info_s3" % name, {}).get("verdict"),
+            data_type=v.get("data_type"), type=v.get("type"), n_scales=len(scs),
+            finest_scale=finest.get("key"), resolution_nm=finest.get("resolution_nm"),
+            size_voxels=finest.get("size_voxels"), bbox_nm=finest.get("bbox_nm"),
+            bbox_mm=finest.get("bbox_mm"), volume_mm3=vol_mm3(finest),
+            chunk_sizes_voxels=finest.get("chunk_sizes_voxels"),
+            encoding=finest.get("encoding"),
+            n_chunks_derived=finest.get("n_chunks_derived"),
+            raw_bytes_per_chunk_derived=finest.get("raw_bytes_per_chunk_derived"),
+            full_volume_raw_bytes_derived=(finest.get("n_chunks_derived", 0) *
+                                           finest.get("raw_bytes_per_chunk_derived", 0)),
+            n_chunks_all_scales_derived=sum(s.get("n_chunks_derived", 0) for s in scs))
+    shard = {}
+    for k, v in (st.get("shard_inventory_measured_bounded") or {}).items():
+        shard[k] = dict(scale=v.get("scale"), n_objects_measured=v.get("n_objects"),
+                        bytes_measured=v.get("n_bytes"), pages=v.get("pages"),
+                        truncated=v.get("truncated"), size_min=v.get("size_min"),
+                        size_max=v.get("size_max"), size_mean=v.get("size_mean"),
+                        evidence="measured(有界列举)")
+
+    fs = (pr.get("protocol", {}).get("functional_series") or [])
+    masks = (pr.get("protocol", {}).get("field_seg_masks") or [])
+    fields = pr.get("fields", {})
+    func_counts = dict(
+        n_fields_enumerated=fields.get("n_field_summary_prefixes"),
+        n_field_attributes_fetched=fields.get("n_attributes_fetched"),
+        n_fields_with_functional_series=(pr.get("sources", {}).get("listing_functional_series", {}) or {}).get("n_prefixes"),
+        n_fields_with_seg_masks=(pr.get("sources", {}).get("listing_field_seg_masks", {}) or {}).get("n_prefixes"),
+        n_platinum_stimulus_movies=(pr.get("sources", {}).get("listing_platinum_stimulus_movies", {}) or {}).get("n_objects"),
+        n_platinum_camovies=(pr.get("sources", {}).get("listing_platinum_camovies", {}) or {}).get("n_objects"),
+        n_stimulus_movies=(pr.get("sources", {}).get("listing_stimulus_movies", {}) or {}).get("n_objects"),
+        n_raw_scan_tifs=(pr.get("sources", {}).get("listing_two_photon_functional_scans", {}) or {}).get("n_objects"),
+        raw_scan_tif_bytes_total=(pr.get("sources", {}).get("listing_two_photon_functional_scans", {}) or {}).get("n_bytes"),
+        series=[dict(field=s.get("source_url", "").split("/functional_series/")[-1].split("/")[0]
+                     if "/functional_series/" in s.get("source_url", "") else "?",
+                     frame_interval_s=s.get("frame_interval_s"), frame_rate_hz=s.get("frame_rate_hz"),
+                     n_timepoints=s.get("n_timepoints"), duration_s=s.get("duration_s"),
+                     n_planes=s.get("n_planes"), volume_rate_hz=s.get("volume_rate_hz"),
+                     voxel_um_xyz=s.get("voxel_um_xyz"), fov_um=s.get("fov_um"),
+                     block_size=s.get("block_size"), data_type=s.get("data_type"),
+                     source_url=s.get("source_url"), retrieved_at=s.get("retrieved_at"))
+                for s in fs],
+        seg_mask_grid=dict(n_masks_infos=len(masks),
+                           resolution_nm=masks[0].get("resolution_nm") if masks else None,
+                           size_voxels=masks[0].get("size_voxels") if masks else None,
+                           encoding=masks[0].get("encoding") if masks else None),
+        raw_bigtiff=dict(url=(pr.get("protocol", {}).get("raw_scan_bigtiff", {}) or {}).get("url"),
+                         frame_shape=(pr.get("protocol", {}).get("raw_scan_bigtiff", {}) or {}).get("image_description_json"),
+                         bits_per_sample=(pr.get("protocol", {}).get("raw_scan_bigtiff", {}) or {}).get("tags", {}).get("258"),
+                         strip_bytes=(pr.get("protocol", {}).get("raw_scan_bigtiff", {}) or {}).get("tags", {}).get("279"),
+                         evidence="measured(Range 0-65535, HTTP 206)"),
+        bounded_subset=dict(series=sub.get("series"), t_chunk_range=sub.get("t_chunk_range"),
+                            n_objects=sub.get("n_objects_landed"), bytes=sub.get("total_bytes"),
+                            frames=10 * (sub.get("n_ok") or 0), evidence="measured(逐对象 HTTP 200)"),
+    )
+
+    av = []
+    for r in read_csv_rows(os.path.join(DATA, "m11_allen_celltypes_metadata.csv")):
+        av.append(r)
+    fr = []
+    for r in av:
+        try:
+            fr.append(float(r.get("ef__avg_firing_rate") or "nan"))
+        except ValueError:
+            pass
+    fr = [x for x in fr if x == x]
+    donors = {r.get("donor__id") for r in av if r.get("donor__id")}
+    allen_counts = dict(
+        celltypes_total_rows_reported=ct.get("total_rows"),
+        celltypes_rows_landed=ct.get("num_rows_returned"),
+        celltypes_download_complete=ct.get("download_complete"),
+        celltypes_n_fields=ct.get("n_fields"),
+        celltypes_n_ef_fields=ct.get("n_ef_fields"),
+        celltypes_n_unique_donors=len(donors),
+        ef_avg_firing_rate=dict(n=len(fr), min=round(min(fr), 3) if fr else None,
+                                median=round(sorted(fr)[len(fr) // 2], 3) if fr else None,
+                                max=round(max(fr), 3) if fr else None,
+                                evidence="measured(API 返回的 ef__ 特征字段，逐标本一行)"),
+        per_cell_nwb=dict(head_http_code=nwb.get("head_http_code"),
+                          content_length=nwb.get("head_content_length"),
+                          filename=(nwb.get("head_content_disposition") or "").split('filename=')[-1],
+                          range_0_99_http_code=nwb.get("range_0_99_http_code"),
+                          local_full_bytes=nwb.get("local_full_bytes"),
+                          local_partial_bytes=nwb.get("local_partial_bytes"),
+                          header_status=(nwb.get("nwb_header") or {}).get("status"),
+                          header_source=nwb.get("header_source"),
+                          header_groups=(nwb.get("nwb_header") or {}).get("groups"),
+                          n_datasets=(nwb.get("nwb_header") or {}).get("n_datasets")),
+        bo_neuropixels=dict(n_objects=(al.get("bo_neuropixels") or {}).get("n_objects"),
+                            bytes=(al.get("bo_neuropixels") or {}).get("n_bytes"),
+                            truncated=(al.get("bo_neuropixels") or {}).get("truncated"),
+                            object_probe=(al.get("bo_neuropixels") or {}).get("object_probe")),
+    )
+
+    vc = {}
+    for r in reach_rows:
+        vc[r["verdict"]] = vc.get(r["verdict"], 0) + 1
+    lit_v = {}
+    for r in lit_rows:
+        lit_v[r["status"]] = lit_v.get(r["status"], 0) + 1
+
+    total_bytes_downloaded = 0
+    for r in inv:
+        total_bytes_downloaded += r["bytes"]
+
+    counts = dict(
+        generated_by="tools/build_m11_inventory.py", generated_at=utcnow(),
+        units="bytes; evidence ∈ {measured, derived, literature, unavailable}",
+        microns_structure=dict(
+            evidence="measured(元数据) + derived(chunk 计数); shard 清单 = measured(有界)",
+            volumes=struct_counts, shard_inventory_measured_bounded=shard,
+            unavailable=["逐 chunk 键清单：precomputed+sharded 存储 ⇒ 单 chunk 对象不可逐键列举（见 shard 级实测）",
+                         "EM/seg 全量下载：TB 级 → 明令禁止（清单 §1.1.2）"]),
+        microns_functional=dict(evidence="measured(元数据+有界子集)", **func_counts),
+        allen=dict(evidence="measured", **allen_counts),
+        literature=dict(n_rows=len(lit_rows), by_status=lit_v,
+                        evidence="literature=Europe PMC 题录实测命中；未命中=literature_unverified"),
+        reachability=dict(n_sources=len(reach_rows), by_verdict=vc,
+                          evidence="measured(curl 两次探测)"),
+        inventory=dict(n_items=len(inv), total_bytes=total_bytes_downloaded,
+                       total_MB=round(total_bytes_downloaded / 1e6, 3)),
+        unavailable_register=[
+            "MICrONS 逐细胞 ΔF/F 与 ROI 轨迹：仅存在于 v8 DataJoint MySQL 数据库"
+            "（103.8 GB docker tar 或 116.2 GB SQL dump）→ 本轮未取（超预算）⇒ unavailable（非 0、非未命中）",
+            "MICrONS 全 144 field 的扫描级 fps/nframes/nfields：在数据库 Scan 表内 → 本轮 unavailable；"
+            "框架内时间口径由 field_summaries（无时间轴）+ functional_series（仅 2 field，6.3001 Hz）给出",
+            "Allen synphys 桶对象级读取：403 AccessDenied（桶存在、不可 list）→ NEEDS_VERIFY",
+            "IBL OpenAlyx 数据集表：403 需凭据 → NEEDS_TOKEN（P12 走公开桶 + 论文档回退）",
+            "MICrONS minnie CAVE 表 API（info/materialize）：404 / 503 → REACHABLE_NO_DATA / BLOCKED",
+        ],
+    )
+    with open(OUT_CNT, "w") as f:
+        json.dump(counts, f, indent=1, ensure_ascii=False, sort_keys=False)
+    print("wrote %s (%d items, %.1f MB)" % (OUT_INV, len(inv), total_bytes_downloaded / 1e6))
+    print("wrote %s" % OUT_CNT)
+    return counts
+
+
+if __name__ == "__main__":
+    main()

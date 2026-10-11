@@ -1,0 +1,19 @@
+{
+ "tag": "MBON|silence",
+ "mode": "silence",
+ "pool": "MBON",
+ "factor": 0.0,
+ "delta_bias_mult": 0.0,
+ "n_target": 1374,
+ "n_target_edges": 183316,
+ "target_nt_class": 0,
+ "n_partner": 12259,
+ "self_rate_hz": 8.811499272197961,
+ "partner_rate_hz": 8.08410147646627,
+ "pop_rate_hz": 4.806190082941367,
+ "n_spikes": 669286.0,
+ "counts_hash": "1692f173c467d67c",
+ "wall_s": 81.989518583,
+ "ms_per_step": 3.31910950205,
+ "task": "MBON|silence"
+}

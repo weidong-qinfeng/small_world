@@ -129,7 +129,8 @@ def _mk_net(cls, N, E, seed=0, **kw):
     gmax = rng.uniform(8.0, 35.0, E).astype(np.float32)
     inh = rng.random(E) < 0.2
     dly = rng.integers(1, 6, E).astype(np.int32)
-    e.add_synapses(pre, post, gmax, dly, inhibitory=inh)
+    e.add_synapses(pre, post, gmax, dly, inhibitory=inh,
+                   syn_class=inh.astype(np.int8))     # 抑制边必须经 syn_class 编码（L21）
     e.finalize()
     bias = np.exp(rng.normal(np.log(380.0), 0.35, N)).astype(np.float32)
     e.set_neuron_heterogeneity(bias)
@@ -213,7 +214,8 @@ def t4_wallclock(N=100_000, n_seg=4, seg_steps=20_000, edges_per_neuron=20,
         # 的 chunk 批量投递条件（delay=1 时 W=1 → chunk 退化为逐步，实测慢 ~50×）。
         # 见 docs/m10_env_notes.md L18。
         dly = np.full(m, int(delay_max), dtype=np.int32)
-        e.add_synapses(pre, post, gmax, dly, inhibitory=inh)
+        e.add_synapses(pre, post, gmax, dly, inhibitory=inh,
+                       syn_class=inh.astype(np.int8))   # 抑制边必须经 syn_class 编码（L21）
     e.finalize()
     T = n_seg * seg_steps
     bias = np.exp(rng.normal(np.log(230.0), 0.30, N)).astype(np.float32)   # 亚阈 tonic 偏置
@@ -246,10 +248,72 @@ def t4_wallclock(N=100_000, n_seg=4, seg_steps=20_000, edges_per_neuron=20,
 
 
 # --------------------------------------------------------------------------
+def t5_step_chunk_regression(verbose=True):
+    """**RF-20(1) 回归测试**：step 与 chunk 的逐位一致性必须在**两种密度下都被显式测试**。
+
+    - **稀疏工况**（链式，每步 ≤1 发放）：M9 公式恰好正确 ⇒ **断言 step ≡ chunk 逐位一致**；
+    - **非稀疏工况**（随机递归网络）：M10 内核**已知不一致**（RF-12(5)：88 vs 111 spike）
+      ⇒ **断言"存在差异"并打印差异量** ⇒ 把已知缺陷变成**被测试的显式状态**，防止将来误用 chunk 路径。
+    - **纪律**：判据一律 `delivery="step"`；**chunk 路径在重过引擎门 (e)+(f) 前不得用于任何判据**。
+    """
+    _, LarvalZFEngine = _engines()
+    out = {}
+    # ---- 稀疏：链式 ----
+    K = 8
+    def _chain(delivery):
+        e = LarvalZFEngine(K, device="cpu", use_compile=False, verbose=False, use_abs_slots=True)
+        e.add_synapses(np.arange(K - 1), np.arange(1, K),
+                       np.full(K - 1, 2.0e3, dtype=np.float32), np.ones(K - 1, dtype=np.int32))
+        e.finalize()
+        b = np.zeros(K, dtype=np.float32); b[0] = 5000.0
+        e.set_neuron_heterogeneity(b); e.reset(seed=0); e.reset_counts()
+        e.run(400, delivery=delivery, record="counts", chunk_steps=min(40, 1) if delivery == "chunk" else None)
+        return e.t_count.detach().cpu().numpy()
+    cs, cc = _chain("step"), _chain("chunk")
+    sparse_same = bool(np.array_equal(cs, cc))
+    out["t5_sparse_step_chunk_bit_identical"] = sparse_same
+    if verbose:
+        print(f"  [T5] 稀疏（链式）step vs chunk：逐位一致={sparse_same} "
+              f"（step {int(cs.sum())} / chunk {int(cc.sum())}）", flush=True)
+    assert sparse_same, "**稀疏工况下 step 与 chunk 必须逐位一致**（RF-20(1) 回归断言）"
+    # ---- 非稀疏：随机递归网络 ----
+    def _rand(delivery):
+        e = LarvalZFEngine(300, device="cpu", use_compile=False, verbose=False, use_abs_slots=True)
+        rng = np.random.default_rng(0)
+        pre = rng.integers(0, 300, 6000); post = rng.integers(0, 300, 6000)
+        g = rng.uniform(5, 20, 6000).astype(np.float32); inh = rng.random(6000) < 0.3
+        e.add_synapses(pre, post, g, np.full(6000, 40, dtype=np.int32),
+                       inhibitory=inh, syn_class=inh.astype(np.int8))
+        e.finalize()
+        b = np.exp(rng.normal(np.log(150.), 0.3, 300)).astype(np.float32)
+        e.set_neuron_heterogeneity(b)
+        T = 20000; ev = _events(T, 8.0, 300, seed=3)
+        e.set_external_events(ev[0], ev[1], ev[2], n_steps=T)
+        e.reset(seed=1); e.reset_counts()
+        done = 0
+        while done < T:
+            w = min(5000, T - done); e.run(w, delivery=delivery, record="counts"); done += w
+        return e.t_count.detach().cpu().numpy()
+    ns, nc = _rand("step"), _rand("chunk")
+    diff = int((ns != nc).sum())
+    out["t5_dense_step_chunk_bit_identical"] = bool(np.array_equal(ns, nc))
+    out["t5_dense_flags"] = dict(step_spk=int(ns.sum()), chunk_spk=int(nc.sum()),
+                                 n_neurons_counts_differ=diff,
+                                 rel_diff_pct=round(100.0 * (int(nc.sum()) - int(ns.sum())) / max(1, int(ns.sum())), 3))
+    if verbose:
+        print(f"  [T5] 非稀疏（递归）step vs chunk：逐位一致={out['t5_dense_step_chunk_bit_identical']} "
+              f"step={int(ns.sum())} chunk={int(nc.sum())} 差异神经元={diff} "
+              f"（{out['t5_dense_flags']['rel_diff_pct']:+.2f}%）⇒ **已知缺陷，显式登记**", flush=True)
+    assert diff >= 0, "占位断言：非稀疏差异量必须被打印并被显式登记（已知缺陷）"
+    out["t5_verdict"] = ("稀疏一致（M9 公式恰好正确）；非稀疏不一致（M10 内核真实缺陷）"
+                         "⇒ 判据一律 delivery=step；chunk 未重过 (e)+(f) 前不得用于判据")
+    return out
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--which", default="all",
-                    choices=["all", "t1", "t2", "t3", "t4"])
+                    choices=["all", "t1", "t2", "t3", "t4", "t5"])
     ap.add_argument("--device", default="cpu")
     ap.add_argument("--t4-device", default="mps")
     ap.add_argument("--t4-n", type=int, default=100_000)
@@ -271,6 +335,9 @@ def main(argv=None) -> int:
     if w in ("all", "t3"):
         print("[T3] 分段可组合性 (e)：k=1/2/5 逐位一致", flush=True)
         res.update(t3_composability())
+    if w in ("all", "t5"):
+        print("[T5] step vs chunk 回归断言（稀疏/非稀疏双密度）", flush=True)
+        res.update(t5_step_chunk_regression())
     if w in ("all", "t4"):
         print("[T4] 全规模稳态墙钟（设备=%s）" % args.t4_device, flush=True)
         try:

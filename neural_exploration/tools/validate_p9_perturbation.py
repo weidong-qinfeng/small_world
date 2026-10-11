@@ -396,8 +396,9 @@ def main() -> int:
     meas = {}
     for key in POOLS:
         need = run_tasks(key)
-        if not all(os.path.exists(os.path.join(RUNS_DIR, t + ".json")) for t in need):
-            log("  %s 结果缺失 → 不参与判定（不静默）" % key)
+        # **部分臂可判**：静默臂存在即判静默槽；激活臂存在即判激活槽；缺失臂逐槽登记 unavailable
+        if not os.path.exists(os.path.join(RUNS_DIR, need[0] + ".json")):
+            log("  %s 静默臂结果缺失 → 本会话不参与判定（不静默）" % key)
             continue
         s = load_run(need[0])
         tgt, partner = s["self"], s["partner"]
@@ -414,23 +415,33 @@ def main() -> int:
         row["d_silence_partner"] = rel_delta(row["silence_partner"], b_part)
         row["class_silence_self"] = classify(row["d_silence_self"], thr)
         row["class_silence_partner"] = classify(row["d_silence_partner"], thr)
+        def _maybe(task):
+            f = os.path.join(RUNS_DIR, task + ".json")
+            return load_run(task) if os.path.exists(f) else None
+
         if key in POOL_SPECS:
-            a = load_run(key + "|activation")
-            rs = load_run(key + "|random_silence")
-            ra = load_run(key + "|random_activation")
-            row["activation_self"] = rate(a["counts"], tgt)
-            row["activation_partner"] = rate(a["counts"], partner)
-            row["random_silence_partner"] = rate(rs["counts"], partner)
-            row["random_activation_partner"] = rate(ra["counts"], partner)
-            row["d_activation_self"] = rel_delta(row["activation_self"], b_self)
-            row["d_activation_partner"] = rel_delta(row["activation_partner"], b_part)
+            a = _maybe(key + "|activation")
+            if a is not None:
+                row["activation_self"] = rate(a["counts"], tgt)
+                row["activation_partner"] = rate(a["counts"], partner)
+                row["d_activation_self"] = rel_delta(row["activation_self"], b_self)
+                row["d_activation_partner"] = rel_delta(row["activation_partner"], b_part)
+                row["class_activation_partner"] = classify(row["d_activation_partner"], thr)
+            else:
+                row["class_activation_partner"] = "unavailable"
+                row["d_activation_partner"] = float("nan")
+                row["d_activation_self"] = float("nan")
+            rs = _maybe(key + "|random_silence")
+            row["random_silence_partner"] = (rate(rs["counts"], partner) if rs else float("nan"))
             row["d_random_silence_partner"] = rel_delta(row["random_silence_partner"], b_part)
+            ra = _maybe(key + "|random_activation")
+            row["random_activation_partner"] = (rate(ra["counts"], partner) if ra
+                                                else float("nan"))
             row["d_random_activation_partner"] = rel_delta(row["random_activation_partner"],
                                                            b_part)
-            row["class_activation_partner"] = classify(row["d_activation_partner"], thr)
         else:
-            rs = load_run(key + "|random_edge_silence")
-            row["random_silence_partner"] = rate(rs["counts"], partner)
+            rs = _maybe(key + "|random_edge_silence")
+            row["random_silence_partner"] = (rate(rs["counts"], partner) if rs else float("nan"))
             row["d_random_silence_partner"] = rel_delta(row["random_silence_partner"], b_part)
             row["class_activation_partner"] = "n/a(edge)"
             row["d_activation_partner"] = float("nan")
@@ -458,7 +469,7 @@ def main() -> int:
                "S2_edge_silence_pre": m["class_silence_self"]}.get(d["slot"], "?")
         slot_rows.append({**d, "measured": got, "hit": bool(got == d["predicted"])})
     testable = [r for r in slot_rows if r["predicted"] != "no-experiment"
-                and r["measured"] != "unavailable"]
+                and r["measured"] not in ("unavailable",)]
     n_hit = sum(1 for r in testable if r["hit"])
     hit_rate = n_hit / max(len(testable), 1)
     pool_slots = {}
@@ -562,7 +573,10 @@ def main() -> int:
         rows.append(["slot", "%s|%s" % (r["anchor_id"], r["slot"] or "-"),
                      "pred=%s meas=%s hit=%s" % (r["predicted"], r["measured"], r["hit"]),
                      "target=%s slot_dir=%+d" % (r["target"], r["predicted_dir"])])
-    rows += [["agg", "hit_rate_anchor_level", "%.4f" % hit_rate,
+    n_unavail_slots = sum(1 for r in slot_rows if r["measured"] == "unavailable")
+    rows += [["agg", "slots_unavailable", n_unavail_slots,
+              "**未测槽（预算/环境限制；不入分母，未测 ≠ 未命中）**"],
+             ["agg", "hit_rate_anchor_level", "%.4f" % hit_rate,
               "%d/%d 槽" % (n_hit, len(testable))],
              ["agg", "hit_rate_pool_level", "%.4f" % pool_rate,
               "%d/%d 池×槽" % (pool_hit, len(pool_slots))],
@@ -576,10 +590,14 @@ def main() -> int:
              ["agg", "sham_noop_bitwise", str(sham_ok), "零臂自检"],
              ["agg", "determinism_bitwise", str(det_ok), ""],
              ["agg", "specificity_target_gt_control_pools",
-              "%d/%d" % (sum(1 for k in meas
-                             if abs(meas[k]["d_silence_partner"])
-                             > abs(meas[k]["d_random_silence_partner"])), len(meas)),
-              "描述性（目标效应量 > 随机对照）"],
+              "%d/%d（可判定池数，对照组缺失者不计）" % (
+                  sum(1 for k in meas
+                      if np.isfinite(meas[k].get("d_random_silence_partner", np.nan))
+                      and abs(meas[k]["d_silence_partner"])
+                      > abs(meas[k]["d_random_silence_partner"])),
+                  sum(1 for k in meas
+                      if np.isfinite(meas[k].get("d_random_silence_partner", np.nan)))),
+              "描述性（目标效应量 > 随机对照；对照组缺失登记为不可判定）"],
              ["agg", "wall_s", "%.0f" % (time.perf_counter() - t_all), ""]]
     for k, v in crit.items():
         rows.append(["crit", k, str(bool(v)), "P9 判据"])

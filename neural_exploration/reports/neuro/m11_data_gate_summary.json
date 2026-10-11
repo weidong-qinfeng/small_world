@@ -1,0 +1,226 @@
+{
+ "generated_by": "tools/validate_p11_data_gate.py",
+ "generated_at": "2026-10-11T11:01:07Z",
+ "gate": "G2 (P1/P2 数据门)",
+ "assertions": [
+  {
+   "assertion": "P1.1a 清单 51 源逐号在位",
+   "ok": true,
+   "detail": "缺失=[]；n_rows=68（含补测源）"
+  },
+  {
+   "assertion": "P1.1b verdict 词表合法",
+   "ok": true,
+   "detail": "越界=[]"
+  },
+  {
+   "assertion": "P1.1c 逐行 url/http_code/bytes 齐备",
+   "ok": true,
+   "detail": "缺字段=[]"
+  },
+  {
+   "assertion": "P1.1d 两次探测 HTTP 码一致（不一致须已在 note 标注）",
+   "ok": true,
+   "detail": "两次不同：[]（按 pass1 记录并标注）"
+  },
+  {
+   "assertion": "P1.2 结构元数据 em（分辨率/体素/bBox/channel）",
+   "ok": true,
+   "detail": "scale=8x8x40 res=[8.0, 8.0, 40.0] size=[212992, 180224, 13088] dtype=uint8 bbox_mm=[1.7039, 1.4418, 0.5235]"
+  },
+  {
+   "assertion": "P1.2 em info 主通道 REACHABLE",
+   "ok": true,
+   "detail": "http=200 bytes=4117"
+  },
+  {
+   "assertion": "P1.2 结构元数据 seg（分辨率/体素/bBox/channel）",
+   "ok": true,
+   "detail": "scale=8x8x40 res=[8.0, 8.0, 40.0] size=[192424, 131051, 13008] dtype=uint64 bbox_mm=[1.5394, 1.0484, 0.5203]"
+  },
+  {
+   "assertion": "P1.2 seg info 主通道 REACHABLE",
+   "ok": true,
+   "detail": "http=200 bytes=7448"
+  },
+  {
+   "assertion": "P1.2 结构元数据 seg_m1300（分辨率/体素/bBox/channel）",
+   "ok": true,
+   "detail": "scale=8.0x8.0x40.0 res=[8.0, 8.0, 40.0] size=[218809, 161359, 27858] dtype=uint64 bbox_mm=[1.7505, 1.2909, 1.1143]"
+  },
+  {
+   "assertion": "P1.2 seg_m1300 info 主通道 REACHABLE",
+   "ok": true,
+   "detail": "http=200 bytes=7628"
+  },
+  {
+   "assertion": "P1.2b shard 有界实测在位（truncated 如实标注）",
+   "ok": true,
+   "detail": "{\"em\": {\"n\": 3000, \"bytes\": 20056798614991, \"trunc\": true}, \"seg\": {\"n\": 3000, \"bytes\": 1153504931766, \"trunc\": true}, \"seg_m1300\": {\"n\": 3000, \"bytes\": 1043457169905, \"trunc\": true}}"
+  },
+  {
+   "assertion": "P1.3a Cell Types 计数锚 total_rows 落盘",
+   "ok": false,
+   "detail": "total_rows=None"
+  },
+  {
+   "assertion": "P1.3b Cell Types 元数据表落盘行数 == total_rows",
+   "ok": true,
+   "detail": "landed=None complete=None"
+  },
+  {
+   "assertion": "P1.3c per-cell NWB HEAD 实测（content-length 与预期一致）",
+   "ok": true,
+   "detail": "http=200 len=91560414 expect=91560414 file=attachment; filename=\"486940961_ephys.nwb\""
+  },
+  {
+   "assertion": "P1.3d per-cell NWB HTTP Range 部分读取通过（206）",
+   "ok": true,
+   "detail": "range_0_99 http=206"
+  },
+  {
+   "assertion": "P1.3e per-cell NWB 头可解析（HDF5/NWB 结构可见）",
+   "ok": true,
+   "detail": "status=partial source=sparse(prefix 44695552 B + holes) groups=4 datasets=0 errors=['visititems 提前终止：Object visitation failed (free block size is zero?)', 'timeseries.keys(): Unable to get group info (bad symbol table node signature)']"
+  },
+  {
+   "assertion": "P1.4a 文献表覆盖 §1.3 + §4.1 C-1..C-8 + §4.5/§1.4 依据",
+   "ok": true,
+   "detail": "未覆盖条款=[]；n_rows=37"
+  },
+  {
+   "assertion": "P1.4b 命中状态词表合法",
+   "ok": true,
+   "detail": "{\"literature\": 31, \"literature_unverified\": 6}"
+  },
+  {
+   "assertion": "P1.4c 凡声明标识的行，题录核对必须通过",
+   "ok": false,
+   "detail": "题录不符=['P-1.3-12']"
+  },
+  {
+   "assertion": "P1.4d literature_unverified 行必须写明未命中原因/查询式",
+   "ok": false,
+   "detail": "缺说明=['C-8-b', 'D-1', 'D-2', 'D-3']"
+  },
+  {
+   "assertion": "P1.5a 清单内全部路径存在",
+   "ok": true,
+   "detail": "缺失=[]"
+  },
+  {
+   "assertion": "P1.5b SHA-256 现场重算一致（确定性锚）",
+   "ok": true,
+   "detail": "不一致=[]"
+  },
+  {
+   "assertion": "P1.6 M11 产出路径全部落在 m11 命名空间（冻结件零修改）",
+   "ok": true,
+   "detail": "越界=[] (n_items=224)"
+  },
+  {
+   "assertion": "P2.7a functional_series 采集参数读回（帧率/时长/平面/体素/FOV）",
+   "ok": true,
+   "detail": "n_series=2 rates=[6.300006, 6.300006] n_t=[40000, 40000] dur_min=[105.82, 105.82] planes=[1, 1] vox=[[2.5, 2.5, 10.0], [2.5, 2.5, 10.0]] fov=[[620.0, 1100.0], [620.0, 1100.0]]"
+  },
+  {
+   "assertion": "P2.7b 帧率读回值 == 1/0.15873 s（读回一致性断言）",
+   "ok": true,
+   "detail": "expect=6.300006 got=[6.300006, 6.300006]"
+  },
+  {
+   "assertion": "P2.8 神经域/掩膜网格与功能序列网格同源同格",
+   "ok": true,
+   "detail": "mask_size=[248, 440, 1] series_dims=[248, 440, 1, 40000] mask_enc=compressed_segmentation mask_res_nm=[2500, 2500, 10000]"
+  },
+  {
+   "assertion": "P2.8b 全部 field 的掩膜 info 落盘数 == field 数",
+   "ok": true,
+   "detail": "n_masks=144 n_fields=144"
+  },
+  {
+   "assertion": "P2.9a 有界子集总量 ≤ 2 GB（禁止大数据下载）",
+   "ok": true,
+   "detail": "total=136.3 MB n_objects=200"
+  },
+  {
+   "assertion": "P2.9b 子集逐对象 url+bytes+sha256 齐备",
+   "ok": true,
+   "detail": "n_rows=200"
+  },
+  {
+   "assertion": "P2.9c 子集对象级 HTTP 200 且字节非零",
+   "ok": true,
+   "detail": "n_ok=200"
+  },
+  {
+   "assertion": "P2.10 未取项显式登记 unavailable + 原因（未测 ≠ 未命中）",
+   "ok": true,
+   "detail": "n_unavailable=5"
+  },
+  {
+   "assertion": "DET 复跑 verdict 一致（确定性）",
+   "ok": true,
+   "detail": "[{\"source_id\": \"2\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"3\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F7\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F8\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F9\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}]"
+  }
+ ],
+ "failures": [
+  "P1.3a Cell Types 计数锚 total_rows 落盘",
+  "P1.4c 凡声明标识的行，题录核对必须通过",
+  "P1.4d literature_unverified 行必须写明未命中原因/查询式"
+ ],
+ "unavailable": [
+  "MICrONS 逐细胞 ΔF/F 与 ROI 轨迹：仅存在于 v8 DataJoint MySQL 数据库（103.8 GB docker tar 或 116.2 GB SQL dump）→ 本轮未取（超预算）⇒ unavailable（非 0、非未命中）",
+  "MICrONS 全 144 field 的扫描级 fps/nframes/nfields：在数据库 Scan 表内 → 本轮 unavailable；框架内时间口径由 field_summaries（无时间轴）+ functional_series（仅 2 field，6.3001 Hz）给出",
+  "Allen synphys 桶对象级读取：403 AccessDenied（桶存在、不可 list）→ NEEDS_VERIFY",
+  "IBL OpenAlyx 数据集表：403 需凭据 → NEEDS_TOKEN（P12 走公开桶 + 论文档回退）",
+  "MICrONS minnie CAVE 表 API（info/materialize）：404 / 503 → REACHABLE_NO_DATA / BLOCKED"
+ ],
+ "P1": {
+  "verdict": "fail",
+  "n_assertions": 23,
+  "n_failed": 3
+ },
+ "P2": {
+  "verdict": "pass",
+  "n_assertions": 8,
+  "n_failed": 0
+ },
+ "G2_gate": "fail",
+ "determinism_check": {
+  "note": "复跑固定子集（#2/#3/F7/F8/F9），比对 verdict 是否一致",
+  "comparisons": [
+   {
+    "source_id": "2",
+    "first": "REACHABLE",
+    "rerun": "REACHABLE",
+    "same": true
+   },
+   {
+    "source_id": "3",
+    "first": "REACHABLE",
+    "rerun": "REACHABLE",
+    "same": true
+   },
+   {
+    "source_id": "F7",
+    "first": "REACHABLE",
+    "rerun": "REACHABLE",
+    "same": true
+   },
+   {
+    "source_id": "F8",
+    "first": "REACHABLE",
+    "rerun": "REACHABLE",
+    "same": true
+   },
+   {
+    "source_id": "F9",
+    "first": "REACHABLE",
+    "rerun": "REACHABLE",
+    "same": true
+   }
+  ],
+  "all_same": true
+ }
+}

@@ -45,12 +45,22 @@ LEVELS = {
     "M-3": dict(stp=None, gaba=dict(enabled=True, tau_fast_ms=8.0, tau_slow_ms=200.0,
                                     frac_slow=0.35), g_mod=1.0,
                 desc="GABA 亚型异质（A 快 8 ms / B 慢 200 ms，慢组分 35%；类级先验）"),
-    "M-4": dict(stp=None, gaba=None, g_mod=1.5,
-                desc="调质增益（tonic→phasic 近似：兴奋/抑制权重与外部事件 ×1.5）"),
+    "M-4": dict(stp=None, gaba=None, g_mod=1.5, mod_slow=True, tau_mod_ms=5000.0,
+                gain_hi=1.5, gain_lo=0.7, rate_ref_hz=1.0,
+                desc="调质增益 **慢变量版（D1 修正）**：m(t) 一阶低通（τ_mod=5 s ∈ 预注册 [0.5,10] s）"
+                     "→ 增益 gain_lo..gain_hi 作用于突触电导与外部事件幅度"),
+    "M-6": dict(stp=dict(enabled=True, u0=0.5, tau_fac_ms=50.0, tau_rec_ms=26000.0,
+                         mode="depress"),
+                gaba=dict(enabled=True, tau_fast_ms=8.0, tau_slow_ms=2000.0, frac_slow=0.35),
+                g_mod=1.0,
+                desc="慢恢复组分（主agent 裁决 3 指定候选）：STP τ_rec=26 s（= 成像 dwell 中位 26.5 s）"
+                     "+ GABA_B 慢组分 τ_slow=2 s"),
     "M-5": dict(stp=dict(enabled=True, u0=0.5, tau_fac_ms=50.0, tau_rec_ms=1000.0,
                          mode="depress"),
                 gaba=dict(enabled=True, tau_fast_ms=8.0, tau_slow_ms=200.0, frac_slow=0.35),
-                g_mod=1.15, desc="组合：M-1 + M-3 + M-4（全局参数 4 个 ≤ 上限 8）"),
+                g_mod=1.15, mod_slow=True, tau_mod_ms=5000.0, gain_hi=1.4, gain_lo=0.75,
+                rate_ref_hz=1.0,
+                desc="组合（D1 修正）：M-1 + M-3 + **M-4 慢变量版**（全局参数 5 个 ≤ 上限 8）"),
 }
 
 
@@ -79,6 +89,8 @@ def main(argv=None) -> int:
     ap.add_argument("--g-inh", type=float, default=22.0)
     ap.add_argument("--out-json", default=None)
     ap.add_argument("--out-csv", default=os.path.join(DATA_DIR, "m10_p6_levels.csv"))
+    ap.add_argument("--save-pop-dir", default=None,
+                    help="若给定，则每个驱动臂落盘逐步群体脉冲计数 .npy（供 RF-10 状态结构离线重算）")
     args = ap.parse_args(argv)
 
     bands = load_bands()
@@ -92,9 +104,19 @@ def main(argv=None) -> int:
     rows = []
     for m in (0.0, 1.0, 4.0):
         e = build_engine(Pm, device=args.device, stp=cfg["stp"], gaba=cfg["gaba"],
-                         g_mod=cfg["g_mod"])
+                         g_mod=cfg["g_mod"], mod_slow=bool(cfg.get("mod_slow", False)),
+                         tau_mod_ms=float(cfg.get("tau_mod_ms", 2000.0)),
+                         gain_hi=float(cfg.get("gain_hi", 1.3)),
+                         gain_lo=float(cfg.get("gain_lo", 0.8)),
+                         rate_ref_hz=float(cfg.get("rate_ref_hz", 5.0)))
+        _pf = None
+        if args.save_pop_dir:
+            os.makedirs(args.save_pop_dir, exist_ok=True)
+            _pf = os.path.join(args.save_pop_dir,
+                               f"poptrace_{args.level}_lamx{m}_n{args.n_neuron}.npy")
         r = run_protocol(e, T, settle_steps=settle, segment_steps=args.segment_steps,
-                         lam_hz=args.lam0 * m, ev_seed=3, g_ext=args.g_ext)
+                         lam_hz=args.lam0 * m, ev_seed=3, g_ext=args.g_ext,
+                         save_pop_to=_pf)
         r["drive_mult"] = m
         rows.append(r)
         print(f"   λ×{m}: pop={r['pop_rate_hz']:.4f} med={r['rate_median_hz']:.4f} "

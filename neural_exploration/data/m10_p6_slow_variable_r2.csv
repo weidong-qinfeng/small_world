@@ -1,0 +1,8 @@
+# M10 P6 慢变量硬判据（主agent 裁决 2；结构证据级别=抽象 ⇒ 归属降级）
+level,tau_setting_ms,tau_in_range,tau_est_s,slow_var_corr_max_var,slow_var_corr,tau_activity_s,tau_ratio,same_order_pass,closed_state_bit_identical,hard_criterion_pass,zap_dwell_median_s,model_hmm_transition_rate_hz,model_hmm_dwell_low_median_s,tau_over_zap_dwell,same_order_vs_zapbench
+M-1,1000.0,True,0.01,stp_x,-0.0361,1.0,100.0,False,False,False,26.5,,,,False
+M-1,1000.0,True,0.01,stp_x,-0.0361,1.0,100.0,False,False,False,26.5,,,,False
+M-2,500.0,True,0.01,stp_u,0.5948,0.5,0.0189,False,False,False,26.5,,,,False
+M-3,200.0,True,0.01,gaba_b_conductance,0.865,0.2,0.0075,False,False,False,26.5,,,,False
+M-4,2000.0,True,0.01,,,2.0,0.0755,False,False,False,26.5,,,,False
+M-6,,False,0.01,gaba_b_conductance,-0.9916,,,False,False,False,26.5,,,,False

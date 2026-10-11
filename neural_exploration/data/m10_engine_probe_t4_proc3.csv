@@ -1,0 +1,15 @@
+key,value
+generated_by,tools/scan_m10_engine.py
+started_at,2026-10-11T13:50:01
+t4_n_neuron,100000
+t4_n_edge,2000000
+t4_segments[0].seg,0
+t4_segments[0].wall_s,53.68
+t4_segments[0].ms_per_step,1.4385
+t4_segments[0].spk,14771593
+t4_segments[0].rss_mb,2236.0
+t4_steady_ms_per_step,nan
+t4_gpu_h_per_30s,nan
+t4_build_s,54.2
+t4_rss_mb,2236.0
+elapsed_s,

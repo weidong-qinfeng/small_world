@@ -1,0 +1,171 @@
+{
+ "config": {
+  "arms": "lamx1.0, n=250, T=120 s (131 frames)",
+  "tau_ref_s": 37.18,
+  "tau_window_s": [
+   9.4,
+   146.3
+  ],
+  "imaging_dwell_Q_s": 6.854,
+  "imaging_low_occ": 0.672,
+  "imaging_trans_hz": 0.0196
+ },
+ "results": {
+  "M-1": {
+   "n_frames": 131,
+   "pop_rate_hz": 56.9454,
+   "H_occ": [
+    0.634,
+    0.366
+   ],
+   "H_trans": 0.78522,
+   "H_dwell_low_med": 0.914,
+   "p90_over_med": 4.0,
+   "ks_exp_p": 2.3111266710183455e-08,
+   "consistency": {
+    "applicable": true,
+    "predicted_dwell_s": 0.6367618666163738,
+    "observed_dwell_s": 0.9138261902586128,
+    "rel_diff": 0.30319148936170215,
+    "pass_": true,
+    "note": "2 状态稳态近似；若状态数>2 或转移矩阵强非对称则本条不适用（须显式声明）"
+   },
+   "AR1_phi": 0.5610506535082683,
+   "AR1_tau_s": 1.5811671271899685,
+   "AR1_in_window": false,
+   "AR1_ll": -1.2441091325439235,
+   "AR1_whiten": false,
+   "sample_gate": {
+    "n_frames": 131,
+    "valid": true,
+    "shape_ok": true,
+    "bic_ok": false,
+    "thresholds": {
+     "valid": 65,
+     "shape": 130,
+     "bic": 500
+    },
+    "note": "n_frames<65 ⇒ invalid（最短协议 T≥60 s）；形状判据需 ≥130（T≥120 s）；BIC 需 ≥500"
+   },
+   "best_K": "unavailable",
+   "gate3_status": "measured"
+  },
+  "M-4": {
+   "n_frames": 131,
+   "pop_rate_hz": 34.9007,
+   "H_occ": [
+    0.611,
+    0.389
+   ],
+   "H_trans": 0.72675,
+   "H_dwell_low_med": 0.914,
+   "p90_over_med": 3.8000000000000043,
+   "ks_exp_p": 1.4933874578638302e-07,
+   "consistency": {
+    "applicable": true,
+    "predicted_dwell_s": 0.687995580022289,
+    "observed_dwell_s": 0.9138261902586128,
+    "rel_diff": 0.24712643678160912,
+    "pass_": true,
+    "note": "2 状态稳态近似；若状态数>2 或转移矩阵强非对称则本条不适用（须显式声明）"
+   },
+   "AR1_phi": 0.673352676377376,
+   "AR1_tau_s": 2.3106407656940458,
+   "AR1_in_window": false,
+   "AR1_ll": -0.9747085096611865,
+   "AR1_whiten": false,
+   "sample_gate": {
+    "n_frames": 131,
+    "valid": true,
+    "shape_ok": true,
+    "bic_ok": false,
+    "thresholds": {
+     "valid": 65,
+     "shape": 130,
+     "bic": 500
+    },
+    "note": "n_frames<65 ⇒ invalid（最短协议 T≥60 s）；形状判据需 ≥130（T≥120 s）；BIC 需 ≥500"
+   },
+   "best_K": "unavailable",
+   "gate3_status": "measured"
+  },
+  "M-6": {
+   "n_frames": 131,
+   "pop_rate_hz": 56.9955,
+   "H_occ": [
+    0.687,
+    0.313
+   ],
+   "H_trans": 0.67663,
+   "H_dwell_low_med": 0.914,
+   "p90_over_med": 4.0,
+   "ks_exp_p": 2.3659922028295712e-05,
+   "consistency": {
+    "applicable": true,
+    "predicted_dwell_s": 0.7389582155794956,
+    "observed_dwell_s": 0.9138261902586128,
+    "rel_diff": 0.19135802469135796,
+    "pass_": true,
+    "note": "2 状态稳态近似；若状态数>2 或转移矩阵强非对称则本条不适用（须显式声明）"
+   },
+   "AR1_phi": 0.6613528237255,
+   "AR1_tau_s": 2.2101507557086606,
+   "AR1_in_window": false,
+   "AR1_ll": -1.132690390374665,
+   "AR1_whiten": false,
+   "sample_gate": {
+    "n_frames": 131,
+    "valid": true,
+    "shape_ok": true,
+    "bic_ok": false,
+    "thresholds": {
+     "valid": 65,
+     "shape": 130,
+     "bic": 500
+    },
+    "note": "n_frames<65 ⇒ invalid（最短协议 T≥60 s）；形状判据需 ≥130（T≥120 s）；BIC 需 ≥500"
+   },
+   "best_K": "unavailable",
+   "gate3_status": "measured"
+  },
+  "M0": {
+   "n_frames": 131,
+   "pop_rate_hz": 55.9513,
+   "H_occ": [
+    0.511,
+    0.489
+   ],
+   "H_trans": 0.83534,
+   "H_dwell_low_med": 0.914,
+   "p90_over_med": 2.0,
+   "ks_exp_p": 6.703601403140914e-13,
+   "consistency": {
+    "applicable": true,
+    "predicted_dwell_s": 0.5985561546193914,
+    "observed_dwell_s": 0.9138261902586128,
+    "rel_diff": 0.345,
+    "pass_": true,
+    "note": "2 状态稳态近似；若状态数>2 或转移矩阵强非对称则本条不适用（须显式声明）"
+   },
+   "AR1_phi": 0.6085391379051723,
+   "AR1_tau_s": 1.8398170671232097,
+   "AR1_in_window": false,
+   "AR1_ll": -1.204964441138249,
+   "AR1_whiten": false,
+   "sample_gate": {
+    "n_frames": 131,
+    "valid": true,
+    "shape_ok": true,
+    "bic_ok": false,
+    "thresholds": {
+     "valid": 65,
+     "shape": 130,
+     "bic": 500
+    },
+    "note": "n_frames<65 ⇒ invalid（最短协议 T≥60 s）；形状判据需 ≥130（T≥120 s）；BIC 需 ≥500"
+   },
+   "best_K": "unavailable",
+   "gate3_status": "measured"
+  }
+ }
+}

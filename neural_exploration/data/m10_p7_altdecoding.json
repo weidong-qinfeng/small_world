@@ -1,0 +1,515 @@
+{
+ "generated_by": "tools/validate_p10_altdecoding.py",
+ "protocol": "跨条件（早半训练/晚半测试，双向）+ 条件内漂移地板（早半 vs 晚半，同条件）",
+ "frame_rate_hz": 1.0943055555555556,
+ "n_neurons": 2048,
+ "stride": 4,
+ "pre_registered_margin_min": 0.1,
+ "interleaved_conditions_available": false,
+ "interleaved_note": "ZAPBench CONDITION_OFFSETS 单调递增 ⇒ 无条件交错段（RF-3 ② 不可得）",
+ "rows": [
+  {
+   "cross_accuracy": 1.0,
+   "cross_accuracy_both_directions": [
+    {
+     "accuracy": 1.0,
+     "n_test": 157,
+     "n_correct": 157,
+     "ci95": [
+      1.0,
+      1.0
+     ],
+     "perm_p": 0.0,
+     "perm_null_max": 0.6050955414012739
+    },
+    {
+     "accuracy": 1.0,
+     "n_test": 157,
+     "n_correct": 157,
+     "ci95": [
+      1.0,
+      1.0
+     ],
+     "perm_p": 0.0,
+     "perm_null_max": 0.6178343949044586
+    }
+   ],
+   "within_condition_drift_floor": 0.7254492939666239,
+   "drift_floor_per_condition": [
+    {
+     "accuracy": 0.6219512195121951,
+     "n_test": 82,
+     "n_correct": 51,
+     "ci95": [
+      0.4996951219512195,
+      0.7560975609756098
+     ]
+    },
+    {
+     "accuracy": 0.8289473684210527,
+     "n_test": 76,
+     "n_correct": 63,
+     "ci95": [
+      0.7368421052631579,
+      0.9078947368421053
+     ]
+    }
+   ],
+   "nonstationary": true,
+   "margin": 0.27455070603337606,
+   "pair": "taxis_vs_dark",
+   "frame_centered": false,
+   "separable": true
+  },
+  {
+   "cross_accuracy": 0.47770700636942676,
+   "cross_accuracy_both_directions": [
+    {
+     "accuracy": 0.47770700636942676,
+     "n_test": 157,
+     "n_correct": 75,
+     "ci95": [
+      0.3885350318471338,
+      0.5670382165605096
+     ],
+     "perm_p": 1.0,
+     "perm_null_max": 0.47770700636942676
+    },
+    {
+     "accuracy": 0.47770700636942676,
+     "n_test": 157,
+     "n_correct": 75,
+     "ci95": [
+      0.388375796178344,
+      0.5670382165605096
+     ],
+     "perm_p": 1.0,
+     "perm_null_max": 0.47770700636942676
+    }
+   ],
+   "within_condition_drift_floor": 0.5060975609756098,
+   "drift_floor_per_condition": [
+    {
+     "accuracy": 0.5121951219512195,
+     "n_test": 82,
+     "n_correct": 42,
+     "ci95": [
+      0.3902439024390244,
+      0.6222560975609757
+     ]
+    },
+    {
+     "accuracy": 0.5,
+     "n_test": 76,
+     "n_correct": 38,
+     "ci95": [
+      0.4075657894736842,
+      0.6052631578947368
+     ]
+    }
+   ],
+   "nonstationary": true,
+   "margin": -0.028390554606183005,
+   "pair": "taxis_vs_dark",
+   "frame_centered": true,
+   "separable": false
+  },
+  {
+   "cross_accuracy": 1.0,
+   "cross_accuracy_both_directions": [
+    {
+     "accuracy": 1.0,
+     "n_test": 157,
+     "n_correct": 157,
+     "ci95": [
+      1.0,
+      1.0
+     ],
+     "perm_p": 0.0,
+     "perm_null_max": 0.6178343949044586
+    },
+    {
+     "accuracy": 1.0,
+     "n_test": 157,
+     "n_correct": 157,
+     "ci95": [
+      1.0,
+      1.0
+     ],
+     "perm_p": 0.0,
+     "perm_null_max": 0.6305732484076433
+    }
+   ],
+   "within_condition_drift_floor": 0.7742297817715019,
+   "drift_floor_per_condition": [
+    {
+     "accuracy": 0.7195121951219512,
+     "n_test": 82,
+     "n_correct": 59,
+     "ci95": [
+      0.6460365853658537,
+      0.8048780487804879
+     ]
+    },
+    {
+     "accuracy": 0.8289473684210527,
+     "n_test": 76,
+     "n_correct": 63,
+     "ci95": [
+      0.7368421052631579,
+      0.9078947368421053
+     ]
+    }
+   ],
+   "nonstationary": true,
+   "margin": 0.22577021822849808,
+   "pair": "gain_vs_dark",
+   "frame_centered": false,
+   "separable": true
+  },
+  {
+   "cross_accuracy": 0.47770700636942676,
+   "cross_accuracy_both_directions": [
+    {
+     "accuracy": 0.47770700636942676,
+     "n_test": 157,
+     "n_correct": 75,
+     "ci95": [
+      0.4011146496815287,
+      0.554140127388535
+     ],
+     "perm_p": 1.0,
+     "perm_null_max": 0.47770700636942676
+    },
+    {
+     "accuracy": 0.47770700636942676,
+     "n_test": 157,
+     "n_correct": 75,
+     "ci95": [
+      0.40732484076433123,
+      0.5479299363057325
+     ],
+     "perm_p": 1.0,
+     "perm_null_max": 0.47770700636942676
+    }
+   ],
+   "within_condition_drift_floor": 0.5,
+   "drift_floor_per_condition": [
+    {
+     "accuracy": 0.5,
+     "n_test": 82,
+     "n_correct": 41,
+     "ci95": [
+      0.4024390243902439,
+      0.5975609756097561
+     ]
+    },
+    {
+     "accuracy": 0.5,
+     "n_test": 76,
+     "n_correct": 38,
+     "ci95": [
+      0.4075657894736842,
+      0.6052631578947368
+     ]
+    }
+   ],
+   "nonstationary": true,
+   "margin": -0.022292993630573243,
+   "pair": "gain_vs_dark",
+   "frame_centered": true,
+   "separable": false
+  },
+  {
+   "cross_accuracy": 0.9696969696969697,
+   "cross_accuracy_both_directions": [
+    {
+     "accuracy": 0.9696969696969697,
+     "n_test": 297,
+     "n_correct": 288,
+     "ci95": [
+      0.9461279461279462,
+      0.9866161616161616
+     ],
+     "perm_p": 0.0,
+     "perm_null_max": 0.7003367003367004
+    },
+    {
+     "accuracy": 0.9696969696969697,
+     "n_test": 297,
+     "n_correct": 288,
+     "ci95": [
+      0.9494107744107744,
+      0.9865319865319865
+     ],
+     "perm_p": 0.0,
+     "perm_null_max": 0.6734006734006734
+    }
+   ],
+   "within_condition_drift_floor": 0.7523115220483642,
+   "drift_floor_per_condition": [
+    {
+     "accuracy": 0.6756756756756757,
+     "n_test": 222,
+     "n_correct": 150,
+     "ci95": [
+      0.6170045045045045,
+      0.7344594594594596
+     ]
+    },
+    {
+     "accuracy": 0.8289473684210527,
+     "n_test": 76,
+     "n_correct": 63,
+     "ci95": [
+      0.7368421052631579,
+      0.9078947368421053
+     ]
+    }
+   ],
+   "nonstationary": true,
+   "margin": 0.21738544764860557,
+   "pair": "dots_vs_dark",
+   "frame_centered": false,
+   "separable": true
+  },
+  {
+   "cross_accuracy": 0.25252525252525254,
+   "cross_accuracy_both_directions": [
+    {
+     "accuracy": 0.25252525252525254,
+     "n_test": 297,
+     "n_correct": 75,
+     "ci95": [
+      0.2053872053872054,
+      0.3132154882154882
+     ],
+     "perm_p": 1.0,
+     "perm_null_max": 0.25252525252525254
+    },
+    {
+     "accuracy": 0.25252525252525254,
+     "n_test": 297,
+     "n_correct": 75,
+     "ci95": [
+      0.20530303030303032,
+      0.30319865319865325
+     ],
+     "perm_p": 1.0,
+     "perm_null_max": 0.25252525252525254
+    }
+   ],
+   "within_condition_drift_floor": 0.5,
+   "drift_floor_per_condition": [
+    {
+     "accuracy": 0.5,
+     "n_test": 222,
+     "n_correct": 111,
+     "ci95": [
+      0.4503378378378379,
+      0.5675675675675675
+     ]
+    },
+    {
+     "accuracy": 0.5,
+     "n_test": 76,
+     "n_correct": 38,
+     "ci95": [
+      0.4075657894736842,
+      0.6052631578947368
+     ]
+    }
+   ],
+   "nonstationary": true,
+   "margin": -0.24747474747474746,
+   "pair": "dots_vs_dark",
+   "frame_centered": true,
+   "separable": false
+  },
+  {
+   "cross_accuracy": 0.9871794871794872,
+   "cross_accuracy_both_directions": [
+    {
+     "accuracy": 0.9871794871794872,
+     "n_test": 156,
+     "n_correct": 154,
+     "ci95": [
+      0.9677884615384615,
+      1.0
+     ],
+     "perm_p": 0.0,
+     "perm_null_max": 0.6025641025641025
+    },
+    {
+     "accuracy": 0.9871794871794872,
+     "n_test": 156,
+     "n_correct": 154,
+     "ci95": [
+      0.967948717948718,
+      1.0
+     ],
+     "perm_p": 0.0,
+     "perm_null_max": 0.6153846153846154
+    }
+   ],
+   "within_condition_drift_floor": 0.6845748187211602,
+   "drift_floor_per_condition": [
+    {
+     "accuracy": 0.5853658536585366,
+     "n_test": 82,
+     "n_correct": 48,
+     "ci95": [
+      0.4634146341463415,
+      0.6951219512195121
+     ]
+    },
+    {
+     "accuracy": 0.7837837837837838,
+     "n_test": 74,
+     "n_correct": 58,
+     "ci95": [
+      0.7023648648648649,
+      0.8783783783783784
+     ]
+    }
+   ],
+   "nonstationary": true,
+   "margin": 0.302604668458327,
+   "pair": "rotation_vs_position",
+   "frame_centered": false,
+   "separable": true
+  },
+  {
+   "cross_accuracy": 0.47435897435897434,
+   "cross_accuracy_both_directions": [
+    {
+     "accuracy": 0.47435897435897434,
+     "n_test": 156,
+     "n_correct": 74,
+     "ci95": [
+      0.3974358974358974,
+      0.5514423076923077
+     ],
+     "perm_p": 1.0,
+     "perm_null_max": 0.47435897435897434
+    },
+    {
+     "accuracy": 0.47435897435897434,
+     "n_test": 156,
+     "n_correct": 74,
+     "ci95": [
+      0.40384615384615385,
+      0.5578525641025641
+     ],
+     "perm_p": 1.0,
+     "perm_null_max": 0.47435897435897434
+    }
+   ],
+   "within_condition_drift_floor": 0.5,
+   "drift_floor_per_condition": [
+    {
+     "accuracy": 0.5,
+     "n_test": 82,
+     "n_correct": 41,
+     "ci95": [
+      0.3902439024390244,
+      0.5975609756097561
+     ]
+    },
+    {
+     "accuracy": 0.5,
+     "n_test": 74,
+     "n_correct": 37,
+     "ci95": [
+      0.3918918918918919,
+      0.5949324324324325
+     ]
+    }
+   ],
+   "nonstationary": true,
+   "margin": -0.02564102564102566,
+   "pair": "rotation_vs_position",
+   "frame_centered": true,
+   "separable": false
+  }
+ ],
+ "best": {
+  "cross_accuracy": 0.9871794871794872,
+  "cross_accuracy_both_directions": [
+   {
+    "accuracy": 0.9871794871794872,
+    "n_test": 156,
+    "n_correct": 154,
+    "ci95": [
+     0.9677884615384615,
+     1.0
+    ],
+    "perm_p": 0.0,
+    "perm_null_max": 0.6025641025641025
+   },
+   {
+    "accuracy": 0.9871794871794872,
+    "n_test": 156,
+    "n_correct": 154,
+    "ci95": [
+     0.967948717948718,
+     1.0
+    ],
+    "perm_p": 0.0,
+    "perm_null_max": 0.6153846153846154
+   }
+  ],
+  "within_condition_drift_floor": 0.6845748187211602,
+  "drift_floor_per_condition": [
+   {
+    "accuracy": 0.5853658536585366,
+    "n_test": 82,
+    "n_correct": 48,
+    "ci95": [
+     0.4634146341463415,
+     0.6951219512195121
+    ]
+   },
+   {
+    "accuracy": 0.7837837837837838,
+    "n_test": 74,
+    "n_correct": 58,
+    "ci95": [
+     0.7023648648648649,
+     0.8783783783783784
+    ]
+   }
+  ],
+  "nonstationary": true,
+  "margin": 0.302604668458327,
+  "pair": "rotation_vs_position",
+  "frame_centered": false,
+  "separable": true
+ },
+ "two_operationalizations": {
+  "raw_features": {
+   "n_separable_pairs": 4,
+   "of": 4,
+   "margins": [
+    0.2746,
+    0.2258,
+    0.2174,
+    0.3026
+   ],
+   "note": "未去帧均值：跨条件准确率高，但**条件内漂移地板同样高**"
+  },
+  "frame_centered": {
+   "n_separable_pairs": 0,
+   "of": 4,
+   "margins": [
+    -0.0284,
+    -0.0223,
+    -0.2475,
+    -0.0256
+   ],
+   "note": "去帧均值后：可分性消失（margin ≈0）"
+  }
+ },
+ "conclusion": "**可分性口径依赖（两口径相反结论，均登记在案）**：未去帧均值口径 4/4 对可分（margin +0.22~+0.30）；**去帧均值口径 0/4 对不可分（margin −0.25~−0.02）**。条件内漂移地板均值 **0.618 ≥ 0.5 ⇒ 记录非平稳**（与 M9 R7/R9 同一混杂：慢漂移可被误判为条件差异）。⇒ P7 ④ 的结论只能是**条件性的**：ZAPBench 上 ④ 维持 `unavailable`（数据获取限制，非模型问题），且**两个口径都必须登记**。",
+ "elapsed_s": 8.2
+}

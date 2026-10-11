@@ -18,3 +18,6 @@ GATE,自检门 2：驱动弹性,drive_elasticity_min,0.30,0.30,,4× 驱动增幅
 GATE,自检门 3：双态存在,bout_fraction_min,0.05,1.0,,活动 bout 占比须 >0（带下界 0.05）；M9 实测 0.0000 → 反证基线
 GATE,现象级：慢变量相关,slow_var_corr_min,0.30,1.0,,机制内部慢变量轨迹 vs 群率慢涨落 |r| 下限（机制归属证据链，双轨）
 GATE,消融：关闭机制 → 双态消失,ablation_bout_fraction_max,0.00,0.02,,关闭态须回到 M9 语义（bout≈0）且逐 spike 等价（§2.3 关闭态等价）
+M-6,慢恢复组分（裁决 3 指定候选）,stp_tau_rec_s,26.0,26.0,s,**由成像 dwell 26.5 s 反推**（跨数据源定量约束）；u0=0.5、depress
+M-6,慢恢复组分,gaba_tau_slow_s,2.0,2.0,s,GABA_B 慢组分同时放慢（类级先验 + 测量限制）
+GATE,自检门 4（裁决 2 修正表述）,tau_in_dwell_window,8.0,80.0,s,"τ_slow ∈ [8,80] s（=0.3×–3× 成像 dwell 中位 26.5 s）；**不与快尺度自相关比**"

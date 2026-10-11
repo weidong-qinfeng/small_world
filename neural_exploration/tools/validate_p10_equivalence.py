@@ -141,10 +141,21 @@ def attenuation_table(rates=(0.1, 0.3, 0.5, 1.0, 1.5, 3.0, 10.0), T_s=7200.0,
         # 口径说明：反演给出的是**窗内脉冲计数** N_est = ∫ΔF/F dt /(A·τ)（不是速率）
         # ⇒ 衰减因子 = N_est / N_true（N_true = r·T）。首版误除 r（缺 T 因子）→ 已修正。
         n_true = r * T_s
-        rows.append(dict(true_rate_hz=r, est_spikes_full=ef, est_spikes_window=ew,
-                         est_rate_hz_full=ef / T_s, est_rate_hz_window=ew / T_s,
+        # ---------------- **量纲自检（主agent 复核要求；M9"率/计数/积分"量纲纪律）----------------
+        # 恒等式 ①：真值 × T = 计数（本例 0.1 Hz × 7200 s = 720 ✓）
+        # 恒等式 ②：反演给出的是 **spike 数** N=∫ΔF/F dt/(A·τ_ca) ⇒ 率 = N / T
+        assert abs(n_true - r * T_s) < 1e-9, "量纲自检①失败：true_rate×T != true_spikes"
+        rate_full = ef / T_s
+        rate_win = ew / T_s
+        assert abs(rate_full * T_s - ef) < 1e-9, "量纲自检②失败：rate != count/T"
+        # 形如"率"的量必须落在合理量级（否则说明漏除/多乘了 T——首版曾出现 ×7300 的荒谬值）
+        assert 0.0 < rate_full < 1000.0, f"量纲自检③失败：est_rate_hz={rate_full} 量级异常"
+        rows.append(dict(true_rate_hz=r, true_spikes=n_true,
+                         est_spikes_full=ef, est_spikes_window=ew,
+                         est_rate_hz_full=rate_full, est_rate_hz_window=rate_win,
                          attenuation_full=(ef / n_true if n_true else float("nan")),
                          attenuation_window=(ew / n_true if n_true else float("nan")),
+                         correction_factor_full=((n_true / ef) if ef else float("nan")),
                          n_spikes_mean=n_true))
     return rows
 
@@ -164,15 +175,20 @@ def main(argv=None) -> int:
     att = attenuation_table(fs_hz=args.fs_hz)
     with open(args.out_atten, "w", newline="") as f:
         f.write("# M10 低采样混淆量化：合成 Poisson 真值 → §6.1 正向模型 → 1.09 Hz 帧化 → 同管线反演\n")
-        f.write(f"# A={FORWARD['A']} τ_ca={FORWARD['tau_ca_s']}s 帧率={args.fs_hz}Hz T=7200s n_rep=40 dt=10ms\n")
+        f.write(f"# A={FORWARD['A']} τ_ca={FORWARD['tau_ca_s']}s 帧率={args.fs_hz}Hz T={7200.0}s n_rep=40 dt=10ms\n")
+        f.write("# **定义（唯一口径）**：est_rate_hz = est_spikes / T；attenuation = est / true（>1 = 高估）；\n")
+        f.write("#                    correction_factor = true / est（对模型侧同口径反演值的乘性修正）\n")
+        f.write("# **量纲自检（已断言）**：true_rate×T == true_spikes；est_rate×T == est_spikes；est_rate ∈ (0,1e3)\n")
         w = csv.writer(f, lineterminator="\n")
         w.writerow(["true_rate_hz", "true_spikes", "est_spikes_full", "est_spikes_window",
-                    "est_rate_hz_full", "attenuation_full", "attenuation_window"])
+                    "est_rate_hz_full", "est_rate_hz_window", "attenuation_full",
+                    "attenuation_window", "correction_factor_full"])
         for r in att:
-            w.writerow([r["true_rate_hz"], round(r["n_spikes_mean"], 1),
+            w.writerow([r["true_rate_hz"], round(r["true_spikes"], 1),
                         round(r["est_spikes_full"], 2), round(r["est_spikes_window"], 2),
-                        round(r["est_rate_hz_full"], 6), round(r["attenuation_full"], 6),
-                        round(r["attenuation_window"], 6)])
+                        round(r["est_rate_hz_full"], 6), round(r["est_rate_hz_window"], 6),
+                        round(r["attenuation_full"], 6), round(r["attenuation_window"], 6),
+                        round(r["correction_factor_full"], 6)])
     print("[衰减] " + " | ".join(f"{r['true_rate_hz']}Hz→×{r['attenuation_full']:.4f}"
                                 for r in att), flush=True)
 
@@ -228,6 +244,15 @@ def main(argv=None) -> int:
          "measured", "裁决 3(3)", "ZAPBench 为 L1；报告中必须标注"),
         ("p7_idealization", "无噪声/无运动伪影/无神经域污染", "理想上限制声明",
          "—", "M9 L42", "数值不可与文献成像直接等价比较；仅承诺统计级"),
+        ("p7_tost_unified_form", "**统一判据形式**：Welch TOST",
+         "等价 ⟺ max(p_low,p_high) < 0.05（两侧 p 都拒绝'差异 ≥ margin'）",
+         "逐指标 margin（见下 4 行）", "主agent 复核要求：各指标都须给 **margin + CI95 + p**",
+         "worked example（成像分裂半，自检通过）：margin=0.05 Hz、diff=−0.000194、se=0.00277、"
+         "p_low=4.1e-13、p_high=1.5e-13、CI95=[−0.00562,0.00523] ⇒ ok=TRUE"),
+        ("p7_m1_tost_rate", "逐神经元率的中位差", "TOST |Δ| < margin", "0.05 Hz",
+         "P7 ① 分布指标的等价形式（与 KS D<d_eq 并列）", "CI95 与两侧 p 必须落盘"),
+        ("p7_m3_tost_occupancy", "状态占用差", "TOST |Δ| < margin", "0.10（=20 pp 的等价形式）",
+         "P7 ③", "同一 HMM/分位法同一参数"),
         ("p7_cell_identity", "逐神经元对应", "**不声称**（仅区域级）",
          "—", "§0.7 #4 + 数据门事实（Fish1 与 ZAPBench 不同动物）",
          "第三方数据源文档亦确认 'no cell-level correspondence'"),
@@ -244,7 +269,32 @@ def main(argv=None) -> int:
     selfcheck["elapsed_s"] = round(time.time() - t0, 1)
     with open(args.out_selfcheck, "w") as f:
         json.dump(selfcheck, f, indent=1, ensure_ascii=False)
+    try:
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+        rr = np.array([r["true_rate_hz"] for r in att], float)
+        aa = np.array([r["attenuation_full"] for r in att], float)
+        fig, ax = plt.subplots(1, 2, figsize=(10, 3.6))
+        ax[0].semilogx(rr, aa, "o-")
+        ax[0].axhline(1.0, color="k", ls="--", lw=0.8)
+        ax[0].set_ylim(0.9, 1.1)
+        ax[0].set_xlabel("true rate (Hz)"); ax[0].set_ylabel("attenuation = est/true")
+        ax[0].set_title("same-pipeline inversion attenuation @1.09 Hz framing")
+        ax[1].semilogx(rr, 100.0 * (aa - 1.0), "o-", color="#c05621")
+        ax[1].axhline(0.0, color="k", ls="--", lw=0.8)
+        ax[1].set_xlabel("true rate (Hz)"); ax[1].set_ylabel("bias (%)")
+        ax[1].set_title("relative bias (<= ~1.5%)")
+        fig.tight_layout()
+        figp = os.path.join(PROJECT_ROOT, "reports", "neuro", "m10_sampling_attenuation.png")
+        os.makedirs(os.path.dirname(figp), exist_ok=True)
+        fig.savefig(figp, dpi=110)
+        print("figure ->", figp, flush=True)
+        att_fig = figp
+    except Exception as e:  # pragma: no cover
+        att_fig = f"skip: {e}"
     print(json.dumps({"protocol": args.out_proto, "attenuation": args.out_atten,
+                      "figure": att_fig,
                       "selfcheck_ok_margin_0.05": (selfcheck.get("tost", {})
                                                    .get("tost_margin_0.05", {}) or {}).get("ok"),
                       "elapsed_s": selfcheck["elapsed_s"]}, ensure_ascii=False, indent=1))

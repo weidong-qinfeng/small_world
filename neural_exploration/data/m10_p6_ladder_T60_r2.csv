@@ -1,0 +1,5 @@
+# M10 P6 机制阶梯判决表（逐级：自检门三条 + 结论；结构证据级别 = 抽象/Fish1-partial 锚定）
+level,desc,selfsustain_ratio,selfsustain_pass,elasticity_4x,elasticity_monotone,elasticity_pass,bout_fraction,n_bouts,bout_pass,gate_all_pass,outcome,pop_rate_hz,rate_median_hz,silent_frac,wall_s_total
+M-1,"STP 抑制型（Tsodyks–Markram；u0=0.5, τ_rec=1 s）",0.108249,0,9.000949,1,1,0.0,0,0,0,partial,0.245883,0.0,0.888,326.3
+M-1,"STP 抑制型（Tsodyks–Markram；u0=0.5, τ_rec=1 s）",0.0,1,9.829147,1,1,0.0,0,0,0,partial,0.223389,0.0,0.886667,1028.1
+M-5,组合：M-1 + M-3 + M-4（全局参数 4 个 ≤ 上限 8）,0.142278,0,9.354623,1,1,0.0,0,0,0,partial,0.279733,0.0,0.868,1307.2

@@ -1,0 +1,810 @@
+{
+ "generated_by": "tools/validate_p10_resting.py",
+ "generated_at": "2026-10-11T18:42:27",
+ "structure_evidence_level": "abstract(anchored_on_fish1_partial)",
+ "fish1_anchors": {
+  "source": "data/m10_connectome_counts.json",
+  "roster": 180782,
+  "cells": 13813,
+  "synapses": 23987,
+  "cell_type_counts": {
+   "exc": 2763,
+   "inh": 2384,
+   "na": 25199
+  },
+  "completeness": "partial"
+ },
+ "net_params": {
+  "n_neuron": 500,
+  "indegree": 20,
+  "inh_frac": 0.3,
+  "g_exc": 1.0,
+  "g_inh": 22.0,
+  "delay_max": 40,
+  "bias_median_mv_s": 150.0,
+  "bias_cv": 0.3,
+  "seed": 0
+ },
+ "bands_used": {
+  "rate_band_lo": "0.30",
+  "rate_band_hi": "1.50",
+  "silent_band_lo": "0.50",
+  "silent_band_hi": "0.95",
+  "selfsustain_ratio_max": "0.10",
+  "drive_elasticity_min": "0.30",
+  "drive_monotone_required": "1",
+  "single_trial_gpu_h_max": "0.50",
+  "settle_window_ms": "500",
+  "n_trials_min": "3",
+  "p6_dwell_window_lo": "8.0",
+  "p6_dwell_window_hi": "80.0",
+  "p6_dwell_ref_s": "26.5",
+  "p6_slow_var_corr_min_rerun": "0.30",
+  "p5_selfsustain_ratio_max": "0.10",
+  "p5_selfsustain_ci_upper_max": "0.12",
+  "p5_selfsustain_measured": "0.1015",
+  "p5_gate1_verdict": "临界通过（统计未分辨）/ 点估计未过",
+  "p6_gate12_discriminativeness": "none"
+ },
+ "drive_sweep": [
+  {
+   "n_neuron": 500,
+   "T_ms": 15000.0,
+   "settle_ms": 1000.0,
+   "lam_hz": 0.0,
+   "n_events": 0,
+   "g_ext": 20.0,
+   "spk_total": 0.0,
+   "pop_rate_hz": 0.0,
+   "rate_median_hz": 0.0,
+   "rate_mean_hz": 0.0,
+   "rate_p95_hz": 0.0,
+   "silent_frac": 1.0,
+   "n_nan": 0,
+   "wall_s": 21.32,
+   "ms_per_step_steady": 0.066,
+   "segments": [
+    {
+     "step": 0,
+     "w": 20000,
+     "wall_s": 1.313,
+     "ms_per_step": 0.0656
+    },
+    {
+     "step": 20000,
+     "w": 20000,
+     "wall_s": 1.301,
+     "ms_per_step": 0.065
+    },
+    {
+     "step": 40000,
+     "w": 20000,
+     "wall_s": 1.281,
+     "ms_per_step": 0.064
+    },
+    {
+     "step": 60000,
+     "w": 20000,
+     "wall_s": 1.363,
+     "ms_per_step": 0.0681
+    },
+    {
+     "step": 80000,
+     "w": 20000,
+     "wall_s": 1.378,
+     "ms_per_step": 0.0689
+    },
+    {
+     "step": 100000,
+     "w": 20000,
+     "wall_s": 1.43,
+     "ms_per_step": 0.0715
+    },
+    {
+     "step": 120000,
+     "w": 20000,
+     "wall_s": 1.34,
+     "ms_per_step": 0.067
+    },
+    {
+     "step": 140000,
+     "w": 20000,
+     "wall_s": 1.46,
+     "ms_per_step": 0.073
+    },
+    {
+     "step": 160000,
+     "w": 20000,
+     "wall_s": 1.381,
+     "ms_per_step": 0.0691
+    },
+    {
+     "step": 180000,
+     "w": 20000,
+     "wall_s": 1.596,
+     "ms_per_step": 0.0798
+    },
+    {
+     "step": 200000,
+     "w": 20000,
+     "wall_s": 1.297,
+     "ms_per_step": 0.0648
+    },
+    {
+     "step": 220000,
+     "w": 20000,
+     "wall_s": 1.246,
+     "ms_per_step": 0.0623
+    },
+    {
+     "step": 240000,
+     "w": 20000,
+     "wall_s": 1.287,
+     "ms_per_step": 0.0643
+    },
+    {
+     "step": 260000,
+     "w": 20000,
+     "wall_s": 1.244,
+     "ms_per_step": 0.0622
+    },
+    {
+     "step": 280000,
+     "w": 20000,
+     "wall_s": 1.266,
+     "ms_per_step": 0.0633
+    }
+   ],
+   "pop_trace_mean_hz": 0.0,
+   "bout_fraction": 0.0,
+   "n_bouts": 0,
+   "silent_bin_frac": 1.0,
+   "bout_median_s": 0.0,
+   "nbins": 150,
+   "mean_bin_spikes": 0.0,
+   "drive_mult": 0.0
+  },
+  {
+   "n_neuron": 500,
+   "T_ms": 15000.0,
+   "settle_ms": 1000.0,
+   "lam_hz": 4.0,
+   "n_events": 30000,
+   "g_ext": 20.0,
+   "spk_total": 675.0,
+   "pop_rate_hz": 0.09000000000000001,
+   "rate_median_hz": 0.0,
+   "rate_mean_hz": 0.09,
+   "rate_p95_hz": 0.0,
+   "silent_frac": 0.956,
+   "n_nan": 0,
+   "wall_s": 21.77,
+   "ms_per_step_steady": 0.07045,
+   "segments": [
+    {
+     "step": 0,
+     "w": 20000,
+     "wall_s": 1.311,
+     "ms_per_step": 0.0655
+    },
+    {
+     "step": 20000,
+     "w": 20000,
+     "wall_s": 1.279,
+     "ms_per_step": 0.0639
+    },
+    {
+     "step": 40000,
+     "w": 20000,
+     "wall_s": 1.308,
+     "ms_per_step": 0.0654
+    },
+    {
+     "step": 60000,
+     "w": 20000,
+     "wall_s": 1.286,
+     "ms_per_step": 0.0643
+    },
+    {
+     "step": 80000,
+     "w": 20000,
+     "wall_s": 1.337,
+     "ms_per_step": 0.0668
+    },
+    {
+     "step": 100000,
+     "w": 20000,
+     "wall_s": 1.293,
+     "ms_per_step": 0.0646
+    },
+    {
+     "step": 120000,
+     "w": 20000,
+     "wall_s": 1.412,
+     "ms_per_step": 0.0706
+    },
+    {
+     "step": 140000,
+     "w": 20000,
+     "wall_s": 1.414,
+     "ms_per_step": 0.0707
+    },
+    {
+     "step": 160000,
+     "w": 20000,
+     "wall_s": 1.411,
+     "ms_per_step": 0.0705
+    },
+    {
+     "step": 180000,
+     "w": 20000,
+     "wall_s": 1.416,
+     "ms_per_step": 0.0708
+    },
+    {
+     "step": 200000,
+     "w": 20000,
+     "wall_s": 1.408,
+     "ms_per_step": 0.0704
+    },
+    {
+     "step": 220000,
+     "w": 20000,
+     "wall_s": 1.414,
+     "ms_per_step": 0.0707
+    },
+    {
+     "step": 240000,
+     "w": 20000,
+     "wall_s": 1.365,
+     "ms_per_step": 0.0682
+    },
+    {
+     "step": 260000,
+     "w": 20000,
+     "wall_s": 1.478,
+     "ms_per_step": 0.0739
+    },
+    {
+     "step": 280000,
+     "w": 20000,
+     "wall_s": 1.492,
+     "ms_per_step": 0.0746
+    }
+   ],
+   "pop_trace_mean_hz": 0.08999999612569809,
+   "estimator_rel_diff": 4.304779912163899e-08,
+   "bout_fraction": 0.0,
+   "n_bouts": 0,
+   "silent_bin_frac": 0.0,
+   "bout_median_s": 0.0,
+   "nbins": 150,
+   "mean_bin_spikes": 4.5,
+   "drive_mult": 0.5
+  },
+  {
+   "n_neuron": 500,
+   "T_ms": 15000.0,
+   "settle_ms": 1000.0,
+   "lam_hz": 8.0,
+   "n_events": 60000,
+   "g_ext": 20.0,
+   "spk_total": 1813.0,
+   "pop_rate_hz": 0.24173333333333333,
+   "rate_median_hz": 0.0,
+   "rate_mean_hz": 0.24173333333333336,
+   "rate_p95_hz": 1.0499999999999545,
+   "silent_frac": 0.872,
+   "n_nan": 0,
+   "wall_s": 24.4,
+   "ms_per_step_steady": 0.07855000000000001,
+   "segments": [
+    {
+     "step": 0,
+     "w": 20000,
+     "wall_s": 1.464,
+     "ms_per_step": 0.0732
+    },
+    {
+     "step": 20000,
+     "w": 20000,
+     "wall_s": 1.406,
+     "ms_per_step": 0.0703
+    },
+    {
+     "step": 40000,
+     "w": 20000,
+     "wall_s": 1.486,
+     "ms_per_step": 0.0743
+    },
+    {
+     "step": 60000,
+     "w": 20000,
+     "wall_s": 1.461,
+     "ms_per_step": 0.073
+    },
+    {
+     "step": 80000,
+     "w": 20000,
+     "wall_s": 1.509,
+     "ms_per_step": 0.0754
+    },
+    {
+     "step": 100000,
+     "w": 20000,
+     "wall_s": 1.705,
+     "ms_per_step": 0.0852
+    },
+    {
+     "step": 120000,
+     "w": 20000,
+     "wall_s": 1.608,
+     "ms_per_step": 0.0804
+    },
+    {
+     "step": 140000,
+     "w": 20000,
+     "wall_s": 1.513,
+     "ms_per_step": 0.0756
+    },
+    {
+     "step": 160000,
+     "w": 20000,
+     "wall_s": 1.574,
+     "ms_per_step": 0.0787
+    },
+    {
+     "step": 180000,
+     "w": 20000,
+     "wall_s": 1.576,
+     "ms_per_step": 0.0788
+    },
+    {
+     "step": 200000,
+     "w": 20000,
+     "wall_s": 1.584,
+     "ms_per_step": 0.0792
+    },
+    {
+     "step": 220000,
+     "w": 20000,
+     "wall_s": 1.58,
+     "ms_per_step": 0.079
+    },
+    {
+     "step": 240000,
+     "w": 20000,
+     "wall_s": 1.569,
+     "ms_per_step": 0.0784
+    },
+    {
+     "step": 260000,
+     "w": 20000,
+     "wall_s": 1.584,
+     "ms_per_step": 0.0792
+    },
+    {
+     "step": 280000,
+     "w": 20000,
+     "wall_s": 1.495,
+     "ms_per_step": 0.0747
+    }
+   ],
+   "pop_trace_mean_hz": 0.2417333424091339,
+   "estimator_rel_diff": 3.754467974334549e-08,
+   "bout_fraction": 0.0,
+   "n_bouts": 0,
+   "silent_bin_frac": 0.0,
+   "bout_median_s": 0.0,
+   "nbins": 150,
+   "mean_bin_spikes": 12.08666706085205,
+   "drive_mult": 1.0
+  },
+  {
+   "n_neuron": 500,
+   "T_ms": 15000.0,
+   "settle_ms": 1000.0,
+   "lam_hz": 16.0,
+   "n_events": 120000,
+   "g_ext": 20.0,
+   "spk_total": 4502.0,
+   "pop_rate_hz": 0.6002666666666666,
+   "rate_median_hz": 0.0,
+   "rate_mean_hz": 0.6002666666666666,
+   "rate_p95_hz": 3.0,
+   "silent_frac": 0.718,
+   "n_nan": 0,
+   "wall_s": 799.25,
+   "ms_per_step_steady": 0.0866,
+   "segments": [
+    {
+     "step": 0,
+     "w": 20000,
+     "wall_s": 1.557,
+     "ms_per_step": 0.0778
+    },
+    {
+     "step": 20000,
+     "w": 20000,
+     "wall_s": 1.695,
+     "ms_per_step": 0.0847
+    },
+    {
+     "step": 40000,
+     "w": 20000,
+     "wall_s": 1.815,
+     "ms_per_step": 0.0907
+    },
+    {
+     "step": 60000,
+     "w": 20000,
+     "wall_s": 1.631,
+     "ms_per_step": 0.0816
+    },
+    {
+     "step": 80000,
+     "w": 20000,
+     "wall_s": 1.638,
+     "ms_per_step": 0.0819
+    },
+    {
+     "step": 100000,
+     "w": 20000,
+     "wall_s": 1.702,
+     "ms_per_step": 0.0851
+    },
+    {
+     "step": 120000,
+     "w": 20000,
+     "wall_s": 1.719,
+     "ms_per_step": 0.086
+    },
+    {
+     "step": 140000,
+     "w": 20000,
+     "wall_s": 1.634,
+     "ms_per_step": 0.0817
+    },
+    {
+     "step": 160000,
+     "w": 20000,
+     "wall_s": 1.665,
+     "ms_per_step": 0.0832
+    },
+    {
+     "step": 180000,
+     "w": 20000,
+     "wall_s": 1.743,
+     "ms_per_step": 0.0872
+    },
+    {
+     "step": 200000,
+     "w": 20000,
+     "wall_s": 2.313,
+     "ms_per_step": 0.1157
+    },
+    {
+     "step": 220000,
+     "w": 20000,
+     "wall_s": 1.765,
+     "ms_per_step": 0.0882
+    },
+    {
+     "step": 240000,
+     "w": 20000,
+     "wall_s": 1.991,
+     "ms_per_step": 0.0995
+    },
+    {
+     "step": 260000,
+     "w": 20000,
+     "wall_s": 1.875,
+     "ms_per_step": 0.0937
+    },
+    {
+     "step": 280000,
+     "w": 20000,
+     "wall_s": 773.088,
+     "ms_per_step": 0.1215
+    }
+   ],
+   "pop_trace_mean_hz": 0.6002666801214218,
+   "estimator_rel_diff": 2.241462994036829e-08,
+   "bout_fraction": 0.0,
+   "n_bouts": 0,
+   "silent_bin_frac": 0.0,
+   "bout_median_s": 0.0,
+   "nbins": 150,
+   "mean_bin_spikes": 30.013334274291992,
+   "drive_mult": 2.0
+  },
+  {
+   "n_neuron": 500,
+   "T_ms": 15000.0,
+   "settle_ms": 1000.0,
+   "lam_hz": 32.0,
+   "n_events": 240000,
+   "g_ext": 20.0,
+   "spk_total": 13262.0,
+   "pop_rate_hz": 1.7682666666666667,
+   "rate_median_hz": 1.0,
+   "rate_mean_hz": 1.7682666666666667,
+   "rate_p95_hz": 6.0,
+   "silent_frac": 0.372,
+   "n_nan": 0,
+   "wall_s": 25.26,
+   "ms_per_step_steady": 0.0766,
+   "segments": [
+    {
+     "step": 0,
+     "w": 20000,
+     "wall_s": 1.719,
+     "ms_per_step": 0.0861
+    },
+    {
+     "step": 20000,
+     "w": 20000,
+     "wall_s": 1.525,
+     "ms_per_step": 0.0764
+    },
+    {
+     "step": 40000,
+     "w": 20000,
+     "wall_s": 1.863,
+     "ms_per_step": 0.0933
+    },
+    {
+     "step": 60000,
+     "w": 20000,
+     "wall_s": 1.83,
+     "ms_per_step": 0.0916
+    },
+    {
+     "step": 80000,
+     "w": 20000,
+     "wall_s": 1.593,
+     "ms_per_step": 0.0798
+    },
+    {
+     "step": 100000,
+     "w": 20000,
+     "wall_s": 1.566,
+     "ms_per_step": 0.0784
+    },
+    {
+     "step": 120000,
+     "w": 20000,
+     "wall_s": 1.53,
+     "ms_per_step": 0.0766
+    },
+    {
+     "step": 140000,
+     "w": 20000,
+     "wall_s": 1.469,
+     "ms_per_step": 0.0735
+    },
+    {
+     "step": 160000,
+     "w": 20000,
+     "wall_s": 1.587,
+     "ms_per_step": 0.0794
+    },
+    {
+     "step": 180000,
+     "w": 20000,
+     "wall_s": 1.546,
+     "ms_per_step": 0.0773
+    },
+    {
+     "step": 200000,
+     "w": 20000,
+     "wall_s": 1.505,
+     "ms_per_step": 0.0753
+    },
+    {
+     "step": 220000,
+     "w": 20000,
+     "wall_s": 1.532,
+     "ms_per_step": 0.0766
+    },
+    {
+     "step": 240000,
+     "w": 20000,
+     "wall_s": 1.485,
+     "ms_per_step": 0.0743
+    },
+    {
+     "step": 260000,
+     "w": 20000,
+     "wall_s": 1.506,
+     "ms_per_step": 0.0753
+    },
+    {
+     "step": 280000,
+     "w": 20000,
+     "wall_s": 1.449,
+     "ms_per_step": 0.0725
+    }
+   ],
+   "pop_trace_mean_hz": 1.7682667076587677,
+   "estimator_rel_diff": 2.3182080972087847e-08,
+   "bout_fraction": 0.0,
+   "n_bouts": 0,
+   "silent_bin_frac": 0.0,
+   "bout_median_s": 0.0,
+   "nbins": 150,
+   "mean_bin_spikes": 88.413330078125,
+   "drive_mult": 4.0
+  },
+  {
+   "n_neuron": 500,
+   "T_ms": 15000.0,
+   "settle_ms": 1000.0,
+   "lam_hz": 64.0,
+   "n_events": 480000,
+   "g_ext": 20.0,
+   "spk_total": 33817.0,
+   "pop_rate_hz": 4.508933333333333,
+   "rate_median_hz": 4.0,
+   "rate_mean_hz": 4.508933333333332,
+   "rate_p95_hz": 11.0,
+   "silent_frac": 0.064,
+   "n_nan": 0,
+   "wall_s": 945.35,
+   "ms_per_step_steady": 0.0825,
+   "segments": [
+    {
+     "step": 0,
+     "w": 20000,
+     "wall_s": 1.696,
+     "ms_per_step": 0.0848
+    },
+    {
+     "step": 20000,
+     "w": 20000,
+     "wall_s": 1.603,
+     "ms_per_step": 0.0802
+    },
+    {
+     "step": 40000,
+     "w": 20000,
+     "wall_s": 1.597,
+     "ms_per_step": 0.0799
+    },
+    {
+     "step": 60000,
+     "w": 20000,
+     "wall_s": 1.667,
+     "ms_per_step": 0.0833
+    },
+    {
+     "step": 80000,
+     "w": 20000,
+     "wall_s": 1.672,
+     "ms_per_step": 0.0836
+    },
+    {
+     "step": 100000,
+     "w": 20000,
+     "wall_s": 1.873,
+     "ms_per_step": 0.0937
+    },
+    {
+     "step": 120000,
+     "w": 20000,
+     "wall_s": 1.669,
+     "ms_per_step": 0.0835
+    },
+    {
+     "step": 140000,
+     "w": 20000,
+     "wall_s": 1.618,
+     "ms_per_step": 0.0809
+    },
+    {
+     "step": 160000,
+     "w": 20000,
+     "wall_s": 1.602,
+     "ms_per_step": 0.0801
+    },
+    {
+     "step": 180000,
+     "w": 20000,
+     "wall_s": 1.648,
+     "ms_per_step": 0.0824
+    },
+    {
+     "step": 200000,
+     "w": 20000,
+     "wall_s": 1.636,
+     "ms_per_step": 0.0818
+    },
+    {
+     "step": 220000,
+     "w": 20000,
+     "wall_s": 920.587,
+     "ms_per_step": 0.1048
+    },
+    {
+     "step": 240000,
+     "w": 20000,
+     "wall_s": 1.501,
+     "ms_per_step": 0.075
+    },
+    {
+     "step": 260000,
+     "w": 20000,
+     "wall_s": 1.837,
+     "ms_per_step": 0.0919
+    },
+    {
+     "step": 280000,
+     "w": 20000,
+     "wall_s": 1.654,
+     "ms_per_step": 0.0826
+    }
+   ],
+   "pop_trace_mean_hz": 4.508933424949646,
+   "estimator_rel_diff": 2.0318843945008465e-08,
+   "bout_fraction": 0.0,
+   "n_bouts": 0,
+   "silent_bin_frac": 0.0,
+   "bout_median_s": 0.0,
+   "nbins": 150,
+   "mean_bin_spikes": 225.44667053222656,
+   "drive_mult": 8.0
+  }
+ ],
+ "verdict": {
+  "p5_c_selfsustain": {
+   "value": 0.0,
+   "limit": 0.1,
+   "pass_": true,
+   "m9_baseline": 0.9853
+  },
+  "p5_d_elasticity": {
+   "value": 6.3149476006618865,
+   "limit": 0.3,
+   "monotone": true,
+   "pass_": true,
+   "m9_baseline": 0.0725
+  },
+  "p5_a_rate_median": {
+   "value": 0.0,
+   "band": [
+    0.3,
+    1.5
+   ],
+   "pass_": false,
+   "imaging_note": ""
+  },
+  "p5_b_silent": {
+   "value": 0.872,
+   "band": [
+    0.5,
+    0.95
+   ],
+   "pass_": true
+  },
+  "p5_bout_present": {
+   "value": 0.0,
+   "pass_": false,
+   "m9_baseline": 0.0
+  },
+  "p5_e_bounded": {
+   "nan": 0,
+   "pass_": true
+  },
+  "p5_g_determinism": {
+   "run1_spk": 220.0,
+   "run2_spk": 220.0,
+   "bit_identical": true
+  }
+ },
+ "G1_gate": {
+  "pass_": true,
+  "rule": "(c) 自持比 ≤ 上限 ∧ (d) 4× 驱动增幅 ≥ 下限（清单 §4.2 G1 门判定）"
+ },
+ "all_pass": false,
+ "elapsed_s": 1846.7
+}

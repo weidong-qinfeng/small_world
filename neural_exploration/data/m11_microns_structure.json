@@ -1,0 +1,2369 @@
+{
+ "generated_by": "tools/fetch_m11_microns.py --struct",
+ "generated_at": "2026-10-11T09:11:08Z",
+ "authority": "MICrONS minimie65 precomputed CloudVolume info (GCS iarpa_microns + bossdb-open-data S3 \u955c\u50cf)",
+ "evidence_level": "measured(\u5143\u6570\u636e) / derived(chunk \u8ba1\u6570)",
+ "volumes": {
+  "em": {
+   "gcs": {
+    "type": "image",
+    "data_type": "uint8",
+    "num_channels": 1,
+    "scales": [
+     {
+      "key": "8x8x40",
+      "resolution_nm": [
+       8.0,
+       8.0,
+       40.0
+      ],
+      "size_voxels": [
+       212992,
+       180224,
+       13088
+      ],
+      "voxel_offset": [
+       13824,
+       13824,
+       14816
+      ],
+      "bbox_nm": [
+       1703936.0,
+       1441792.0,
+       523520.0
+      ],
+      "bbox_mm": [
+       1.7039,
+       1.4418,
+       0.5235
+      ],
+      "chunk_sizes_voxels": [
+       128,
+       128,
+       32
+      ],
+      "encoding": "raw",
+      "n_chunks_derived": 958251008,
+      "raw_bytes_per_chunk_derived": 524288,
+      "n_chunks_or_index_derived": 958251008
+     },
+     {
+      "key": "16x16x40",
+      "resolution_nm": [
+       16.0,
+       16.0,
+       40.0
+      ],
+      "size_voxels": [
+       106496,
+       90112,
+       13088
+      ],
+      "voxel_offset": [
+       6912,
+       6912,
+       14816
+      ],
+      "bbox_nm": [
+       1703936.0,
+       1441792.0,
+       523520.0
+      ],
+      "bbox_mm": [
+       1.7039,
+       1.4418,
+       0.5235
+      ],
+      "chunk_sizes_voxels": [
+       128,
+       128,
+       32
+      ],
+      "encoding": "raw",
+      "n_chunks_derived": 239562752,
+      "raw_bytes_per_chunk_derived": 524288,
+      "n_chunks_or_index_derived": 239562752
+     },
+     {
+      "key": "32x32x40",
+      "resolution_nm": [
+       32.0,
+       32.0,
+       40.0
+      ],
+      "size_voxels": [
+       53248,
+       45056,
+       13088
+      ],
+      "voxel_offset": [
+       3456,
+       3456,
+       14816
+      ],
+      "bbox_nm": [
+       1703936.0,
+       1441792.0,
+       523520.0
+      ],
+      "bbox_mm": [
+       1.7039,
+       1.4418,
+       0.5235
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "raw",
+      "n_chunks_derived": 120074240,
+      "raw_bytes_per_chunk_derived": 262144,
+      "n_chunks_or_index_derived": 120074240
+     },
+     {
+      "key": "64x64x80",
+      "resolution_nm": [
+       64.0,
+       64.0,
+       80.0
+      ],
+      "size_voxels": [
+       26624,
+       22528,
+       6544
+      ],
+      "voxel_offset": [
+       1728,
+       1728,
+       7408
+      ],
+      "bbox_nm": [
+       1703936.0,
+       1441792.0,
+       523520.0
+      ],
+      "bbox_mm": [
+       1.7039,
+       1.4418,
+       0.5235
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "raw",
+      "n_chunks_derived": 15082496,
+      "raw_bytes_per_chunk_derived": 262144,
+      "n_chunks_or_index_derived": 15082496
+     },
+     {
+      "key": "128x128x160",
+      "resolution_nm": [
+       128.0,
+       128.0,
+       160.0
+      ],
+      "size_voxels": [
+       13312,
+       11264,
+       3272
+      ],
+      "voxel_offset": [
+       864,
+       864,
+       3704
+      ],
+      "bbox_nm": [
+       1703936.0,
+       1441792.0,
+       523520.0
+      ],
+      "bbox_mm": [
+       1.7039,
+       1.4418,
+       0.5235
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "raw",
+      "n_chunks_derived": 1903616,
+      "raw_bytes_per_chunk_derived": 262144,
+      "n_chunks_or_index_derived": 1903616
+     },
+     {
+      "key": "256x256x320",
+      "resolution_nm": [
+       256.0,
+       256.0,
+       320.0
+      ],
+      "size_voxels": [
+       6656,
+       5632,
+       1636
+      ],
+      "voxel_offset": [
+       432,
+       432,
+       1852
+      ],
+      "bbox_nm": [
+       1703936.0,
+       1441792.0,
+       523520.0
+      ],
+      "bbox_mm": [
+       1.7039,
+       1.4418,
+       0.5235
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "raw",
+      "n_chunks_derived": 237952,
+      "raw_bytes_per_chunk_derived": 262144,
+      "n_chunks_or_index_derived": 237952
+     },
+     {
+      "key": "512x512x640",
+      "resolution_nm": [
+       512.0,
+       512.0,
+       640.0
+      ],
+      "size_voxels": [
+       3328,
+       2816,
+       818
+      ],
+      "voxel_offset": [
+       216,
+       216,
+       926
+      ],
+      "bbox_nm": [
+       1703936.0,
+       1441792.0,
+       523520.0
+      ],
+      "bbox_mm": [
+       1.7039,
+       1.4418,
+       0.5235
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "raw",
+      "n_chunks_derived": 29744,
+      "raw_bytes_per_chunk_derived": 262144,
+      "n_chunks_or_index_derived": 29744
+     },
+     {
+      "key": "1024x1024x1280",
+      "resolution_nm": [
+       1024.0,
+       1024.0,
+       1280.0
+      ],
+      "size_voxels": [
+       1664,
+       1408,
+       409
+      ],
+      "voxel_offset": [
+       108,
+       108,
+       463
+      ],
+      "bbox_nm": [
+       1703936.0,
+       1441792.0,
+       523520.0
+      ],
+      "bbox_mm": [
+       1.7039,
+       1.4418,
+       0.5235
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "raw",
+      "n_chunks_derived": 4004,
+      "raw_bytes_per_chunk_derived": 262144,
+      "n_chunks_or_index_derived": 4004
+     },
+     {
+      "key": "2048x2048x2560",
+      "resolution_nm": [
+       2048.0,
+       2048.0,
+       2560.0
+      ],
+      "size_voxels": [
+       832,
+       704,
+       205
+      ],
+      "voxel_offset": [
+       54,
+       54,
+       231
+      ],
+      "bbox_nm": [
+       1703936.0,
+       1441792.0,
+       524800.0
+      ],
+      "bbox_mm": [
+       1.7039,
+       1.4418,
+       0.5248
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "raw",
+      "n_chunks_derived": 572,
+      "raw_bytes_per_chunk_derived": 262144,
+      "n_chunks_or_index_derived": 572
+     },
+     {
+      "key": "4096x4096x5120",
+      "resolution_nm": [
+       4096.0,
+       4096.0,
+       5120.0
+      ],
+      "size_voxels": [
+       416,
+       352,
+       103
+      ],
+      "voxel_offset": [
+       27,
+       27,
+       115
+      ],
+      "bbox_nm": [
+       1703936.0,
+       1441792.0,
+       527360.0
+      ],
+      "bbox_mm": [
+       1.7039,
+       1.4418,
+       0.5274
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "raw",
+      "n_chunks_derived": 84,
+      "raw_bytes_per_chunk_derived": 262144,
+      "n_chunks_or_index_derived": 84
+     },
+     {
+      "key": "8192x8192x10240",
+      "resolution_nm": [
+       8192.0,
+       8192.0,
+       10240.0
+      ],
+      "size_voxels": [
+       208,
+       176,
+       52
+      ],
+      "voxel_offset": [
+       13,
+       13,
+       57
+      ],
+      "bbox_nm": [
+       1703936.0,
+       1441792.0,
+       532480.0
+      ],
+      "bbox_mm": [
+       1.7039,
+       1.4418,
+       0.5325
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "raw",
+      "n_chunks_derived": 12,
+      "raw_bytes_per_chunk_derived": 262144,
+      "n_chunks_or_index_derived": 12
+     }
+    ]
+   },
+   "s3": {
+    "type": "image",
+    "data_type": "uint8",
+    "num_channels": 1,
+    "scales": [
+     {
+      "key": "8_8_40",
+      "resolution_nm": [
+       8.0,
+       8.0,
+       40.0
+      ],
+      "size_voxels": [
+       212992,
+       180224,
+       13088
+      ],
+      "voxel_offset": [
+       13824,
+       13824,
+       14816
+      ],
+      "bbox_nm": [
+       1703936.0,
+       1441792.0,
+       523520.0
+      ],
+      "bbox_mm": [
+       1.7039,
+       1.4418,
+       0.5235
+      ],
+      "chunk_sizes_voxels": [
+       128,
+       128,
+       16
+      ],
+      "encoding": "raw",
+      "n_chunks_derived": 1916502016,
+      "raw_bytes_per_chunk_derived": 262144,
+      "n_chunks_or_index_derived": 1916502016
+     },
+     {
+      "key": "16_16_40",
+      "resolution_nm": [
+       16.0,
+       16.0,
+       40.0
+      ],
+      "size_voxels": [
+       106496,
+       90112,
+       13088
+      ],
+      "voxel_offset": [
+       6912,
+       6912,
+       14816
+      ],
+      "bbox_nm": [
+       1703936.0,
+       1441792.0,
+       523520.0
+      ],
+      "bbox_mm": [
+       1.7039,
+       1.4418,
+       0.5235
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "jpeg",
+      "n_chunks_derived": 480296960,
+      "raw_bytes_per_chunk_derived": 262144,
+      "n_chunks_or_index_derived": 480296960
+     },
+     {
+      "key": "32_32_40",
+      "resolution_nm": [
+       32.0,
+       32.0,
+       40.0
+      ],
+      "size_voxels": [
+       53248,
+       45056,
+       13088
+      ],
+      "voxel_offset": [
+       3456,
+       3456,
+       14816
+      ],
+      "bbox_nm": [
+       1703936.0,
+       1441792.0,
+       523520.0
+      ],
+      "bbox_mm": [
+       1.7039,
+       1.4418,
+       0.5235
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "jpeg",
+      "n_chunks_derived": 120074240,
+      "raw_bytes_per_chunk_derived": 262144,
+      "n_chunks_or_index_derived": 120074240
+     },
+     {
+      "key": "64_64_40",
+      "resolution_nm": [
+       64.0,
+       64.0,
+       40.0
+      ],
+      "size_voxels": [
+       26624,
+       22528,
+       13088
+      ],
+      "voxel_offset": [
+       1728,
+       1728,
+       14816
+      ],
+      "bbox_nm": [
+       1703936.0,
+       1441792.0,
+       523520.0
+      ],
+      "bbox_mm": [
+       1.7039,
+       1.4418,
+       0.5235
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "jpeg",
+      "n_chunks_derived": 30018560,
+      "raw_bytes_per_chunk_derived": 262144,
+      "n_chunks_or_index_derived": 30018560
+     },
+     {
+      "key": "128_128_80",
+      "resolution_nm": [
+       128.0,
+       128.0,
+       80.0
+      ],
+      "size_voxels": [
+       13312,
+       11264,
+       6544
+      ],
+      "voxel_offset": [
+       864,
+       864,
+       7408
+      ],
+      "bbox_nm": [
+       1703936.0,
+       1441792.0,
+       523520.0
+      ],
+      "bbox_mm": [
+       1.7039,
+       1.4418,
+       0.5235
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "jpeg",
+      "n_chunks_derived": 3770624,
+      "raw_bytes_per_chunk_derived": 262144,
+      "n_chunks_or_index_derived": 3770624
+     },
+     {
+      "key": "256_256_160",
+      "resolution_nm": [
+       256.0,
+       256.0,
+       160.0
+      ],
+      "size_voxels": [
+       6656,
+       5632,
+       3272
+      ],
+      "voxel_offset": [
+       432,
+       432,
+       3704
+      ],
+      "bbox_nm": [
+       1703936.0,
+       1441792.0,
+       523520.0
+      ],
+      "bbox_mm": [
+       1.7039,
+       1.4418,
+       0.5235
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "jpeg",
+      "n_chunks_derived": 475904,
+      "raw_bytes_per_chunk_derived": 262144,
+      "n_chunks_or_index_derived": 475904
+     },
+     {
+      "key": "512_512_320",
+      "resolution_nm": [
+       512.0,
+       512.0,
+       320.0
+      ],
+      "size_voxels": [
+       3328,
+       2816,
+       1636
+      ],
+      "voxel_offset": [
+       216,
+       216,
+       1852
+      ],
+      "bbox_nm": [
+       1703936.0,
+       1441792.0,
+       523520.0
+      ],
+      "bbox_mm": [
+       1.7039,
+       1.4418,
+       0.5235
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "jpeg",
+      "n_chunks_derived": 59488,
+      "raw_bytes_per_chunk_derived": 262144,
+      "n_chunks_or_index_derived": 59488
+     },
+     {
+      "key": "1024_1024_640",
+      "resolution_nm": [
+       1024.0,
+       1024.0,
+       640.0
+      ],
+      "size_voxels": [
+       1664,
+       1408,
+       818
+      ],
+      "voxel_offset": [
+       108,
+       108,
+       926
+      ],
+      "bbox_nm": [
+       1703936.0,
+       1441792.0,
+       523520.0
+      ],
+      "bbox_mm": [
+       1.7039,
+       1.4418,
+       0.5235
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "jpeg",
+      "n_chunks_derived": 7436,
+      "raw_bytes_per_chunk_derived": 262144,
+      "n_chunks_or_index_derived": 7436
+     },
+     {
+      "key": "2048_2048_1280",
+      "resolution_nm": [
+       2048.0,
+       2048.0,
+       1280.0
+      ],
+      "size_voxels": [
+       832,
+       704,
+       409
+      ],
+      "voxel_offset": [
+       54,
+       54,
+       463
+      ],
+      "bbox_nm": [
+       1703936.0,
+       1441792.0,
+       523520.0
+      ],
+      "bbox_mm": [
+       1.7039,
+       1.4418,
+       0.5235
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "jpeg",
+      "n_chunks_derived": 1001,
+      "raw_bytes_per_chunk_derived": 262144,
+      "n_chunks_or_index_derived": 1001
+     }
+    ]
+   }
+  },
+  "seg": {
+   "gcs": {
+    "type": "segmentation",
+    "data_type": "uint64",
+    "num_channels": 1,
+    "scales": [
+     {
+      "key": "8x8x40",
+      "resolution_nm": [
+       8.0,
+       8.0,
+       40.0
+      ],
+      "size_voxels": [
+       192424,
+       131051,
+       13008
+      ],
+      "voxel_offset": [
+       26385,
+       30308,
+       14850
+      ],
+      "bbox_nm": [
+       1539392.0,
+       1048408.0,
+       520320.0
+      ],
+      "bbox_mm": [
+       1.5394,
+       1.0484,
+       0.5203
+      ],
+      "chunk_sizes_voxels": [
+       128,
+       128,
+       32
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 626819072,
+      "raw_bytes_per_chunk_derived": 4194304,
+      "n_chunks_or_index_derived": 626819072
+     },
+     {
+      "key": "16x16x40",
+      "resolution_nm": [
+       16.0,
+       16.0,
+       40.0
+      ],
+      "size_voxels": [
+       96212,
+       65526,
+       13008
+      ],
+      "voxel_offset": [
+       13192,
+       15154,
+       14850
+      ],
+      "bbox_nm": [
+       1539392.0,
+       1048416.0,
+       520320.0
+      ],
+      "bbox_mm": [
+       1.5394,
+       1.0484,
+       0.5203
+      ],
+      "chunk_sizes_voxels": [
+       128,
+       128,
+       32
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 156704768,
+      "raw_bytes_per_chunk_derived": 4194304,
+      "n_chunks_or_index_derived": 156704768
+     },
+     {
+      "key": "32x32x40",
+      "resolution_nm": [
+       32.0,
+       32.0,
+       40.0
+      ],
+      "size_voxels": [
+       48106,
+       32763,
+       13008
+      ],
+      "voxel_offset": [
+       6596,
+       7577,
+       14850
+      ],
+      "bbox_nm": [
+       1539392.0,
+       1048416.0,
+       520320.0
+      ],
+      "bbox_mm": [
+       1.5394,
+       1.0484,
+       0.5203
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 78544896,
+      "raw_bytes_per_chunk_derived": 2097152,
+      "n_chunks_or_index_derived": 78544896
+     },
+     {
+      "key": "64x64x80",
+      "resolution_nm": [
+       64.0,
+       64.0,
+       80.0
+      ],
+      "size_voxels": [
+       24053,
+       16382,
+       6504
+      ],
+      "voxel_offset": [
+       3298,
+       3788,
+       7425
+      ],
+      "bbox_nm": [
+       1539392.0,
+       1048448.0,
+       520320.0
+      ],
+      "bbox_mm": [
+       1.5394,
+       1.0484,
+       0.5203
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 9818112,
+      "raw_bytes_per_chunk_derived": 2097152,
+      "n_chunks_or_index_derived": 9818112
+     },
+     {
+      "key": "128x128x160",
+      "resolution_nm": [
+       128.0,
+       128.0,
+       160.0
+      ],
+      "size_voxels": [
+       12027,
+       8191,
+       3252
+      ],
+      "voxel_offset": [
+       1649,
+       1894,
+       3712
+      ],
+      "bbox_nm": [
+       1539456.0,
+       1048448.0,
+       520320.0
+      ],
+      "bbox_mm": [
+       1.5395,
+       1.0484,
+       0.5203
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 1227264,
+      "raw_bytes_per_chunk_derived": 2097152,
+      "n_chunks_or_index_derived": 1227264
+     },
+     {
+      "key": "256x256x320",
+      "resolution_nm": [
+       256.0,
+       256.0,
+       320.0
+      ],
+      "size_voxels": [
+       6014,
+       4096,
+       1626
+      ],
+      "voxel_offset": [
+       824,
+       947,
+       1856
+      ],
+      "bbox_nm": [
+       1539584.0,
+       1048576.0,
+       520320.0
+      ],
+      "bbox_mm": [
+       1.5396,
+       1.0486,
+       0.5203
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 156416,
+      "raw_bytes_per_chunk_derived": 2097152,
+      "n_chunks_or_index_derived": 156416
+     },
+     {
+      "key": "512x512x640",
+      "resolution_nm": [
+       512.0,
+       512.0,
+       640.0
+      ],
+      "size_voxels": [
+       3007,
+       2048,
+       813
+      ],
+      "voxel_offset": [
+       412,
+       473,
+       928
+      ],
+      "bbox_nm": [
+       1539584.0,
+       1048576.0,
+       520320.0
+      ],
+      "bbox_mm": [
+       1.5396,
+       1.0486,
+       0.5203
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 19552,
+      "raw_bytes_per_chunk_derived": 2097152,
+      "n_chunks_or_index_derived": 19552
+     },
+     {
+      "key": "1024x1024x1280",
+      "resolution_nm": [
+       1024.0,
+       1024.0,
+       1280.0
+      ],
+      "size_voxels": [
+       1504,
+       1024,
+       407
+      ],
+      "voxel_offset": [
+       206,
+       236,
+       464
+      ],
+      "bbox_nm": [
+       1540096.0,
+       1048576.0,
+       520960.0
+      ],
+      "bbox_mm": [
+       1.5401,
+       1.0486,
+       0.521
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 2688,
+      "raw_bytes_per_chunk_derived": 2097152,
+      "n_chunks_or_index_derived": 2688
+     },
+     {
+      "key": "2048x2048x2560",
+      "resolution_nm": [
+       2048.0,
+       2048.0,
+       2560.0
+      ],
+      "size_voxels": [
+       752,
+       512,
+       204
+      ],
+      "voxel_offset": [
+       103,
+       118,
+       232
+      ],
+      "bbox_nm": [
+       1540096.0,
+       1048576.0,
+       522240.0
+      ],
+      "bbox_mm": [
+       1.5401,
+       1.0486,
+       0.5222
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 384,
+      "raw_bytes_per_chunk_derived": 2097152,
+      "n_chunks_or_index_derived": 384
+     },
+     {
+      "key": "4096x4096x5120",
+      "resolution_nm": [
+       4096.0,
+       4096.0,
+       5120.0
+      ],
+      "size_voxels": [
+       376,
+       256,
+       102
+      ],
+      "voxel_offset": [
+       51,
+       59,
+       116
+      ],
+      "bbox_nm": [
+       1540096.0,
+       1048576.0,
+       522240.0
+      ],
+      "bbox_mm": [
+       1.5401,
+       1.0486,
+       0.5222
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 48,
+      "raw_bytes_per_chunk_derived": 2097152,
+      "n_chunks_or_index_derived": 48
+     },
+     {
+      "key": "8192x8192x10240",
+      "resolution_nm": [
+       8192.0,
+       8192.0,
+       10240.0
+      ],
+      "size_voxels": [
+       188,
+       128,
+       51
+      ],
+      "voxel_offset": [
+       25,
+       29,
+       58
+      ],
+      "bbox_nm": [
+       1540096.0,
+       1048576.0,
+       522240.0
+      ],
+      "bbox_mm": [
+       1.5401,
+       1.0486,
+       0.5222
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 6,
+      "raw_bytes_per_chunk_derived": 2097152,
+      "n_chunks_or_index_derived": 6
+     }
+    ]
+   },
+   "s3": {
+    "type": "segmentation",
+    "data_type": "uint64",
+    "num_channels": 1,
+    "scales": [
+     {
+      "key": "8x8x40",
+      "resolution_nm": [
+       8.0,
+       8.0,
+       40.0
+      ],
+      "size_voxels": [
+       192424,
+       131051,
+       13008
+      ],
+      "voxel_offset": [
+       26385,
+       30308,
+       14850
+      ],
+      "bbox_nm": [
+       1539392.0,
+       1048408.0,
+       520320.0
+      ],
+      "bbox_mm": [
+       1.5394,
+       1.0484,
+       0.5203
+      ],
+      "chunk_sizes_voxels": [
+       128,
+       128,
+       32
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 626819072,
+      "raw_bytes_per_chunk_derived": 4194304,
+      "n_chunks_or_index_derived": 626819072
+     },
+     {
+      "key": "16x16x40",
+      "resolution_nm": [
+       16.0,
+       16.0,
+       40.0
+      ],
+      "size_voxels": [
+       96212,
+       65526,
+       13008
+      ],
+      "voxel_offset": [
+       13192,
+       15154,
+       14850
+      ],
+      "bbox_nm": [
+       1539392.0,
+       1048416.0,
+       520320.0
+      ],
+      "bbox_mm": [
+       1.5394,
+       1.0484,
+       0.5203
+      ],
+      "chunk_sizes_voxels": [
+       128,
+       128,
+       32
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 156704768,
+      "raw_bytes_per_chunk_derived": 4194304,
+      "n_chunks_or_index_derived": 156704768
+     },
+     {
+      "key": "32x32x40",
+      "resolution_nm": [
+       32.0,
+       32.0,
+       40.0
+      ],
+      "size_voxels": [
+       48106,
+       32763,
+       13008
+      ],
+      "voxel_offset": [
+       6596,
+       7577,
+       14850
+      ],
+      "bbox_nm": [
+       1539392.0,
+       1048416.0,
+       520320.0
+      ],
+      "bbox_mm": [
+       1.5394,
+       1.0484,
+       0.5203
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 78544896,
+      "raw_bytes_per_chunk_derived": 2097152,
+      "n_chunks_or_index_derived": 78544896
+     },
+     {
+      "key": "64x64x80",
+      "resolution_nm": [
+       64.0,
+       64.0,
+       80.0
+      ],
+      "size_voxels": [
+       24053,
+       16382,
+       6504
+      ],
+      "voxel_offset": [
+       3298,
+       3788,
+       7425
+      ],
+      "bbox_nm": [
+       1539392.0,
+       1048448.0,
+       520320.0
+      ],
+      "bbox_mm": [
+       1.5394,
+       1.0484,
+       0.5203
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 9818112,
+      "raw_bytes_per_chunk_derived": 2097152,
+      "n_chunks_or_index_derived": 9818112
+     },
+     {
+      "key": "128x128x160",
+      "resolution_nm": [
+       128.0,
+       128.0,
+       160.0
+      ],
+      "size_voxels": [
+       12027,
+       8191,
+       3252
+      ],
+      "voxel_offset": [
+       1649,
+       1894,
+       3712
+      ],
+      "bbox_nm": [
+       1539456.0,
+       1048448.0,
+       520320.0
+      ],
+      "bbox_mm": [
+       1.5395,
+       1.0484,
+       0.5203
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 1227264,
+      "raw_bytes_per_chunk_derived": 2097152,
+      "n_chunks_or_index_derived": 1227264
+     },
+     {
+      "key": "256x256x320",
+      "resolution_nm": [
+       256.0,
+       256.0,
+       320.0
+      ],
+      "size_voxels": [
+       6014,
+       4096,
+       1626
+      ],
+      "voxel_offset": [
+       824,
+       947,
+       1856
+      ],
+      "bbox_nm": [
+       1539584.0,
+       1048576.0,
+       520320.0
+      ],
+      "bbox_mm": [
+       1.5396,
+       1.0486,
+       0.5203
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 156416,
+      "raw_bytes_per_chunk_derived": 2097152,
+      "n_chunks_or_index_derived": 156416
+     },
+     {
+      "key": "512x512x640",
+      "resolution_nm": [
+       512.0,
+       512.0,
+       640.0
+      ],
+      "size_voxels": [
+       3007,
+       2048,
+       813
+      ],
+      "voxel_offset": [
+       412,
+       473,
+       928
+      ],
+      "bbox_nm": [
+       1539584.0,
+       1048576.0,
+       520320.0
+      ],
+      "bbox_mm": [
+       1.5396,
+       1.0486,
+       0.5203
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 19552,
+      "raw_bytes_per_chunk_derived": 2097152,
+      "n_chunks_or_index_derived": 19552
+     },
+     {
+      "key": "1024x1024x1280",
+      "resolution_nm": [
+       1024.0,
+       1024.0,
+       1280.0
+      ],
+      "size_voxels": [
+       1504,
+       1024,
+       407
+      ],
+      "voxel_offset": [
+       206,
+       236,
+       464
+      ],
+      "bbox_nm": [
+       1540096.0,
+       1048576.0,
+       520960.0
+      ],
+      "bbox_mm": [
+       1.5401,
+       1.0486,
+       0.521
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 2688,
+      "raw_bytes_per_chunk_derived": 2097152,
+      "n_chunks_or_index_derived": 2688
+     },
+     {
+      "key": "2048x2048x2560",
+      "resolution_nm": [
+       2048.0,
+       2048.0,
+       2560.0
+      ],
+      "size_voxels": [
+       752,
+       512,
+       204
+      ],
+      "voxel_offset": [
+       103,
+       118,
+       232
+      ],
+      "bbox_nm": [
+       1540096.0,
+       1048576.0,
+       522240.0
+      ],
+      "bbox_mm": [
+       1.5401,
+       1.0486,
+       0.5222
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 384,
+      "raw_bytes_per_chunk_derived": 2097152,
+      "n_chunks_or_index_derived": 384
+     },
+     {
+      "key": "4096x4096x5120",
+      "resolution_nm": [
+       4096.0,
+       4096.0,
+       5120.0
+      ],
+      "size_voxels": [
+       376,
+       256,
+       102
+      ],
+      "voxel_offset": [
+       51,
+       59,
+       116
+      ],
+      "bbox_nm": [
+       1540096.0,
+       1048576.0,
+       522240.0
+      ],
+      "bbox_mm": [
+       1.5401,
+       1.0486,
+       0.5222
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 48,
+      "raw_bytes_per_chunk_derived": 2097152,
+      "n_chunks_or_index_derived": 48
+     },
+     {
+      "key": "8192x8192x10240",
+      "resolution_nm": [
+       8192.0,
+       8192.0,
+       10240.0
+      ],
+      "size_voxels": [
+       188,
+       128,
+       51
+      ],
+      "voxel_offset": [
+       25,
+       29,
+       58
+      ],
+      "bbox_nm": [
+       1540096.0,
+       1048576.0,
+       522240.0
+      ],
+      "bbox_mm": [
+       1.5401,
+       1.0486,
+       0.5222
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 6,
+      "raw_bytes_per_chunk_derived": 2097152,
+      "n_chunks_or_index_derived": 6
+     }
+    ]
+   }
+  },
+  "seg_m1300": {
+   "gcs": {
+    "type": "segmentation",
+    "data_type": "uint64",
+    "num_channels": 1,
+    "scales": [
+     {
+      "key": "8.0x8.0x40.0",
+      "resolution_nm": [
+       8.0,
+       8.0,
+       40.0
+      ],
+      "size_voxels": [
+       218809,
+       161359,
+       27858
+      ],
+      "voxel_offset": null,
+      "bbox_nm": [
+       1750472.0,
+       1290872.0,
+       1114320.0
+      ],
+      "bbox_mm": [
+       1.7505,
+       1.2909,
+       1.1143
+      ],
+      "chunk_sizes_voxels": [
+       128,
+       128,
+       32
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 1878146010,
+      "raw_bytes_per_chunk_derived": 4194304,
+      "n_chunks_or_index_derived": 1878146010
+     },
+     {
+      "key": "16.0x16.0x40.0",
+      "resolution_nm": [
+       16.0,
+       16.0,
+       40.0
+      ],
+      "size_voxels": [
+       109405,
+       80680,
+       27858
+      ],
+      "voxel_offset": null,
+      "bbox_nm": [
+       1750480.0,
+       1290880.0,
+       1114320.0
+      ],
+      "bbox_mm": [
+       1.7505,
+       1.2909,
+       1.1143
+      ],
+      "chunk_sizes_voxels": [
+       128,
+       128,
+       32
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 469908855,
+      "raw_bytes_per_chunk_derived": 4194304,
+      "n_chunks_or_index_derived": 469908855
+     },
+     {
+      "key": "32.0x32.0x40.0",
+      "resolution_nm": [
+       32.0,
+       32.0,
+       40.0
+      ],
+      "size_voxels": [
+       54703,
+       40340,
+       27858
+      ],
+      "voxel_offset": null,
+      "bbox_nm": [
+       1750496.0,
+       1290880.0,
+       1114320.0
+      ],
+      "bbox_mm": [
+       1.7505,
+       1.2909,
+       1.1143
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 235224180,
+      "raw_bytes_per_chunk_derived": 2097152,
+      "n_chunks_or_index_derived": 235224180
+     },
+     {
+      "key": "64.0x64.0x80.0",
+      "resolution_nm": [
+       64.0,
+       64.0,
+       80.0
+      ],
+      "size_voxels": [
+       27352,
+       20170,
+       13929
+      ],
+      "voxel_offset": null,
+      "bbox_nm": [
+       1750528.0,
+       1290880.0,
+       1114320.0
+      ],
+      "bbox_mm": [
+       1.7505,
+       1.2909,
+       1.1143
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 29484064,
+      "raw_bytes_per_chunk_derived": 2097152,
+      "n_chunks_or_index_derived": 29484064
+     },
+     {
+      "key": "128.0x128.0x160.0",
+      "resolution_nm": [
+       128.0,
+       128.0,
+       160.0
+      ],
+      "size_voxels": [
+       13676,
+       10085,
+       6965
+      ],
+      "voxel_offset": null,
+      "bbox_nm": [
+       1750528.0,
+       1290880.0,
+       1114400.0
+      ],
+      "bbox_mm": [
+       1.7505,
+       1.2909,
+       1.1144
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 3685508,
+      "raw_bytes_per_chunk_derived": 2097152,
+      "n_chunks_or_index_derived": 3685508
+     },
+     {
+      "key": "256.0x256.0x320.0",
+      "resolution_nm": [
+       256.0,
+       256.0,
+       320.0
+      ],
+      "size_voxels": [
+       6838,
+       5043,
+       3483
+      ],
+      "voxel_offset": null,
+      "bbox_nm": [
+       1750528.0,
+       1291008.0,
+       1114560.0
+      ],
+      "bbox_mm": [
+       1.7505,
+       1.291,
+       1.1146
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 464915,
+      "raw_bytes_per_chunk_derived": 2097152,
+      "n_chunks_or_index_derived": 464915
+     },
+     {
+      "key": "512.0x512.0x640.0",
+      "resolution_nm": [
+       512.0,
+       512.0,
+       640.0
+      ],
+      "size_voxels": [
+       3419,
+       2522,
+       1742
+      ],
+      "voxel_offset": null,
+      "bbox_nm": [
+       1750528.0,
+       1291264.0,
+       1114880.0
+      ],
+      "bbox_mm": [
+       1.7505,
+       1.2913,
+       1.1149
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 60480,
+      "raw_bytes_per_chunk_derived": 2097152,
+      "n_chunks_or_index_derived": 60480
+     },
+     {
+      "key": "1024.0x1024.0x1280.0",
+      "resolution_nm": [
+       1024.0,
+       1024.0,
+       1280.0
+      ],
+      "size_voxels": [
+       1710,
+       1261,
+       871
+      ],
+      "voxel_offset": null,
+      "bbox_nm": [
+       1751040.0,
+       1291264.0,
+       1114880.0
+      ],
+      "bbox_mm": [
+       1.751,
+       1.2913,
+       1.1149
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 7560,
+      "raw_bytes_per_chunk_derived": 2097152,
+      "n_chunks_or_index_derived": 7560
+     },
+     {
+      "key": "2048.0x2048.0x2560.0",
+      "resolution_nm": [
+       2048.0,
+       2048.0,
+       2560.0
+      ],
+      "size_voxels": [
+       855,
+       631,
+       436
+      ],
+      "voxel_offset": null,
+      "bbox_nm": [
+       1751040.0,
+       1292288.0,
+       1116160.0
+      ],
+      "bbox_mm": [
+       1.751,
+       1.2923,
+       1.1162
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 980,
+      "raw_bytes_per_chunk_derived": 2097152,
+      "n_chunks_or_index_derived": 980
+     },
+     {
+      "key": "4096.0x4096.0x5120.0",
+      "resolution_nm": [
+       4096.0,
+       4096.0,
+       5120.0
+      ],
+      "size_voxels": [
+       428,
+       316,
+       218
+      ],
+      "voxel_offset": null,
+      "bbox_nm": [
+       1753088.0,
+       1294336.0,
+       1116160.0
+      ],
+      "bbox_mm": [
+       1.7531,
+       1.2943,
+       1.1162
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 140,
+      "raw_bytes_per_chunk_derived": 2097152,
+      "n_chunks_or_index_derived": 140
+     },
+     {
+      "key": "8192.0x8192.0x10240.0",
+      "resolution_nm": [
+       8192.0,
+       8192.0,
+       10240.0
+      ],
+      "size_voxels": [
+       214,
+       158,
+       109
+      ],
+      "voxel_offset": null,
+      "bbox_nm": [
+       1753088.0,
+       1294336.0,
+       1116160.0
+      ],
+      "bbox_mm": [
+       1.7531,
+       1.2943,
+       1.1162
+      ],
+      "chunk_sizes_voxels": [
+       64,
+       64,
+       64
+      ],
+      "encoding": "compressed_segmentation",
+      "n_chunks_derived": 24,
+      "raw_bytes_per_chunk_derived": 2097152,
+      "n_chunks_or_index_derived": 24
+     }
+    ]
+   },
+   "s3": {}
+  }
+ },
+ "sources": {
+  "em_info_gcs": {
+   "http_code": 200,
+   "nbytes": 4117,
+   "content_type": "application/octet-stream",
+   "curl_exit": 0,
+   "time_total_s": 1.283,
+   "retrieved_at": "2026-10-11T09:11:09Z",
+   "url": "https://storage.googleapis.com/iarpa_microns/minnie/minnie65/em/info",
+   "sha256": "fbb1669c8788d31c491a16c8ac39f6d78492e645e1afe29ba800959ba5ead60d",
+   "verdict": "REACHABLE",
+   "host": "gcs",
+   "volume": "em"
+  },
+  "em_info_s3": {
+   "http_code": 200,
+   "nbytes": 5970,
+   "content_type": "application/octet-stream",
+   "curl_exit": 0,
+   "time_total_s": 1.783,
+   "retrieved_at": "2026-10-11T09:11:11Z",
+   "url": "https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/minnie65/em/info",
+   "sha256": "95413c657ff900c114757b149b327fb410d465197093d8bcfb0fc97a8133e140",
+   "verdict": "REACHABLE",
+   "host": "s3",
+   "volume": "em"
+  },
+  "seg_info_gcs": {
+   "http_code": 200,
+   "nbytes": 7448,
+   "content_type": "application/octet-stream",
+   "curl_exit": 0,
+   "time_total_s": 0.446,
+   "retrieved_at": "2026-10-11T09:11:11Z",
+   "url": "https://storage.googleapis.com/iarpa_microns/minnie/minnie65/seg/info",
+   "sha256": "fb4f1c9aa75121200e2e2df7fad2cc7e0850a0d6fec97c851bf7280fe0facc33",
+   "verdict": "REACHABLE",
+   "host": "gcs",
+   "volume": "seg"
+  },
+  "seg_info_s3": {
+   "http_code": 200,
+   "nbytes": 7448,
+   "content_type": "application/octet-stream",
+   "curl_exit": 0,
+   "time_total_s": 0.838,
+   "retrieved_at": "2026-10-11T09:11:12Z",
+   "url": "https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/minnie65/seg/info",
+   "sha256": "fb4f1c9aa75121200e2e2df7fad2cc7e0850a0d6fec97c851bf7280fe0facc33",
+   "verdict": "REACHABLE",
+   "host": "s3",
+   "volume": "seg"
+  },
+  "seg_m1300_info_gcs": {
+   "http_code": 200,
+   "nbytes": 7628,
+   "content_type": "application/json",
+   "curl_exit": 0,
+   "time_total_s": 1.0,
+   "retrieved_at": "2026-10-11T09:11:13Z",
+   "url": "https://storage.googleapis.com/iarpa_microns/minnie/minnie65/seg_m1300/info",
+   "sha256": "11a8b787e54012bac2dfbb77ffcebecb217764a234506a07500e472382caca7b",
+   "verdict": "REACHABLE",
+   "host": "gcs",
+   "volume": "seg_m1300"
+  },
+  "seg_m1300_info_s3": {
+   "http_code": 404,
+   "nbytes": 315,
+   "content_type": "application/xml",
+   "curl_exit": 0,
+   "time_total_s": 0.779,
+   "retrieved_at": "2026-10-11T09:11:14Z",
+   "url": "https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/minnie65/seg_m1300/info",
+   "verdict": "REACHABLE_NO_DATA",
+   "note": "\u975e JSON\uff08Expecting value: line 1 column 1 (char 0)\uff09",
+   "host": "s3",
+   "volume": "seg_m1300"
+  }
+ },
+ "shard_inventory_measured_bounded": {
+  "em": {
+   "n_objects": 3000,
+   "n_bytes": 20056798614991,
+   "keys_sample": [
+    "minnie/minnie65/em/8x8x40/0086.shard",
+    "minnie/minnie65/em/8x8x40/0087.shard",
+    "minnie/minnie65/em/8x8x40/008e.shard",
+    "minnie/minnie65/em/8x8x40/008f.shard",
+    "minnie/minnie65/em/8x8x40/0094.shard"
+   ],
+   "prefixes_sample": [],
+   "prefixes_all": [],
+   "n_prefixes": 0,
+   "pages": 3,
+   "truncated": true,
+   "size_min": 4044,
+   "size_max": 11374538382,
+   "size_mean": 6685599538,
+   "scale": "8x8x40",
+   "prefix": "minnie/minnie65/em/8x8x40/",
+   "host": "gcs",
+   "page_cap": 3,
+   "note": "\u6709\u754c\u5b9e\u6d4b\uff1a\u4ec5\u5217\u4e3e\u524d 3 \u9875\uff08\u6bcf\u9875 1000 \u952e\uff09\uff1btruncated=true \u8868\u793a**\u603b\u91cf\u672a\u6d4b**\uff0c\u4e0d\u5f97\u5199\u6210\u603b\u6570"
+  },
+  "seg": {
+   "n_objects": 3000,
+   "n_bytes": 1153504931766,
+   "keys_sample": [
+    "minnie/minnie65/seg/8x8x40/0013.shard",
+    "minnie/minnie65/seg/8x8x40/001a.shard",
+    "minnie/minnie65/seg/8x8x40/001b.shard",
+    "minnie/minnie65/seg/8x8x40/0024.shard",
+    "minnie/minnie65/seg/8x8x40/0025.shard"
+   ],
+   "prefixes_sample": [],
+   "prefixes_all": [],
+   "n_prefixes": 0,
+   "pages": 3,
+   "truncated": true,
+   "size_min": 1789,
+   "size_max": 634708923,
+   "size_mean": 384501643,
+   "scale": "8x8x40",
+   "prefix": "minnie/minnie65/seg/8x8x40/",
+   "host": "gcs",
+   "page_cap": 3,
+   "note": "\u6709\u754c\u5b9e\u6d4b\uff1a\u4ec5\u5217\u4e3e\u524d 3 \u9875\uff08\u6bcf\u9875 1000 \u952e\uff09\uff1btruncated=true \u8868\u793a**\u603b\u91cf\u672a\u6d4b**\uff0c\u4e0d\u5f97\u5199\u6210\u603b\u6570"
+  },
+  "seg_m1300": {
+   "n_objects": 3000,
+   "n_bytes": 1043457169905,
+   "keys_sample": [
+    "minnie/minnie65/seg_m1300/8.0x8.0x40.0/00deb.shard",
+    "minnie/minnie65/seg_m1300/8.0x8.0x40.0/00df8.shard",
+    "minnie/minnie65/seg_m1300/8.0x8.0x40.0/00df9.shard",
+    "minnie/minnie65/seg_m1300/8.0x8.0x40.0/00dfa.shard",
+    "minnie/minnie65/seg_m1300/8.0x8.0x40.0/00dfb.shard"
+   ],
+   "prefixes_sample": [],
+   "prefixes_all": [],
+   "n_prefixes": 0,
+   "pages": 3,
+   "truncated": true,
+   "size_min": 1993,
+   "size_max": 622582249,
+   "size_mean": 347819056,
+   "scale": "8.0x8.0x40.0",
+   "prefix": "minnie/minnie65/seg_m1300/8.0x8.0x40.0/",
+   "host": "gcs",
+   "page_cap": 3,
+   "note": "\u6709\u754c\u5b9e\u6d4b\uff1a\u4ec5\u5217\u4e3e\u524d 3 \u9875\uff08\u6bcf\u9875 1000 \u952e\uff09\uff1btruncated=true \u8868\u793a**\u603b\u91cf\u672a\u6d4b**\uff0c\u4e0d\u5f97\u5199\u6210\u603b\u6570"
+  }
+ },
+ "chunk_count_derived_all_scales": {
+  "em": {
+   "8x8x40": {
+    "n_chunks": 958251008,
+    "raw_B": 524288
+   },
+   "16x16x40": {
+    "n_chunks": 239562752,
+    "raw_B": 524288
+   },
+   "32x32x40": {
+    "n_chunks": 120074240,
+    "raw_B": 262144
+   },
+   "64x64x80": {
+    "n_chunks": 15082496,
+    "raw_B": 262144
+   },
+   "128x128x160": {
+    "n_chunks": 1903616,
+    "raw_B": 262144
+   },
+   "256x256x320": {
+    "n_chunks": 237952,
+    "raw_B": 262144
+   },
+   "512x512x640": {
+    "n_chunks": 29744,
+    "raw_B": 262144
+   },
+   "1024x1024x1280": {
+    "n_chunks": 4004,
+    "raw_B": 262144
+   },
+   "2048x2048x2560": {
+    "n_chunks": 572,
+    "raw_B": 262144
+   },
+   "4096x4096x5120": {
+    "n_chunks": 84,
+    "raw_B": 262144
+   },
+   "8192x8192x10240": {
+    "n_chunks": 12,
+    "raw_B": 262144
+   }
+  },
+  "seg": {
+   "8x8x40": {
+    "n_chunks": 626819072,
+    "raw_B": 4194304
+   },
+   "16x16x40": {
+    "n_chunks": 156704768,
+    "raw_B": 4194304
+   },
+   "32x32x40": {
+    "n_chunks": 78544896,
+    "raw_B": 2097152
+   },
+   "64x64x80": {
+    "n_chunks": 9818112,
+    "raw_B": 2097152
+   },
+   "128x128x160": {
+    "n_chunks": 1227264,
+    "raw_B": 2097152
+   },
+   "256x256x320": {
+    "n_chunks": 156416,
+    "raw_B": 2097152
+   },
+   "512x512x640": {
+    "n_chunks": 19552,
+    "raw_B": 2097152
+   },
+   "1024x1024x1280": {
+    "n_chunks": 2688,
+    "raw_B": 2097152
+   },
+   "2048x2048x2560": {
+    "n_chunks": 384,
+    "raw_B": 2097152
+   },
+   "4096x4096x5120": {
+    "n_chunks": 48,
+    "raw_B": 2097152
+   },
+   "8192x8192x10240": {
+    "n_chunks": 6,
+    "raw_B": 2097152
+   }
+  },
+  "seg_m1300": {
+   "8.0x8.0x40.0": {
+    "n_chunks": 1878146010,
+    "raw_B": 4194304
+   },
+   "16.0x16.0x40.0": {
+    "n_chunks": 469908855,
+    "raw_B": 4194304
+   },
+   "32.0x32.0x40.0": {
+    "n_chunks": 235224180,
+    "raw_B": 2097152
+   },
+   "64.0x64.0x80.0": {
+    "n_chunks": 29484064,
+    "raw_B": 2097152
+   },
+   "128.0x128.0x160.0": {
+    "n_chunks": 3685508,
+    "raw_B": 2097152
+   },
+   "256.0x256.0x320.0": {
+    "n_chunks": 464915,
+    "raw_B": 2097152
+   },
+   "512.0x512.0x640.0": {
+    "n_chunks": 60480,
+    "raw_B": 2097152
+   },
+   "1024.0x1024.0x1280.0": {
+    "n_chunks": 7560,
+    "raw_B": 2097152
+   },
+   "2048.0x2048.0x2560.0": {
+    "n_chunks": 980,
+    "raw_B": 2097152
+   },
+   "4096.0x4096.0x5120.0": {
+    "n_chunks": 140,
+    "raw_B": 2097152
+   },
+   "8192.0x8192.0x10240.0": {
+    "n_chunks": 24,
+    "raw_B": 2097152
+   }
+  }
+ },
+ "shard_object_probe": {
+  "em": {
+   "scale": "8x8x40",
+   "prefix": "minnie/minnie65/em/8x8x40/",
+   "n_objects_first_page": 5,
+   "probes": [
+    {
+     "key": "minnie/minnie65/em/8x8x40/0086.shard",
+     "url": "https://storage.googleapis.com/iarpa_microns/minnie/minnie65/em/8x8x40/0086.shard",
+     "http_code": 206,
+     "bytes": 1024,
+     "content_type": "application/octet-stream",
+     "curl_exit": 0,
+     "time_total_s": 5.664,
+     "retrieved_at": "2026-10-11T09:37:36Z",
+     "sha256_prefix": "fccf2bea963826743449570f7c5ede8c62955cd6657161241e4ce606ca57f2f6",
+     "first8_hex": "0000000000000000",
+     "gzip_magic": false,
+     "verdict": "REACHABLE"
+    },
+    {
+     "key": "minnie/minnie65/em/8x8x40/0087.shard",
+     "url": "https://storage.googleapis.com/iarpa_microns/minnie/minnie65/em/8x8x40/0087.shard",
+     "http_code": 206,
+     "bytes": 1024,
+     "content_type": "application/octet-stream",
+     "curl_exit": 0,
+     "time_total_s": 1.421,
+     "retrieved_at": "2026-10-11T09:37:37Z",
+     "sha256_prefix": "6f46b1aa60020245bc0e54ab1aa2f979d7fa76381e0a1746822e7a42d1c4012b",
+     "first8_hex": "0000000000000000",
+     "gzip_magic": false,
+     "verdict": "REACHABLE"
+    }
+   ]
+  },
+  "seg": {
+   "scale": "8x8x40",
+   "prefix": "minnie/minnie65/seg/8x8x40/",
+   "n_objects_first_page": 5,
+   "probes": [
+    {
+     "key": "minnie/minnie65/seg/8x8x40/0013.shard",
+     "url": "https://storage.googleapis.com/iarpa_microns/minnie/minnie65/seg/8x8x40/0013.shard",
+     "http_code": 206,
+     "bytes": 1024,
+     "content_type": "application/octet-stream",
+     "curl_exit": 0,
+     "time_total_s": 0.586,
+     "retrieved_at": "2026-10-11T09:37:46Z",
+     "sha256_prefix": "5c2c2c23ff3c32cac457f0d82f60245822af50ba04bc6fe07ec79cf21877cbae",
+     "first8_hex": "0000000000000000",
+     "gzip_magic": false,
+     "verdict": "REACHABLE"
+    },
+    {
+     "key": "minnie/minnie65/seg/8x8x40/001a.shard",
+     "url": "https://storage.googleapis.com/iarpa_microns/minnie/minnie65/seg/8x8x40/001a.shard",
+     "http_code": 206,
+     "bytes": 1024,
+     "content_type": "application/octet-stream",
+     "curl_exit": 0,
+     "time_total_s": 8.675,
+     "retrieved_at": "2026-10-11T09:37:55Z",
+     "sha256_prefix": "2bcde72a1e83269dee5a25374c0a97219ee350fd1dc1c1ad2a7b3047b4e4ea00",
+     "first8_hex": "0000000000000000",
+     "gzip_magic": false,
+     "verdict": "REACHABLE"
+    }
+   ]
+  },
+  "seg_m1300": {
+   "scale": "8.0x8.0x40.0",
+   "prefix": "minnie/minnie65/seg_m1300/8.0x8.0x40.0/",
+   "n_objects_first_page": 5,
+   "probes": [
+    {
+     "key": "minnie/minnie65/seg_m1300/8.0x8.0x40.0/00deb.shard",
+     "url": "https://storage.googleapis.com/iarpa_microns/minnie/minnie65/seg_m1300/8.0x8.0x40.0/00deb.shard",
+     "http_code": 206,
+     "bytes": 1024,
+     "content_type": "application/octet-stream",
+     "curl_exit": 0,
+     "time_total_s": 8.431,
+     "retrieved_at": "2026-10-11T09:38:12Z",
+     "sha256_prefix": "8afc8eb6dee0be9c123046bad2d5c8fb2a579c34f3599e59155077ea849cac1f",
+     "first8_hex": "0000000000000000",
+     "gzip_magic": false,
+     "verdict": "REACHABLE"
+    },
+    {
+     "key": "minnie/minnie65/seg_m1300/8.0x8.0x40.0/00df8.shard",
+     "url": "https://storage.googleapis.com/iarpa_microns/minnie/minnie65/seg_m1300/8.0x8.0x40.0/00df8.shard",
+     "http_code": 206,
+     "bytes": 1024,
+     "content_type": "application/octet-stream",
+     "curl_exit": 0,
+     "time_total_s": 8.435,
+     "retrieved_at": "2026-10-11T09:38:21Z",
+     "sha256_prefix": "509ed67b105e53bf7edba517dbeb22a6e4a2dabdf5ca6a0f99c7568fa64812fa",
+     "first8_hex": "0000000000000000",
+     "gzip_magic": false,
+     "verdict": "REACHABLE"
+    }
+   ]
+  }
+ },
+ "shard_object_probe_note": "\u5bf9\u8c61\u7ea7 Range \u8bfb\u53d6\uff080-1023 B\uff09\u8bc1\u660e shard **\u771f\u5b9e\u53ef\u53d6**\uff1b**\u672a\u4e0b\u8f7d**\u4efb\u4f55\u5b8c\u6574 shard\uff08\u6700\u5927 4.4 GB \u7ea7\uff09"
+}

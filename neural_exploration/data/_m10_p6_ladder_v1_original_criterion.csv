@@ -1,0 +1,6 @@
+# M10 P6 机制阶梯判决表（逐级：自检门三条 + 结论；结构证据级别 = 抽象/Fish1-partial 锚定）
+level,desc,selfsustain_ratio,selfsustain_pass,elasticity_4x,elasticity_monotone,elasticity_pass,bout_fraction,n_bouts,bout_pass,gate_all_pass,outcome,pop_rate_hz,rate_median_hz,silent_frac,wall_s_total
+M-1,"STP 抑制型（Tsodyks–Markram；u0=0.5, τ_rec=1 s）",0.010549,1,7.521097,1,1,1.0,1,1,1,effective,2.844,2.0,0.388,14.6
+M-4,调质增益（tonic→phasic 近似：兴奋/抑制权重与外部事件 ×1.5）,0.000184,1,0.042517,1,0,1.0,1,1,0,partial,185.2565,185.5,0.0,21.0
+M-3,GABA 亚型异质（A 快 8 ms / B 慢 200 ms，慢组分 35%；类级先验）,9.4e-05,1,0.027012,1,0,1.0,1,1,0,partial,366.392,366.5,0.0,23.2
+M-2,"STP 易化型（u0=0.15, τ_fac=0.5 s）",0.00662,1,8.144544,1,1,1.0,1,1,1,effective,4.5315,3.5,0.215,19.3

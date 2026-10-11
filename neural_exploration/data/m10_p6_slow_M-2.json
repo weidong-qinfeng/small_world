@@ -16,7 +16,7 @@
   "g_mod": 1.0,
   "desc": "STP 易化型（u0=0.15, τ_fac=0.5 s）"
  },
- "attribution_strength": "abstract_only（Fish1 连接组 partial/CAVE 门控 ⇒ 消融归属降级为抽象网络内归属）",
+ "attribution_strength": "参数级/类级归属（主agent RF-1 裁决）：连接组完整度=partial ⇒ 消融归因**不得**表述为连接组结构级归属；仅限类级权重/参数级效应",
  "stop_condition": "按主agent 裁决 2：不做“扫参数直到 bout 出现”的搜索；参数取预注册范围中点",
  "slow_variable": {
   "traces_summary": {
@@ -94,5 +94,9 @@
   "C_same_order_pass": false,
   "D_closed_state_equiv": null,
   "hard_criterion_pass": false
+ },
+ "adjudications": {
+  "RF-1": "partial 为 P1 正式分级；归属降级为参数级/类级",
+  "RF-2": "GABA 亚型走类级文献先验 + 测量限制登记；消融须分别报告 A/B 通路"
  }
 }
