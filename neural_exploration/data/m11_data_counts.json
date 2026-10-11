@@ -1,6 +1,6 @@
 {
  "generated_by": "tools/build_m11_inventory.py",
- "generated_at": "2026-10-11T14:31:01Z",
+ "generated_at": "2026-10-11T14:32:23Z",
  "units": "bytes; evidence ∈ {measured, derived, literature, unavailable}",
  "microns_structure": {
   "evidence": "measured(元数据) + derived(chunk 计数); shard 清单 = measured(有界)",
@@ -394,6 +394,81 @@
    "NEEDS_TOKEN": 1
   },
   "evidence": "measured(curl 两次探测)"
+ },
+ "disk_verified": {
+  "rule": "清单/计数里出现的每个数必须能与磁盘对上：exists + bytes_on_disk + sha256；**未完成者写 INCOMPLETE 并给原因，不留 null、不写 0**",
+  "artifacts": [
+   {
+    "key": "allen.per_cell_nwb.full_nwb",
+    "path": "neural_exploration/data/m11_raw/allen/486940961_ephys.nwb",
+    "declared_bytes": 91560414,
+    "exists": true,
+    "note": "per-cell ephys NWB 全量；**下载停滞 48 min 无增长后已按 >30 min 纪律停止** ⇒ INCOMPLETE（可 curl -C - 续传）；期望 91560414 B / 实收 44695552 B",
+    "bytes_on_disk": 44695552,
+    "sha256": "562d809c7447eded943afb552641d6e1fc5b856dde4b64da2d0c97bf97a270ea",
+    "status": "INCOMPLETE"
+   },
+   {
+    "key": "allen.per_cell_nwb.header_staging",
+    "path": "neural_exploration/data/m11_raw/allen/head_sparse.nwb",
+    "declared_bytes": null,
+    "exists": true,
+    "note": "**稀疏文件**：仅前 44,695,552 B 为真实数据，其余为洞(zeros) ⇒ **不是完整 NWB**，仅用于读 HDF5 头",
+    "bytes_on_disk": 91560414,
+    "sha256": "ac91e095f3d3c470ffd0865729f8fabbcb3042c6801520def8b330997b1d4a10",
+    "status": "COMPLETE"
+   },
+   {
+    "key": "allen.per_cell_nwb.range_prefix",
+    "path": "neural_exploration/data/m11_raw/allen/486940961_ephys_head8MB.bin",
+    "declared_bytes": 8388608,
+    "exists": true,
+    "note": "HTTP Range 前缀（独立于部分下载）",
+    "bytes_on_disk": 8388608,
+    "sha256": "44d0c3af3915dea4335fb3eadcba725b95817ec89c40aa54cedc4197ac908a55",
+    "status": "COMPLETE"
+   },
+   {
+    "key": "microns.functional_subset.manifest",
+    "path": "neural_exploration/data/m11_functional_subset_manifest.csv",
+    "declared_bytes": null,
+    "exists": true,
+    "note": "200 对象逐行 url/bytes/sha256/integrity",
+    "bytes_on_disk": 77701,
+    "sha256": "f639de3d07c8cc1ebfa157373fcd8bc3266023be9df54bfb4ed51810807a9ce0",
+    "status": "COMPLETE"
+   },
+   {
+    "key": "microns.structure.info",
+    "path": "neural_exploration/data/m11_microns_structure.json",
+    "declared_bytes": null,
+    "exists": true,
+    "note": "",
+    "bytes_on_disk": 46081,
+    "sha256": "4bc5a47b83dc6fee6c3cea9cee4d081b0fb0947847e71d63c91ec677ee097646",
+    "status": "COMPLETE"
+   },
+   {
+    "key": "microns.protocol",
+    "path": "neural_exploration/data/m11_microns_protocol.json",
+    "declared_bytes": null,
+    "exists": true,
+    "note": "",
+    "bytes_on_disk": 231518,
+    "sha256": "29366f6f5aa6a8f796e399191c0cabdba5f04ed7ec09a7acc4849ba0dde1cb77",
+    "status": "COMPLETE"
+   },
+   {
+    "key": "m11.reference",
+    "path": "neural_exploration/data/m11_reference.csv",
+    "declared_bytes": null,
+    "exists": true,
+    "note": "",
+    "bytes_on_disk": 8623,
+    "sha256": "177ee5019c377533fb0e5c4a791c51dc41c240ee5642fd17e691b18411843fc9",
+    "status": "COMPLETE"
+   }
+  ]
  },
  "inventory": {
   "n_items": 235,

@@ -257,3 +257,49 @@
 6. **"声明" ≠ "落盘"**：`protocol.json` 声明 2 个 functional_series，但 manifest/磁盘只有 1 个 ⇒ **凡"数据来自 N 个 X"的表述必须回溯到 manifest/磁盘逐件核**（本次差 2× 的样本范围与「跨 field」结论）。
 7. **公式常数也要做量纲自检**：清单 §10.1 的 `3.6e-6` 与同节单试次行相差 12.96× ⇒ **凡预算公式必须与同文档的"示例单值"交叉验算**（本工作包的"双估计器"律在**预算文本**上的又一次实例化）。
 8. **"两个口径"与"两个样本"是两件事**：R10 的 2 条管线被读成 2 个 field ⇒ 把**方法学口径差**误当**生物学变异**（与既有口径纪律同源）。
+
+## L23 — 主agent 六项裁决落盘（收口轮）
+
+| 裁决 | 内容 | 本节点的落盘动作 |
+|---|---|---|
+| **A12 更正**（主agent **自纠**） | 三值实际配置不同：T=2 s/**N=1000**/**settle=300 ms**；T=60 s/N=1000/settle=1000 ms；T=120 s/**N=250**/settle=1000 ms ⇒ 「+76% 时长漂移」**是把配置差异说成时长依赖**；受控截断实验仅 **+1.4%** | 本节点 **L8** 的「先登记、不擅改」被确认为正确处置；**判据设计不变**（协议元数据 + 时长阶梯仍必需 —— **配置敏感性反而被证实更强**）。已同步入 `m11_p5_targets.json::mainagent_rulings_2026_10_11` |
+| ② (a) 的带 | **保留 literature 档**（0.5/2.0 Hz，PMID 30419013 全文已核）；**J1 判 `unavailable（吞吐限制）`**（S3 实测 **10–17 KB/s** ⇒ ETA **1.6–7 h**） | `allen_bo_neuropixels_spike_rate_band` note 追加吞吐裁决 + **续取计划**（换网络/时段 + Range 续传 + 先探吞吐）+ 「原写 20–60 min 已废」；`rate_median_hz_literature_spike_band` note 追加**性质限制**（建模论文对实测的**转述、非原测、只覆盖 L4**） |
+| ③ J2 | **批准**；**执行归 B1** | 新增 `j2_reserved_keys_and_acceptance`：预留 **5 个 key**（钙率带 2 + 静默带 2 + **新增跨 field 离散度**）+ **5 条验收条件**（口径逐项 / 跨 field 离散度 / 与电生理域并列 / 哨兵处置先声明 / 不可得时须写明已覆盖维度）；`m11_b3_managed_jobs.json` 的 J2 标 approved + handover_to=B1（占位命令作废，**不得新增 tools/*.py**） |
+| ④ 清单文字 | 批准（§1.5 C3 → PMID 8340806 + 跨物种/麻醉；§0.9 N_full → `literature_unverified`）；**由主agent 落盘** | 本节点**不改清单**（先改清单再改代码）；判据表已按新依据给行 |
+| ⑤ 文档矛盾 | `m11_acceptance_master.md` §4 与 §3d 的矛盾**已修** | L7 可标为**已闭环** |
+| ⑥ **G1 门条件加强** | **G1 = (c) ∧ (e) ∧ 张力已定量识别**；**(d) 降为 sanity** | 判据表新增 `gate_g1_conditions_v2`（旧行保留 + final=0 + 指针）；工具 `GATE_CRITERIA` 改为 (c, e, `p5_g1_tension_quantified`)，新增该子判据的发射与判定；**新增 `_assert_gate_composition()` 断言**（表↔代码一致性，负向测试实测 raise「门组成漂移」）；`CRIT_EXPECTED` 由 9 → **10 条**（不变式随之更新） |
+| G0 现状 | **partial**（(a)(e)(f) pass、`off_state_equivalence` 由 fail 转 pass；**(b)(c)(d)(g)(h) 与 4 项 extensions 仍 unavailable**） | 门链不变：**G0 通过条件 = 全项 measured 且全过 ⇒ G1 暂不得启动**；`m11_b3_managed_jobs.json` 的 policy 已同步该状态 |
+
+### L23.1 冒烟复跑（新门组成后，全部通过）
+
+`S1 unavailable/3`（12 行）· `S2 fail/1`（12 行）· `S3 unavailable/3`（**24 行**）· `S4 invalid/2` · `S5 invalid/2`；
+全部 `criteria_per_unit=[10]`（9 + 张力门）、`gate_criteria=['p5_c_selfsustain','p5_e_ei_balance','p5_g1_tension_quantified']`、`sanity=['p5_d_drive_elasticity']`。
+**张力门在 (b) 带未定稿时的正确行为已实测**：S3 给出 `unavailable` 并显式说明「**n_both_in_band 在带未定稿时恒为 0，不构成张力证据**」（防构造性结论）。
+
+### L23.2 新增教训
+
+9. **门组成本身也要防漂移**：清单/判据表声明与代码实现是**两份可独立漂移的文本** ⇒ 本工作包用 `_assert_gate_composition()` 把「表怎么写就怎么判」做成断言（与"双估计器一致"同族：**同一语义的两个载体必须一致**）。负向测试（把表改成 `c_and_d_and_e`）实测触发 `AssertionError: **门组成漂移**`。
+10. **"张力被定量" ≠ "没有张力"**：门条件写作「张力已**定量识别**」而不是「无张力」——否则会把清单 §4.5(i) 明确要登记的标定权衡变成门失败（判据语义的**方向性**错误，比数值错误更难发现）。
+
+## L24 — 掩膜裁决定稿 + J2 key 命名对称化（主agent 2026-10-11 §一/§二）
+
+### L24.1 掩膜：**定稿 = 无掩膜（`no_mask(retain_and_log)`）**
+- 主agent 裁决：`int16<0` 的样本**保留并登记**；**其旧指令**（`uint16>65000 ⇔ int16<0` 前置为缺失，写在 B1 取证**之前**）**已撤回**（M11 验收记录 §3f-3 与 R9 反转已载明）。
+- 依据（B1 空间成簇证据）：3×3 邻域负值比例 p50 **0.111** vs 随机 ≈0.000129 ⇒ **~860× 富集**、**孤立比例 0.000**、位于**暗区**（邻域均值 ≈395 vs 全局中位 1,953）、仅比局部基线低 ~381 counts；若按 uint16 读，其真值将是该对象自身最大值的 ~2.3× 而邻居仅 395 ⇒ **物理荒诞解**。
+- **本节点动作（含审计）**：`microns_sentinel_mask_policy` 的 **value** `unresolved_conflict` → `no_mask(retain_and_log)`、**evidence_level** → `measured`、**final** 0 → 1；**原 provenance / note / wrong_usage_consequence 逐字保留于该行 note 的「修订记录（append-only 审计）」段**。
+  ⇒ 这是本表**唯一**一处按裁决指令就地改 value 的行（非判据带、而是**未决冲突的裁定**），已在此登记；其余行一律「新增行 + 指针」。
+- **量化界定保留**：两侧计数一致（10,383 / 80,000,000 = **0.01298%**）⇒ 比例/中位数类统计影响 **≤0.0130 个百分点**；**但 P14 的「空间成簇」类判据（像素/邻域统计、暗区偏置）可能更敏感** ⇒ 该处置在 P14 必须显式声明。
+- **「哨兵」一词的口径**：仅指 **32767 饱和**（实测计数 **0**），**不是** below-baseline 样本（R9 §3f-3 已更正）。
+
+### L24.2 J2 预留 key 命名对称化
+- 新增 **`silent_frac_calcium_band_lo/hi`**（`unavailable`，`final=0`）⇒ 与 rate 侧的 `rate_median_hz_measured_calcium_band_*` **命名对称**；原 `silent_frac_lo/hi` 保留 + 加命名分列指针。
+- **J2 执行归 B1**（本节点**不动 J2、不新增 `tools/*.py`**）；`j2_reserved_keys_and_acceptance` 的 key 清单与 note 已同步（5 个 key + 5 条验收条件）。
+- 钙域静默带的两个口径候选（`zero_activity` / `low_activity`）已写入预留行 note，**阈值必须在 B1 落口径时定稿**。
+
+### L24.3 G0 现状（R13 后）
+节点报 `pass`，但 **(b) 出现 `fail→pass` 的极端翻转**（0.5 Hz 档：静默比差 **14.0 pp / KS p=6.8e-4** → **0.0 pp / p=1.0 / 逐位相同**）⇒ **主agent 暂缓采信**，要求交「翻转解释（引擎修复？参照替换？口径变更？）+ `root_cause`/`fix` 字段 + `registered` 四态归一」。
+⇒ **未解释前 G0 不算通过 ⇒ G1 继续停在设计/工具态**（与 L23 的门链一致）。**这正是「极端翻转 = 口径变更或参照替换」的典型信号**（M10 的 RF-5~RF-8 家族），在解释落盘前**不得**把 G0 记为 pass。
+
+### L24.4 教训补充
+11. **"未决冲突"行被裁决后，就地改值也要留原文**：本表对 `microns_sentinel_mask_policy` 按裁决改 value，但把**原 provenance/note/wuc 逐字保留在 note 的修订记录段** ⇒ 审计链不丢（若只改值不留原文，则"曾经的冲突两侧证据"会随改值消失）。
+12. **未决项的"影响上界"比"哪一方对"更有用**：本节点在冲突未决时先算出「**≤0.0130 个百分点 → 不阻塞 G1**」，使主agent 可以**在不阻塞关键路径的前提下**从容裁决（并把唯一真正敏感的场合（P14 空间类）单独点名）。

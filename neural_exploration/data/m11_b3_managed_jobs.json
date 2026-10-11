@@ -1,12 +1,12 @@
 {
  "generated_by": "M11 执行节点 B3（工作包 G1：P5 判据/协议设计与工具骨架）",
- "generated_at": "2026-10-11",
+ "generated_at": "2026-10-11（收口轮：主agent 六项裁决落盘）",
  "policy": {
   "rule": "本节点**不启动任何仿真或 >10 min 的作业**（纪律）；以下作业一律由主agent 以**托管后台作业**启动并回传日志",
   "thread_discipline": "CPU 作业必须 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1；MPS 作业**串行**（禁并发）",
   "progress_rule": "长作业进度必须看「累计 CPU 时间 / 墙钟」之比，**不得**只看 `ps %CPU`（M10 L46/L50：实测占空比 ≈10%，曾导致误杀）",
   "kill_rule": "终止前必须看进度",
-  "g0_blocker": "R11：G0 引擎门 = fail ⇒ **G1 不得启动**。因此下列 J3–J5（需要仿真的 P5 运行）在 G0 全项复测通过前**不要启动**；J1/J2（纯数据）不依赖 G0，可在预算内启动。"
+  "g0_blocker": "R11 → G0 现状 = **partial**（(a)(e)(f) pass；off_state_equivalence 已由 fail 转 pass；(b)(c)(d)(g)(h) 与 4 项 extensions 仍 unavailable）⇒ **G0 通过条件 = 全项 measured 且全过** ⇒ **G1 暂不得启动**。J3–J5（需仿真的 P5 运行）在 G0 全项通过前**不要启动**；J2 已批准但执行归 B1。"
  },
  "common_env": {
   "cwd": "/Users/weidong/ai/small_world",
@@ -40,7 +40,11 @@
     "neural_exploration/data/m11_p5_rate_reference.json（读回断言：session 时长、采样率、unit 计数、epoch 定义）"
    ],
    "acceptance": "① 采样率/时长/unit 计数读回断言通过；② 中位率与静默比例**同口径**（同 epoch、同 T）算出；③ 若与 literature 档（0.5–2.0 Hz）差异 >3× ⇒ 必须定位口径维度（灰屏 vs 自发 vs 被动观看；层/区子集；unit 质量阈值）后再改写带",
-   "note": "**可达 ≠ 可行**（R 纪律 §5）：若实测吞吐 <100 KB/s ⇒ 立即停并登记 unavailable(吞吐)"
+   "note": "**可达 ≠ 可行**（R 纪律 §5）：若实测吞吐 <100 KB/s ⇒ 立即停并登记 unavailable(吞吐)",
+   "status_2026_10_11": "**judged_unavailable（吞吐限制）—— 由主agent 裁决 §二.2，不再作为待启动作业**",
+   "measured_throughput": "本机对 S3 实测 **10–17 KB/s**（与 DQ-4 同因）；单个 ecephys NWB 100–250 MB ⇒ **ETA 1.6–7 h ⇒ 不可行**",
+   "replacement_decision": "(a) 的带**保留 literature 档**（0.5–2.0 Hz，PMID 30419013 全文已核；已补写限制：该文档为**建模论文对实测的转述、非原测、只覆盖 L4 回路**）",
+   "future_resume_plan": "换网络/换时段 + **Range 续传**（复用 `tools/verify_m11_downloads.py` 的 exists+getsize+sha256 断点校验）+ **先探吞吐再决定**；若将来取得实测带 ⇒ 在 `m11_p5_targets.csv` **新增行**替换（旧行保留）"
   },
   {
    "job_id": "J2",
@@ -57,7 +61,17 @@
     "neural_exploration/data/m11_p5_silent_reference_ca.csv（新建；列：pipeline/n_frames/silent_frac_zero_activity/…，双口径并列）"
    ],
    "acceptance": "(b) 的钙域带**定稿**（新增行，`final=1`）需：① 口径逐项写清（帧率/ROI/神经域/是否平滑）；② 给跨 field 与跨时间窗离散度；③ 与电生理域带**并列**不混用（清单 §4.5(b)）",
-   "note": "若 ROI 提取管线不可得 ⇒ 直接判 `unavailable` 并写明「已覆盖的维度」（R9 新纪律：不得因未覆盖而写成不可用）"
+   "note": "原 note 中的占位命令作废：**不得新增 tools/*.py**（工作包边界）；ROI/事件检测脚本由 B1 提供。本节点只负责：预留 key、验收条件、以及产物落盘后**用 `validate_p11_resting.py` 离线复算**。",
+   "status_2026_10_11": "**approved（主agent 裁决 §二.3）—— 执行归 B1（数据/参考带所有者），本节点只预留 key 与验收条件**",
+   "handover_to": "M11-B1",
+   "reserved_keys_in_targets_table": [
+    "rate_median_hz_measured_calcium_band_lo",
+    "rate_median_hz_measured_calcium_band_hi",
+    "silent_frac_lo",
+    "silent_frac_hi",
+    "microns_functional_calcium_crossfield_dispersion"
+   ],
+   "acceptance_in_table": "见 m11_p5_targets.csv::j2_reserved_keys_and_acceptance（5 条验收条件 a–e）"
   },
   {
    "job_id": "J3",
@@ -100,7 +114,9 @@
     "# 形态与 J3 相同，仅替换协议 JSON 的臂参数；**每一档改动后必须重跑零驱动臂重核 (c)**",
     "./.venv-m11/bin/python -m neural_exploration.tools.validate_p11_resting --protocol-json <新协议> --out-json <新输出>"
    ],
-   "artifacts": ["neural_exploration/data/m11_p5_calibration_targets_v2.csv（新增行；原行保留）"],
+   "artifacts": [
+    "neural_exploration/data/m11_p5_calibration_targets_v2.csv（新增行；原行保留）"
+   ],
    "note": "**禁止**用「提高背景 λ」当标定手段（§5 禁项）"
   },
   {
@@ -109,15 +125,52 @@
    "why": "工具只比较不生成 ⇒ 需要仿真侧提供 replica 臂（同 config/seed/T）。",
    "blocked_by": "G0 通过",
    "est_wall": "与 J3 的单试次相当 × 2",
-   "commands": ["# 同 J3，但同一 (config, mechanism, dose, seed, T) 跑两次；第二次 arm 标 replica_of=<第一次 arm_id>"],
-   "artifacts": ["neural_exploration/data/m11_p5_replica_check.json"],
+   "commands": [
+    "# 同 J3，但同一 (config, mechanism, dose, seed, T) 跑两次；第二次 arm 标 replica_of=<第一次 arm_id>"
+   ],
+   "artifacts": [
+    "neural_exploration/data/m11_p5_replica_check.json"
+   ],
    "note": "跨进程逐位一致性归 G0（清单 §2.3(e)）；P5 只要求统计级一致（判据表 determinism_mode=statistical）"
+  },
+  {
+   "job_id": "J6",
+   "title": "（**提议，待主agent 裁决**）取第二个 MICrONS field 以给跨 field 离散度",
+   "why": "本轮发现 A：R10 的同源目标带建立在**单 field** `session4_scan7_field4` × 2,000 帧 = 317.46 s 上（manifest/磁盘/探针 JSON 三处一致）；`protocol.json` **声明**的第二个 series `session5_scan3_field1` **从未取数** ⇒ R10 自列的「①两个 field 都建带 ②给跨 field 离散度」**仍 open**，RF-M11-2 的「同阶窗」目前只能取跨条件离散度。",
+   "blocked_by": "无（纯数据；不依赖 G0）；但需主agent 批准（>10 min 一律托管）",
+   "est_wall": "≈35–60 min（2,000 chunk × 685 KB ≈ 1.37 GB @ 至少 0.4–0.7 MB/s；若吞吐同 DQ-4 的低速档则**不可行** ⇒ 先探吞吐）",
+   "commands": [
+    "# ⓿ 先探吞吐（30 s 单 Range，不得凭锚外推）",
+    "curl -sS -m 30 -r 0-999999 -o /tmp/ma_f5_probe.bin -w '%{http_code}|%{size_download}|%{speed_download}\\n' \\",
+    "  'https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/functional_data/functional_series/session5_scan3_field1/0/0/0/0'",
+    "# ① 若吞吐 ≥0.4 MB/s ⇒ 复用 B1 的取数工具（本节点不新增 tools/*.py），落盘到独立子目录避免覆盖 field4",
+    "./.venv-m11/bin/python neural_exploration/tools/fetch_m11_microns.py --func-subset --series session5_scan3_field1 \\",
+    "  --out neural_exploration/data/m11_p5_raw_field2_manifest.csv --jobs 3   # ← 确切参数由 B1 确认（--series 是否已支持）"
+   ],
+   "artifacts": [
+    "neural_exploration/data/m11_p5_raw_field2_manifest.csv",
+    "neural_exploration/data/m11_p5_crossfield_dispersion.json（跨 field 的 τ/dwell/占用离散度）"
+   ],
+   "acceptance": "两 field 各自建带并给离散度；差异 >5% 须定位到具体口径维度（箱宽/平滑/代理定义/阈值/帧率换算）——沿用 R10 §3e 的要求",
+   "note": "**本节点不自行启动**（>10 min 托管纪律）；且 `--series` 参数是否存在需 B1 确认 ⇒ 我把它列为**待裁决 + 依赖 B1**"
   }
  ],
  "not_requested": [
-  {"item": "任何 MPS 作业", "reason": "本节点现无需求；纪律要求串行且 MPS 仅由主agent 调度"},
-  {"item": "DQ-4 的功能连接组学 pkl 下载", "reason": "主agent 已实测吞吐（8 路持续 17 min 仅 10–16 KB/s ⇒ ETA 5–8 h）判不可行；本工作包不得依赖"},
-  {"item": "v8 DataJoint DB 取数（逐细胞轨迹）", "reason": "R1 保持：103.8 GB / 116.2 GB、36–58 KB/s ⇒ 20–30 天（永久不可行）"},
-  {"item": "S 门（P6）目标带与机制阶梯", "reason": "归属 S 门；本工作包只登记边界（microns_same_source_tau_band_ref 标为 S 门所有）"}
+  {
+   "item": "任何 MPS 作业",
+   "reason": "本节点现无需求；纪律要求串行且 MPS 仅由主agent 调度"
+  },
+  {
+   "item": "DQ-4 的功能连接组学 pkl 下载",
+   "reason": "主agent 已实测吞吐（8 路持续 17 min 仅 10–16 KB/s ⇒ ETA 5–8 h）判不可行；本工作包不得依赖"
+  },
+  {
+   "item": "v8 DataJoint DB 取数（逐细胞轨迹）",
+   "reason": "R1 保持：103.8 GB / 116.2 GB、36–58 KB/s ⇒ 20–30 天（永久不可行）"
+  },
+  {
+   "item": "S 门（P6）目标带与机制阶梯",
+   "reason": "归属 S 门；本工作包只登记边界（microns_same_source_tau_band_ref 标为 S 门所有）"
+  }
  ]
 }

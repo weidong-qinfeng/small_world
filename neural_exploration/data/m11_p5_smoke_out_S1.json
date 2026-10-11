@@ -1,10 +1,10 @@
 {
  "verdict_G1": "unavailable",
- "verdict_reason": "G1 门条件中存在未测项：['p5_c_selfsustain=unavailable', 'p5_d_drive_elasticity=unavailable', 'p5_e_ei_balance=unavailable'] ⇒ 不得判 pass（未测 ≠ 未命中）",
+ "verdict_reason": "G1 门条件中存在未测项：['p5_c_selfsustain=unavailable', 'p5_e_ei_balance=unavailable', 'p5_g1_tension_quantified=unavailable'] ⇒ 不得判 pass（未测 ≠ 未命中）",
  "gate_conditions": {
   "p5_c_selfsustain": "unavailable",
-  "p5_d_drive_elasticity": "unavailable",
-  "p5_e_ei_balance": "unavailable"
+  "p5_e_ei_balance": "unavailable",
+  "p5_g1_tension_quantified": "unavailable"
  },
  "criterion_status": {
   "p5_a_rate_median": "unavailable",
@@ -15,13 +15,14 @@
   "p5_f_bounded": "unavailable",
   "p5_g_wallclock": "unavailable",
   "p5_h_determinism": "unavailable",
-  "p5_i_tradeoff": "unavailable"
+  "p5_i_tradeoff": "unavailable",
+  "p5_g1_tension_quantified": "unavailable"
  },
  "state_counts": {
   "pass": 0,
   "fail": 0,
   "invalid": 0,
-  "unavailable": 11
+  "unavailable": 12
  },
  "hard_failures": [],
  "estimator_gate_unmet": [
@@ -91,7 +92,7 @@
  },
  "exit_code": 3,
  "generated_by": "tools/validate_p11_resting.py",
- "generated_at": "2026-10-11T22:30:18",
+ "generated_at": "2026-10-11T22:34:37",
  "role": "M11 P5/G1 离线评估（只做分析，不做仿真；不写判据带）",
  "protocol_path": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_smoke_protocol_S1.json",
  "protocol": {
@@ -112,6 +113,7 @@
   "③_double_estimator": "counts/pop_trace/agg 三估计器两两相对差 ≤2%，并含轨迹长度⟺(T,dt) 量纲自检",
   "④_duration_ladder": "同一配置 {T_min,2×T_min,4×T_min} 三档；跨 T 判定翻转 ⇒ invalid",
   "⑤_discriminativeness": "必须给出无机制基线臂的同一判据值；不得用非判别性判据作机制证据",
+  "⑥_gate_composition": "G1 = (c) ∧ (e) ∧ 张力已定量识别（主agent 2026-10-11 §二.6）；(d) 降为 sanity",
   "⑥_caliber_annotation": "逐行带 protocol(T/settle/seed/bin/smooth) 与 estimator"
  },
  "arms": [
@@ -158,12 +160,26 @@
   }
  },
  "output_invariants": {
-  "rows": 11,
+  "rows": 12,
   "units": 1,
   "criteria_per_unit": [
-   9
+   10
   ],
   "caliber_fields_checked": 8
+ },
+ "gate_composition": {
+  "declaration_key": "gate_g1_conditions_v2",
+  "declared": "c_and_e_and_tension_quantified",
+  "code": "c_and_e_and_tension_quantified",
+  "gate_criteria": [
+   "p5_c_selfsustain",
+   "p5_e_ei_balance",
+   "p5_g1_tension_quantified"
+  ],
+  "sanity_criteria": [
+   "p5_d_drive_elasticity"
+  ],
+  "note": "(d) 降为 sanity（M10 基线臂 +579.6% 即过 ⇒ 无判别性）"
  },
  "rows": [
   {
@@ -518,6 +534,38 @@
    "protocol_T_ms": 120000.0,
    "protocol_settle_ms": 500.0,
    "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "M10_M0_T120s",
+   "T_ms": 120000.0,
+   "mechanism": "none",
+   "criterion": "p5_g1_tension_quantified",
+   "estimator": "dose_sweep_rank_correlation",
+   "value": null,
+   "unit": "",
+   "band_lo": null,
+   "band_hi": null,
+   "band_keys": "tension_detect_required|tension_spearman_max",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "unavailable",
+   "reason": "张力未定量（需 ≥3 个剂量点（含 zero_drive）才能识别张力；现 0 点（另需逐神经元 counts 才有中位率/静默））⇒ 该门条件不得判 pass/fail",
+   "evidence_class": "gate_condition(tension_quantified)",
+   "discriminative": null,
+   "baseline_value": null,
+   "baseline_meets": null,
+   "is_primary_estimator": 1,
+   "n_seeds": null,
+   "zero_drive_spikes": null,
+   "n_neuron": null,
+   "note": "G1 门条件之三（主agent 2026-10-11 裁决 §二.6）：(d) 已降为 sanity，门条件改为 (c) ∧ (e) ∧ 张力已定量识别",
+   "protocol_id": "m11_b3_smoke_S1_trace_only",
+   "protocol_T_ms": 120000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": null,
    "protocol_dt_ms": 0.05,
    "protocol_bin_ms": 100.0,
    "protocol_smooth_frames": 5

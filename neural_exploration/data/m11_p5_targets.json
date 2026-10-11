@@ -1,12 +1,12 @@
 {
  "generated_by": "M11 执行节点 B3（工作包 G1：P5 判据/协议设计与工具骨架）——逐行 provenance，无一行凭印象",
- "generated_at": "2026-10-11（验收后收尾：R10 实测锚补入 + 样本范围实测更正）",
- "revision_note": "72 行（首版）→ 80（R9/R10/R11）→ 94（初审反馈：口径分列）→ **97 行**（本收尾轮：① 样本范围**实测更正**（落盘数据来自**单 field**，非 2 field）② 补入 R10 的**平滑档 τ** 与 **Q/H 双法 dwell/p90 锚**）。**旧行 value/evidence_level/provenance 一律逐字保留**；`unavailable→measured` 升级一律新增行。",
+ "generated_at": "2026-10-11（掩膜裁决 + J2 key 命名对称化）",
+ "revision_note": "72（首版）→ 80（R9/R10/R11）→ 94（口径分列）→ 97（样本范围更正 + R10 平滑/dwell 锚）→ 99（门组成修订 + J2 预留）→ **101 行**（掩膜裁决定稿 `no_mask(retain_and_log)` + 新增 `silent_frac_calcium_band_lo/hi` 预留行）。**旧行 value/evidence_level/provenance 一律逐字保留**（唯一例外：`microns_sentinel_mask_policy` 按主agent §一 裁决指令改 value/final，**原文逐字保留于该行 note 的「修订记录」段**）。",
  "role": "M11 G1（P5 生理工作点门）判据带 + 协议常数；运行前定稿，不事后调；只允许新增行",
  "file": "data/m11_p5_targets.csv",
  "hash_basis": {
-  "csv_sha256_file_bytes": "a3273fb6ed01cb2652877b9b1f6a2c6041b78da17f754faab3ec0411fa2736a9",
-  "rows_payload_sha256": "55bce1039431f64dc6c0f682c4997ea3a7996cc438a9ae7156ad0b119b89e458",
+  "csv_sha256_file_bytes": "bb72205181b76831f7e920082b36e56949ad33b527d7e6dea90d261e5d83576d",
+  "rows_payload_sha256": "d27a8af5240af4f065e40caa964357840fb478d65f5e1a28803c47753ca70837",
   "payload_definition": "csv 行按 key 排序的 canonical JSON（sort_keys=True, separators=(',',':')）",
   "note": "跨节点比对 sha256 时必须声明基准（file_bytes / payload / semantic）——主agent 纪律 §6-3"
  },
@@ -494,7 +494,7 @@
    "unit": "",
    "evidence_level": "unavailable",
    "provenance": "docs/m11_data_gate_report.md §1/§3.1（int16/uint16 与 4 px/µm vs 2.5 µm/px 的 10× 口径差待核）+ docs/m11_acceptance_master.md R4",
-   "note": "钙域静默比例带走查依赖口径定稿（清单 §0.7 #9：帧率/τ_ca/神经域须读回断言）⇒ 未定稿；(b) 当前只能报描述性值",
+   "note": "钙域静默比例带走查依赖口径定稿（清单 §0.7 #9：帧率/τ_ca/神经域须读回断言）⇒ 未定稿；(b) 当前只能报描述性值 **【命名分列（主agent 2026-10-11 §二）】** 为与 rate 侧的 `rate_median_hz_measured_calcium_band_*` 对称，钙域静默带的新增保留行命名为 **`silent_frac_calcium_band_lo/hi`**（见该两行）；本行保留原值，final 维持 0。",
    "wrong_usage_consequence": "把未定稿的带用于判定 ⇒ 违反判据带定稿纪律（清单 §0.7 #16）",
    "final": "0"
   },
@@ -505,7 +505,7 @@
    "unit": "",
    "evidence_level": "unavailable",
    "provenance": "docs/m11_data_gate_report.md §1/§3.1 + docs/m11_acceptance_master.md R4",
-   "note": "同上",
+   "note": "同上 **【命名分列（主agent 2026-10-11 §二）】** 为与 rate 侧的 `rate_median_hz_measured_calcium_band_*` 对称，钙域静默带的新增保留行命名为 **`silent_frac_calcium_band_lo/hi`**（见该两行）；本行保留原值，final 维持 0。",
    "wrong_usage_consequence": "同上",
    "final": "0"
   },
@@ -703,7 +703,7 @@
    "unit": "",
    "evidence_level": "derived",
    "provenance": "docs/生物仿真M11实施清单.md §4.2 #4 注（门 3/4 通过不能作为机制有效的证据）+ docs/m10_acceptance_master.md A8",
-   "note": "硬条款：(d) 通过不得作为「机制有效」的证据；只能作 sanity 前置",
+   "note": "硬条款：(d) 通过不得作为「机制有效」的证据；只能作 sanity 前置 **【主agent 裁决 2026-10-11 §二.6】** 本行已作为依据被采信：(d) 降为 sanity，工具中恒标 `sanity_precondition(non_discriminative)` 并列入 `non_discriminative_criteria`。",
    "wrong_usage_consequence": "把 (d) 当判别性证据 ⇒ 重演 L23「基线自身通过 ⇒ 阶梯无判别性」",
    "final": "1"
   },
@@ -846,9 +846,9 @@
    "unit": "",
    "evidence_level": "derived",
    "provenance": "docs/生物仿真M11实施清单.md §4.5 门判定行（(c) ∧ (d) ∧ (e)）",
-   "note": "(c)(d)(e) 为 G1 门条件；不过则 P6 不得启动",
+   "note": "(c)(d)(e) 为 G1 门条件；不过则 P6 不得启动 **【主agent 裁决 2026-10-11 §二.6】** 本行的门组成 `(c)∧(d)∧(e)` **已被修订**：G1 = **(c) ∧ (e) ∧ 张力已定量识别**，**(d) 降为 sanity**（理由：M10 基线臂自身即过 (d)（+579.6% / 修正档 +573.1%）⇒ (d) 无判别性，用它支撑门等于用一条构造性可过的判据）。现行声明见新增行 `gate_g1_conditions_v2`。本行 value 逐字保留，final 置 0。",
    "wrong_usage_consequence": "若 (d) 已被登记为无判别性（criterion_d_as_mechanism_evidence=0），仅凭 (c)∧(d) 判通过等于用一条无判别性判据支撑门 ⇒ 本工具必须同时输出 (e) 与张力登记（清单未排除，主agent 可裁决加强）",
-   "final": "1"
+   "final": "0"
   },
   {
    "key": "gate_band_finalized_required",
@@ -1143,7 +1143,7 @@
    "unit": "Hz",
    "evidence_level": "literature",
    "provenance": "PMID 30419013 / DOI 10.1371/journal.pcbi.1006535（PMC6258373 OA 全文：'The spontaneous rates were 0.5-1.0 Hz for excitatory and 1.5-2.0 Hz for inhibitory cells'）——与 rate_median_hz_lo/hi 同源同值",
-   "note": "**口径分列行（主agent 2026-10-11 要求）**：本行命名并锁定**电生理口径（spike rate）**的文献档；值同 rate_median_hz_lo/hi（0.5–2.0 Hz）与类级行 exc 0.5–1.0 / inh 1.5–2.0。与**钙口径**行 `rate_median_hz_measured_calcium_band_lo|hi` 必须**并列报告、不得混用**。",
+   "note": "**口径分列行（主agent 2026-10-11 要求）**：本行命名并锁定**电生理口径（spike rate）**的文献档；值同 rate_median_hz_lo/hi（0.5–2.0 Hz）与类级行 exc 0.5–1.0 / inh 1.5–2.0。与**钙口径**行 `rate_median_hz_measured_calcium_band_lo|hi` 必须**并列报告、不得混用**。 **【限制补写（主agent 2026-10-11 §二.2）】** 本 literature 档的性质：**是一篇建模论文（PMID 30419013）对实测的转述**，**非原测**；且其量程**只覆盖 L4 回路**（该文题即 layer-4 circuit in silico）⇒ 层/类级判据使用时必须声明「锚来自 L4」。保留「将来有 Allen in vivo 实测量 ⇒ **新增行**替换」的既定 note。",
    "wrong_usage_consequence": "与钙口径混用 ⇒ 见 `calcium_vs_spike_caliber_gap`（方向：中位率低估 + 静默比例高估）",
    "final": "1"
   },
@@ -1237,14 +1237,14 @@
   },
   {
    "key": "microns_sentinel_mask_policy",
-   "value": "unresolved_conflict",
+   "value": "no_mask(retain_and_log)",
    "value_kind": "enum",
    "unit": "",
    "evidence_level": "measured",
-   "provenance": "位置 A（主agent 2026-10-11 指令）：哨兵掩膜必须前置，`uint16>65000 ⇔ int16<0` 作缺失处理并登记；位置 B（docs/m11_acceptance_master.md §3f-3 + data/m11_reference.csv::R-14，节点 B1 推翻主agent）：**无掩膜，保留并登记**（空间成簇证据：3×3 邻域负值比例 p50=0.111 vs 随机 ≈0.000129 ⇒ ~860× 富集、孤立比例 0.000、位于暗区邻域均值≈395 vs 全局中位 1,953）",
-   "note": "**🔴 未决冲突（本节点不擅自裁决）**：同一文件的 §3f-3/R-14 与主agent 最新指令**方向相反**。本行 `final=0` ⇒ 依赖掩膜处置的钙域统计**不得定稿**。影响上界见 `microns_functional_sentinel_fraction`（≤0.0130 个百分点 ⇒ **不阻塞 G1**）。裁决路径（任选）：① 两侧（掩膜/不掩膜）各自复算钙域统计并给差异；② 采纳 B1 的空间成簇证据（若成立则掩膜会删掉真实暗区数据）；③ 主agent 明确指定一方并注明与 §3f-3 的关系。",
-   "wrong_usage_consequence": "静默采纳任一方而不登记 ⇒ 复现性受损；按主agent 指令掩膜但 B1 证据成立 ⇒ **删除真实数据**（暗区成簇样本），使钙域静默/活动比例产生系统性偏差",
-   "final": "0"
+   "provenance": "主agent 裁决 2026-10-11 §一（RF-M11-D 旧指令**已撤回**）+ docs/m11_acceptance_master.md §3f-3（已修订）+ data/m11_reference.csv::R-14（mask_rule=无掩膜，below-baseline 保留并登记 10,383/0.01298%）+ 依据（B1 空间成簇证据）：3×3 邻域负值比例 p50=0.111 vs 随机 ≈0.000129 ⇒ ~860× 富集、孤立比例 0.000、位于暗区（邻域均值≈395 vs 全局中位 1,953）、仅比局部基线低 ~381 counts；若按 uint16 读其真值将是该对象自身最大值的 ~2.3× 而邻居仅 395 ⇒ 物理荒诞",
+   "note": "**定稿（主agent 裁决 2026-10-11 §一）= 无掩膜：`int16<0` 的样本保留并登记**。依据 = B1 的**空间成簇证据**（~860× 富集、孤立比例 0.000、位于暗区、仅低 ~381 counts；uint16 读法要求「孤立超亮点被 395 背景包围」的物理荒诞解）⇒ 主agent 的旧指令（`uint16>65000 ⇔ int16<0` 前置为缺失，写在 B1 取证之前）**已撤回**（M11 验收记录 §3f-3 与 R9 反转已载明）。「哨兵」一词仅指 **32767 饱和**（实测计数 **0**）。**影响上界（本节点量化，保留）**：两侧对计数一致（10,383 / 80,000,000 = **0.01298%**）⇒ 任何**比例/中位数**类统计的变化 **≤0.0130 个百分点**，低于任何合理带宽；**但 P14 的「空间成簇」类判据（像素/邻域统计、暗区偏置）可能更敏感** ⇒ 该处置在 P14 必须显式声明。**【修订记录（append-only 审计）】** 本行**原值 = `unresolved_conflict`、final=0**；2026-10-11 主agent 裁决 §一 定为无掩膜 ⇒ 本行按**裁决指令**改 value/evidence_level/final，**原文逐字保留于下**：\n　原 provenance：`位置 A（主agent 2026-10-11 指令）：哨兵掩膜必须前置，`uint16>65000 ⇔ int16<0` 作缺失处理并登记；位置 B（docs/m11_acceptance_master.md §3f-3 + data/m11_reference.csv::R-14，节点 B1 推翻主agent）：**无掩膜，保留并登记**（空间成簇证据：3×3 邻域负值比例 p50=0.111 vs 随机 ≈0.000129 ⇒ ~860× 富集、孤立比例 0.000、位于暗区邻域均值≈395 vs 全局中位 1,953）`\n　原 note：`**🔴 未决冲突（本节点不擅自裁决）**：同一文件的 §3f-3/R-14 与主agent 最新指令**方向相反**。本行 `final=0` ⇒ 依赖掩膜处置的钙域统计**不得定稿**。影响上界见 `microns_functional_sentinel_fraction`（≤0.0130 个百分点 ⇒ **不阻塞 G1**）。裁决路径（任选）：① 两侧（掩膜/不掩膜）各自复算钙域统计并给差异；② 采纳 B1 的空间成簇证据（若成立则掩膜会删掉真实暗区数据）；③ 主agent 明确指定一方并注明与 §3f-3 的关系。`",
+   "wrong_usage_consequence": "静默采纳任一方而不登记 ⇒ 复现性受损；**按已撤回的旧指令掩膜 ⇒ 删除真实暗区数据**（~860× 空间成簇的 below-baseline 样本），使钙域静默/活动比例产生系统性偏差；反之若在 P14 空间类判据里**不声明**该处置 ⇒ 暗区偏置无法归因（原判据行同款警告保留）",
+   "final": "1"
   },
   {
    "key": "microns_calcium_measured_population_anchors",
@@ -1275,7 +1275,7 @@
    "unit": "Hz",
    "evidence_level": "unavailable",
    "provenance": "docs/m11_data_gate_report.md §1（Allen BO Neuropixels 仅完成目录枚举：569 对象 / 853.7 GB，未下载任何 session NWB）+ docs/m11_acceptance_master.md R3",
-   "note": "Allen BO Neuropixels（在体电生理、清醒）的**实测**率带当前不可得（仅目录）；补取路径 = 托管作业 J1（单 session NWB ≈100–250 MB，20–60 min）。与钙口径行分列（本行 = 电生理口径、在体、Allen 制备）。",
+   "note": "Allen BO Neuropixels（在体电生理、清醒）的**实测**率带当前不可得（仅目录）；补取路径 = 托管作业 J1（单 session NWB ≈100–250 MB，20–60 min）。与钙口径行分列（本行 = 电生理口径、在体、Allen 制备）。 **【J1 裁决 2026-10-11 §二.2：`unavailable（吞吐限制）`】** 主agent 实测本机对 S3 吞吐 **10–17 KB/s**（与 DQ-4 同因）⇒ 单个 ecephys NWB 100–250 MB ⇒ **ETA 1.6–7 h ⇒ 判不可行**（本行 note 原写的 20–60 min 按 M10 锚外推，**偏乐观，已废**）。**可续取计划（未来）**：换网络/换时段 + **Range 续传**（复用 `tools/verify_m11_downloads.py` 的断点校验 exists+getsize+sha256）+ **先探吞吐再决定**。若将来取得 ⇒ **新增行**替换本带（保留本行）。",
    "wrong_usage_consequence": "把「目录可达」当成「率带可得」⇒ 未测被当成已测；仍以 Allen Cell Types **in vitro**（17.41/17.63 Hz）顶上 ⇒ 高 8.7–34.8×（见 proxy_* 行）",
    "final": "0"
   },
@@ -1311,6 +1311,50 @@
    "note": "**同源 dwell 锚（主agent 本轮要求补入）**：Q 法与 H 法的低态 dwell 中位相差 **2.6–6×**、p90 相差 **4.5×**，且 H 法 n=17/16 接近 RF-M11-4 的「bout 数 ≥10」下限（**再少即须判 `unavailable`**）。**归属 S 门**：RF-M11-4 四要素（占用非退化 / 转换存在 / p90÷中位 ≥2 且拒绝指数 / 消融致消失）须与这些锚同算法同参数判。占用 0.613–0.642 满足「两态各 ≥5%」✅。",
    "wrong_usage_consequence": "用 Q 法锚去判 H 法实现（或反之）⇒ 2.6–6× 的口径差被读成机制差；在 P5/G1 内引用 ⇒ 越界（慢状态归 S 门）",
    "final": "1"
+  },
+  {
+   "key": "gate_g1_conditions_v2",
+   "value": "c_and_e_and_tension_quantified",
+   "value_kind": "enum",
+   "unit": "",
+   "evidence_level": "derived",
+   "provenance": "主agent 裁决 2026-10-11 §二.6（收口裁决 6）：G1 = (c) ∧ (e) ∧（张力已定量识别）；(d) 降为 sanity —— 理由采自本表 criterion_d_as_mechanism_evidence=0 与 drive_elasticity_baseline_observed_m10=5.796",
+   "note": "**现行 G1 门条件（取代 `gate_g1_conditions`）**。工具实现见 `tools/validate_p11_resting.py::GATE_CRITERIA`；**代码内的门组成必须与本行声明一致**（`_assert_gate_composition()` 不一致即 raise ⇒ 防「代码与清单漂移」）。「张力已定量识别」= 新增子判据 `p5_g1_tension_quantified`：剂量-响应 ≥3 点 **且** (a)(b) 两条带均已定稿 ⇒ `pass`（给 `n_both_in_band` + 两条 Spearman）；否则 `unavailable`。**`pass` 只表示「张力已被定量」，不表示「张力不存在」**；张力存在时按清单 §4.5(i) 登记为 P6 的输入约束（不得据此把 G1 判 fail，也不得静默放宽带）。",
+   "wrong_usage_consequence": "仍按旧行 (c)∧(d)∧(e) 判定 ⇒ 用非判别性判据 (d) 支撑门，且**漏掉「张力是否已定量」**这一在 M10 已付代价的结构性张力；反之把「张力存在」当成 G1 fail ⇒ 与清单 §4.5(i) 冲突（张力是 P6 的输入约束而非门失败）",
+   "final": "1"
+  },
+  {
+   "key": "j2_reserved_keys_and_acceptance",
+   "value": "rate_median_hz_measured_calcium_band_lo|rate_median_hz_measured_calcium_band_hi|silent_frac_lo|silent_frac_hi|microns_functional_calcium_crossfield_dispersion|silent_frac_calcium_band_lo|silent_frac_calcium_band_hi",
+   "value_kind": "list",
+   "unit": "",
+   "evidence_level": "derived",
+   "provenance": "主agent 裁决 2026-10-11 §二.3（J2 批准；执行归 B1 —— 数据/参考带所有者）+ 本表 rate_median_hz_measured_calcium_band_lo/hi 与 silent_frac_lo/hi 的既有 final=0 状态 + RF-M11-2（跨 field 离散度）+ docs/m11_acceptance_master.md R10（「节点须做①两个 field 都建带 ②给跨 field 离散度」仍 open）",
+   "note": "**J2 产物预留（执行归 B1；本节点只预留 key 与验收条件，不改原行）**。要填的 key：① 钙口径率带 `rate_median_hz_measured_calcium_band_lo/hi`（当前 final=0）；② 钙域静默带 `silent_frac_lo/hi`（当前 final=0）；③ **跨 field 离散度** `microns_functional_calcium_crossfield_dispersion`（**新增 key**；R10 只建了单 field `session4_scan7_field4` 的带）。**验收条件（缺一即不得 final=1）**：a) 口径逐项写清（帧率/ROI 掩膜来源/神经域反演/是否平滑/事件检测阈值）；b) 给**跨 field 与跨时间窗离散度**（≥2 个 field；只有单 field 时须写明「场内外推限制」）；c) 与**电生理域带并列**且不得混用（清单 §4.5(b)）；d) 哨兵/below-baseline 样本处置口径已声明（本表 `microns_sentinel_mask_policy` 未决 ⇒ 先裁决或两侧并列）；e) 若 ROI 提取管线不可得 ⇒ 判 `unavailable` **并写明已覆盖的维度**（R9 新纪律：不得在未举证前写「不可解码/不可用」）。 **【key 命名更新（主agent 2026-10-11 §二）】** 钙域静默带的两条保留行正式命名为 **`silent_frac_calcium_band_lo` / `silent_frac_calcium_band_hi`**（已加入本表；与 rate 侧 `rate_median_hz_measured_calcium_band_*` 对称）；原 `silent_frac_lo/hi` 保留但不再作为钙域的专属命名。**J2 执行归 B1**（本节点不动 J2、不新增 tools/*.py）。",
+   "wrong_usage_consequence": "把 J2 产物直接当 (a) 的电生理带 ⇒ 钙口径 ≠ spike rate（见 `calcium_vs_spike_caliber_gap`）；只建单 field 就声称「目标带定稿」⇒ 跨 field 通用性未测（本轮发现 A）",
+   "final": "1"
+  },
+  {
+   "key": "silent_frac_calcium_band_lo",
+   "value": "unavailable",
+   "value_kind": "unavailable",
+   "unit": "",
+   "evidence_level": "unavailable",
+   "provenance": "主agent 裁决 2026-10-11 §二（J2 批准、执行归 B1；本节点只预留 key）+ 本表 silent_def_primary(zero_count) + microns_functional_calcium_sample_scope_perfield_measured + calcium_caliber_resolvable_floor_hz",
+   "note": "**钙域静默比例带（下界）—— J2 预留行（B1 执行，尚未填值）**。口径候选：① `zero_activity`（该 ROI 在窗内无钙事件）；② `low_activity`（事件率 < 阈值，阈值待定稿）。**必须与电生理域静默带并列且不得混用**（清单 §4.5(b)）；**哨兵处置已定稿 = 无掩膜保留并登记**（本表 `microns_sentinel_mask_policy`）⇒ J2 统计须显式声明该处置。**可分辨率下限** = 1/317.46 s = 0.00315 Hz（单 field 窗），比电生理 0.5 Hz 低 159× ⇒ 长窗内大量「低活动」不可分辨。",
+   "wrong_usage_consequence": "把钙域静默比例当电生理静默比例 ⇒ 系统性**高估静默**（见 calcium_vs_spike_caliber_gap）；在带未定稿（final=0）时用于判定 ⇒ 违反判据带定稿纪律",
+   "final": "0"
+  },
+  {
+   "key": "silent_frac_calcium_band_hi",
+   "value": "unavailable",
+   "value_kind": "unavailable",
+   "unit": "",
+   "evidence_level": "unavailable",
+   "provenance": "同 silent_frac_calcium_band_lo（J2 预留；执行归 B1）",
+   "note": "钙域静默比例带（上界）：同下界行。**口径与事件定义未定稿 ⇒ 不得 final=1**；B1 落口径后填值（新增行）。",
+   "wrong_usage_consequence": "同 silent_frac_calcium_band_lo",
+   "final": "0"
   }
  ],
  "row_index": {
@@ -1563,7 +1607,7 @@
    "unit": "",
    "evidence_level": "unavailable",
    "provenance": "docs/m11_data_gate_report.md §1/§3.1（int16/uint16 与 4 px/µm vs 2.5 µm/px 的 10× 口径差待核）+ docs/m11_acceptance_master.md R4",
-   "note": "钙域静默比例带走查依赖口径定稿（清单 §0.7 #9：帧率/τ_ca/神经域须读回断言）⇒ 未定稿；(b) 当前只能报描述性值",
+   "note": "钙域静默比例带走查依赖口径定稿（清单 §0.7 #9：帧率/τ_ca/神经域须读回断言）⇒ 未定稿；(b) 当前只能报描述性值 **【命名分列（主agent 2026-10-11 §二）】** 为与 rate 侧的 `rate_median_hz_measured_calcium_band_*` 对称，钙域静默带的新增保留行命名为 **`silent_frac_calcium_band_lo/hi`**（见该两行）；本行保留原值，final 维持 0。",
    "wrong_usage_consequence": "把未定稿的带用于判定 ⇒ 违反判据带定稿纪律（清单 §0.7 #16）",
    "final": "0"
   },
@@ -1574,7 +1618,7 @@
    "unit": "",
    "evidence_level": "unavailable",
    "provenance": "docs/m11_data_gate_report.md §1/§3.1 + docs/m11_acceptance_master.md R4",
-   "note": "同上",
+   "note": "同上 **【命名分列（主agent 2026-10-11 §二）】** 为与 rate 侧的 `rate_median_hz_measured_calcium_band_*` 对称，钙域静默带的新增保留行命名为 **`silent_frac_calcium_band_lo/hi`**（见该两行）；本行保留原值，final 维持 0。",
    "wrong_usage_consequence": "同上",
    "final": "0"
   },
@@ -1772,7 +1816,7 @@
    "unit": "",
    "evidence_level": "derived",
    "provenance": "docs/生物仿真M11实施清单.md §4.2 #4 注（门 3/4 通过不能作为机制有效的证据）+ docs/m10_acceptance_master.md A8",
-   "note": "硬条款：(d) 通过不得作为「机制有效」的证据；只能作 sanity 前置",
+   "note": "硬条款：(d) 通过不得作为「机制有效」的证据；只能作 sanity 前置 **【主agent 裁决 2026-10-11 §二.6】** 本行已作为依据被采信：(d) 降为 sanity，工具中恒标 `sanity_precondition(non_discriminative)` 并列入 `non_discriminative_criteria`。",
    "wrong_usage_consequence": "把 (d) 当判别性证据 ⇒ 重演 L23「基线自身通过 ⇒ 阶梯无判别性」",
    "final": "1"
   },
@@ -1915,9 +1959,9 @@
    "unit": "",
    "evidence_level": "derived",
    "provenance": "docs/生物仿真M11实施清单.md §4.5 门判定行（(c) ∧ (d) ∧ (e)）",
-   "note": "(c)(d)(e) 为 G1 门条件；不过则 P6 不得启动",
+   "note": "(c)(d)(e) 为 G1 门条件；不过则 P6 不得启动 **【主agent 裁决 2026-10-11 §二.6】** 本行的门组成 `(c)∧(d)∧(e)` **已被修订**：G1 = **(c) ∧ (e) ∧ 张力已定量识别**，**(d) 降为 sanity**（理由：M10 基线臂自身即过 (d)（+579.6% / 修正档 +573.1%）⇒ (d) 无判别性，用它支撑门等于用一条构造性可过的判据）。现行声明见新增行 `gate_g1_conditions_v2`。本行 value 逐字保留，final 置 0。",
    "wrong_usage_consequence": "若 (d) 已被登记为无判别性（criterion_d_as_mechanism_evidence=0），仅凭 (c)∧(d) 判通过等于用一条无判别性判据支撑门 ⇒ 本工具必须同时输出 (e) 与张力登记（清单未排除，主agent 可裁决加强）",
-   "final": "1"
+   "final": "0"
   },
   "gate_band_finalized_required": {
    "key": "gate_band_finalized_required",
@@ -2212,7 +2256,7 @@
    "unit": "Hz",
    "evidence_level": "literature",
    "provenance": "PMID 30419013 / DOI 10.1371/journal.pcbi.1006535（PMC6258373 OA 全文：'The spontaneous rates were 0.5-1.0 Hz for excitatory and 1.5-2.0 Hz for inhibitory cells'）——与 rate_median_hz_lo/hi 同源同值",
-   "note": "**口径分列行（主agent 2026-10-11 要求）**：本行命名并锁定**电生理口径（spike rate）**的文献档；值同 rate_median_hz_lo/hi（0.5–2.0 Hz）与类级行 exc 0.5–1.0 / inh 1.5–2.0。与**钙口径**行 `rate_median_hz_measured_calcium_band_lo|hi` 必须**并列报告、不得混用**。",
+   "note": "**口径分列行（主agent 2026-10-11 要求）**：本行命名并锁定**电生理口径（spike rate）**的文献档；值同 rate_median_hz_lo/hi（0.5–2.0 Hz）与类级行 exc 0.5–1.0 / inh 1.5–2.0。与**钙口径**行 `rate_median_hz_measured_calcium_band_lo|hi` 必须**并列报告、不得混用**。 **【限制补写（主agent 2026-10-11 §二.2）】** 本 literature 档的性质：**是一篇建模论文（PMID 30419013）对实测的转述**，**非原测**；且其量程**只覆盖 L4 回路**（该文题即 layer-4 circuit in silico）⇒ 层/类级判据使用时必须声明「锚来自 L4」。保留「将来有 Allen in vivo 实测量 ⇒ **新增行**替换」的既定 note。",
    "wrong_usage_consequence": "与钙口径混用 ⇒ 见 `calcium_vs_spike_caliber_gap`（方向：中位率低估 + 静默比例高估）",
    "final": "1"
   },
@@ -2306,14 +2350,14 @@
   },
   "microns_sentinel_mask_policy": {
    "key": "microns_sentinel_mask_policy",
-   "value": "unresolved_conflict",
+   "value": "no_mask(retain_and_log)",
    "value_kind": "enum",
    "unit": "",
    "evidence_level": "measured",
-   "provenance": "位置 A（主agent 2026-10-11 指令）：哨兵掩膜必须前置，`uint16>65000 ⇔ int16<0` 作缺失处理并登记；位置 B（docs/m11_acceptance_master.md §3f-3 + data/m11_reference.csv::R-14，节点 B1 推翻主agent）：**无掩膜，保留并登记**（空间成簇证据：3×3 邻域负值比例 p50=0.111 vs 随机 ≈0.000129 ⇒ ~860× 富集、孤立比例 0.000、位于暗区邻域均值≈395 vs 全局中位 1,953）",
-   "note": "**🔴 未决冲突（本节点不擅自裁决）**：同一文件的 §3f-3/R-14 与主agent 最新指令**方向相反**。本行 `final=0` ⇒ 依赖掩膜处置的钙域统计**不得定稿**。影响上界见 `microns_functional_sentinel_fraction`（≤0.0130 个百分点 ⇒ **不阻塞 G1**）。裁决路径（任选）：① 两侧（掩膜/不掩膜）各自复算钙域统计并给差异；② 采纳 B1 的空间成簇证据（若成立则掩膜会删掉真实暗区数据）；③ 主agent 明确指定一方并注明与 §3f-3 的关系。",
-   "wrong_usage_consequence": "静默采纳任一方而不登记 ⇒ 复现性受损；按主agent 指令掩膜但 B1 证据成立 ⇒ **删除真实数据**（暗区成簇样本），使钙域静默/活动比例产生系统性偏差",
-   "final": "0"
+   "provenance": "主agent 裁决 2026-10-11 §一（RF-M11-D 旧指令**已撤回**）+ docs/m11_acceptance_master.md §3f-3（已修订）+ data/m11_reference.csv::R-14（mask_rule=无掩膜，below-baseline 保留并登记 10,383/0.01298%）+ 依据（B1 空间成簇证据）：3×3 邻域负值比例 p50=0.111 vs 随机 ≈0.000129 ⇒ ~860× 富集、孤立比例 0.000、位于暗区（邻域均值≈395 vs 全局中位 1,953）、仅比局部基线低 ~381 counts；若按 uint16 读其真值将是该对象自身最大值的 ~2.3× 而邻居仅 395 ⇒ 物理荒诞",
+   "note": "**定稿（主agent 裁决 2026-10-11 §一）= 无掩膜：`int16<0` 的样本保留并登记**。依据 = B1 的**空间成簇证据**（~860× 富集、孤立比例 0.000、位于暗区、仅低 ~381 counts；uint16 读法要求「孤立超亮点被 395 背景包围」的物理荒诞解）⇒ 主agent 的旧指令（`uint16>65000 ⇔ int16<0` 前置为缺失，写在 B1 取证之前）**已撤回**（M11 验收记录 §3f-3 与 R9 反转已载明）。「哨兵」一词仅指 **32767 饱和**（实测计数 **0**）。**影响上界（本节点量化，保留）**：两侧对计数一致（10,383 / 80,000,000 = **0.01298%**）⇒ 任何**比例/中位数**类统计的变化 **≤0.0130 个百分点**，低于任何合理带宽；**但 P14 的「空间成簇」类判据（像素/邻域统计、暗区偏置）可能更敏感** ⇒ 该处置在 P14 必须显式声明。**【修订记录（append-only 审计）】** 本行**原值 = `unresolved_conflict`、final=0**；2026-10-11 主agent 裁决 §一 定为无掩膜 ⇒ 本行按**裁决指令**改 value/evidence_level/final，**原文逐字保留于下**：\n　原 provenance：`位置 A（主agent 2026-10-11 指令）：哨兵掩膜必须前置，`uint16>65000 ⇔ int16<0` 作缺失处理并登记；位置 B（docs/m11_acceptance_master.md §3f-3 + data/m11_reference.csv::R-14，节点 B1 推翻主agent）：**无掩膜，保留并登记**（空间成簇证据：3×3 邻域负值比例 p50=0.111 vs 随机 ≈0.000129 ⇒ ~860× 富集、孤立比例 0.000、位于暗区邻域均值≈395 vs 全局中位 1,953）`\n　原 note：`**🔴 未决冲突（本节点不擅自裁决）**：同一文件的 §3f-3/R-14 与主agent 最新指令**方向相反**。本行 `final=0` ⇒ 依赖掩膜处置的钙域统计**不得定稿**。影响上界见 `microns_functional_sentinel_fraction`（≤0.0130 个百分点 ⇒ **不阻塞 G1**）。裁决路径（任选）：① 两侧（掩膜/不掩膜）各自复算钙域统计并给差异；② 采纳 B1 的空间成簇证据（若成立则掩膜会删掉真实暗区数据）；③ 主agent 明确指定一方并注明与 §3f-3 的关系。`",
+   "wrong_usage_consequence": "静默采纳任一方而不登记 ⇒ 复现性受损；**按已撤回的旧指令掩膜 ⇒ 删除真实暗区数据**（~860× 空间成簇的 below-baseline 样本），使钙域静默/活动比例产生系统性偏差；反之若在 P14 空间类判据里**不声明**该处置 ⇒ 暗区偏置无法归因（原判据行同款警告保留）",
+   "final": "1"
   },
   "microns_calcium_measured_population_anchors": {
    "key": "microns_calcium_measured_population_anchors",
@@ -2344,7 +2388,7 @@
    "unit": "Hz",
    "evidence_level": "unavailable",
    "provenance": "docs/m11_data_gate_report.md §1（Allen BO Neuropixels 仅完成目录枚举：569 对象 / 853.7 GB，未下载任何 session NWB）+ docs/m11_acceptance_master.md R3",
-   "note": "Allen BO Neuropixels（在体电生理、清醒）的**实测**率带当前不可得（仅目录）；补取路径 = 托管作业 J1（单 session NWB ≈100–250 MB，20–60 min）。与钙口径行分列（本行 = 电生理口径、在体、Allen 制备）。",
+   "note": "Allen BO Neuropixels（在体电生理、清醒）的**实测**率带当前不可得（仅目录）；补取路径 = 托管作业 J1（单 session NWB ≈100–250 MB，20–60 min）。与钙口径行分列（本行 = 电生理口径、在体、Allen 制备）。 **【J1 裁决 2026-10-11 §二.2：`unavailable（吞吐限制）`】** 主agent 实测本机对 S3 吞吐 **10–17 KB/s**（与 DQ-4 同因）⇒ 单个 ecephys NWB 100–250 MB ⇒ **ETA 1.6–7 h ⇒ 判不可行**（本行 note 原写的 20–60 min 按 M10 锚外推，**偏乐观，已废**）。**可续取计划（未来）**：换网络/换时段 + **Range 续传**（复用 `tools/verify_m11_downloads.py` 的断点校验 exists+getsize+sha256）+ **先探吞吐再决定**。若将来取得 ⇒ **新增行**替换本带（保留本行）。",
    "wrong_usage_consequence": "把「目录可达」当成「率带可得」⇒ 未测被当成已测；仍以 Allen Cell Types **in vitro**（17.41/17.63 Hz）顶上 ⇒ 高 8.7–34.8×（见 proxy_* 行）",
    "final": "0"
   },
@@ -2380,6 +2424,50 @@
    "note": "**同源 dwell 锚（主agent 本轮要求补入）**：Q 法与 H 法的低态 dwell 中位相差 **2.6–6×**、p90 相差 **4.5×**，且 H 法 n=17/16 接近 RF-M11-4 的「bout 数 ≥10」下限（**再少即须判 `unavailable`**）。**归属 S 门**：RF-M11-4 四要素（占用非退化 / 转换存在 / p90÷中位 ≥2 且拒绝指数 / 消融致消失）须与这些锚同算法同参数判。占用 0.613–0.642 满足「两态各 ≥5%」✅。",
    "wrong_usage_consequence": "用 Q 法锚去判 H 法实现（或反之）⇒ 2.6–6× 的口径差被读成机制差；在 P5/G1 内引用 ⇒ 越界（慢状态归 S 门）",
    "final": "1"
+  },
+  "gate_g1_conditions_v2": {
+   "key": "gate_g1_conditions_v2",
+   "value": "c_and_e_and_tension_quantified",
+   "value_kind": "enum",
+   "unit": "",
+   "evidence_level": "derived",
+   "provenance": "主agent 裁决 2026-10-11 §二.6（收口裁决 6）：G1 = (c) ∧ (e) ∧（张力已定量识别）；(d) 降为 sanity —— 理由采自本表 criterion_d_as_mechanism_evidence=0 与 drive_elasticity_baseline_observed_m10=5.796",
+   "note": "**现行 G1 门条件（取代 `gate_g1_conditions`）**。工具实现见 `tools/validate_p11_resting.py::GATE_CRITERIA`；**代码内的门组成必须与本行声明一致**（`_assert_gate_composition()` 不一致即 raise ⇒ 防「代码与清单漂移」）。「张力已定量识别」= 新增子判据 `p5_g1_tension_quantified`：剂量-响应 ≥3 点 **且** (a)(b) 两条带均已定稿 ⇒ `pass`（给 `n_both_in_band` + 两条 Spearman）；否则 `unavailable`。**`pass` 只表示「张力已被定量」，不表示「张力不存在」**；张力存在时按清单 §4.5(i) 登记为 P6 的输入约束（不得据此把 G1 判 fail，也不得静默放宽带）。",
+   "wrong_usage_consequence": "仍按旧行 (c)∧(d)∧(e) 判定 ⇒ 用非判别性判据 (d) 支撑门，且**漏掉「张力是否已定量」**这一在 M10 已付代价的结构性张力；反之把「张力存在」当成 G1 fail ⇒ 与清单 §4.5(i) 冲突（张力是 P6 的输入约束而非门失败）",
+   "final": "1"
+  },
+  "j2_reserved_keys_and_acceptance": {
+   "key": "j2_reserved_keys_and_acceptance",
+   "value": "rate_median_hz_measured_calcium_band_lo|rate_median_hz_measured_calcium_band_hi|silent_frac_lo|silent_frac_hi|microns_functional_calcium_crossfield_dispersion|silent_frac_calcium_band_lo|silent_frac_calcium_band_hi",
+   "value_kind": "list",
+   "unit": "",
+   "evidence_level": "derived",
+   "provenance": "主agent 裁决 2026-10-11 §二.3（J2 批准；执行归 B1 —— 数据/参考带所有者）+ 本表 rate_median_hz_measured_calcium_band_lo/hi 与 silent_frac_lo/hi 的既有 final=0 状态 + RF-M11-2（跨 field 离散度）+ docs/m11_acceptance_master.md R10（「节点须做①两个 field 都建带 ②给跨 field 离散度」仍 open）",
+   "note": "**J2 产物预留（执行归 B1；本节点只预留 key 与验收条件，不改原行）**。要填的 key：① 钙口径率带 `rate_median_hz_measured_calcium_band_lo/hi`（当前 final=0）；② 钙域静默带 `silent_frac_lo/hi`（当前 final=0）；③ **跨 field 离散度** `microns_functional_calcium_crossfield_dispersion`（**新增 key**；R10 只建了单 field `session4_scan7_field4` 的带）。**验收条件（缺一即不得 final=1）**：a) 口径逐项写清（帧率/ROI 掩膜来源/神经域反演/是否平滑/事件检测阈值）；b) 给**跨 field 与跨时间窗离散度**（≥2 个 field；只有单 field 时须写明「场内外推限制」）；c) 与**电生理域带并列**且不得混用（清单 §4.5(b)）；d) 哨兵/below-baseline 样本处置口径已声明（本表 `microns_sentinel_mask_policy` 未决 ⇒ 先裁决或两侧并列）；e) 若 ROI 提取管线不可得 ⇒ 判 `unavailable` **并写明已覆盖的维度**（R9 新纪律：不得在未举证前写「不可解码/不可用」）。 **【key 命名更新（主agent 2026-10-11 §二）】** 钙域静默带的两条保留行正式命名为 **`silent_frac_calcium_band_lo` / `silent_frac_calcium_band_hi`**（已加入本表；与 rate 侧 `rate_median_hz_measured_calcium_band_*` 对称）；原 `silent_frac_lo/hi` 保留但不再作为钙域的专属命名。**J2 执行归 B1**（本节点不动 J2、不新增 tools/*.py）。",
+   "wrong_usage_consequence": "把 J2 产物直接当 (a) 的电生理带 ⇒ 钙口径 ≠ spike rate（见 `calcium_vs_spike_caliber_gap`）；只建单 field 就声称「目标带定稿」⇒ 跨 field 通用性未测（本轮发现 A）",
+   "final": "1"
+  },
+  "silent_frac_calcium_band_lo": {
+   "key": "silent_frac_calcium_band_lo",
+   "value": "unavailable",
+   "value_kind": "unavailable",
+   "unit": "",
+   "evidence_level": "unavailable",
+   "provenance": "主agent 裁决 2026-10-11 §二（J2 批准、执行归 B1；本节点只预留 key）+ 本表 silent_def_primary(zero_count) + microns_functional_calcium_sample_scope_perfield_measured + calcium_caliber_resolvable_floor_hz",
+   "note": "**钙域静默比例带（下界）—— J2 预留行（B1 执行，尚未填值）**。口径候选：① `zero_activity`（该 ROI 在窗内无钙事件）；② `low_activity`（事件率 < 阈值，阈值待定稿）。**必须与电生理域静默带并列且不得混用**（清单 §4.5(b)）；**哨兵处置已定稿 = 无掩膜保留并登记**（本表 `microns_sentinel_mask_policy`）⇒ J2 统计须显式声明该处置。**可分辨率下限** = 1/317.46 s = 0.00315 Hz（单 field 窗），比电生理 0.5 Hz 低 159× ⇒ 长窗内大量「低活动」不可分辨。",
+   "wrong_usage_consequence": "把钙域静默比例当电生理静默比例 ⇒ 系统性**高估静默**（见 calcium_vs_spike_caliber_gap）；在带未定稿（final=0）时用于判定 ⇒ 违反判据带定稿纪律",
+   "final": "0"
+  },
+  "silent_frac_calcium_band_hi": {
+   "key": "silent_frac_calcium_band_hi",
+   "value": "unavailable",
+   "value_kind": "unavailable",
+   "unit": "",
+   "evidence_level": "unavailable",
+   "provenance": "同 silent_frac_calcium_band_lo（J2 预留；执行归 B1）",
+   "note": "钙域静默比例带（上界）：同下界行。**口径与事件定义未定稿 ⇒ 不得 final=1**；B1 落口径后填值（新增行）。",
+   "wrong_usage_consequence": "同 silent_frac_calcium_band_lo",
+   "final": "0"
   }
  },
  "sample_scope_correction": {
@@ -2409,5 +2497,42 @@
   "dwell_low_p90_s": "Q 7.0–7.6；H 32.6–34.2",
   "caliber_spread": "跨法（Q/H）dwell 中位 2.6–6×、p90 4.5×；跨平滑 3.29×；跨箱宽 7.6–32 s 共 4.2× ⇒ **全部必须并列**（RF-M11-2）",
   "ownership": "**S 门（P6）/RF-M11-2**；P5/G1 内引用即越界"
+ },
+ "mainagent_rulings_2026_10_11": {
+  "A12 更正（主agent 自纠）": "三值实际配置不同（T=2 s/N=1000/settle=300 ms；T=60 s/N=1000/settle=1000 ms；T=120 s/N=250/settle=1000 ms）⇒ 「+76% 时长漂移」是把配置差异说成时长依赖；受控截断实验仅 +1.4%。已由主agent 在 m10_acceptance_master §4.3 与 m11_acceptance_master §3i 更正。**本节点 L8「先登记、不擅改」被确认为正确处置。**",
+  "①": "A12 更正（上）",
+  "②": "(a) 的带：**保留 literature 档**（0.5/2.0 Hz，PMID 30419013 全文已核）；**J1 判 unavailable（吞吐限制）**（S3 实测 10–17 KB/s ⇒ ETA 1.6–7 h）⇒ 已登记吞吐数据 + 续取计划 + 「literature 是建模论文转述实测、非原测、只覆盖 L4」的限制（见 `allen_bo_neuropixels_spike_rate_band` 与 `rate_median_hz_literature_spike_band` 的 note 追加）",
+  "③": "**J2 批准**（钙域静默/率口径重建）；**执行归 B1** ⇒ 本节点只**预留 key 与验收条件**（`j2_reserved_keys_and_acceptance`：钙率带 2 key + 静默带 2 key + **新增** 跨 field 离散度 key；5 条验收条件）",
+  "④": "清单文字更正批准（§1.5 C3 → PMID 8340806 + 跨物种/麻醉标注；§0.9 N_full=75,909 → literature_unverified）；**由主agent 落盘**",
+  "⑤": "`m11_acceptance_master.md` §4 与 §3d 的矛盾**已修**（§4 加「已被 R9 反转」标注）",
+  "⑥": "**G1 门条件加强批准**：G1 = **(c) ∧ (e) ∧ 张力已定量识别**，**(d) 降为 sanity** ⇒ 已落 `gate_g1_conditions_v2` + 子判据 `p5_g1_tension_quantified`（≥3 剂量点 且 (a)(b) 带均定稿 ⇒ pass）+ **`_assert_gate_composition()` 断言代码与表声明不得漂移**",
+  "G0 现状": "**partial**（(a)(e)(f) pass、off_state_equivalence 已由 fail 转 pass；**(b)(c)(d)(g)(h) 与 4 项 extensions 仍 unavailable**）⇒ **G0 通过条件 = 全项 measured 且全过** ⇒ **G1 暂不得启动**",
+  "掩膜裁决（§一）": {
+   "verdict": "**no_mask(retain_and_log)** —— `int16<0` 样本保留并登记；主agent 的旧指令（`uint16>65000 ⇔ int16<0` 前置为缺失，写在 B1 取证之前）**已撤回**",
+   "basis": "B1 空间成簇证据：3×3 邻域负值比例 p50 0.111 vs 随机 ≈0.000129（~860× 富集）、孤立比例 0.000、位于暗区（邻域均值 ≈395 vs 全局中位 1,953）、仅比局部基线低 ~381 counts；uint16 读法要求「孤立超亮点被 395 背景包围」的物理荒诞解",
+   "impact_bound_kept": "两侧计数一致（10,383/80,000,000 = 0.01298%）⇒ 比例/中位数类统计影响 ≤0.0130 个百分点；**但 P14 空间类判据可能更敏感**（已保留于该行 note）",
+   "row_action": "`microns_sentinel_mask_policy`：value `unresolved_conflict` → `no_mask(retain_and_log)`、evidence_level → measured、final 0 → 1；**原 provenance/note/wuc 逐字保留于 note 的「修订记录」段**（append-only 审计）"
+  },
+  "J2 key 命名（§二）": {
+   "reserved_keys_final": [
+    "rate_median_hz_measured_calcium_band_lo",
+    "rate_median_hz_measured_calcium_band_hi",
+    "silent_frac_calcium_band_lo",
+    "silent_frac_calcium_band_hi",
+    "microns_functional_calcium_crossfield_dispersion"
+   ],
+   "owner": "M11-B1（J2 已批准并归 B1；本节点不动 J2）",
+   "row_action": "新增 `silent_frac_calcium_band_lo/hi`（unavailable, final=0）；`silent_frac_lo/hi` 保留 + 命名分列指针；`j2_reserved_keys_and_acceptance` 的 key 清单与 note 同步更新"
+  },
+  "G0 现状（R13 后）": "节点报 **pass**，但 **(b) 出现 fail→pass 的极端翻转**（0.5 Hz 档：静默比差 14.0 pp/KS p=6.8e-4 → 0.0 pp/p=1.0/逐位相同）⇒ **主agent 已暂缓采信**，要求交「翻转解释 + `root_cause`/`fix` 字段 + `registered` 四态归一」。**未解释前 G0 不算通过** ⇒ **G1 继续停在设计/工具态**。"
+ },
+ "gate_composition": {
+  "declared_in_table": "c_and_e_and_tension_quantified",
+  "implemented_in_code": "c_and_e_and_tension_quantified（GATE_CRITERIA = (c, e, p5_g1_tension_quantified)）",
+  "sanity": [
+   "p5_d_drive_elasticity"
+  ],
+  "anti_drift_assert": "`tools/validate_p11_resting.py::Evaluator._assert_gate_composition()` —— 表声明与代码不一致即 raise（负向测试已实测触发：把表改成 c_and_d_and_e ⇒ AssertionError「门组成漂移」）",
+  "tension_criterion_status_rule": "≥3 剂量点 且 (a)(b) 两条带均已定稿 ⇒ pass（给 n_both_in_band + 两条 Spearman）；否则 unavailable。**pass 只表示「张力已被定量」，不表示「张力不存在」**"
  }
 }

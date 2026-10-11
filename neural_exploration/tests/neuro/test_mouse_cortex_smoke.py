@@ -202,3 +202,101 @@ def test_two_comp_is_explicitly_unavailable():
     eng.finalize()
     with pytest.raises(NotImplementedError):
         eng.run(10, fidelity="two_comp")
+
+
+# ===========================================================================
+# RF-M11-F 回归测试（已知缺陷必须成为**被测试的显式状态**）
+# ===========================================================================
+def _expected_delivered(edges, cls_of_edge, firing, step, n_slot, n, n_ch):
+    """独立期望：逐边算 (arrival_slot, cls, post, amp) 后按目标格**合并求和**（index_add_ 语义）。"""
+    merged = {}
+    for k, (pre, post, g, d) in enumerate(edges):
+        if pre in firing:
+            cls = int(cls_of_edge[k])
+            if n_ch == 2 and cls > 0:
+                cls = 1
+            key = ((step + int(d)) % n_slot, cls, int(post))
+            merged[key] = merged.get(key, 0.0) + float(g)
+    return sorted((k[0], k[1], k[2], v) for k, v in merged.items())
+
+
+def _actual_delivered(engine, firing, step):
+    """由**写入前/后环槽差**反解实际落槽（与期望算途径完全独立）。"""
+    ncn = int(engine.n_ch) * engine.n
+    before = engine._ring.clone()
+    v = torch.zeros(engine.n, dtype=torch.bool, device=engine.device)
+    v[list(firing)] = True
+    engine._deliver_step(v, step)
+    after = engine._ring - before
+    out = []
+    for flat in (after != 0).nonzero(as_tuple=False).flatten().cpu().numpy():
+        slot, rem = divmod(int(flat), ncn)
+        cls, post = divmod(rem, engine.n)
+        out.append((slot, int(cls), int(post), float(after[flat].item())))
+    return sorted(out)
+
+
+def test_sync_firing_delivery_no_raise_and_per_class_slots():
+    """(f) 回归：**同一步多源发放**不得抛错，且逐类落槽必须与独立期望逐项相等。
+
+    构造含"单源 2 条同类边打到同一目标"的最小网络（M9 冻结公式在此越界，M10 E5-FIX 修好）
+    + 三条同类不同延迟档的边 + E/PV/SST/VIP 四类标签 ⇒ 覆盖 M10 L17/L21 的全部失效语境。
+    """
+    edges = [(0, 3, 11.0, 40), (0, 3, 13.0, 40), (0, 3, 23.0, 40),
+             (1, 3, 31.0, 40), (1, 4, 37.0, 60), (2, 5, 41.0, 80)]
+    cls = [0, 0, 0, 1, 2, 3]
+    firing = [0, 1, 2]                       # 3 个源神经元在**同一步**发放
+    for classes in (4, 2):
+        e = MouseCortexEngine(6, device="cpu", use_compile=False, verbose=False)
+        if classes == 4:
+            e.configure_subtypes(True)
+        e.finalize()
+        e.configure_layers(np.zeros(6, dtype=np.int64), delay_bins=(40, 60, 80))
+        c = np.asarray(cls, dtype=np.int8) if classes == 4 else np.asarray(
+            [0, 0, 0, 1, 1, 1], dtype=np.int8)
+        e.add_synapses(np.asarray([x[0] for x in edges]), np.asarray([x[1] for x in edges]),
+                       np.asarray([x[2] for x in edges], dtype=np.float32),
+                       np.asarray([x[3] for x in edges], dtype=np.int32),
+                       inhibitory=(c > 0), syn_class=c)
+        e.finalize()
+        e.reset(seed=0)
+        exp = _expected_delivered(edges, c.tolist(), firing, 0, e.n_slot, e.n, e.n_ch)
+        got = _actual_delivered(e, firing, 0)          # 不得抛错
+        assert got == exp, "同步发放下的逐类落槽与独立期望不一致：%s vs %s" % (got, exp)
+        if classes == 4:
+            # 逐类边数 == 逐类槽内边数（编码路径断言，装配方意图 vs 内核实际）
+            assert e.class_slot_counts() == e.class_edge_counts() == {
+                "E": 3, "PV": 1, "SST": 1, "VIP": 1}
+
+
+@pytest.mark.parametrize("delivery", ["step", "chunk"])
+def test_step_segment_composability_k_scan(delivery):
+    """(e) 回归：step/chunk 两路径的 k=1/2/3/5/10 分段必须**逐位一致**（0.0%）。
+
+    含外部事件（正是 RF-M11-F 中 step 口径回归的触发条件：冻结件按局部步号索引外部事件）。
+    """
+    net = _net()
+    st, ne, gg = _events(T=2000)
+    base = None
+    for k in (1, 2, 3, 5, 10):
+        e = MouseCortexEngine(N, device="cpu", use_compile=False, verbose=False)
+        e.configure_subtypes(True)
+        e.configure_slow(True, tau_slow_ms=1000.0, inc_per_spike=6.0)
+        e.configure_layers(net["layer_of"], delay_bins=net["meta"]["delay_bins"])
+        attach_to_engine(e, net)
+        e.set_external_events(st, ne, gg, n_steps=2000)
+        e.reset(seed=1)
+        e.reset_counts()
+        done = 0
+        lens = [2000 // k + (1 if i < 2000 % k else 0) for i in range(k)]
+        for ln in lens:
+            e.run(ln, delivery=delivery, record="counts")
+            done += ln
+        assert done == 2000
+        cnt = e.t_count.detach().cpu().numpy().astype(np.int64)
+        tot = int(cnt.sum())
+        if base is None:
+            base = (tot, cnt)
+        assert tot == base[0] and np.array_equal(cnt, base[1]), (
+            "(e) 回归失败：delivery=%s k=%d 总脉冲 %d vs k=1 %d、逐神经元计数差异 %d 个"
+            % (delivery, k, tot, base[0], int((cnt != base[1]).sum())))

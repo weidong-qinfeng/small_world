@@ -355,6 +355,31 @@ def main():
                         ((dp.get("battery") or {}).get("little-endian int16（我/主 agent 首版读法）") or {}).get("lat_x_corr"),
                         ((dp.get("battery") or {}).get("little-endian int16（我/主 agent 首版读法）") or {}).get("frame_lag1"))))
 
+    # ---------------- P1.9 计数与磁盘一致（主 agent 必须修项）----------------
+    dv = (cnt.get("disk_verified") or {}).get("artifacts") or []
+    nullish = [d["key"] for d in dv if d.get("status") in ("COMPLETE", "INCOMPLETE")
+               and d.get("bytes_on_disk") in (None, "")]
+    no_note = [d["key"] for d in dv if d["status"] in ("INCOMPLETE", "MISSING") and not d.get("note")]
+    A.append(assert_("P1.9a 计数产物逐行磁盘核对（已落盘者不得留空；未完成者写 INCOMPLETE+原因）",
+                     bool(dv) and not nullish and not no_note,
+                     "n=%d；空值=%s；缺原因=%s" % (len(dv), nullish, no_note)))
+    pcn = (cnt.get("allen") or {}).get("per_cell_nwb") or {}
+    A.append(assert_("P1.9b allen.per_cell_nwb 关键字段非 null（HEAD/大小/头状态/分组）",
+                     all(pcn.get(k) not in (None, "") for k in
+                         ("head_http_code", "content_length", "local_full_bytes", "header_status")),
+                     json.dumps({k: pcn.get(k) for k in
+                                 ("head_http_code", "content_length", "local_full_bytes", "header_status",
+                                  "header_source")}, ensure_ascii=False)))
+    ver = load(os.path.join(DATA, "m11_functional_subset_verify.json")) or {}
+    checks = ver.get("checks") or []
+    A.append(assert_("P1.9c 子集解压验证产物已按**大端口径**重生成（含 LE 误读对照）",
+                     bool(checks) and all(c.get("structural_gate") == "pass" for c in checks)
+                     and all("le_frac_negative" in c for c in checks),
+                     "n=%d；示例 be_lat_x=%s be_frame=%s le_frac_negative=%s"
+                     % (len(checks), checks[0].get("be_lat_x") if checks else None,
+                        checks[0].get("be_frame_lag1") if checks else None,
+                        checks[0].get("le_frac_negative") if checks else None)))
+
     # ---------------- 判定 ----------------
     for a in A:
         if not a["ok"]:

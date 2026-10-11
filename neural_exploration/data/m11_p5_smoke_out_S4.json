@@ -3,8 +3,8 @@
  "verdict_reason": "存在硬失败/口径缺陷（见 hard_failures、duration_flip 与 ladder_arms_look_truncated）⇒ 该轮结论无效",
  "gate_conditions": {
   "p5_c_selfsustain": "unavailable",
-  "p5_d_drive_elasticity": "pass",
-  "p5_e_ei_balance": "unavailable"
+  "p5_e_ei_balance": "unavailable",
+  "p5_g1_tension_quantified": "unavailable"
  },
  "criterion_status": {
   "p5_a_rate_median": "fail",
@@ -15,13 +15,14 @@
   "p5_f_bounded": "pass",
   "p5_g_wallclock": "unavailable",
   "p5_h_determinism": "unavailable",
-  "p5_i_tradeoff": "unavailable"
+  "p5_i_tradeoff": "unavailable",
+  "p5_g1_tension_quantified": "unavailable"
  },
  "state_counts": {
   "pass": 2,
   "fail": 2,
   "invalid": 0,
-  "unavailable": 7
+  "unavailable": 8
  },
  "hard_failures": [
   "M0_base_X1p15: double_estimator_mismatch[counts_sum__vs__pop_trace_sum]: 相对差 0.1304 > 0.02 （同一物理量的两个独立估计器不一致 ⇒ 硬门③ 失败；M10 历史事故 ×1.3004/×1.15/43× 的同族）"
@@ -124,7 +125,7 @@
  },
  "exit_code": 2,
  "generated_by": "tools/validate_p11_resting.py",
- "generated_at": "2026-10-11T22:30:19",
+ "generated_at": "2026-10-11T22:34:38",
  "role": "M11 P5/G1 离线评估（只做分析，不做仿真；不写判据带）",
  "protocol_path": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_smoke_protocol_S4.json",
  "protocol": {
@@ -146,6 +147,7 @@
   "③_double_estimator": "counts/pop_trace/agg 三估计器两两相对差 ≤2%，并含轨迹长度⟺(T,dt) 量纲自检",
   "④_duration_ladder": "同一配置 {T_min,2×T_min,4×T_min} 三档；跨 T 判定翻转 ⇒ invalid",
   "⑤_discriminativeness": "必须给出无机制基线臂的同一判据值；不得用非判别性判据作机制证据",
+  "⑥_gate_composition": "G1 = (c) ∧ (e) ∧ 张力已定量识别（主agent 2026-10-11 §二.6）；(d) 降为 sanity",
   "⑥_caliber_annotation": "逐行带 protocol(T/settle/seed/bin/smooth) 与 estimator"
  },
  "arms": [
@@ -374,12 +376,26 @@
   }
  },
  "output_invariants": {
-  "rows": 11,
+  "rows": 12,
   "units": 1,
   "criteria_per_unit": [
-   9
+   10
   ],
   "caliber_fields_checked": 8
+ },
+ "gate_composition": {
+  "declaration_key": "gate_g1_conditions_v2",
+  "declared": "c_and_e_and_tension_quantified",
+  "code": "c_and_e_and_tension_quantified",
+  "gate_criteria": [
+   "p5_c_selfsustain",
+   "p5_e_ei_balance",
+   "p5_g1_tension_quantified"
+  ],
+  "sanity_criteria": [
+   "p5_d_drive_elasticity"
+  ],
+  "note": "(d) 降为 sanity（M10 基线臂 +579.6% 即过 ⇒ 无判别性）"
  },
  "rows": [
   {
@@ -754,6 +770,38 @@
    "protocol_T_ms": 120000.0,
    "protocol_settle_ms": 500.0,
    "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "M10_M0_T120s",
+   "T_ms": 120000.0,
+   "mechanism": "none",
+   "criterion": "p5_g1_tension_quantified",
+   "estimator": "dose_sweep_rank_correlation",
+   "value": -1.0,
+   "unit": "",
+   "band_lo": null,
+   "band_hi": null,
+   "band_keys": "tension_detect_required|tension_spearman_max",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "unavailable",
+   "reason": "张力未定量（(a) 或 (b) 的带未定稿 ⇒ 张力只能定性（n_both_in_band 此时恒为 0，不构成张力证据））⇒ 该门条件不得判 pass/fail；**注意 n_both_in_band 在带未定稿时恒为 0，不构成张力证据**",
+   "evidence_class": "gate_condition(tension_quantified)",
+   "discriminative": null,
+   "baseline_value": null,
+   "baseline_meets": null,
+   "is_primary_estimator": 1,
+   "n_seeds": null,
+   "zero_drive_spikes": null,
+   "n_neuron": null,
+   "note": "G1 门条件之三（主agent 2026-10-11 裁决 §二.6）：(d) 已降为 sanity，门条件改为 (c) ∧ (e) ∧ 张力已定量识别",
+   "protocol_id": "m11_b3_smoke_S4_double_estimator_violation",
+   "protocol_T_ms": 120000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": null,
    "protocol_dt_ms": 0.05,
    "protocol_bin_ms": 100.0,
    "protocol_smooth_frames": 5

@@ -741,16 +741,34 @@ def cmd_verify_subset(args):
         d["bytes_match"] = (len(raw) == args.raw_chunk_bytes)
         try:
             import numpy as np
-            a = np.frombuffer(raw, dtype="<i2")
-            u = a.view(np.uint16)
-            d.update(n_voxels=int(a.size), int16_min=int(a.min()), int16_max=int(a.max()),
-                     int16_mean=round(float(a.mean()), 4), nonzero_frac=round(float((a != 0).mean()), 4),
-                     dtype_declared="int16（attributes.json dataType）",
-                     uint16_alt=dict(min=int(u.min()), max=int(u.max()), mean=round(float(u.mean()), 3)),
-                     frac_negative_int16=round(float((a < 0).mean()), 4))
-            d["note"] = ("⚠️ **量纲/口径待核（NEEDS_VERIFY）**：按 int16 解释均值≈%.0f 且 %.0f%% 为负，"
-                         "按 uint16 解释均值≈%.0f —— 两解均自洽；attributes.json 声明 int16 ⇒ "
-                         "P2 定稿前必须核对（本节点不裁决）" % (a.mean(), 100 * (a < 0).mean(), u.mean()))
+            # **字节序口径（主 agent 复核后修正）**：数据为**大端** int16；小端读法给出
+            # "frac_negative≈0.5 / p50=0 / 逐轴自相关≈0"的**假象**（hi/lo 被对调），
+            # 故此处并列两解：`be_*` = 判决性读法，`le_*` = 误读对照（保留以便复核与对齐）。
+            be = np.frombuffer(raw, dtype=">i2").astype(np.int32)
+            le = np.frombuffer(raw, dtype="<i2").astype(np.int32)
+            A = be.reshape(10, 200, 200).astype(np.float64)
+            lat_x = float(np.corrcoef(A[:, :, :-1].ravel(), A[:, :, 1:].ravel())[0, 1])
+            lat_y = float(np.corrcoef(A[:, :-1, :].ravel(), A[:, 1:, :].ravel())[0, 1])
+            frame = float(np.corrcoef(A[:-1].ravel(), A[1:].ravel())[0, 1])
+            d.update(
+                dtype_declared="int16（attributes.json dataType）",
+                byte_order="**big-endian（大端）**",
+                be_min=int(be.min()), be_max=int(be.max()), be_p50=float(np.median(be)),
+                be_frac_negative=round(float((be < 0).mean()), 6),
+                be_lat_x=round(lat_x, 4), be_lat_y=round(lat_y, 4), be_frame_lag1=round(frame, 4),
+                le_frac_negative=round(float((le < 0).mean()), 6), le_p50=float(np.median(le)),
+                le_lat_x=round(float(np.corrcoef(
+                    le.reshape(10, 200, 200).astype(np.float64)[:, :, :-1].ravel(),
+                    le.reshape(10, 200, 200).astype(np.float64)[:, :, 1:].ravel())[0, 1]), 4),
+                note=("结构门：BE 满足 lat_x≥0.2 ∧ 相邻帧≥0.2（实测 lat_x=%.3f 帧轴lag1=%.3f）；"
+                      "LE 为**误读对照**（lat_x=%.3f，frac_negative=%.4f——主 agent 引用的即此数）。"
+                      "详见 data/m11_microns_parse_validation.json 与 data/m11_decode_proof.json"
+                      % (lat_x, frame,
+                         float(np.corrcoef(
+                             le.reshape(10, 200, 200).astype(np.float64)[:, :, :-1].ravel(),
+                             le.reshape(10, 200, 200).astype(np.float64)[:, :, 1:].ravel())[0, 1]),
+                         float((le < 0).mean()))))
+            d["structural_gate"] = "pass" if (lat_x >= 0.2 and frame >= 0.2) else "FAIL"
         except Exception as e:
             d["numpy_error"] = str(e)[:120]
         d["verdict"] = ("REACHABLE(可解压+字节数精确匹配)" if d.get("bytes_match")

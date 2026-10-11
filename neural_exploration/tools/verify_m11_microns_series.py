@@ -231,11 +231,15 @@ def main(argv=None) -> int:
         shapes.add(shape)
         if shape == (200, 200, 1, 10):
             hdr_ok += 1
+        assert len(shape) == 4 and shape[0] == 200 and shape[1] == 200 and shape[3] >= 2, \
+            "头形状非预期：%s（须 (Y,X,Z,T)）" % (shape,)
         dec = gzip.decompress(raw[20:])
         for tag, dt_ in ((">", ">i2"), ("<", "<i2")):
             arr = np.frombuffer(dec, dtype=dt_)
             if tag == ">":
-                mat = arr.reshape(shape)[..., 0].astype(np.int16)      # (200,200,10)
+                # ⚠️ 头为 (Y,X,Z,T)=(200,200,1,10)：必须 squeeze 单例的 Z 轴；
+                #    用 [...,0] 会**切掉帧轴**（本节点实测踩坑：只剩 1/10 帧、哨兵计数少 10×）
+                mat = arr.reshape(shape).squeeze().astype(np.int16)     # → (200,200,10)
                 arrs = mat
                 u = mat.view(">u2")                                    # **同字节序**的无符号读法
                 neg = mat < 0
@@ -251,7 +255,7 @@ def main(argv=None) -> int:
                 arrays.append(mat)
                 idxs.append(k)
             else:
-                arrs = arr.reshape(shape)[..., 0].astype(np.int16)
+                arrs = arr.reshape(shape).squeeze().astype(np.int16)
                 p50["<"].append(float(np.percentile(arrs, 50)))
             # 空间结构：横向/纵向相邻像素
             smetrics[tag]["px_h"].add(arrs[:, :-1, :], arrs[:, 1:, :])
@@ -290,9 +294,10 @@ def main(argv=None) -> int:
     # 内存纪律：**不做** `vol[valid]` 之类的花式索引（会物化 (n_valid,2000) float64 = 640 MB，
     #           并使 percentile 在 80M 元素上排序 ⇒ 本次试跑即被 60 s 超时拦下，已改按对象分块）。
     #           逐对象处理：单对象仅 (n_valid,10) float64 ≈ 3.2 MB。
+    assert arrays[0].ndim == 3 and arrays[0].shape[-1] >= 2, "帧轴缺失：%s" % (arrays[0].shape,)
     ever_sent = np.zeros(arrays[0].shape[:2], bool)
     for a_ in arrays:
-        np.logical_or(ever_sent, a_ < 0, out=ever_sent)
+        np.logical_or(ever_sent, (a_ < 0).any(axis=-1), out=ever_sent)
     n_frames = int(sum(a_.shape[-1] for a_ in arrays))
     n_vox = ever_sent.size
     valid = ~ever_sent
@@ -324,6 +329,59 @@ def main(argv=None) -> int:
     print("  轨迹长度 = %d 帧 = %.1f s（@%.6f Hz）" % (trace_mean.size, trace_mean.size / a.fps, a.fps))
     print("  口径A(空间均值 df/F)：mean=%.2f sd=%.2f | 口径B(>p99 活跃占比)：mean=%.5f" %
           (trace_mean.mean(), trace_mean.std(), trace_frac.mean()))
+
+    # ---------------- 链连续性诊断（**决定轨迹能否当时间序列用**）----------------
+    # 若 200 个 chunk 是时间上相邻的连续段，则"末帧_k → 首帧_{k+1}"是一个 **lag=1** 对，
+    # 其相关应与链内 lag=1 相当；实测若显著更低，则"按文件名顺序拼接"**不成立**。
+    def _r(x, y):
+        x = np.asarray(x, np.float64).ravel(); y = np.asarray(y, np.float64).ravel()
+        d = math.sqrt(x.var() * y.var())
+        return float(((x * y).mean() - x.mean() * y.mean()) / d) if d > 0 else float("nan")
+
+    lag1_in = [_r(o[..., t], o[..., t + 1]) for o in arrays for t in range(o.shape[-1] - 1)]
+    lag1_bd = [_r(arrays[k][..., -1], arrays[k + 1][..., 0]) for k in range(len(arrays) - 1)]
+    meanimg = [o.mean(axis=-1) for o in arrays]
+    mi_adj = [_r(meanimg[k], meanimg[k + 1]) for k in range(len(meanimg) - 1)]
+    per_phase = [_r(o[..., ph], o[..., ph + 1]) for ph in range(arrays[0].shape[-1] - 1) for o in arrays]
+    per_phase = [float(np.median([_r(o[..., ph], o[..., ph + 1]) for o in arrays]))
+                 for ph in range(arrays[0].shape[-1] - 1)]
+    same_phase_d = {d_: float(np.median([_r(arrays[k][..., 0], arrays[k + d_][..., 0])
+                                        for k in range(len(arrays) - d_)]))
+                    for d_ in (1, 2, 5, 10, 30) if d_ < len(arrays)}
+    chunk_means = [float(o.mean()) for o in arrays]
+    tr_stitch = np.concatenate([o.reshape(-1, o.shape[-1]).mean(axis=0) for o in arrays])
+    nch = arrays[0].shape[-1]
+    djump_in = np.abs(np.diff(tr_stitch))[np.array([(i + 1) % nch != 0 for i in range(tr_stitch.size - 1)])]
+    djump_bd = np.abs(np.diff(tr_stitch))[np.array([(i + 1) % nch == 0 for i in range(tr_stitch.size - 1)])]
+    ac = [float(np.corrcoef(tr_stitch[:-l], tr_stitch[l:])[0, 1]) for l in range(1, min(31, tr_stitch.size // 3))]
+    contig = dict(
+        lag1_within_median=float(np.median(lag1_in)),
+        lag1_boundary_median=float(np.median(lag1_bd)),
+        boundary_over_within=float(np.median(lag1_bd) / np.median(lag1_in)),
+        meanimg_adjacent_r_median=float(np.median(mi_adj)),
+        same_spatial_tile=bool(np.median(mi_adj) > 0.5),
+        per_phase_lag1=[float(v) for v in per_phase],
+        same_phase_across_chunks=same_phase_d,
+        trace_jump_within_median=float(np.median(djump_in)),
+        trace_jump_boundary_median=float(np.median(djump_bd)),
+        trace_jump_ratio=float(np.median(djump_bd) / max(np.median(djump_in), 1e-9)),
+        chunk_means_first10=[round(v, 1) for v in chunk_means[:10]],
+        chunk_means_monotone_frac=float(np.mean(np.diff(chunk_means) < 0)),
+        stitched_trace_autocorr_lag1_30=[round(v, 4) for v in ac],
+        autocorr_peak_lag=int(1 + int(np.argmax(ac))),
+        autocorr_lag10=float(ac[9]) if len(ac) >= 10 else None,
+    )
+    contig["verdict"] = ("**chunk 间非时间相邻（按名序拼接不是连续记录）**"
+                         if contig["boundary_over_within"] < 0.8 else "链内相邻（可作时间序列）")
+    print("\n[③b 连续性诊断] 链内 lag1 r=%.4f vs 跨 chunk 边界 lag1 r=%.4f ⇒ 比值 %.2f ⇒ %s"
+          % (contig["lag1_within_median"], contig["lag1_boundary_median"],
+             contig["boundary_over_within"], contig["verdict"]))
+    print("        轨迹跳变 |Δ|：链内中位 %.1f vs 跨边界中位 %.1f（比值 %.1f×）"
+          % (contig["trace_jump_within_median"], contig["trace_jump_boundary_median"], contig["trace_jump_ratio"]))
+    print("        同一空间 tile 校验：时间均值图像相邻 chunk r 中位 = %.4f" % contig["meanimg_adjacent_r_median"])
+    print("        逐相位 lag1 相关（相位0→1 … 8→9）：%s" % " ".join("%.3f" % v for v in per_phase))
+    print("        轨迹自相关 lag1..10 = %s（峰在 lag=%d）"
+          % (" ".join("%.3f" % v for v in ac[:10]), contig["autocorr_peak_lag"]))
 
     # ---------------- 目标带 ----------------
     bands = []
@@ -357,6 +415,7 @@ def main(argv=None) -> int:
         traces=dict(spatial_mean_dfF=dict(mean=float(trace_mean.mean()), sd=float(trace_mean.std())),
                     active_fraction_p99=dict(mean=float(trace_frac.mean()), thr_hi=thr_hi),
                     n_voxels_valid=int(valid.sum()), n_voxels_ever_sentinel=int(ever_sent.sum())),
+        contiguity=contig,
         bands=bands,
         gates=dict(MIN_FRAMES_VALID=MIN_FRAMES_VALID, MIN_FRAMES_SHAPE=MIN_FRAMES_SHAPE,
                    TAU_MIN_FRAMES=TAU_MIN_FRAMES, MIN_FRAMES_BIC=MIN_FRAMES_BIC),

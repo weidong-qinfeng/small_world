@@ -1,6 +1,6 @@
 {
  "generated_by": "tools/validate_p11_data_gate.py",
- "generated_at": "2026-10-11T14:31:01Z",
+ "generated_at": "2026-10-11T14:32:23Z",
  "gate": "G2 (P1/P2 数据门)",
  "assertions": [
   {
@@ -239,9 +239,19 @@
    "detail": "lat_x=0.814 帧轴lag1=0.8032 p50=1953.0（LE 对照：lat_x=-0.0011 帧轴lag1=0.0003）"
   },
   {
-   "assertion": "DET 复跑 verdict 一致（确定性）",
+   "assertion": "P1.9a 计数产物逐行磁盘核对（已落盘者不得留空；未完成者写 INCOMPLETE+原因）",
    "ok": true,
-   "detail": "[{\"source_id\": \"2\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"3\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F7\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F8\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F9\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}]"
+   "detail": "n=7；空值=[]；缺原因=[]"
+  },
+  {
+   "assertion": "P1.9b allen.per_cell_nwb 关键字段非 null（HEAD/大小/头状态/分组）",
+   "ok": true,
+   "detail": "{\"head_http_code\": 200, \"content_length\": 91560414, \"local_full_bytes\": 44695552, \"header_status\": \"partial\", \"header_source\": \"sparse(prefix 44695552 B + holes)\"}"
+  },
+  {
+   "assertion": "P1.9c 子集解压验证产物已按**大端口径**重生成（含 LE 误读对照）",
+   "ok": true,
+   "detail": "n=5；示例 be_lat_x=0.814 be_frame=0.8032 le_frac_negative=0.49962"
   }
  ],
  "failures": [],
@@ -255,7 +265,7 @@
  ],
  "P1": {
   "verdict": "pass",
-  "n_assertions": 30,
+  "n_assertions": 33,
   "n_failed": 0
  },
  "P2": {
@@ -263,41 +273,5 @@
   "n_assertions": 17,
   "n_failed": 0
  },
- "G2_gate": "pass",
- "determinism_check": {
-  "note": "复跑固定子集（#2/#3/F7/F8/F9），比对 verdict 是否一致",
-  "comparisons": [
-   {
-    "source_id": "2",
-    "first": "REACHABLE",
-    "rerun": "REACHABLE",
-    "same": true
-   },
-   {
-    "source_id": "3",
-    "first": "REACHABLE",
-    "rerun": "REACHABLE",
-    "same": true
-   },
-   {
-    "source_id": "F7",
-    "first": "REACHABLE",
-    "rerun": "REACHABLE",
-    "same": true
-   },
-   {
-    "source_id": "F8",
-    "first": "REACHABLE",
-    "rerun": "REACHABLE",
-    "same": true
-   },
-   {
-    "source_id": "F9",
-    "first": "REACHABLE",
-    "rerun": "REACHABLE",
-    "same": true
-   }
-  ],
-  "all_same": true
- }
+ "G2_gate": "pass"
 }

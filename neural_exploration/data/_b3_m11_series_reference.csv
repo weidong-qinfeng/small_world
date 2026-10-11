@@ -1,0 +1,58 @@
+# M11-B3b MICrONS 序列目标带（长表）——box 宽已显式声明；basis=file_bytes（RF-31 纪律）
+band,bin_frames,dt_bin_s,n_binned,n_smoothed,metric,value,unit,note
+bin1_spatial_mean_dfF,1,0.158730,100,96,tau_smoothed,,s,"帧箱(bin=1, dt=0.158730 s) → 5 帧滑动平均 → z → AR(1)"
+bin1_spatial_mean_dfF,1,0.158730,100,96,tau_unsmoothed,10.611058173015461,s,5 帧平滑的对照口径
+bin1_spatial_mean_dfF,1,0.158730,100,96,phi_smoothed,1.0041447356106592,-,
+bin1_spatial_mean_dfF,1,0.158730,100,96,phi_unsmoothed,0.9851524053759636,-,
+bin1_spatial_mean_dfF,1,0.158730,100,96,tau_criterion_status,unavailable（n_frames<300）,-,RF-21(1) n≥300 门
+bin1_spatial_mean_dfF,1,0.158730,100,96,Q_dwell_low_median,0.0,s,**未平滑**箱序列中位切分
+bin1_spatial_mean_dfF,1,0.158730,100,96,Q_transition_hz,0.06300006,Hz,
+bin1_spatial_mean_dfF,1,0.158730,100,96,Q_occ_low,0.5,-,
+bin1_spatial_mean_dfF,1,0.158730,100,96,H_dwell_low_median,6.349200302348919,s,2 状态 HMM(seed=0)
+bin1_spatial_mean_dfF,1,0.158730,100,96,H_transition_hz,0.131250125,Hz,
+bin1_spatial_mean_dfF,1,0.158730,100,96,H_occ_low,0.4166666666666667,-,
+bin1_spatial_mean_dfF,1,0.158730,100,96,best_K_by_BIC,unavailable,-,n_frames=100 < 500 ⇒ K 选择结论 unavailable（RF-18(4)）
+bin1_spatial_mean_dfF,1,0.158730,100,96,internal_consistency_rel,0.4,-,|dwell−1/(2λ)|/dwell ≤1 为 pass
+bin1_spatial_mean_dfF,1,0.158730,100,96,sample_gate_bic_ok,False,-,
+bin1_active_fraction_p99,1,0.158730,100,96,tau_smoothed,,s,"帧箱(bin=1, dt=0.158730 s) → 5 帧滑动平均 → z → AR(1)"
+bin1_active_fraction_p99,1,0.158730,100,96,tau_unsmoothed,33.19475262979945,s,5 帧平滑的对照口径
+bin1_active_fraction_p99,1,0.158730,100,96,phi_smoothed,1.0187544941141335,-,
+bin1_active_fraction_p99,1,0.158730,100,96,phi_unsmoothed,0.99522963440905,-,
+bin1_active_fraction_p99,1,0.158730,100,96,tau_criterion_status,unavailable（n_frames<300）,-,RF-21(1) n≥300 门
+bin1_active_fraction_p99,1,0.158730,100,96,Q_dwell_low_median,3.8888851851887125,s,**未平滑**箱序列中位切分
+bin1_active_fraction_p99,1,0.158730,100,96,Q_transition_hz,0.3150003,Hz,
+bin1_active_fraction_p99,1,0.158730,100,96,Q_occ_low,0.5,-,
+bin1_active_fraction_p99,1,0.158730,100,96,H_dwell_low_median,0.0,s,2 状态 HMM(seed=0)
+bin1_active_fraction_p99,1,0.158730,100,96,H_transition_hz,0.0656250625,Hz,
+bin1_active_fraction_p99,1,0.158730,100,96,H_occ_low,0.59375,-,
+bin1_active_fraction_p99,1,0.158730,100,96,best_K_by_BIC,unavailable,-,n_frames=100 < 500 ⇒ K 选择结论 unavailable（RF-18(4)）
+bin1_active_fraction_p99,1,0.158730,100,96,internal_consistency_rel,,-,|dwell−1/(2λ)|/dwell ≤1 为 pass
+bin1_active_fraction_p99,1,0.158730,100,96,sample_gate_bic_ok,False,-,
+bin6_spatial_mean_dfF,6,0.952380,16,12,tau_smoothed,,s,"帧箱(bin=6, dt=0.952380 s) → 5 帧滑动平均 → z → AR(1)"
+bin6_spatial_mean_dfF,6,0.952380,16,12,tau_unsmoothed,,s,5 帧平滑的对照口径
+bin6_spatial_mean_dfF,6,0.952380,16,12,phi_smoothed,,-,
+bin6_spatial_mean_dfF,6,0.952380,16,12,phi_unsmoothed,,-,
+bin6_spatial_mean_dfF,6,0.952380,16,12,tau_criterion_status,unavailable（n_frames<300）,-,RF-21(1) n≥300 门
+bin6_spatial_mean_dfF,6,0.952380,16,12,Q_dwell_low_median,7.619040362818702,s,**未平滑**箱序列中位切分
+bin6_spatial_mean_dfF,6,0.952380,16,12,Q_transition_hz,0.131250125,Hz,
+bin6_spatial_mean_dfF,6,0.952380,16,12,Q_occ_low,0.5,-,
+bin6_spatial_mean_dfF,6,0.952380,16,12,H_dwell_low_median,,s,2 状态 HMM(seed=0)
+bin6_spatial_mean_dfF,6,0.952380,16,12,H_transition_hz,,Hz,
+bin6_spatial_mean_dfF,6,0.952380,16,12,H_occ_low,,-,
+bin6_spatial_mean_dfF,6,0.952380,16,12,best_K_by_BIC,,-,
+bin6_spatial_mean_dfF,6,0.952380,16,12,internal_consistency_rel,,-,|dwell−1/(2λ)|/dwell ≤1 为 pass
+bin6_spatial_mean_dfF,6,0.952380,16,12,sample_gate_bic_ok,False,-,
+bin6_active_fraction_p99,6,0.952380,16,12,tau_smoothed,,s,"帧箱(bin=6, dt=0.952380 s) → 5 帧滑动平均 → z → AR(1)"
+bin6_active_fraction_p99,6,0.952380,16,12,tau_unsmoothed,,s,5 帧平滑的对照口径
+bin6_active_fraction_p99,6,0.952380,16,12,phi_smoothed,,-,
+bin6_active_fraction_p99,6,0.952380,16,12,phi_unsmoothed,,-,
+bin6_active_fraction_p99,6,0.952380,16,12,tau_criterion_status,unavailable（n_frames<300）,-,RF-21(1) n≥300 门
+bin6_active_fraction_p99,6,0.952380,16,12,Q_dwell_low_median,7.619040362818702,s,**未平滑**箱序列中位切分
+bin6_active_fraction_p99,6,0.952380,16,12,Q_transition_hz,0.131250125,Hz,
+bin6_active_fraction_p99,6,0.952380,16,12,Q_occ_low,0.5,-,
+bin6_active_fraction_p99,6,0.952380,16,12,H_dwell_low_median,,s,2 状态 HMM(seed=0)
+bin6_active_fraction_p99,6,0.952380,16,12,H_transition_hz,,Hz,
+bin6_active_fraction_p99,6,0.952380,16,12,H_occ_low,,-,
+bin6_active_fraction_p99,6,0.952380,16,12,best_K_by_BIC,,-,
+bin6_active_fraction_p99,6,0.952380,16,12,internal_consistency_rel,,-,|dwell−1/(2λ)|/dwell ≤1 为 pass
+bin6_active_fraction_p99,6,0.952380,16,12,sample_gate_bic_ok,False,-,

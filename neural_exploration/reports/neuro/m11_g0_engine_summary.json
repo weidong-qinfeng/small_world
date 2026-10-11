@@ -230,9 +230,9 @@
      "spk_total": 244,
      "sha256": "3d7a2b56707a29d3c3369610206697419437cd9f815fa7130c227b8f3a2e8df8",
      "pids": [
-      38279,
-      38290,
-      38293
+      39669,
+      39670,
+      39684
      ]
     },
     "off_frozen": {
@@ -241,9 +241,9 @@
      "spk_total": 3730,
      "sha256": "c29dd7a0ee3a7f74f4064db92cb28c859345a11cbbd1285460949abcc6dd41ea",
      "pids": [
-      38304,
-      38306,
-      38314
+      39694,
+      39701,
+      39711
      ]
     }
    }
@@ -362,8 +362,8 @@
      "spk_total": 244.0,
      "counts_sum": 244.0,
      "rel_diff_count_vs_total": 0.0,
-     "wall_s": 1.8005375829999997,
-     "wall_from_ms_per_step_s": 1.8005375829999999
+     "wall_s": 1.9675175419999995,
+     "wall_from_ms_per_step_s": 1.9675175419999995
     },
     "core_readback": {
      "core_key": "nc4_slow1_semantic_fix",
@@ -632,31 +632,31 @@
     "rows": [
      {
       "seg": 0,
-      "rss_mb": 190.3,
+      "rss_mb": 189.83,
       "ar_buf_numel": 4096
      },
      {
       "seg": 1,
-      "rss_mb": 190.53,
+      "rss_mb": 190.06,
       "ar_buf_numel": 4096
      },
      {
       "seg": 2,
-      "rss_mb": 190.72,
+      "rss_mb": 190.25,
       "ar_buf_numel": 4096
      },
      {
       "seg": 3,
-      "rss_mb": 190.91,
+      "rss_mb": 190.25,
       "ar_buf_numel": 4096
      },
      {
       "seg": 4,
-      "rss_mb": 191.09,
+      "rss_mb": 190.47,
       "ar_buf_numel": 4096
      }
     ],
-    "rss_growth_mb": 0.789999999999992,
+    "rss_growth_mb": 0.6399999999999864,
     "ar_buf_numel_last": 4096,
     "crit_pass": true,
     "note": "禁以动态规模为缓存键（M9 真 bug）；`_ar_buf` 必须保持**单一**增长缓冲"

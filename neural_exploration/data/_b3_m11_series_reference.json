@@ -1,0 +1,599 @@
+{
+  "task": "M11-B3b 独立复核：MICrONS 功能体素序列解码 + 同源成像目标带",
+  "independence": "本工具未参照 M11-B1 实现；解码路径独立写就并自证；下游估计器复用 M10 冻结口径",
+  "raw": {
+    "dir": "../../../../tmp/m11probe",
+    "n_objects": 10,
+    "n_bytes": 6846404,
+    "field_prefixes": [
+      "session4_scan7_field4"
+    ],
+    "header_shapes": [
+      "(200, 200, 1, 10)"
+    ],
+    "header_ok_objects": 10,
+    "decode_path": "20B >5I 头(ndim=4 + 4 dims) → gzip@offset20 → >i2 → reshape"
+  },
+  "fps": 6.300006,
+  "frame_dt_s": 0.15873000755872296,
+  "b4_target_bin_s": 0.9138261902586128,
+  "total_frames": 100,
+  "total_seconds": 15.873000755872297,
+  "self_proof": {
+    "sentinels": {
+      "neg16": 355,
+      "u16gt": 31079,
+      "both": 68,
+      "u16gt_not_neg": 31011,
+      "total": 4000000,
+      "ratio_of_total": 8.875e-05,
+      "equiv_int16_neg_iff_u16gt65000": false
+    },
+    "global_min_int16": -72,
+    "structure": {
+      ">i2（正解）": {
+        "px_h": 0.45065110398932234,
+        "px_v": 0.44487875481107564,
+        "ft": 0.8059742832803585,
+        "p50_median": 2005.0,
+        "p50_min": 1216.0,
+        "p50_max": 2491.0,
+        "n_prod": 3980000
+      },
+      "<i2（对照）": {
+        "px_h": 0.00023250740009052583,
+        "px_v": 0.00022835497998340945,
+        "ft": 0.00011372714838859429,
+        "p50_median": 0.0,
+        "p50_min": -244.0,
+        "p50_max": 3.0,
+        "n_prod": 3980000
+      }
+    }
+  },
+  "traces": {
+    "spatial_mean_dfF": {
+      "mean": 2124.9138588751357,
+      "sd": 547.5615130068442
+    },
+    "active_fraction_p99": {
+      "mean": 0.009996470617893969,
+      "thr_hi": 6893.0
+    },
+    "n_voxels_valid": 39667,
+    "n_voxels_ever_sentinel": 333
+  },
+  "contiguity": {
+    "lag1_within_median": 0.7589718540830395,
+    "lag1_boundary_median": 0.3559984975889005,
+    "boundary_over_within": 0.46905362257340116,
+    "meanimg_adjacent_r_median": 0.8868763027298309,
+    "same_spatial_tile": true,
+    "per_phase_lag1": [
+      0.780506238322419,
+      0.7938533007425282,
+      0.776170868736893,
+      0.7547277994986588,
+      0.7448025619539398,
+      0.766139816712615,
+      0.7670975645111828,
+      0.7584443866303976,
+      0.7277470580765472
+    ],
+    "same_phase_across_chunks": {
+      "1": 0.7099605051549562,
+      "2": 0.6507216406739413,
+      "5": 0.5966755824868528
+    },
+    "trace_jump_within_median": 7.590337500000032,
+    "trace_jump_boundary_median": 165.53665,
+    "trace_jump_ratio": 21.80886554780987,
+    "chunk_means_first10": [
+      2149.0,
+      1632.6,
+      1517.2,
+      1486.8,
+      1328.3,
+      2274.0,
+      2698.1,
+      2604.8,
+      2658.9,
+      2793.7
+    ],
+    "chunk_means_monotone_frac": 0.5555555555555556,
+    "stitched_trace_autocorr_lag1_30": [
+      0.977,
+      0.9543,
+      0.9312,
+      0.9075,
+      0.8835,
+      0.8583,
+      0.832,
+      0.8053,
+      0.7781,
+      0.7518,
+      0.7223,
+      0.691,
+      0.6584,
+      0.6256,
+      0.5933,
+      0.5611,
+      0.5276,
+      0.4934,
+      0.4587,
+      0.4235,
+      0.3991,
+      0.3723,
+      0.3443,
+      0.3158,
+      0.2879,
+      0.2597,
+      0.2298,
+      0.1989,
+      0.1674,
+      0.135
+    ],
+    "autocorr_peak_lag": 1,
+    "autocorr_lag10": 0.7517809193002996,
+    "verdict": "**chunk 间非时间相邻（按名序拼接不是连续记录）**"
+  },
+  "bands": [
+    {
+      "label": "bin1_spatial_mean_dfF",
+      "source": "spatial_mean_dfF",
+      "bin_frames": 1,
+      "dt_bin_s": 0.15873000755872296,
+      "n_frames_binned": 100,
+      "n_frames_smoothed": 96,
+      "trace_s_total": 15.873000755872296,
+      "b4_target_bin_s": 0.9138261902586128,
+      "bin_vs_b4_rel": -0.8263017527284895,
+      "sample_size_gate": {
+        "n_frames": 100,
+        "valid": true,
+        "shape_ok": false,
+        "bic_ok": false,
+        "thresholds": {
+          "valid": 65,
+          "shape": 130,
+          "bic": 500
+        },
+        "note": "n_frames<65 ⇒ invalid（最短协议 T≥60 s）；形状判据需 ≥130（T≥120 s）；BIC 需 ≥500"
+      },
+      "AR1": {
+        "status": "invalid",
+        "reason": "φ=1.0041447356106592 不在 (0,1)",
+        "phi": 1.0041447356106592,
+        "pipeline": "帧箱(bin=1, dt=0.158730 s) → 5 帧滑动平均 → z → AR(1)",
+        "phi_smoothed": 1.0041447356106592,
+        "phi_unsmoothed": 0.9851524053759636,
+        "tau_unsmoothed_s": 10.611058173015461,
+        "min_frames_for_tau": 300,
+        "tau_criterion_status": "unavailable（n_frames<300）"
+      },
+      "Q_method": {
+        "threshold": 2220.3351526457764,
+        "occupancy": [
+          0.5,
+          0.5
+        ],
+        "transition_rate_hz": 0.06300006,
+        "dwell": {
+          "low": {
+            "n": 0,
+            "median_s": 0.0,
+            "mean_s": 0.0,
+            "p90_s": 0.0,
+            "p90_over_median": null,
+            "ks_vs_exp": {
+              "n": 0,
+              "D": null,
+              "p": null,
+              "pass_": false
+            }
+          },
+          "high": {
+            "n": 0,
+            "median_s": 0.0,
+            "mean_s": 0.0,
+            "p90_s": 0.0,
+            "p90_over_median": null,
+            "ks_vs_exp": {
+              "n": 0,
+              "D": null,
+              "p": null,
+              "pass_": false
+            }
+          }
+        }
+      },
+      "H_K2": {
+        "occupancy": [
+          0.4166666666666667,
+          0.5833333333333334
+        ],
+        "transition_rate_hz": 0.131250125,
+        "dwell": {
+          "low": {
+            "n": 1,
+            "median_s": 6.349200302348919,
+            "mean_s": 6.349200302348919,
+            "p90_s": 6.349200302348919,
+            "p90_over_median": 1.0,
+            "ks_vs_exp": {
+              "n": 1,
+              "D": null,
+              "p": null,
+              "pass_": false
+            }
+          },
+          "high": {
+            "n": 0,
+            "median_s": 0.0,
+            "mean_s": 0.0,
+            "p90_s": 0.0,
+            "p90_over_median": null,
+            "ks_vs_exp": {
+              "n": 0,
+              "D": null,
+              "p": null,
+              "pass_": false
+            }
+          }
+        },
+        "bic": 110.84265657097428,
+        "loglik": -41.728283711083634
+      },
+      "BIC_by_K": {
+        "1": {
+          "bic": 281.56489475823236,
+          "loglik": -136.21809918764833,
+          "n_par": 2
+        },
+        "2": {
+          "bic": 110.84265657097428,
+          "loglik": -41.728283711083634,
+          "n_par": 6
+        },
+        "3": {
+          "bic": 21.317500779148894,
+          "loglik": 16.72733875923257,
+          "n_par": 12
+        },
+        "4": {
+          "bic": 31.26610896207753,
+          "loglik": 30.010427433639595,
+          "n_par": 20
+        }
+      },
+      "best_K_by_BIC": "unavailable",
+      "BIC_note": "n_frames=100 < 500 ⇒ K 选择结论 unavailable（RF-18(4)）",
+      "internal_consistency": {
+        "applicable": true,
+        "predicted_dwell_s": 3.809520181409351,
+        "observed_dwell_s": 6.349200302348919,
+        "rel_diff": 0.4,
+        "pass_": true,
+        "note": "2 状态稳态近似；若状态数>2 或转移矩阵强非对称则本条不适用（须显式声明）"
+      },
+      "dwell_resolution_floor": {
+        "at_floor": true,
+        "note": "dwell 中位 ≤1.5 帧 ⇒ 触分辨率地板、无分辨力（仅作旁证）"
+      }
+    },
+    {
+      "label": "bin1_active_fraction_p99",
+      "source": "active_fraction_p99",
+      "bin_frames": 1,
+      "dt_bin_s": 0.15873000755872296,
+      "n_frames_binned": 100,
+      "n_frames_smoothed": 96,
+      "trace_s_total": 15.873000755872296,
+      "b4_target_bin_s": 0.9138261902586128,
+      "bin_vs_b4_rel": -0.8263017527284895,
+      "sample_size_gate": {
+        "n_frames": 100,
+        "valid": true,
+        "shape_ok": false,
+        "bic_ok": false,
+        "thresholds": {
+          "valid": 65,
+          "shape": 130,
+          "bic": 500
+        },
+        "note": "n_frames<65 ⇒ invalid（最短协议 T≥60 s）；形状判据需 ≥130（T≥120 s）；BIC 需 ≥500"
+      },
+      "AR1": {
+        "status": "invalid",
+        "reason": "φ=1.0187544941141335 不在 (0,1)",
+        "phi": 1.0187544941141335,
+        "pipeline": "帧箱(bin=1, dt=0.158730 s) → 5 帧滑动平均 → z → AR(1)",
+        "phi_smoothed": 1.0187544941141335,
+        "phi_unsmoothed": 0.99522963440905,
+        "tau_unsmoothed_s": 33.19475262979945,
+        "min_frames_for_tau": 300,
+        "tau_criterion_status": "unavailable（n_frames<300）"
+      },
+      "Q_method": {
+        "threshold": 0.007323467870017899,
+        "occupancy": [
+          0.5,
+          0.5
+        ],
+        "transition_rate_hz": 0.3150003,
+        "dwell": {
+          "low": {
+            "n": 2,
+            "median_s": 3.8888851851887125,
+            "mean_s": 3.8888851851887125,
+            "p90_s": 6.746025321245726,
+            "p90_over_median": 1.7346938775510206,
+            "ks_vs_exp": {
+              "n": 2,
+              "D": null,
+              "p": null,
+              "pass_": false
+            }
+          },
+          "high": {
+            "n": 2,
+            "median_s": 0.4761900226761689,
+            "mean_s": 0.4761900226761689,
+            "p90_s": 0.6031740287231473,
+            "p90_over_median": 1.2666666666666668,
+            "ks_vs_exp": {
+              "n": 2,
+              "D": null,
+              "p": null,
+              "pass_": false
+            }
+          }
+        }
+      },
+      "H_K2": {
+        "occupancy": [
+          0.59375,
+          0.40625
+        ],
+        "transition_rate_hz": 0.0656250625,
+        "dwell": {
+          "low": {
+            "n": 0,
+            "median_s": 0.0,
+            "mean_s": 0.0,
+            "p90_s": 0.0,
+            "p90_over_median": null,
+            "ks_vs_exp": {
+              "n": 0,
+              "D": null,
+              "p": null,
+              "pass_": false
+            }
+          },
+          "high": {
+            "n": 0,
+            "median_s": 0.0,
+            "mean_s": 0.0,
+            "p90_s": 0.0,
+            "p90_over_median": null,
+            "ks_vs_exp": {
+              "n": 0,
+              "D": null,
+              "p": null,
+              "pass_": false
+            }
+          }
+        },
+        "bic": 111.15617774627644,
+        "loglik": -41.88504429873471
+      },
+      "BIC_by_K": {
+        "1": {
+          "bic": 281.5648947344747,
+          "loglik": -136.2180991757695,
+          "n_par": 2
+        },
+        "2": {
+          "bic": 111.15617774627644,
+          "loglik": -41.88504429873471,
+          "n_par": 6
+        },
+        "3": {
+          "bic": 53.92668556878771,
+          "loglik": 0.42274636441316016,
+          "n_par": 12
+        },
+        "4": {
+          "bic": 25.49426174971491,
+          "loglik": 32.89635103982091,
+          "n_par": 20
+        }
+      },
+      "best_K_by_BIC": "unavailable",
+      "BIC_note": "n_frames=100 < 500 ⇒ K 选择结论 unavailable（RF-18(4)）",
+      "internal_consistency": {
+        "applicable": false,
+        "reason": "dwell 或转换率为 0/缺失（样本不足）"
+      },
+      "dwell_resolution_floor": {
+        "at_floor": false,
+        "note": "dwell 中位 ≤1.5 帧 ⇒ 触分辨率地板、无分辨力（仅作旁证）"
+      }
+    },
+    {
+      "label": "bin6_spatial_mean_dfF",
+      "source": "spatial_mean_dfF",
+      "bin_frames": 6,
+      "dt_bin_s": 0.9523800453523378,
+      "n_frames_binned": 16,
+      "n_frames_smoothed": 12,
+      "trace_s_total": 15.238080725637404,
+      "b4_target_bin_s": 0.9138261902586128,
+      "bin_vs_b4_rel": 0.042189483629063274,
+      "sample_size_gate": {
+        "n_frames": 16,
+        "valid": false,
+        "shape_ok": false,
+        "bic_ok": false,
+        "thresholds": {
+          "valid": 65,
+          "shape": 130,
+          "bic": 500
+        },
+        "note": "n_frames<65 ⇒ invalid（最短协议 T≥60 s）；形状判据需 ≥130（T≥120 s）；BIC 需 ≥500"
+      },
+      "AR1": {
+        "status": "invalid",
+        "reason": "序列过短 n=12",
+        "pipeline": "帧箱(bin=6, dt=0.952380 s) → 5 帧滑动平均 → z → AR(1)",
+        "phi_smoothed": null,
+        "phi_unsmoothed": null,
+        "tau_unsmoothed_s": null,
+        "min_frames_for_tau": 300,
+        "tau_criterion_status": "unavailable（n_frames<300）"
+      },
+      "Q_method": {
+        "threshold": 2071.025684658112,
+        "occupancy": [
+          0.5,
+          0.5
+        ],
+        "transition_rate_hz": 0.131250125,
+        "dwell": {
+          "low": {
+            "n": 1,
+            "median_s": 7.619040362818702,
+            "mean_s": 7.619040362818702,
+            "p90_s": 7.619040362818702,
+            "p90_over_median": 1.0,
+            "ks_vs_exp": {
+              "n": 1,
+              "D": null,
+              "p": null,
+              "pass_": false
+            }
+          },
+          "high": {
+            "n": 0,
+            "median_s": 0.0,
+            "mean_s": 0.0,
+            "p90_s": 0.0,
+            "p90_over_median": null,
+            "ks_vs_exp": {
+              "n": 0,
+              "D": null,
+              "p": null,
+              "pass_": false
+            }
+          }
+        }
+      },
+      "H_K2": {
+        "status": "invalid",
+        "reason": "z 过短 n=12"
+      },
+      "internal_consistency": {
+        "applicable": false,
+        "reason": "z 过短"
+      },
+      "dwell_resolution_floor": {
+        "at_floor": false,
+        "note": "dwell 中位 ≤1.5 帧 ⇒ 触分辨率地板、无分辨力（仅作旁证）"
+      }
+    },
+    {
+      "label": "bin6_active_fraction_p99",
+      "source": "active_fraction_p99",
+      "bin_frames": 6,
+      "dt_bin_s": 0.9523800453523378,
+      "n_frames_binned": 16,
+      "n_frames_smoothed": 12,
+      "trace_s_total": 15.238080725637404,
+      "b4_target_bin_s": 0.9138261902586128,
+      "bin_vs_b4_rel": 0.042189483629063274,
+      "sample_size_gate": {
+        "n_frames": 16,
+        "valid": false,
+        "shape_ok": false,
+        "bic_ok": false,
+        "thresholds": {
+          "valid": 65,
+          "shape": 130,
+          "bic": 500
+        },
+        "note": "n_frames<65 ⇒ invalid（最短协议 T≥60 s）；形状判据需 ≥130（T≥120 s）；BIC 需 ≥500"
+      },
+      "AR1": {
+        "status": "invalid",
+        "reason": "序列过短 n=12",
+        "pipeline": "帧箱(bin=6, dt=0.952380 s) → 5 帧滑动平均 → z → AR(1)",
+        "phi_smoothed": null,
+        "phi_unsmoothed": null,
+        "tau_unsmoothed_s": null,
+        "min_frames_for_tau": 300,
+        "tau_criterion_status": "unavailable（n_frames<300）"
+      },
+      "Q_method": {
+        "threshold": 0.006392803421819984,
+        "occupancy": [
+          0.5,
+          0.5
+        ],
+        "transition_rate_hz": 0.131250125,
+        "dwell": {
+          "low": {
+            "n": 1,
+            "median_s": 7.619040362818702,
+            "mean_s": 7.619040362818702,
+            "p90_s": 7.619040362818702,
+            "p90_over_median": 1.0,
+            "ks_vs_exp": {
+              "n": 1,
+              "D": null,
+              "p": null,
+              "pass_": false
+            }
+          },
+          "high": {
+            "n": 0,
+            "median_s": 0.0,
+            "mean_s": 0.0,
+            "p90_s": 0.0,
+            "p90_over_median": null,
+            "ks_vs_exp": {
+              "n": 0,
+              "D": null,
+              "p": null,
+              "pass_": false
+            }
+          }
+        }
+      },
+      "H_K2": {
+        "status": "invalid",
+        "reason": "z 过短 n=12"
+      },
+      "internal_consistency": {
+        "applicable": false,
+        "reason": "z 过短"
+      },
+      "dwell_resolution_floor": {
+        "at_floor": false,
+        "note": "dwell 中位 ≤1.5 帧 ⇒ 触分辨率地板、无分辨力（仅作旁证）"
+      }
+    }
+  ],
+  "gates": {
+    "MIN_FRAMES_VALID": 65,
+    "MIN_FRAMES_SHAPE": 130,
+    "TAU_MIN_FRAMES": 300,
+    "MIN_FRAMES_BIC": 500
+  },
+  "wallclock_s": 0.7286078929901123,
+  "cpu_s": 0.784663,
+  "determinism": "gzip 确定性 + HMM seed=0 + 无随机采样 ⇒ 可复跑逐位一致",
+  "artifacts_sha256_file_bytes": {
+    "_b3_m11_series_reference.json": "694a6d937049e9eb3bdf434c9f31417b9f1eb157afd0c4c5948a9f9d0f31e5ec",
+    "_b3_m11_series_reference.csv": "faa53b98e801064fb3165e8b54422a7c1c75bcc80bf2b249b40bcc844cb2e955"
+  }
+}

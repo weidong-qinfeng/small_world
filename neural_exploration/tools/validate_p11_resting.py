@@ -527,6 +527,7 @@ class Evaluator:
         self.duration_ladder: Dict[str, Any] = {}
         self.tension: Dict[str, Any] = {}
         self.invariants: Dict[str, Any] = {}
+        self.gate_composition: Dict[str, Any] = {}
 
     # ---------------- 协议前缀（口径字段，逐行携带） ----------------
     def _proto_fields(self, arm: Optional[Arm], T_ms: Optional[float] = None) -> Dict[str, Any]:
@@ -571,7 +572,7 @@ class Evaluator:
         for r in rows:
             if r["is_primary_estimator"] == 1:
                 units.setdefault((r["config_id"], r["T_ms"], r["mechanism"]), set()).add(r["criterion"])
-        need = set(CRIT.values())
+        need = set(CRIT_EXPECTED)
         for u, got in units.items():
             missing = sorted(need - got)
             assert not missing, f"**子判据静默丢失**：单元 {u} 缺 {missing}（与 M10 静默失效同族的失效模式）"
@@ -612,10 +613,27 @@ class Evaluator:
             self._eval_unit(cfg, T_ms, mech)
         self._duration_ladder()
         self._tension()
+        self._emit_tension_gate()
         self._apply_duration_flip()
+        # 门组成与判据表声明一致性（防"代码与清单漂移"）
+        self.gate_composition = self._assert_gate_composition()
         # 硬断言（违反即 raise）：口径标注 / 未定稿带不得判 pass / 子判据不得静默丢失
         self.invariants = self._assert_output_invariants(self.rows)
         return self._verdict()
+
+    def _assert_gate_composition(self) -> Dict[str, Any]:
+        """**门组成不得与判据表声明漂移**：表里写什么，代码就必须判什么（清单 §4.5 的门条件是可裁决项）。"""
+        key = "gate_g1_conditions_v2" if "gate_g1_conditions_v2" in self.tt.rows else "gate_g1_conditions"
+        declared = self.tt.raw(key)
+        code = "c_and_e_and_tension_quantified"
+        assert declared == code, (
+            f"**门组成漂移**：判据表 `{key}` 声明 `{declared}`，而代码实现 `{code}`。"
+            "按「先改清单/判据表再改代码」纪律，须先改表（新增行）再改代码。")
+        assert GATE_DECLARATION_EXPECTED == code
+        return {"declaration_key": key, "declared": declared, "code": code,
+                "gate_criteria": list(GATE_CRITERIA),
+                "sanity_criteria": list(SOPHISTICATED_CRITERIA),
+                "note": "(d) 降为 sanity（M10 基线臂 +579.6% 即过 ⇒ 无判别性）"}
 
     def _unit_arms(self, cfg: str, T_ms: float, mech: str, role: Optional[str] = None) -> List[Arm]:
         out = [a for a in self.arms if a.config_id == cfg and abs(a.T_ms - T_ms) < 1e-9 and a.mechanism == mech]
@@ -1106,6 +1124,51 @@ class Evaluator:
                                              "**不得**静默放宽带（清单 §4.5(i)）")
                     self.tension[key] = rec
 
+    # ---------------- G1 门条件之三：张力**已定量识别**（主agent §二.6 裁决） ----------------
+    def _emit_tension_gate(self) -> None:
+        """把「张力已定量识别」做成**可判的子判据**（`p5_g1_tension_quantified`）。
+
+        判定式（预注册）：该 (config,T,mechanism) 的剂量-响应点集 ≥3 点、且 (a)(b) 两条带都**已定稿**
+        ⇒ 张力被定量（给 `n_both_in_band` + 两条 Spearman）⇒ `pass`；否则 `unavailable`
+        （**不得**在带未定稿时把构造性的 `n_both_in_band=0` 当成张力证据）。
+        注意：`pass` 只表示「张力已被定量识别」，**不表示张力不存在**——张力存在时按清单 §4.5(i)
+        登记为 P6 的输入约束（并由 `consequence` 字段给出换杠杆指引）。
+        """
+        for key, rec in self.tension.items():
+            cfg, T_s, mech = key.split("|")[0].split("@")[0], None, None
+            try:
+                cfg = key.split("@")[0]
+                T_s = float(key.split("@")[1].split("ms")[0])
+                mech = key.split("mech=")[1]
+            except Exception:
+                pass
+            ok = (rec.get("status") == "ok" and rec.get("n_points", 0) >= 3
+                  and rec.get("n_both_in_band") is not None
+                  and rec.get("spearman_drive_vs_rate") is not None
+                  and rec.get("spearman_drive_vs_silent") is not None)
+            if ok:
+                st = "pass"
+                rs = (f"张力已定量：剂量点 {rec['n_points']} 个、两条带均定稿；"
+                      f"n_both_in_band={rec['n_both_in_band']}、ρ(驱动,中位率)={rec['spearman_drive_vs_rate']:.3f}、"
+                      f"ρ(驱动,静默)={rec['spearman_drive_vs_silent']:.3f}、"
+                      f"structural_tension={rec['structural_tension']}")
+            else:
+                st = "unavailable"
+                rs = ("张力未定量（" + str(rec.get("reason") or "剂量点 <3 或缺逐神经元 counts")
+                      + "）⇒ 该门条件不得判 pass/fail"
+                      + ("；**注意 n_both_in_band 在带未定稿时恒为 0，不构成张力证据**"
+                         if rec.get("structural_tension_pending_bands") else ""))
+            self._emit(config_id=cfg, T_ms=(T_s if T_s is not None else 0.0), mechanism=(mech or "none"),
+                       criterion=CRIT["i2"], estimator="dose_sweep_rank_correlation",
+                       value=rec.get("spearman_drive_vs_silent"), unit="",
+                       status=st, reason=rs,
+                       band_keys="tension_detect_required|tension_spearman_max",
+                       n_seeds=None, n_neuron=None,
+                       evidence_class="gate_condition(tension_quantified)",
+                       is_primary=1,
+                       note=("G1 门条件之三（主agent 2026-10-11 裁决 §二.6）：(d) 已降为 sanity，"
+                             "门条件改为 (c) ∧ (e) ∧ 张力已定量识别"))
+
     # ---------------- 总判定 ----------------
     def _verdict(self) -> Dict[str, Any]:
         by_crit: Dict[str, List[Dict[str, Any]]] = {}
@@ -1266,7 +1329,7 @@ def check_targets(csv_path: str, json_path: str) -> int:
     # 关键键存在性（G1 门条件依赖）
     for k in ("selfsustain_ratio_max", "selfsustain_ci_upper_factor", "selfsustain_zero_drive_min_spikes",
               "protocol_seeds_min_per_arm", "protocol_T_ladder_ratios", "double_estimator_rel_tol",
-              "silent_def_primary", "estimator_primary", "ei_ratio_lo", "ei_ratio_hi", "gate_g1_conditions"):
+              "silent_def_primary", "estimator_primary", "ei_ratio_lo", "ei_ratio_hi", "gate_g1_conditions", "gate_g1_conditions_v2"):
         try:
             tt.row(k)
         except KeyError:
@@ -1401,6 +1464,7 @@ def main(argv=None) -> int:
             "③_double_estimator": "counts/pop_trace/agg 三估计器两两相对差 ≤2%，并含轨迹长度⟺(T,dt) 量纲自检",
             "④_duration_ladder": "同一配置 {T_min,2×T_min,4×T_min} 三档；跨 T 判定翻转 ⇒ invalid",
             "⑤_discriminativeness": "必须给出无机制基线臂的同一判据值；不得用非判别性判据作机制证据",
+            "⑥_gate_composition": "G1 = (c) ∧ (e) ∧ 张力已定量识别（主agent 2026-10-11 §二.6）；(d) 降为 sanity",
             "⑥_caliber_annotation": "逐行带 protocol(T/settle/seed/bin/smooth) 与 estimator",
         },
         "arms": [{"arm_id": a.arm_id, "config_id": a.config_id, "T_ms": a.T_ms, "role": a.role,
@@ -1409,6 +1473,7 @@ def main(argv=None) -> int:
                   "n_steps_present": (None if a.trace is None else int(a.trace.size))} for a in ev.arms],
         "arm_metrics": ev.arm_metrics,
         "output_invariants": ev.invariants,
+        "gate_composition": ev.gate_composition,
         "rows": ev.rows,
         "elapsed_s": None,
     })

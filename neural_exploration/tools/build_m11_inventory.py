@@ -330,6 +330,42 @@ def main():
     for r in inv:
         total_bytes_downloaded += r["bytes"]
 
+    # ---- 磁盘核对（主 agent 要求：清单里的数必须与磁盘上的数一致；未完成写 INCOMPLETE，不留 null/0）----
+    nwb = al.get("per_cell_nwb", {}) or {}
+    declared = [
+        dict(key="allen.per_cell_nwb.full_nwb", path="neural_exploration/data/m11_raw/allen/486940961_ephys.nwb",
+             declared_bytes=nwb.get("nwb_expected_bytes"),
+             note="per-cell ephys NWB 全量；**下载停滞 48 min 无增长后已按 >30 min 纪律停止** ⇒ INCOMPLETE（可 curl -C - 续传）"),
+        dict(key="allen.per_cell_nwb.header_staging", path="neural_exploration/data/m11_raw/allen/head_sparse.nwb",
+             declared_bytes=None,
+             note="**稀疏文件**：仅前 44,695,552 B 为真实数据，其余为洞(zeros) ⇒ **不是完整 NWB**，仅用于读 HDF5 头"),
+        dict(key="allen.per_cell_nwb.range_prefix", path="neural_exploration/data/m11_raw/allen/486940961_ephys_head8MB.bin",
+             declared_bytes=8388608, note="HTTP Range 前缀（独立于部分下载）"),
+        dict(key="microns.functional_subset.manifest", path="neural_exploration/data/m11_functional_subset_manifest.csv",
+             declared_bytes=None, note="200 对象逐行 url/bytes/sha256/integrity"),
+        dict(key="microns.structure.info", path="neural_exploration/data/m11_microns_structure.json", declared_bytes=None, note=""),
+        dict(key="microns.protocol", path="neural_exploration/data/m11_microns_protocol.json", declared_bytes=None, note=""),
+        dict(key="m11.reference", path="neural_exploration/data/m11_reference.csv", declared_bytes=None, note=""),
+    ]
+    disk_verified = []
+    for d in declared:
+        p_ = os.path.join(PROJ, d["path"])
+        e = dict(key=d["key"], path=d["path"], declared_bytes=d["declared_bytes"],
+                 exists=os.path.exists(p_), note=d["note"])
+        if e["exists"]:
+            e["bytes_on_disk"] = os.path.getsize(p_)
+            e["sha256"] = sha256_file(p_)
+            if d["declared_bytes"] is None:
+                e["status"] = "COMPLETE"
+            else:
+                e["status"] = "COMPLETE" if e["bytes_on_disk"] == d["declared_bytes"] else "INCOMPLETE"
+                if e["status"] == "INCOMPLETE":
+                    e["note"] = (e["note"] + "；期望 %d B / 实收 %d B" % (d["declared_bytes"], e["bytes_on_disk"]))
+        else:
+            e["status"] = "MISSING"
+            e["bytes_on_disk"] = None
+        disk_verified.append(e)
+
     counts = dict(
         generated_by="tools/build_m11_inventory.py", generated_at=utcnow(),
         units="bytes; evidence ∈ {measured, derived, literature, unavailable}",
@@ -364,6 +400,10 @@ def main():
                         evidence="literature=Europe PMC 题录实测命中；未命中=literature_unverified"),
         reachability=dict(n_sources=len(reach_rows), by_verdict=vc,
                           evidence="measured(curl 两次探测)"),
+        disk_verified=dict(
+            rule="清单/计数里出现的每个数必须能与磁盘对上：exists + bytes_on_disk + sha256；"
+                 "**未完成者写 INCOMPLETE 并给原因，不留 null、不写 0**",
+            artifacts=disk_verified),
         inventory=dict(n_items=len(inv), total_bytes=total_bytes_downloaded,
                        total_MB=round(total_bytes_downloaded / 1e6, 3)),
         functional_connectomics_release=dict(
