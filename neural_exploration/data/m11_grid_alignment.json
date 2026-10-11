@@ -1,0 +1,132 @@
+{
+ "generated_by": "tools/verify_m11_grid_alignment.py",
+ "generated_at": "2026-10-11T15:10:16Z",
+ "question": "文档 4 px/µm 与元数据 2.5 µm/px 的 10× 差属于哪一层的口径？",
+ "provenance": {
+  "doc": "data/m11_raw/microns/pdf_text/functional_data_technical_documentation_v3.pdf.txt —— 原文 '4 px/µm xy resolution (440×248 px/field) to tile a 1100×1200 µm² FOV'",
+  "metadata": "functional_series/*/attributes.json —— resolution=[2.5,2.5,10], units=[um,um,um]",
+  "summary_metadata": "field_summaries/*/attributes.json —— resolution=[1,1,10], dimensions=[620,1100,1]"
+ },
+ "inputs": {
+  "summary_shape": [
+   200,
+   200
+  ],
+  "summary_prefix_words": [
+   3,
+   100,
+   100,
+   1
+  ],
+  "summary_prefix_bytes": 16,
+  "series_mean_shape": [
+   200,
+   200
+  ],
+  "n_series_chunks": 200,
+  "series_frames": 2000
+ },
+ "scale_sweep": {
+  "1.00": -0.0423,
+  "1.25": -0.0224,
+  "1.50": -0.0108,
+  "2.00": -0.0443,
+  "2.50": 0.1256,
+  "3.00": -0.0193,
+  "4.00": -0.0461,
+  "5.00": -0.0656,
+  "8.00": -0.0607,
+  "10.00": -0.0411,
+  "12.50": -0.021,
+  "25.00": -0.0314
+ },
+ "sweep_best_factor": "2.50",
+ "sweep_best_r": 0.1256,
+ "profile_alignment": {
+  "1.00": 0.0636,
+  "2.50": 0.1836,
+  "10.00": -0.0953
+ },
+ "pixel_alignment_table": [
+  {
+   "case": "aligned(f=2.5)",
+   "factor": 2.5,
+   "n_pixels": 6400,
+   "r": 0.1256,
+   "mean_summary": 0.257,
+   "mean_series": 1068.45,
+   "ratio_means": 0.000241
+  },
+  {
+   "case": "mismatch(f=1)",
+   "factor": 1.0,
+   "n_pixels": 40000,
+   "r": -0.0423,
+   "mean_summary": 0.257,
+   "mean_series": 2083.3,
+   "ratio_means": 0.000123
+  },
+  {
+   "case": "mismatch(f=10)",
+   "factor": 10.0,
+   "n_pixels": 400,
+   "r": -0.0411,
+   "mean_summary": 0.257,
+   "mean_series": 514.44,
+   "ratio_means": 0.0005
+  }
+ ],
+ "fov_crosscheck": {
+  "series_from_metadata": {
+   "px": [
+    248,
+    440
+   ],
+   "um_per_px": [
+    2.5,
+    2.5
+   ],
+   "fov_um": [
+    620.0,
+    1100.0
+   ]
+  },
+  "summary_from_metadata": {
+   "px": [
+    620,
+    1100
+   ],
+   "um_per_px": [
+    1.0,
+    1.0
+   ],
+   "fov_um": [
+    620.0,
+    1100.0
+   ]
+  },
+  "doc_per_field": {
+   "px_per_um": 4.0,
+   "field_px": [
+    440,
+    248
+   ],
+   "field_fov_um": [
+    110.0,
+    62.0
+   ],
+   "doc_mosaic_um2": [
+    1100,
+    1200
+   ]
+  },
+  "verdict": "两个**独立对象**元数据给出的 FOV 完全一致（620×1100 µm）；而文档的 4 px/µm 给出的是**单个 raw 子场**的 110×62 µm，需 ~10×20 个子场才能拼出文档所述 1100×1200 µm² 拼接 FOV ⇒ 两者是**不同层级**（raw 采集 vs 处理后/拼接体素），不是同一层的矛盾。"
+ },
+ "conclusion": {
+  "level_raw": "文档 '4 px/µm'（=0.25 µm/px）= **raw 采集**的每个子场像素（440×248 px/field ⇒ 110×62 µm/field）",
+  "level_processed": "元数据 2.5 µm/px = **处理后 functional_series / field_summaries** 的体素（248×440 px ⇒ 620×1100 µm）",
+  "ratio": 10.0,
+  "ratio_evidence": "实像素尺度扫描峰值出现在 f=2.50（r=0.126），与 2.5 相符；若为 0.25 µm/px 则峰值应出现在 f≈25（实测 r=-0.031）",
+  "misread_risk": "**若把 0.25 µm/px 当成 series 的口径**：① 所有距离/尺度的物理量（感受野尺寸、空间相关长度、ROI/神经域半径、突触-距离关系）**系统性偏小 10×**；② FOV 会被算成 62×110 µm（面积偏小 100×），与 field_summaries 的 620×1100 µm 直接冲突；③ 任何'按物理距离配对/匹配'的对照（如连接概率 vs 距离、dend_len 对照）**口径不可比**。⇒ 纪律：**凡用到空间尺度，必须写明取自哪个对象/字段，并做跨对象 FOV 交叉核对**。"
+ }
+}

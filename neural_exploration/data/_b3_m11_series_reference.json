@@ -159,6 +159,47 @@
     "autocorr_lag10": 0.8161107188827622,
     "verdict": "**chunk 间非时间相邻（按名序拼接不是连续记录）**"
   },
+  "controls": {
+    "real_argv_order": {
+      "tau_smoothed_s": 35.851815729030754,
+      "phi_smoothed": 0.9737853824189515,
+      "tau_unsmoothed_s": 11.532609914284492,
+      "phi_unsmoothed": 0.9207364091761275,
+      "lag1_autocorr_binned": 0.9205552440920941,
+      "Q_dwell_low_s": 7.619040362818702
+    },
+    "block_shuffled": {
+      "tau_smoothed_s": 8.084096971506407,
+      "phi_smoothed": 0.8888657366276566,
+      "tau_unsmoothed_s": 1.352020837146315,
+      "phi_unsmoothed": 0.49439906995355987,
+      "lag1_autocorr_binned": 0.49398510315258076,
+      "Q_dwell_low_s": 2.8571401360570134
+    },
+    "within_block_shuffled": {
+      "tau_smoothed_s": 35.86840224641123,
+      "phi_smoothed": 0.973797344540936,
+      "tau_unsmoothed_s": 11.728056115286202,
+      "phi_unsmoothed": 0.9220044057315359,
+      "lag1_autocorr_binned": 0.921812336926378,
+      "Q_dwell_low_s": 7.619040362818702
+    },
+    "white_noise_null": {
+      "tau_smoothed_s": 3.948546029037772,
+      "phi_smoothed": 0.7856863157158666,
+      "tau_unsmoothed_s": null,
+      "phi_unsmoothed": -0.030239997605815527,
+      "lag1_autocorr_binned": -0.03030398249462912,
+      "Q_dwell_low_s": 1.9047600907046756
+    },
+    "_verdict": {
+      "real_tau_s": 35.851815729030754,
+      "block_shuffled_tau_s": 8.084096971506407,
+      "rel_diff": 0.7745135969512316,
+      "indistinguishable": false,
+      "text": "该 τ 与块序重排对照可区分（差 77.5%）"
+    }
+  },
   "bands": [
     {
       "label": "bin1_spatial_mean_dfF",
@@ -781,11 +822,11 @@
     "TAU_MIN_FRAMES": 300,
     "MIN_FRAMES_BIC": 500
   },
-  "wallclock_s": 24.31637692451477,
-  "cpu_s": 24.291896,
+  "wallclock_s": 25.427597999572754,
+  "cpu_s": 25.250628,
   "determinism": "gzip 确定性 + HMM seed=0 + 无随机采样 ⇒ 可复跑逐位一致",
   "artifacts_sha256_file_bytes": {
-    "_b3_m11_series_reference.json": "ee1086c53a860f4301becf852fccfff25d07748471628fd635bf4905bcdc530f",
+    "_b3_m11_series_reference.json": "9342109505f1ec419d26ba910408f7d27670207a1e90b6e18b9fbaa326d872a2",
     "_b3_m11_series_reference.csv": "6b83a031ab4994bfeb54f40224f631ce013c6a24438da66feb2002dd2a80e90d"
   }
 }

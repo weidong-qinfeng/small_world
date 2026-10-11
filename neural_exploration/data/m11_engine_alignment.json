@@ -148,7 +148,17 @@
     "n_neurons_diff": 0,
     "bit_identical": true
    },
+   "k=3": {
+    "total": 173,
+    "n_neurons_diff": 0,
+    "bit_identical": true
+   },
    "k=5": {
+    "total": 173,
+    "n_neurons_diff": 0,
+    "bit_identical": true
+   },
+   "k=10": {
     "total": 173,
     "n_neurons_diff": 0,
     "bit_identical": true
@@ -171,7 +181,17 @@
     "n_neurons_diff": 0,
     "bit_identical": true
    },
+   "k=3": {
+    "total": 173,
+    "n_neurons_diff": 0,
+    "bit_identical": true
+   },
    "k=5": {
+    "total": 173,
+    "n_neurons_diff": 0,
+    "bit_identical": true
+   },
+   "k=10": {
     "total": 173,
     "n_neurons_diff": 0,
     "bit_identical": true
@@ -359,8 +379,8 @@
    "spk_total": 244.0,
    "counts_sum": 244.0,
    "rel_diff_count_vs_total": 0.0,
-   "wall_s": 1.8490706669999994,
-   "wall_from_ms_per_step_s": 1.8490706669999994
+   "wall_s": 2.2975238750000013,
+   "wall_from_ms_per_step_s": 2.2975238750000013
   },
   "core_readback": {
    "core_key": "nc4_slow1_semantic_fix",
@@ -546,31 +566,31 @@
   "rows": [
    {
     "seg": 0,
-    "rss_mb": 188.0,
+    "rss_mb": 186.75,
     "ar_buf_numel": 4096
    },
    {
     "seg": 1,
-    "rss_mb": 188.44,
+    "rss_mb": 187.28,
     "ar_buf_numel": 4096
    },
    {
     "seg": 2,
-    "rss_mb": 188.62,
+    "rss_mb": 187.42,
     "ar_buf_numel": 4096
    },
    {
     "seg": 3,
-    "rss_mb": 188.84,
+    "rss_mb": 188.34,
     "ar_buf_numel": 4096
    },
    {
     "seg": 4,
-    "rss_mb": 188.88,
+    "rss_mb": 188.56,
     "ar_buf_numel": 4096
    }
   ],
-  "rss_growth_mb": 0.8799999999999955,
+  "rss_growth_mb": 1.8100000000000023,
   "ar_buf_numel_last": 4096,
   "crit_pass": true,
   "note": "禁以动态规模为缓存键（M9 真 bug）；`_ar_buf` 必须保持**单一**增长缓冲"
@@ -677,7 +697,7 @@
       "spk_total": 244,
       "counts_sha256": "3d7a2b56707a29d3c3369610206697419437cd9f815fa7130c227b8f3a2e8df8",
       "n_nonzero": 206,
-      "pid": 40260,
+      "pid": 40535,
       "n_ch": 4,
       "core": "nc4_slow1_semantic_fix",
       "slot_counts": {
@@ -693,9 +713,9 @@
        "VIP": 559
       }
      },
-     "stdout_tail": "{\"arm\": \"on\", \"n\": 400, \"steps\": 20000, \"delivery\": \"step\", \"spk_total\": 244, \"counts_sha256\": \"3d7a2b56707a29d3c3369610206697419437cd9f815fa7130c227b8f3a2e8df8\", \"n_nonzero\": 206, \"pid\": 40260, \"n_ch\": 4, \"core\": \"nc4_slow1_semantic_fix\", \"slot_counts\": {\"E\": 6208, \"PV\": 525, \"SST\": 508, \"VIP\": 559}, \"edge_counts\": {\"E\": 6208, \"PV\": 525, \"SST\": 508, \"VIP\": 559}}\n",
+     "stdout_tail": "{\"arm\": \"on\", \"n\": 400, \"steps\": 20000, \"delivery\": \"step\", \"spk_total\": 244, \"counts_sha256\": \"3d7a2b56707a29d3c3369610206697419437cd9f815fa7130c227b8f3a2e8df8\", \"n_nonzero\": 206, \"pid\": 40535, \"n_ch\": 4, \"core\": \"nc4_slow1_semantic_fix\", \"slot_counts\": {\"E\": 6208, \"PV\": 525, \"SST\": 508, \"VIP\": 559}, \"edge_counts\": {\"E\": 6208, \"PV\": 525, \"SST\": 508, \"VIP\": 559}}\n",
      "stderr_tail": "",
-     "wall_s": 2.61
+     "wall_s": 2.52
     },
     {
      "rc": 0,
@@ -707,7 +727,7 @@
       "spk_total": 244,
       "counts_sha256": "3d7a2b56707a29d3c3369610206697419437cd9f815fa7130c227b8f3a2e8df8",
       "n_nonzero": 206,
-      "pid": 40276,
+      "pid": 40547,
       "n_ch": 4,
       "core": "nc4_slow1_semantic_fix",
       "slot_counts": {
@@ -723,9 +743,9 @@
        "VIP": 559
       }
      },
-     "stdout_tail": "{\"arm\": \"on\", \"n\": 400, \"steps\": 20000, \"delivery\": \"step\", \"spk_total\": 244, \"counts_sha256\": \"3d7a2b56707a29d3c3369610206697419437cd9f815fa7130c227b8f3a2e8df8\", \"n_nonzero\": 206, \"pid\": 40276, \"n_ch\": 4, \"core\": \"nc4_slow1_semantic_fix\", \"slot_counts\": {\"E\": 6208, \"PV\": 525, \"SST\": 508, \"VIP\": 559}, \"edge_counts\": {\"E\": 6208, \"PV\": 525, \"SST\": 508, \"VIP\": 559}}\n",
+     "stdout_tail": "{\"arm\": \"on\", \"n\": 400, \"steps\": 20000, \"delivery\": \"step\", \"spk_total\": 244, \"counts_sha256\": \"3d7a2b56707a29d3c3369610206697419437cd9f815fa7130c227b8f3a2e8df8\", \"n_nonzero\": 206, \"pid\": 40547, \"n_ch\": 4, \"core\": \"nc4_slow1_semantic_fix\", \"slot_counts\": {\"E\": 6208, \"PV\": 525, \"SST\": 508, \"VIP\": 559}, \"edge_counts\": {\"E\": 6208, \"PV\": 525, \"SST\": 508, \"VIP\": 559}}\n",
      "stderr_tail": "",
-     "wall_s": 2.66
+     "wall_s": 2.38
     },
     {
      "rc": 0,
@@ -737,7 +757,7 @@
       "spk_total": 244,
       "counts_sha256": "3d7a2b56707a29d3c3369610206697419437cd9f815fa7130c227b8f3a2e8df8",
       "n_nonzero": 206,
-      "pid": 40277,
+      "pid": 40552,
       "n_ch": 4,
       "core": "nc4_slow1_semantic_fix",
       "slot_counts": {
@@ -753,9 +773,9 @@
        "VIP": 559
       }
      },
-     "stdout_tail": "{\"arm\": \"on\", \"n\": 400, \"steps\": 20000, \"delivery\": \"step\", \"spk_total\": 244, \"counts_sha256\": \"3d7a2b56707a29d3c3369610206697419437cd9f815fa7130c227b8f3a2e8df8\", \"n_nonzero\": 206, \"pid\": 40277, \"n_ch\": 4, \"core\": \"nc4_slow1_semantic_fix\", \"slot_counts\": {\"E\": 6208, \"PV\": 525, \"SST\": 508, \"VIP\": 559}, \"edge_counts\": {\"E\": 6208, \"PV\": 525, \"SST\": 508, \"VIP\": 559}}\n",
+     "stdout_tail": "{\"arm\": \"on\", \"n\": 400, \"steps\": 20000, \"delivery\": \"step\", \"spk_total\": 244, \"counts_sha256\": \"3d7a2b56707a29d3c3369610206697419437cd9f815fa7130c227b8f3a2e8df8\", \"n_nonzero\": 206, \"pid\": 40552, \"n_ch\": 4, \"core\": \"nc4_slow1_semantic_fix\", \"slot_counts\": {\"E\": 6208, \"PV\": 525, \"SST\": 508, \"VIP\": 559}, \"edge_counts\": {\"E\": 6208, \"PV\": 525, \"SST\": 508, \"VIP\": 559}}\n",
      "stderr_tail": "",
-     "wall_s": 2.85
+     "wall_s": 2.43
     }
    ],
    "n_process": 3,
@@ -763,9 +783,9 @@
    "spk_total": 244,
    "sha256": "3d7a2b56707a29d3c3369610206697419437cd9f815fa7130c227b8f3a2e8df8",
    "pids": [
-    40260,
-    40276,
-    40277
+    40535,
+    40547,
+    40552
    ]
   },
   "off_frozen": {
@@ -780,7 +800,7 @@
       "spk_total": 3730,
       "counts_sha256": "c29dd7a0ee3a7f74f4064db92cb28c859345a11cbbd1285460949abcc6dd41ea",
       "n_nonzero": 328,
-      "pid": 40278,
+      "pid": 40557,
       "n_ch": 2,
       "core": "nc2_slow0_m10_frozen",
       "slot_counts": {
@@ -792,9 +812,9 @@
        "PV": 1592
       }
      },
-     "stdout_tail": "{\"arm\": \"off_frozen\", \"n\": 400, \"steps\": 20000, \"delivery\": \"step\", \"spk_total\": 3730, \"counts_sha256\": \"c29dd7a0ee3a7f74f4064db92cb28c859345a11cbbd1285460949abcc6dd41ea\", \"n_nonzero\": 328, \"pid\": 40278, \"n_ch\": 2, \"core\": \"nc2_slow0_m10_frozen\", \"slot_counts\": {\"E\": 6208, \"PV\": 1592}, \"edge_counts\": {\"E\": 6208, \"PV\": 1592}}\n",
+     "stdout_tail": "{\"arm\": \"off_frozen\", \"n\": 400, \"steps\": 20000, \"delivery\": \"step\", \"spk_total\": 3730, \"counts_sha256\": \"c29dd7a0ee3a7f74f4064db92cb28c859345a11cbbd1285460949abcc6dd41ea\", \"n_nonzero\": 328, \"pid\": 40557, \"n_ch\": 2, \"core\": \"nc2_slow0_m10_frozen\", \"slot_counts\": {\"E\": 6208, \"PV\": 1592}, \"edge_counts\": {\"E\": 6208, \"PV\": 1592}}\n",
      "stderr_tail": "",
-     "wall_s": 2.91
+     "wall_s": 2.25
     },
     {
      "rc": 0,
@@ -806,7 +826,7 @@
       "spk_total": 3730,
       "counts_sha256": "c29dd7a0ee3a7f74f4064db92cb28c859345a11cbbd1285460949abcc6dd41ea",
       "n_nonzero": 328,
-      "pid": 40288,
+      "pid": 40560,
       "n_ch": 2,
       "core": "nc2_slow0_m10_frozen",
       "slot_counts": {
@@ -818,9 +838,9 @@
        "PV": 1592
       }
      },
-     "stdout_tail": "{\"arm\": \"off_frozen\", \"n\": 400, \"steps\": 20000, \"delivery\": \"step\", \"spk_total\": 3730, \"counts_sha256\": \"c29dd7a0ee3a7f74f4064db92cb28c859345a11cbbd1285460949abcc6dd41ea\", \"n_nonzero\": 328, \"pid\": 40288, \"n_ch\": 2, \"core\": \"nc2_slow0_m10_frozen\", \"slot_counts\": {\"E\": 6208, \"PV\": 1592}, \"edge_counts\": {\"E\": 6208, \"PV\": 1592}}\n",
+     "stdout_tail": "{\"arm\": \"off_frozen\", \"n\": 400, \"steps\": 20000, \"delivery\": \"step\", \"spk_total\": 3730, \"counts_sha256\": \"c29dd7a0ee3a7f74f4064db92cb28c859345a11cbbd1285460949abcc6dd41ea\", \"n_nonzero\": 328, \"pid\": 40560, \"n_ch\": 2, \"core\": \"nc2_slow0_m10_frozen\", \"slot_counts\": {\"E\": 6208, \"PV\": 1592}, \"edge_counts\": {\"E\": 6208, \"PV\": 1592}}\n",
      "stderr_tail": "",
-     "wall_s": 2.29
+     "wall_s": 2.24
     },
     {
      "rc": 0,
@@ -832,7 +852,7 @@
       "spk_total": 3730,
       "counts_sha256": "c29dd7a0ee3a7f74f4064db92cb28c859345a11cbbd1285460949abcc6dd41ea",
       "n_nonzero": 328,
-      "pid": 40289,
+      "pid": 40566,
       "n_ch": 2,
       "core": "nc2_slow0_m10_frozen",
       "slot_counts": {
@@ -844,9 +864,9 @@
        "PV": 1592
       }
      },
-     "stdout_tail": "{\"arm\": \"off_frozen\", \"n\": 400, \"steps\": 20000, \"delivery\": \"step\", \"spk_total\": 3730, \"counts_sha256\": \"c29dd7a0ee3a7f74f4064db92cb28c859345a11cbbd1285460949abcc6dd41ea\", \"n_nonzero\": 328, \"pid\": 40289, \"n_ch\": 2, \"core\": \"nc2_slow0_m10_frozen\", \"slot_counts\": {\"E\": 6208, \"PV\": 1592}, \"edge_counts\": {\"E\": 6208, \"PV\": 1592}}\n",
+     "stdout_tail": "{\"arm\": \"off_frozen\", \"n\": 400, \"steps\": 20000, \"delivery\": \"step\", \"spk_total\": 3730, \"counts_sha256\": \"c29dd7a0ee3a7f74f4064db92cb28c859345a11cbbd1285460949abcc6dd41ea\", \"n_nonzero\": 328, \"pid\": 40566, \"n_ch\": 2, \"core\": \"nc2_slow0_m10_frozen\", \"slot_counts\": {\"E\": 6208, \"PV\": 1592}, \"edge_counts\": {\"E\": 6208, \"PV\": 1592}}\n",
      "stderr_tail": "",
-     "wall_s": 2.83
+     "wall_s": 2.19
     }
    ],
    "n_process": 3,
@@ -854,9 +874,9 @@
    "spk_total": 3730,
    "sha256": "c29dd7a0ee3a7f74f4064db92cb28c859345a11cbbd1285460949abcc6dd41ea",
    "pids": [
-    40278,
-    40288,
-    40289
+    40557,
+    40560,
+    40566
    ]
   },
   "crit_h_pass": true
@@ -1256,6 +1276,6 @@
    "reason": "E4b 层特异双房室档未实现（清单 §2.2 标『复用+扩展』，属 P-EXT1 预算门控）"
   }
  },
- "started_at": "2026-10-11T22:34:58",
+ "started_at": "2026-10-11T22:53:26",
  "which": "merged:cpu"
 }

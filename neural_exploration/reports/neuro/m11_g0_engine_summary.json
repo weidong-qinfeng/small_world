@@ -130,7 +130,17 @@
       "n_neurons_diff": 0,
       "bit_identical": true
      },
+     "k=3": {
+      "total": 173,
+      "n_neurons_diff": 0,
+      "bit_identical": true
+     },
      "k=5": {
+      "total": 173,
+      "n_neurons_diff": 0,
+      "bit_identical": true
+     },
+     "k=10": {
       "total": 173,
       "n_neurons_diff": 0,
       "bit_identical": true
@@ -153,7 +163,17 @@
       "n_neurons_diff": 0,
       "bit_identical": true
      },
+     "k=3": {
+      "total": 173,
+      "n_neurons_diff": 0,
+      "bit_identical": true
+     },
      "k=5": {
+      "total": 173,
+      "n_neurons_diff": 0,
+      "bit_identical": true
+     },
+     "k=10": {
       "total": 173,
       "n_neurons_diff": 0,
       "bit_identical": true
@@ -238,9 +258,9 @@
      "spk_total": 244,
      "sha256": "3d7a2b56707a29d3c3369610206697419437cd9f815fa7130c227b8f3a2e8df8",
      "pids": [
-      40260,
-      40276,
-      40277
+      40535,
+      40547,
+      40552
      ]
     },
     "off_frozen": {
@@ -249,9 +269,9 @@
      "spk_total": 3730,
      "sha256": "c29dd7a0ee3a7f74f4064db92cb28c859345a11cbbd1285460949abcc6dd41ea",
      "pids": [
-      40278,
-      40288,
-      40289
+      40557,
+      40560,
+      40566
      ]
     }
    }
@@ -260,7 +280,7 @@
  "extensions": {
   "off_state_equivalence": {
    "status": "pass",
-   "note": "新机制全关 + REF_FROZEN ⇒ 与 M9/M10 逐位一致（单延迟档稀疏/密集）；三延迟档 FP 累加序差异已定位到单 ULP",
+   "note": "新机制全关 + REF_FROZEN ⇒ 与 M9/M10 逐位一致（单延迟档稀疏/密集）；三延迟档：**不含外部事件**时与 M10 逐位一致（单共享环槽与每延迟一槽语义等价）；含外部事件时不可比 ⇒ 差异来自 E-M10-2（冻结件在多延迟组下丢弃全部外部事件），**不是 FP 累加序**（本节点早期'单 ULP'主张已撤回，见 detail.three_bins_isolation）",
    "detail": {
     "sparse_single_delay": {
      "m10_spk": 2216,
@@ -370,8 +390,8 @@
      "spk_total": 244.0,
      "counts_sum": 244.0,
      "rel_diff_count_vs_total": 0.0,
-     "wall_s": 1.8490706669999994,
-     "wall_from_ms_per_step_s": 1.8490706669999994
+     "wall_s": 2.2975238750000013,
+     "wall_from_ms_per_step_s": 2.2975238750000013
     },
     "core_readback": {
      "core_key": "nc4_slow1_semantic_fix",
@@ -640,31 +660,31 @@
     "rows": [
      {
       "seg": 0,
-      "rss_mb": 188.0,
+      "rss_mb": 186.75,
       "ar_buf_numel": 4096
      },
      {
       "seg": 1,
-      "rss_mb": 188.44,
+      "rss_mb": 187.28,
       "ar_buf_numel": 4096
      },
      {
       "seg": 2,
-      "rss_mb": 188.62,
+      "rss_mb": 187.42,
       "ar_buf_numel": 4096
      },
      {
       "seg": 3,
-      "rss_mb": 188.84,
+      "rss_mb": 188.34,
       "ar_buf_numel": 4096
      },
      {
       "seg": 4,
-      "rss_mb": 188.88,
+      "rss_mb": 188.56,
       "ar_buf_numel": 4096
      }
     ],
-    "rss_growth_mb": 0.8799999999999955,
+    "rss_growth_mb": 1.8100000000000023,
     "ar_buf_numel_last": 4096,
     "crit_pass": true,
     "note": "禁以动态规模为缓存键（M9 真 bug）；`_ar_buf` 必须保持**单一**增长缓冲"
@@ -693,9 +713,9 @@
   "n_unavailable": 0
  },
  "evidence": {
-  "alignment_json_sha256": "9fd96953e4fa976590f292560bb6fb1b",
+  "alignment_json_sha256": "753caa3954a324ef9510134e395f325b",
   "engine_src_sha256": "84b5759db16253060b4791c3fc444960",
-  "tool_sha256": "b7bb88b53e9ba373d29c0187a30796b5",
+  "tool_sha256": "b62d56fb9ae12c5971482233b4793ad0",
   "minrepro": "/Users/weidong/ai/small_world/neural_exploration/data/m11_minrepro_delivery.json",
   "stale_guard": "本 summary 由本轮实跑生成；若与 `criterion_states` 不一致，以本文件为准（旧快照的 (e) step/（f) m11_ok 值见 RF-M11-F 引用，已作废）"
  },

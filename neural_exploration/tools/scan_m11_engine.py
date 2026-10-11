@@ -308,7 +308,7 @@ def t3_composability(verbose=True) -> dict:
     for delivery in ("step", "chunk"):
         row = {}
         base = None
-        for k in (1, 2, 5):
+        for k in (1, 2, 3, 5, 10):          # 扩展扫描（覆盖 RF-M11-F 的 k 粒度要求）
             eng, _, _ = worker_build(arm="on", n=CPU_N, seed=0, density_hz=2.0)
             tot, cnt = _run_k(eng, T, k, delivery)
             if base is None:
@@ -337,7 +337,7 @@ def t3_composability(verbose=True) -> dict:
                 row["control_rel_slots_k2"]["rel_diff_pct"],
                 row["control_rel_slots_k2"]["n_neurons_diff"]), flush=True)
     out["crit_e_pass"] = bool(all(out[d]["k=%d" % k]["bit_identical"]
-                                  for d in ("step", "chunk") for k in (2, 5)))
+                                  for d in ("step", "chunk") for k in (2, 3, 5, 10)))
     out["control_falsifiable"] = bool(not out["step"]["control_rel_slots_k2"]["bit_identical"]
                                       or not out["chunk"]["control_rel_slots_k2"]["bit_identical"])
     return out
@@ -1581,7 +1581,9 @@ def build_summary(res: dict) -> dict:
         off_state_equivalence=dict(
             **st(t6.get("off_equiv_pass"), bool(t6),
                  "新机制全关 + REF_FROZEN ⇒ 与 M9/M10 逐位一致（单延迟档稀疏/密集）；"
-                 "三延迟档 FP 累加序差异已定位到单 ULP"),
+                 "三延迟档：**不含外部事件**时与 M10 逐位一致（单共享环槽与每延迟一槽语义等价）；"
+                 "含外部事件时不可比 ⇒ 差异来自 E-M10-2（冻结件在多延迟组下丢弃全部外部事件），"
+                 "**不是 FP 累加序**（本节点早期'单 ULP'主张已撤回，见 detail.three_bins_isolation）"),
             detail={k: v for k, v in t6.items() if k != "three_bins_fp_order"},
             fp_order=t6.get("three_bins_fp_order")),
         slot_encoding_assertions=dict(

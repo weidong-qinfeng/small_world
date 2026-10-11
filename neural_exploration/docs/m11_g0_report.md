@@ -168,3 +168,19 @@ export PYTHONHASHSEED=0 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1
    - **多延迟档 + 外部事件**是冻结件的静默失效高发区（E-M10-2）；M11 内核已修，但**任何新入口都要显式断言
      "外部事件真的进了环槽"**（本次用"含/不含事件脉冲数是否相同"作判别）；
    - **闭式 vs 累积的双估计器**差若恰好等于某参数的函数，先怀疑"差一个因子"而不是"机制不对"（B2-L5）。
+
+---
+
+## 8. RF-M11-F（R11）裁定落实记录（含索引级最小复现与两处自我更正）
+
+| 项 | 内容 |
+|---|---|
+| **裁定引用值** | (e) step k=2 total **172**/11 个神经元差、k=5 **165**/28 个差；(f) **`m11_ok=False`** |
+| **状态** | 该快照为**修复前**状态（当时文件正被并行提交）。后续 **R11b**（`e6902b7`）已判"(e)(f) 已修至 pass（含主agent 独立复跑确认）"，**R16**（`3e6ce1e`）独立复跑 "(e) 12/12 逐位一致（3 规模 × 4 分段粒度）"。本节点按 R11 的五条要求**逐条补齐证据**，不推翻架构 |
+| **(e) 真因** | **不是投递/CSR 算术**，而是**步模式外部事件按局部步号索引**（E-M10-1，继承自冻结件）⇒ 分段重放。修法：`ext_abs_index=True`（按绝对步号）。chunk 路径原本就用绝对步号 ⇒ 这就是"step fail / chunk pass"的**真实分界** |
+| **(f) 真因** | **夹具臂定义错误**（把四类标签喂给 E1b 关闭的引擎，被本节点新加的严格守卫正确拦截）⇒ 臂 `invalid`，非内核失败。Suspicion "per-class CSR 算术重算" 经 `minrepro` **证伪** |
+| **索引级最小复现** | `tools/minrepro_m11_delivery.py` → `data/m11_minrepro_delivery.json`（**all_pass=true**）：MR1 复现 M9 缺陷（`[0,1,7]` vs 期望 `[0,1,3]`；M10/M11 `[0,1,3]`）；MR2/MR3/MR4/MR6 在 **step 与 chunk 两路径**逐索引等于独立期望（含四亚型槽与"单源两条同类边→合并落槽"）；MR5 交付落点集合 k=1/2/3/5/10 **全同** |
+| **撤回主张** | 早期"三延迟档差异 = 单 ULP FP 累加序" **已撤回**：不含外部事件时三延迟档与 M10 **逐位一致**（2201=2201 / 5639=5639）；含外部事件时的差异来自 **E-M10-2（冻结件丢事件）**，是语义级而非 ULP 级 |
+| **新增回归测试** | `test_sync_firing_delivery_no_raise_and_per_class_slots`（(f)）+ `test_step_segment_composability_k_scan[step/chunk]`（(e)，k=1/2/3/5/10）⇒ **pytest 10 passed** |
+| **判决表纪律** | 新增 `gate_pass_condition`（pass ⟺ 11 项全 pass；有 `unavailable` ⇒ `incomplete`；有 `fail` ⇒ `fail`）、`criterion_states`/`criterion_counts`（本轮 **11/11 measured、11/11 pass、0 fail、0 unavailable**）、`evidence`（sha256 指纹 + `stale_guard`）、每项 `reference`；`registered` → **`informational`**（R14 裁定，不进判据集合）|
+| **本节点复跑（最新）** | (e) step **k=1/2/3/5/10 全 BIT**、chunk 全 BIT，反例臂仍 **non-identical（−0.578%/11 神经元）**；(f) `m9_raises=True` + **`m11_ok=True`** + 逐类落槽 rel_diff=0 |
