@@ -1331,5 +1331,74 @@
       "tools/hash_report.py（三口径并列打印，供跨节点传值前复制）"
     ],
     "family": "『双口径』家族第 5 例（根因同 L40 律①：同一名字装不同的量）"
+  },
+  "RF32_final": {
+    "title": "P6 主判据的**双口径最终表述**（B4 stage H）——替换旧版主判据措辞；旧字段保留并加指向",
+    "supersedes": [
+      "P6_FINAL_VERDICT.primary_criterion（量级表述部分）",
+      "tau_criterion_final",
+      "M10_final_verdict（量级表述部分）"
+    ],
+    "pointer_note": "上列旧字段**一律保留**（可追溯）；本键为最终版，冲突时以本键 + docs/m10_stage3_report.md §4.8 为准",
+    "consistent_with": "docs/m10_acceptance_master.md A11c（提交 225e685）",
+    "stage_H": {
+      "same_input_two_construction_paths_sha256_identical": true,
+      "unsmoothed": {
+        "phi": 0.76148,
+        "phi_se": 0.0073,
+        "phi_z": 104.3,
+        "p_approx": 0,
+        "tau_s": 3.354,
+        "tau_over_smooth_window": 0.73
+      },
+      "smoothed_5frame": {
+        "phi": 0.97572,
+        "tau_s": 37.18,
+        "tau_over_smooth_window": 8.14
+      },
+      "tau_ratio_smoothed_over_unsmoothed": 11.09,
+      "smooth_window_s": 4.569,
+      "cross_condition_unsmoothed_9_conditions": {
+        "phi_median": 0.6847,
+        "phi_range": [
+          0.4737,
+          0.8343
+        ],
+        "n_negative": "0/9",
+        "tau_range_s": [
+          1.223,
+          5.043
+        ],
+        "all_below_smooth_window": true
+      },
+      "noise_deflation_correction": {
+        "rho1": 0.7614,
+        "rho2": 0.6948,
+        "phi_intrinsic": 0.9125,
+        "tau_intrinsic_s": 9.983,
+        "first_diff_sd": 53.96,
+        "poisson_expected_sd": 11.34,
+        "ratio": 4.76
+      },
+      "verdict_scenario": "(b) 存在内在正自相关，但尺度小于平滑窗 ⇒ 26.5 s / 37.180 s 量级的『慢』不能宣称独立于 5 帧平滑；**非 (c)**：与模型侧 λ×1（未平滑 φ<0）并非同病"
+    },
+    "final_wording": {
+      "unsmoothed": "成像侧 φ=0.7615（z=104.3，真实非噪声；跨条件 0/9 为负，中位 0.685） vs 模型侧 φ<0（四个级别全为负）⇒ 差距是『类别性』的：成像侧有内在正自相关（τ≈3.35 s；噪声修正后 ≈9.98 s），模型侧完全没有",
+      "smoothed_5frame": "τ 1.58–2.31 s vs 37.180 s（差 16–24 倍）、转换率 0.677–0.835 vs 0.0196 Hz（快 35–43×）、占用同量级 ✅、残差两侧均非白噪",
+      "conclusion": "两个口径判定一致 ⇒ 结论对平滑口径稳健；且因模型侧连正自相关都没有，『模型 τ 只是平滑窗诱导』这一可能的反驳被排除 ⇒ **净效果 = 反证增强**"
+    },
+    "mandatory_annotation": "凡引用 26.5 s / 37.180 s 处一律注明『5 帧平滑口径量（含 4.569 s 低通）』；不得写『成像侧内在慢时间尺度』；独立于平滑的对应量 = τ_未平滑 3.354 s（噪声修正后 9.983 s）；τ 窗 [9.4,146.3] s 亦为平滑口径窗",
+    "annotation_applied": {
+      "report_lines_annotated": 13,
+      "marker": "✱平滑口径量（含 4.569 s 低通）§4.8"
+    },
+    "node_crosscheck_scope": {
+      "method": "用本节点盘面 data/m10_p6_ar1_RF24.json 的 phi_unsmoothed 列（n=131）逐臂复核符号",
+      "lam1": "4/4 全为负（M-1 −0.4109 / M-4 −0.1438 / M-6 −0.3120 / M0 −0.3402）⇒ 『四个级别全为负』在**主判据臂 λ×1** 上成立 ✅",
+      "lam0": "4/4 全为负（−0.2745），但 RF-26 已标 invalid ⇒ 不构成证据",
+      "lam4": "**2/4**（M-4 +0.9038 → τ_未平滑 9.032 s；M-6 +0.5808 → τ_未平滑 1.682 s）⇒ **λ×4 并非全为负**，表述须限定 λ×1",
+      "verdict_impact": "无。M-4 λ×4 已判 MECHANISM_NOT_IMPLEMENTED(scope)/unavailable/仅描述性 ⇒ 其 τ_未平滑≈9.03 s 绝不可读作『机制奏效』；M-6 λ×4 τ_未平滑=1.682 s 仅为窗下界 0.18×（低 5.6×）。§4.8.2 的『类别性差距/反证增强』结论不变，其证据基础是 λ×1 四臂 4/4 为负"
+    },
+    "jobs_started": "无（stage H 为 B4 离线复算；本节点未起任何作业）"
   }
 }

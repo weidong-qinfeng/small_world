@@ -61,6 +61,8 @@ INTEG = os.path.join(DATA, "m11_download_integrity_summary.json")
 INTEG_CSV = os.path.join(DATA, "m11_download_integrity.csv")
 PARSE = os.path.join(DATA, "m11_microns_parse_validation.json")
 REFCSV = os.path.join(DATA, "m11_reference.csv")
+ACTJSON = os.path.join(DATA, "m11_allen_activity_fallback.json")
+ACTCRED = os.path.join(DATA, "m11_decode_proof.json")
 
 VERDICTS = {"REACHABLE", "REACHABLE_NO_DATA", "NEEDS_TOKEN", "NEEDS_VERIFY", "BLOCKED", "NOT_EXIST"}
 FRAME_RATE_EXPECT = 1.0 / 0.15873          # 6.300006 Hz（来自 attributes.json t-resolution）
@@ -315,6 +317,34 @@ def main():
     A.append(assert_("P2.12d 空间分辨率 10× 口径冲突已登记 NEEDS_VERIFY",
                      (rmap.get("R-16") or {}).get("status") == "NEEDS_VERIFY",
                      "R-16=%s" % json.dumps(rmap.get("R-16", {}), ensure_ascii=False)[:160]))
+
+    # ---------------- P1.8 活动通道回退源（RF-M11-A）----------------
+    act = load(ACTJSON) if os.path.exists(ACTJSON) else {}
+    sr = act.get("sampling_rate_readback") or {}
+    sp = (sr.get("sampling_rate_hz") or {})
+    lf = (sr.get("lfp_sampling_rate_hz") or {})
+    A.append(assert_("P1.8a 回退源采样率读回（Allen BO ecephys probes.csv 自描述）",
+                     abs((sp.get("max") or 0) - 30000) < 5 and abs((lf.get("max") or 0) - 2500) < 5,
+                     "spike=%.2f Hz（mean %.2f）/ LFP=%.2f Hz（mean %.2f）/ n_probes=%s"
+                     % (sp.get("max") or 0, sp.get("mean") or 0, lf.get("max") or 0, lf.get("mean") or 0,
+                        sr.get("n_probes"))))
+    objs = act.get("objects") or []
+    ok_ev = all(o.get("verdict") in ("COMPLETE", "RANGE_BOUNDED") for o in objs if o.get("verdict") != "MISSING")
+    A.append(assert_("P1.8b 回退源逐对象完整性登记（INCOMPLETE/MISSING 不入统计）", ok_ev,
+                     json.dumps([(o["local_file"].split("/")[-1], o["verdict"]) for o in objs],
+                                ensure_ascii=False)))
+    A.append(assert_("P1.8c 采样率统计**只**用 COMPLETE 的 probes.csv",
+                     bool(sr) and (sr.get("n_probes") or 0) >= 300 and (sr.get("n_with_sampling_rate") or 0) >= 300,
+                     "n_probes=%s n_with_sr=%s（构建器要求本地大小 == 期望 26,954 B 才计算）"
+                     % (sr.get("n_probes"), sr.get("n_with_sampling_rate"))))
+    dp = load(ACTCRED) if os.path.exists(ACTCRED) else {}
+    wv = (dp.get("battery") or {}).get("BIG-endian int16（本轮判决性读法）") or {}
+    A.append(assert_("P1.8d MICrONS 体素解码证据在位（大端 int16，lat_x 与帧轴自相关过门）",
+                     (wv.get("lat_x_corr") or 0) >= 0.2 and (wv.get("frame_lag1") or 0) >= 0.2,
+                     "lat_x=%s 帧轴lag1=%s p50=%s（LE 对照：lat_x=%s 帧轴lag1=%s）"
+                     % (wv.get("lat_x_corr"), wv.get("frame_lag1"), wv.get("p50"),
+                        ((dp.get("battery") or {}).get("little-endian int16（我/主 agent 首版读法）") or {}).get("lat_x_corr"),
+                        ((dp.get("battery") or {}).get("little-endian int16（我/主 agent 首版读法）") or {}).get("frame_lag1"))))
 
     # ---------------- 判定 ----------------
     for a in A:

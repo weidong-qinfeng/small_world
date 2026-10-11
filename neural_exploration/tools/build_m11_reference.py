@@ -35,6 +35,7 @@ PROTO = os.path.join(DATA, "m11_microns_protocol.json")
 PARSE = os.path.join(DATA, "m11_microns_parse_validation.json")
 INTEG = os.path.join(DATA, "m11_download_integrity_summary.json")
 OUT = os.path.join(DATA, "m11_reference.csv")
+BUCKET_URL = "https://allen-brain-observatory.s3.amazonaws.com/visual-coding-neuropixels/ecephys-cache"
 
 FIELDS = ["ref_id", "quantity", "value", "unit", "assertion", "status", "evidence_level",
           "source_url", "retrieved_at", "note"]
@@ -134,6 +135,34 @@ def main():
         "原始 TIFF 帧（未压缩、不同 scan）亦为高相关图像", "asserted", "measured", ti.get("url", ""),
         utcnow(), "独立地面真值 ⇒ 判据阈值 0.2 由真实数据锚定（非自证）；n_frames=%s（Range 前缀）"
                   % ti.get("n_frames"))
+
+    # ---- RF-M11-A：活动通道回退源（Allen BO Neuropixels 自描述表）采样率读回 ----
+    act = json.load(open(os.path.join(DATA, "m11_allen_activity_fallback.json"))) \
+        if os.path.exists(os.path.join(DATA, "m11_allen_activity_fallback.json")) else {}
+    sr = (act.get("sampling_rate_readback") or {})
+    if sr:
+        sp = sr.get("sampling_rate_hz") or {}
+        lf = sr.get("lfp_sampling_rate_hz") or {}
+        add("R-23", "allen_ecephys.spike_sampling_rate_hz", "%.4f" % (sp.get("max") or 0), "Hz",
+            "== 30000（spike-band；probes.csv 自描述）", "asserted", "measured",
+            BUCKET_URL + "/probes.csv", act.get("generated_at", ""),
+            "**RF-M11-A 回退源采样率读回**（%d 个 probe 中 %d 个有值；均值 %.2f Hz）；"
+            "min=0 属无 spike 数据的占位行" % (sr.get("n_probes", 0), sr.get("n_with_sampling_rate", 0),
+                                              sp.get("mean") or 0))
+        add("R-24", "allen_ecephys.lfp_sampling_rate_hz", "%.4f" % (lf.get("max") or 0), "Hz",
+            "== 2500（LFP；probes.csv 自描述）", "asserted", "measured", BUCKET_URL + "/probes.csv",
+            act.get("generated_at", ""),
+            "LFP 采样率；`lfp_temporal_subsampling_factor=%s`；has_lfp_data 的 probe 数=%s"
+            % (sr.get("lfp_temporal_subsampling_factor"), sr.get("n_has_lfp_data")))
+        add("R-25", "allen_ecephys.units_table_schema", "%s 列" % ((act.get("units_csv") or {}).get("n_columns")),
+            "columns", "含 firing_rate / snr / isi_violations / quality", "asserted", "measured(前缀)",
+            BUCKET_URL + "/units.csv", act.get("generated_at", ""),
+            "**全量 51,439,189 B 未取**（网络 16 KB/s ⇒ 预计 >30 min，DQ-6）；1 MB Range 前缀读回 schema+样本")
+        add("R-26", "microns.voxel_channel_status", "decoded(big-endian int16)", "-",
+            "lat_x≥0.2 ∧ 帧轴 lag1≥0.2 ∧ 声明域内", "asserted", "measured",
+            "data/m11_decode_proof.json", utcnow(),
+            "**不登记 format_unverified**：大端 int16 直读给出 lat_x=0.814 / 帧轴 lag1..6=0.803…0.709 / p50=1953，"
+            "并有独立地面真值（原始 TIFF lat_x=0.767）佐证；一条命令可复核（tools/demo_m11_microns_decode.py）")
 
     with open(OUT, "w", newline="", encoding="utf-8") as f:
         f.write("# M11 参考锚（generated_by=tools/build_m11_reference.py；**只允许新增行**；"

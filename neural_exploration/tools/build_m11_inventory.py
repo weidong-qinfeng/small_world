@@ -175,7 +175,12 @@ def main():
     add("m11_json", STRUCT_JSON, "（本工具产出）", st.get("generated_at", ""), "measured+derived", "结构侧")
     add("m11_json", PROTO_JSON, "（本工具产出）", pr.get("generated_at", ""), "measured", "采集参数读回")
     add("m11_json", ALLEN_JSON, "（本工具产出）", al.get("generated_at", ""), "measured", "Allen 侧")
-    for extra in ("m11_reference.csv", "m11_download_integrity.csv", "m11_download_integrity_summary.json",
+    add("allen_bo_ecephys", os.path.join(RAW, "allen", "bo_ecephys", "probes.csv"),
+        "https://allen-brain-observatory.s3.amazonaws.com/visual-coding-neuropixels/ecephys-cache/probes.csv",
+        utcnow(), "measured(HTTP 200, 完整)", "**采样率读回**：spike 30 kHz / LFP 2.5 kHz（RF-M11-A 回退源）")
+    for extra in ("m11_allen_activity_fallback.json", "m11_allen_activity_objects.csv",
+                  "m11_decode_proof.json",
+                  "m11_reference.csv", "m11_download_integrity.csv", "m11_download_integrity_summary.json",
                   "m11_microns_parse_validation.json", "m11_microns_parse_hypotheses.csv"):
         add("m11_gate", os.path.join(DATA, extra), "（本工具链产出）", utcnow(),
             "measured(结构性验证 / 完整性门)", "主 agent 复核要求的三项门（解析/完整性/哨兵）产物")
