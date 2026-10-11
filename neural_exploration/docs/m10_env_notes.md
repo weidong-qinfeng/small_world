@@ -331,3 +331,71 @@ interior bout** 后，饱和网络给出 0.0000（可证伪 ✓）。**两版产
 `data/_m10_p6_ladder_v1_original_criterion.csv`（旧判据）与 `m10_p6_mechanism_ladder.csv`（修正判据）。
 **纪律沉淀**：判据必须先用"应当给出 0 的负对照"自检（此处 = 恒定高活动网络），
 否则"全过"只是判据失效的假象。
+
+---
+
+## L20 — 主agent 评审 3 项裁决的落实记录（全部按"实施硬约束"执行）
+
+### L20.1 裁决 1（连接组可得性三态 → P6 归属强度）：已落实
+- **三态裁决 = `partial`**（`data/m10_connectome_counts.json::completeness_level`），依据与证据链见 L10；
+  完整度分级与"判据带运行前重定稿"已在 `m10_zf_connectome.csv` 头部注释与 counts JSON 中落盘。
+- **P6 归属强度已按 `partial` 降级**：所有机制产物带 `attribution_strength =
+  "abstract_only（Fish1 连接组 partial/CAVE 门控 ⇒ 消融归属降级为抽象网络内归属）"`
+  （`data/m10_p6_slow_M-*.json`）——**报告中不得表述为"连接组结构上的机制归属"**。
+- **可达性表补测（与主agent 观测的差异如实并列）**：`data/m10_source_reachability.csv`（现 44 源）
+  - `zebrafishbrain.org`：**HTTP 200 但仅 114 字节**（`window.location.href='/lander'`）⇒ **域名停放页，
+    无数据资源** → 登记 `REACHABLE_NO_DATA`（"可达 ≠ 可用"，不得当作数据源）；
+  - `zenodo.org`：本次会话 **curl 与 python urllib 双双 200**（首次曾 SSL self-signed/DNS 异常）
+    ⇒ 与主agent"超时不可达"的观测不同 → 登记为**间歇性不稳 + 文件吞吐仅 56 KB/s**，
+    并已实测 4 并发无改善 ⇒ 大档（≥380 MB）不可行。
+
+### L20.2 裁决 2（P6 慢变量硬判据）：已落实并**实测未过**（结果如实入档）
+新增 `tools/validate_p10_slow_variable.py`，对 M-1/M-2/M-3 逐级实测（`data/m10_p6_slow_variable.csv`）：
+
+| 级 | τ_setting 落生理范围 | 慢变量↔群率慢涨落 \|r\|（门槛 0.30） | τ_slow / 活动时间尺度（同阶窗 [0.1,10]） | 消融关闭态逐位等价 | 裁决 2 判定 |
+|---|---|---|---|---|---|
+| **M-1** STP 抑制型 | 1000 ms ∈[100,2000] ✅ | `stp_x` **0.207** ❌ | 1.0 s / 0.01 s = **100** ❌ | 密集工况不可用（M9 引擎崩，L17） | **未过** |
+| **M-2** STP 易化型 | 500 ms ∈[100,1000] ✅ | `stp_u` **+0.945** ✅ | 0.5 s / 0.02 s = **25** ❌ | 同上 | **未过** |
+| **M-3** GABA 亚型 | 200 ms ∈[80,400] ✅ | GABA_B 电导轨迹**无涨落**（corr undefined）❌ | 0.2 s / 0.01 s = **20** ❌ | 同上 | **未过** |
+
+**结论与其科学含义（重要，直接修正上一轮"effective"表述）**：
+1. 三级机制的时间常数**设定值均在预注册生理范围内**（读回断言 ✓，未做"扫参数直到 bout 出现"的搜索，
+   参数取预注册范围中点；`m10_mechanism_ladder.csv` 已预注册全部范围）；
+2. 但**群率本身在 10–20 ms 尺度就失去自相关** ⇒ "bout 时长分布的时间尺度同阶"分支**无定义**
+   （所有等级的 `bout_fraction = 0`，见 L19.3）⇒ 裁决 2 的第三条判据**在本次协议下不可满足**；
+3. M-2 的慢变量与群率**强相关（0.945）**但时间尺度不同阶 ⇒ **慢变量在涨、群率不在慢尺度上组织**
+   —— 这正是裁决 2 想拦住的"bout 来自慢变量之外"的情形；
+4. ∴ **P6 维持 `not passed`**：门 1/2（不自持、驱动弹性）M-1/M-2 通过，**门 3（bout）与裁决 2 的慢变量
+   判据均未过**。**"STP 修复输入增益"（+752%）与"STP 产生双态"是两件独立的事**——前者已成立，后者未成立。
+5. **口径限制登记**：本工具的"活动时间尺度"取分箱群率自相关 e 折（**最快尺度**），
+   **不是 bout dwell**；因 bout = 0，dwell 分支无定义。下一轮应按裁决 2 原文改用**dwell 时长分布**
+   （要求先有非零 bout，即协议 T ≥ 60 s，见 L19.3 下一步）。
+
+### L20.3 裁决 3（P7 等价检验口径 + 低采样量化）：已落实
+新增 `tools/validate_p10_equivalence.py` → 三份**运行前定稿**产物：
+
+1. **`data/m10_equivalence_protocol.csv`**：把"不可区分"操作化为**等价检验**：
+   - P7 ① 发放率分布：**KS D < 预注册 d_eq**（清单 §6.2 ① 的"D<带"语义）+ 逐神经元率的 **Welch TOST**
+     （margin 0.05 Hz）；
+   - P7 ② 群体相关：**TOST on mean pairwise r**（margin 0.05）；③ 状态占转：TOST（margin 0.10）；
+   - P7 ④：**优越性检验**（准确率 > 置换上界 且 ≥ 下限）——并注明该参考在 ZAPBench 上**当前不可建立**；
+   - 沿用条款逐条入表：同管线反演 + 同管线代理地板 + 窗内/全尾双口径 + 理想上限声明 +
+     session 级隔离 + **不声称逐神经元对应（仅区域级）** + 证据级别 L1/L2/L3 标注。
+2. **`data/m10_sampling_attenuation.csv`**（**低采样混淆量化**，裁决 3 第 2 条）：合成 Poisson 真值
+   → M10 §6.1 正向模型（A=0.15、τ_ca=1 s）→ **1.0943 Hz 帧化** → 同管线反演，40 次重复取中位：
+   衰减因子 = **1.016（0.1 Hz）→ 1.010（0.3 Hz）→ 1.004（0.5 Hz）→ 1.009（1 Hz）→ 1.010（3 Hz）**
+   ⇒ **在"同管线反演"口径下，1 Hz 级采样对 2 h 窗内发放率估计的衰减 ≈ 1%（无系统衰减）**
+   （原因：ΔF/F 对脉冲线性、长窗积分守恒）；**因此跨口径比较的唯一合法形式是"两侧同管线反演"**，
+   若一侧用文献数值（非同管线）则 KS 不可比——该限制已写入协议表。
+   *（实现自查：首版把衰减因子误除 `r` 而非 `r·T`，得 ×7300 的荒谬值 → 已定位修正并保留本注。）*
+3. **`data/m10_equivalence_selfcheck.json`**（**判据可达性自检**，防"边界不可达"）：
+   把 ZAPBench 8,192 神经元的率分布**随机劈两半**，用同一 TOST/KS 协议判等价 →
+   **TOST margin 0.05 Hz 通过**（diff = −0.0002，两侧 p≈0）、**KS d_eq 0.05/0.10/0.20 全通过**
+   ⇒ 预注册边界**在该口径下可达**（若连同源两半都判不等价，则边界须放宽后重新预注册）。
+
+### L20.4 本轮新增交付物（裁决落实）
+| 用途 | 路径 |
+|---|---|
+| 裁决 1 | `data/m10_source_reachability.csv`（+2 源：parked 域名 / zenodo 吞吐复测）、`m10_p6_slow_M-*.json::attribution_strength` |
+| 裁决 2 | `tools/validate_p10_slow_variable.py`、`data/m10_p6_slow_variable.csv`、`m10_p6_slow_M-{1,2,3}.json` |
+| 裁决 3 | `tools/validate_p10_equivalence.py`、`data/m10_equivalence_protocol.csv`、`m10_sampling_attenuation.csv`、`m10_equivalence_selfcheck.json` |

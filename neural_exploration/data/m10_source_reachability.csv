@@ -29,6 +29,8 @@ zebrafishatlas.zib.de,https://zebrafishatlas.zib.de/,atlas,200,200,OK
 mapzebrain.org,https://mapzebrain.org/home,atlas,200,200,OK
 fishexplorer.zib.de,https://fishexplorer.zib.de,atlas,200,200,OK
 zebrafishem.org,https://zebrafishem.org,atlas,0,DNS 无 A 记录（域名不可解析）,BLOCKED_DNS
+zebrafishbrain.org,https://zebrafishbrain.org,atlas,200,**HTTP 200 但仅 114 字节**：`window.location.href='/lander'` → **域名停放页（parked/lander），无任何数据资源** ⇒ 可达 ≠ 可用（主agent 观测到的 200 与之相符，但不可当作数据源）,REACHABLE_NO_DATA
+zenodo.org（复测）,https://zenodo.org/api/records/1009488,imaging,200,本次会话 **curl 与 python urllib 双双 200**（首次曾 SSL self-signed/DNS 异常）→ 可达，但**文件吞吐仅 56 KB/s**（与主agent『zenodo 超时不可达』的观测不同：登记为**间歇性不稳 + 极低吞吐**）,OK_VERY_SLOW
 engertlab Z-Brain,https://engertlab.fas.harvard.edu/Z-Brain/,atlas,0,TCP 超时,BLOCKED
 Z-Brain 镜像(Zenodo),https://zenodo.org/api/records/7130703,atlas,200,Reference brains for registration to ZBB（19 nii.gz，4.5 GB）——Z-Brain 配准图谱经 Zenodo 可得,OK_VERY_SLOW
 www.nichd.nih.gov,https://www.nichd.nih.gov/,atlas,200,200（Brain Browser 介绍页）,OK

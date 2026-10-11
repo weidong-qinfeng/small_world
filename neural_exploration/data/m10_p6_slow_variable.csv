@@ -1,0 +1,8 @@
+# M10 P6 慢变量硬判据（主agent 裁决 2 落实）——列名与值已逐列核对
+# 判据：A τ_setting 落预注册生理范围 ∧ B 慢变量↔群率慢涨落 |r|≥0.30 ∧ C τ_slow 与活动/bout 时间尺度同阶
+# 口径说明：tau_activity_s = 分箱群率自相关 e 折（**最快尺度**，非 bout dwell）→ 若 bout=0 则
+#          'C 与 bout 时长分布同阶'分支**无定义**（登记为 undefined，见 note 列）
+level,tau_setting_ms,tau_pre_reg_ms,tau_in_range,tau_activity_s,tau_slow_s,ratio,same_order_pass,corr_var,corr_val,corr_all,bout_fraction,closed_state_bit_identical,hard_criterion_pass,note
+M-1,1000.0,"(100.0, 2000.0)",True,0.01,1.0,100.0,False,stp_x,-0.2066,"{""stp_u"": 0.0786, ""stp_x"": -0.2066}",0.0,,False,bout=0 ⇒ 裁决2 的『与 bout 时长同阶』分支无定义；本条为 A∧B∧C 的裁决 2 判定
+M-2,500.0,"(100.0, 1000.0)",True,0.02,0.5,25.0,False,stp_u,0.9452,"{""stp_u"": 0.9452, ""stp_x"": -0.9002}",0.0,,False,bout=0 ⇒ 裁决2 的『与 bout 时长同阶』分支无定义；本条为 A∧B∧C 的裁决 2 判定
+M-3,200.0,"(80.0, 400.0)",True,0.01,0.2,20.0,False,gaba_b_conductance,,"{""gaba_b_conductance"": null}",0.0,,False,bout=0 ⇒ 裁决2 的『与 bout 时长同阶』分支无定义；本条为 A∧B∧C 的裁决 2 判定

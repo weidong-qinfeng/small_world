@@ -1,0 +1,89 @@
+{
+ "level": "M-3",
+ "desc": "GABA 亚型异质（A 快 8 ms / B 慢 200 ms，慢组分 35%；类级先验）",
+ "n_meas_bins": 600,
+ "meas_duration_s": 6.0,
+ "dt_bin_s": 0.01,
+ "mechanism_params": {
+  "stp": null,
+  "gaba": {
+   "enabled": true,
+   "tau_fast_ms": 8.0,
+   "tau_slow_ms": 200.0,
+   "frac_slow": 0.35
+  },
+  "g_mod": 1.0,
+  "desc": "GABA 亚型异质（A 快 8 ms / B 慢 200 ms，慢组分 35%；类级先验）"
+ },
+ "attribution_strength": "abstract_only（Fish1 连接组 partial/CAVE 门控 ⇒ 消融归属降级为抽象网络内归属）",
+ "stop_condition": "按主agent 裁决 2：不做“扫参数直到 bout 出现”的搜索；参数取预注册范围中点",
+ "slow_variable": {
+  "traces_summary": {
+   "gaba_b_conductance": {
+    "mean": 0.0,
+    "std": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   }
+  },
+  "tau_est_s": {
+   "gaba_b_conductance": NaN
+  },
+  "tau_pre_registered": {
+   "param": "tau_slow_ms",
+   "lo_ms": 80.0,
+   "hi_ms": 400.0
+  },
+  "tau_setting_in_physiological_range": {
+   "param": "tau_slow_ms",
+   "value_ms": 200.0,
+   "lo_ms": 80.0,
+   "hi_ms": 400.0,
+   "pass_": true
+  }
+ },
+ "slow_vs_poprate_corr": {
+  "gaba_b_conductance": NaN
+ },
+ "slow_var_corr_min": 0.3,
+ "slow_var_corr_pass": false,
+ "bout_stats_same_bins": {
+  "bout_fraction": 0.0,
+  "n_bouts": 0,
+  "silent_bin_frac": 0.0,
+  "bout_median_s": 0.0,
+  "nbins": 600,
+  "mean_bin_spikes": 325.4413333333333
+ },
+ "timescale_same_order": {
+  "tau_slow_s": 0.2,
+  "tau_activity_s": 0.01,
+  "ratio": 20.0,
+  "window": [
+   0.1,
+   10.0
+  ],
+  "pass_": false
+ },
+ "wall_s": 25.9,
+ "closed_state_equivalence": {
+  "m9": {
+   "ok": false,
+   "err": "IndexError: index 20064 is out of bounds for dimension 0 with size 20000",
+   "spk": null
+  },
+  "m10": {
+   "ok": true,
+   "err": null,
+   "spk": 317529
+  },
+  "note": "M9 冻结引擎在密集发放工况抛错（见 L17）⇒ **关闭态等价的密集工况对照不可用**（这本身就是 L17 的又一实测证据）；稀疏工况下 M9/M10 逐位一致已在 `scan_m10_engine` T1 实测（t1_m9_m10_identical=true）"
+ },
+ "verdict": {
+  "A_tau_in_phys_range": true,
+  "B_slow_var_corr_pass": false,
+  "C_same_order_pass": false,
+  "D_closed_state_equiv": null,
+  "hard_criterion_pass": false
+ }
+}
