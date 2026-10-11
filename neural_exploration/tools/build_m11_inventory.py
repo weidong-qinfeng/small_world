@@ -197,7 +197,7 @@ def main():
         utcnow(), "measured(HTTP 200, 完整)", "58 session 的 session_type/genotype/age（P14 隔离材料）")
     for extra in ("m11_calcium_silence_reference.csv", "m11_calcium_silence_reference.json",
                   "m11_j2_acceptance.json",
-                  "m11_calcium_reference_quantities.json", "m11_calcium_rate_band.csv", "m11_calcium_population_corr.csv",
+                  "m11_calcium_reference_quantities.json", "m11_calcium_rate_band.csv", "m11_calcium_population_corr.csv", "m11_calcium_silent.json", "m11_p5_targets.json",
                   "m11_allen_units_reference.json", "m11_allen_units_by_session.csv",
                   "m11_allen_units_by_structure.csv", "m11_allen_rate_band_by_area_group.csv",
                   "m11_same_source_crosscheck.csv", "m11_same_source_crosscheck.json",

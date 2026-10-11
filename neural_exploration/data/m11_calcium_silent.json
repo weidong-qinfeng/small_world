@@ -1,0 +1,238 @@
+{
+  "generated_by": "neural_exploration/tools/validate_m11_calcium_silent.py",
+  "generated_at": "2026-10-12 07:21:58",
+  "task": "J2：(b) 钙域静默比例口径（两口径并列 + 解码自证）；G1 解封项",
+  "status_note": "★ 主 agent 已在其 `docs/m11_acceptance_master.md` **§3az/R57** 记录 J2 收口（5/5）并把 5 个预留 key 定稿为 `0.4800/0.4900`；**本工具只做复算确认与补齐**（新增 M10 兼容口径并列 + 解码自证 + 覆盖登记），**不重新裁定、不改旧行**。",
+  "decode_spec": {
+    "header": ">5I = (4,200,200,1,10)（20 B 大端）",
+    "payload": "gzip 成员 @off20 → >i2",
+    "reshape": "(200,200,1,10) F 序（x 最快）",
+    "frame_interval_s": 0.15873,
+    "frame_rate_hz": 6.300006,
+    "bins": "无分箱（原生帧）；每 field 2,000 帧 / 317.46 s"
+  },
+  "decode_selfcheck": {
+    "header_gt5I": [
+      4,
+      200,
+      200,
+      1,
+      10
+    ],
+    "header_matches_spec": true,
+    "gzip_member_offset": 20,
+    "F_order": {
+      "lat_x": 0.7769,
+      "lat_y": 0.762,
+      "frame_axis_lag1_to_6": [
+        0.7738,
+        0.7676,
+        0.7598,
+        0.7527,
+        0.7456,
+        0.7395
+      ],
+      "n_chunks_ok": 200,
+      "n_chunks_bad": 0,
+      "definition": "lat_x/lat_y = **逐帧**相邻像素一阶相关跨全部帧均值（判别性指标，命中定案 0.777）；frame_axis_lag1_to_6 = 相邻帧像素级图像相关轮廓（**一致性指标，非判别性**）"
+    },
+    "C_order_negative_control": {
+      "lat_x": 0.3787,
+      "lat_y": 0.3876,
+      "frame_axis_lag1_to_6": [
+        0.7775,
+        0.6423,
+        0.5627,
+        0.4985,
+        0.4565,
+        0.4358
+      ],
+      "n_chunks_ok": 200,
+      "n_chunks_bad": 0,
+      "note": "C 序的 frame_axis 轮廓与 F 序接近 ⇒ 再次证明判别只能靠 lat_x"
+    },
+    "spec_expected_F": "lat_x ≈ 0.777（已定案解码签名）",
+    "spec_expected_C": "lat_x ≈ 0.41（B3b 自证为错解）",
+    "adopted": "F",
+    "verdict": "自证通过（F 序 lat_x=0.7769 / lat_y=0.7620，命中定案 0.777；帧轴轮廓 [0.7738, 0.7676, 0.7598, 0.7527, 0.7456, 0.7395]；C 序负对照 lat_x=0.3787 ⇒ 判别性低 0.3983）⇒ 序选择被自证"
+  },
+  "caliber_note": {
+    "primary": "silent_frac_zero_count = mean(count_i == 0)（清单 §4.5(b)；判据表 silent_def_primary=zero_count）",
+    "m10_compat": "silent_frac_m10_compat = mean(rate_i < 0.5 Hz)（判据表 silent_def_m10_compat_hz=0.5；`src/larval_zf_circuit.py::run_protocol`）",
+    "must_not_mix": "两口径含义不同（零计数 vs 低于 0.5 Hz）⇒ **任何报告必须同时给出所用口径名**",
+    "event_detection": "dF/F（基线 = 逐像素 20 分位）越过『中位 + 3·MAD』记 1 次事件；**该阈值是口径的一部分**，改变阈值会改变『零计数』的含义",
+    "ephys_incomparable": "**钙域口径与电生理口径不可直接混比**（指示剂衰减/阈值/Nyquist=3.150003 Hz 折叠）"
+  },
+  "measurements": {
+    "field4_primary": {
+      "label": "field4 / session4_scan7_field4（**主 field**，R18 定案）",
+      "n_frames": 2000,
+      "shape": [
+        2000,
+        200,
+        200
+      ],
+      "duration_s": 317.46,
+      "frame_rate_hz": 6.300006,
+      "event_threshold_dff": 1.57847,
+      "dff_median": 0.423285,
+      "dff_mad": 0.385062,
+      "event_definition": "阈值（像素级 dF/F 中位+3·MAD）施加于**代理单元自身时间轨迹**，count_i = 越阈帧数（与 J2 定稿实现同源）",
+      "unit_bin_px": 20,
+      "unit_area_um2": 2500.0,
+      "per_roi_proxy": {
+        "n_units": 100,
+        "silent_frac_zero_count": 0.49,
+        "silent_frac_m10_compat_rate_lt_0p5hz": 1.0,
+        "events_per_unit": {
+          "median": 1.0,
+          "mean": 10.3,
+          "min": 0.0,
+          "max": 104.0,
+          "n_zero": 49,
+          "n_lt_half_hz": 100
+        },
+        "rate_hz": {
+          "median": 0.00315,
+          "p90": 0.10269,
+          "max": 0.3276
+        }
+      },
+      "full_fov": {
+        "frame_unit": {
+          "n_frames": 2000,
+          "events_per_frame_mean": 0.515,
+          "silent_frac_zero_count": 0.8915,
+          "m10_compat_note": "帧为单元时 rate<0.5 Hz 恒等于『该帧无事件』（0.5 Hz > 1/0.15873 s）⇒ 两口径同值"
+        },
+        "pixel_unit": {
+          "n_pixels": 40000,
+          "silent_frac_zero_count": 0.005175,
+          "silent_frac_m10_compat_rate_lt_0p5hz": 0.692025
+        }
+      },
+      "dual_estimator": {
+        "m10_compat_rel_diff": 0.0,
+        "note": "主口径为**单一**集合运算（无第二等价实现）⇒ 不虚构第二估计器；与 J2 定稿值的一致性由 pipeline_check 承担"
+      },
+      "pipeline_check_vs_j2": {
+        "j2_stored": 0.49,
+        "recomputed": 0.49,
+        "abs_diff": 0.0,
+        "consistent_le_1e-6": true
+      },
+      "evidence_level": "measured"
+    },
+    "field2_replication": {
+      "label": "field2 / session5_scan3_field1（**复现对照，非主口径**）",
+      "n_frames": 2000,
+      "shape": [
+        2000,
+        100,
+        100
+      ],
+      "duration_s": 317.46,
+      "frame_rate_hz": 6.300006,
+      "event_threshold_dff": 2.308268,
+      "dff_median": 0.606383,
+      "dff_mad": 0.567295,
+      "event_definition": "阈值（像素级 dF/F 中位+3·MAD）施加于**代理单元自身时间轨迹**，count_i = 越阈帧数（与 J2 定稿实现同源）",
+      "unit_bin_px": 20,
+      "unit_area_um2": 2500.0,
+      "per_roi_proxy": {
+        "n_units": 25,
+        "silent_frac_zero_count": 0.48,
+        "silent_frac_m10_compat_rate_lt_0p5hz": 0.88,
+        "events_per_unit": {
+          "median": 1.0,
+          "mean": 98.68,
+          "min": 0.0,
+          "max": 1707.0,
+          "n_zero": 12,
+          "n_lt_half_hz": 22
+        },
+        "rate_hz": {
+          "median": 0.00315,
+          "p90": 0.48069,
+          "max": 5.377055
+        }
+      },
+      "full_fov": {
+        "frame_unit": {
+          "n_frames": 2000,
+          "events_per_frame_mean": 1.2335,
+          "silent_frac_zero_count": 0.1465,
+          "m10_compat_note": "帧为单元时 rate<0.5 Hz 恒等于『该帧无事件』（0.5 Hz > 1/0.15873 s）⇒ 两口径同值"
+        },
+        "pixel_unit": {
+          "n_pixels": 10000,
+          "silent_frac_zero_count": 0.0,
+          "silent_frac_m10_compat_rate_lt_0p5hz": 0.6582
+        }
+      },
+      "dual_estimator": {
+        "m10_compat_rel_diff": 0.0,
+        "note": "主口径为**单一**集合运算（无第二等价实现）⇒ 不虚构第二估计器；与 J2 定稿值的一致性由 pipeline_check 承担"
+      },
+      "pipeline_check_vs_j2": null,
+      "evidence_level": "measured"
+    }
+  },
+  "field2_skip_reason": null,
+  "band_candidates": {
+    "zero_count_proxy_lo": 0.48,
+    "zero_count_proxy_hi": 0.49,
+    "zero_count_proxy_width_x": 1.0208,
+    "m10_compat_proxy_lo": 0.88,
+    "m10_compat_proxy_hi": 1.0,
+    "single_field_field4_value": 0.49,
+    "note": "R18 单 field 定案 ⇒ 若只承认主 field，取 single_field_field4_value"
+  },
+  "four_state_verdict": {
+    "per_roi_proxy_zero_count": "measured",
+    "per_roi_proxy_m10_compat": "measured",
+    "full_fov_frame_unit": "measured（**但不得作判据**：跨 field 6.0853×）",
+    "real_roi_mask_unit": "unavailable（掩膜未自证；**仅此一维缺**）",
+    "overall_b_caliber": "partial（三口径 measured + 一维 unavailable）——**不得写成整体 unavailable**（R9/R18）",
+    "cross_field_dispersion": "measured（两 field 均在盘；dwell 1.125× / τ 1.01× / 本口径 1.0208×）"
+  },
+  "criteria_rows_appended": [
+    "silent_frac_calcium_m10_compat_saturation_warning"
+  ],
+  "criteria_rows_skipped": [
+    "silent_frac_calcium_zero_count_proxy_field4_measured",
+    "silent_frac_calcium_m10_compat_rate_lt_0p5hz_proxy_field4_measured",
+    "silent_frac_calcium_fullfov_frame_unit_field4_measured",
+    "rate_median_hz_measured_calcium_proxy_bin_measured",
+    "rate_median_hz_measured_calcium_band_status",
+    "silent_frac_calcium_two_caliber_scope_note",
+    "silent_frac_calcium_coverage_register",
+    "silent_frac_calcium_band_lo_measured_proxy",
+    "silent_frac_calcium_band_hi_measured_proxy",
+    "silent_frac_calcium_m10_compat_band_lo_measured_proxy",
+    "silent_frac_calcium_m10_compat_band_hi_measured_proxy",
+    "microns_calcium_silent_decode_selfcheck"
+  ],
+  "criteria_old_rows_unchanged": true,
+  "assertions": {
+    "J2.1_decode_selfcheck": true,
+    "J2.2_two_calibers_parallel": true,
+    "J2.3_two_unit_scopes": true,
+    "J2.4_dual_estimator": true,
+    "J2.5_scope_note_present": true,
+    "J2.6_old_rows_untouched": true,
+    "J2.7_coverage_register": true,
+    "J2.8_pipeline_consistent_with_j2": true,
+    "J2.9_m10_compat_degeneracy_registered": true,
+    "J2.10_rate_side_not_transferable_registered": true
+  },
+  "recompute_commands": [
+    "cd /Users/weidong/ai/small_world",
+    "PYTHONHASHSEED=0 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 ./.venv-m11/bin/python neural_exploration/tools/validate_m11_calcium_silent.py",
+    "# 只看测量、不追加判据表行：加 --no-targets"
+  ],
+  "budget": {
+    "shape": "离线 CPU，单线程，无 GPU",
+    "measured_wall_s": 17.9
+  }
+}

@@ -806,6 +806,58 @@ def main():
     A.append(assert_("P1.24d 清单回退行已更正（不再写『体素 format_unverified / 活动通道改由 Allen 承担』为现行）",
                      "同源时间序列已可用" in cl and "均已作废" in cl, "清单已加更正行（只增不改）"))
 
+    # ---------------- P1.25 J2 (b) 钙域静默口径（validate_m11_calcium_silent.py）----------------
+    cs = load(os.path.join(DATA, "m11_calcium_silent.json")) if os.path.exists(
+        os.path.join(DATA, "m11_calcium_silent.json")) else {}
+    csa = cs.get("assertions") or {}
+    m4 = ((cs.get("measurements") or {}).get("field4_primary") or {})
+    m2b = ((cs.get("measurements") or {}).get("field2_replication") or {})
+    A.append(assert_("P1.25a 解码**自证**通过（F 序 lat_x 命中定案 0.777 ∧ C 序判别性负对照）",
+                     (csa.get("J2.1_decode_selfcheck") is True), cs.get("decode_selfcheck", {}).get("verdict", "")[:150]))
+    A.append(assert_("P1.25b 两口径**并列**且不相同（主 zero_count vs M10 兼容 rate<0.5 Hz）",
+                     (csa.get("J2.2_two_calibers_parallel") is True) and (csa.get("J2.3_two_unit_scopes") is True),
+                     "core zero=%.4f | M10=%.4f | fullFOV(帧)=%.4f"
+                     % ((m4.get("per_roi_proxy") or {}).get("silent_frac_zero_count") or 0,
+                        (m4.get("per_roi_proxy") or {}).get("silent_frac_m10_compat_rate_lt_0p5hz") or 0,
+                        ((m4.get("full_fov") or {}).get("frame_unit") or {}).get("silent_frac_zero_count") or 0)))
+    A.append(assert_("P1.25c 主口径与 J2 定稿值一致（≤1e-6）且带 = [0.4800, 0.4900]",
+                     (csa.get("J2.8_pipeline_consistent_with_j2") is True)
+                     and abs((cs.get("band_candidates") or {}).get("zero_count_proxy_lo", 0) - 0.48) < 1e-9
+                     and abs((cs.get("band_candidates") or {}).get("zero_count_proxy_hi", 0) - 0.49) < 1e-9,
+                     "field4=%.4f field2=%.4f band=%s"
+                     % ((m4.get("per_roi_proxy") or {}).get("silent_frac_zero_count") or 0,
+                        ((m2b.get("per_roi_proxy") or {}).get("silent_frac_zero_count") or 0), 
+                        [(cs.get("band_candidates") or {}).get("zero_count_proxy_lo"),
+                         (cs.get("band_candidates") or {}).get("zero_count_proxy_hi")])))
+    A.append(assert_("P1.25d **M10 兼容口径退化已登记**（field4 饱和 1.0，不得作带）",
+                     (csa.get("J2.9_m10_compat_degeneracy_registered") is True)
+                     and abs(((m4.get("per_roi_proxy") or {}).get("silent_frac_m10_compat_rate_lt_0p5hz") or 0) - 1.0) < 1e-9,
+                     "M10 兼容 field4=%.4f / field2=%.4f（跨 field 差 %.1f pp）"
+                     % ((m4.get("per_roi_proxy") or {}).get("silent_frac_m10_compat_rate_lt_0p5hz") or 0,
+                        (m2b.get("per_roi_proxy") or {}).get("silent_frac_m10_compat_rate_lt_0p5hz") or 0,
+                        100 * abs(((m4.get("per_roi_proxy") or {}).get("silent_frac_m10_compat_rate_lt_0p5hz") or 0)
+                                  - ((m2b.get("per_roi_proxy") or {}).get("silent_frac_m10_compat_rate_lt_0p5hz") or 0)))))
+    A.append(assert_("P1.25e rate 侧预留 key **保持 unavailable**（率不可从代理口径转移）已登记",
+                     (csa.get("J2.10_rate_side_not_transferable_registered") is True)
+                     and any("rate_median_hz_measured_calcium_band_status" == (r.get("key") or "") for r in
+                             ((load(os.path.join(DATA, "m11_p5_targets.json")) or {}).get("rows") or [])),
+                     "新增行 rate_median_hz_measured_calcium_band_status 在位"))
+    tgr = (load(os.path.join(DATA, "m11_p5_targets.json")) or {})
+    rows_tg = tgr.get("rows") or []
+    new_rows_tg = [r for r in rows_tg if r.get("b1_j2_append")]
+    old_sil = {r.get("key"): r.get("value") for r in rows_tg if r.get("key") in
+               ("silent_frac_lo", "silent_frac_hi", "silent_frac_calcium_band_lo", "silent_frac_calcium_band_hi",
+                "rate_median_hz_measured_calcium_band_lo", "rate_median_hz_measured_calcium_band_hi")}
+    A.append(assert_("P1.25f 判据表 **append-only**：新增行 ≥12 且 6 个旧预留行 value 仍为 `unavailable`",
+                     len(new_rows_tg) >= 12
+                     and all(v == "unavailable" for v in old_sil.values()),
+                     "新增 %d 行；旧预留行 value=%s" % (len(new_rows_tg), json.dumps(old_sil, ensure_ascii=False)[:120])))
+    A.append(assert_("P1.25g B1 节点记录 `docs/m11_b1_notes.md` 存在且含**逐项复算命令**",
+                     os.path.exists(os.path.join(DOCS, "m11_b1_notes.md"))
+                     and "validate_m11_calcium_silent.py" in
+                     open(os.path.join(DOCS, "m11_b1_notes.md"), encoding="utf-8").read(),
+                     "docs/m11_b1_notes.md 在位（N5 复算命令表）"))
+
     # ---------------- 判定 ----------------
     for a in A:
         if not a["ok"]:
