@@ -1,6 +1,6 @@
 {
  "generated_by": "tools/validate_p11_data_gate.py",
- "generated_at": "2026-10-11T14:30:31Z",
+ "generated_at": "2026-10-11T14:31:01Z",
  "gate": "G2 (P1/P2 数据门)",
  "assertions": [
   {

@@ -121,8 +121,14 @@ CRIT = {
     "g": "p5_g_wallclock",
     "h": "p5_h_determinism",
     "i": "p5_i_tradeoff",
+    "i2": "p5_g1_tension_quantified",
 }
-GATE_CRITERIA = (CRIT["c"], CRIT["d"], CRIT["e"])
+# **G1 门条件（主agent 2026-10-11 裁决 §二.6：G1 = (c) ∧ (e) ∧ 张力已定量识别；(d) 降为 sanity）**
+# 代码内的门组成必须与判据表声明一致（`gate_g1_conditions_v2`），否则 `_assert_gate_composition` 报错。
+GATE_CRITERIA = (CRIT["c"], CRIT["e"], CRIT["i2"])
+GATE_DECLARATION_EXPECTED = "c_and_e_and_tension_quantified"
+SOPHISTICATED_CRITERIA = (CRIT["d"],)          # 降为 sanity / 非判别性
+CRIT_EXPECTED = tuple(CRIT.values())           # 每评估单元必须出现的子判据全集（防静默丢失）
 
 
 # ===========================================================================

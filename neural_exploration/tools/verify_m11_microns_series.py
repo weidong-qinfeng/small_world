@@ -287,20 +287,40 @@ def main(argv=None) -> int:
                                                        st["<i2（对照）"]["p50_min"], st["<i2（对照）"]["p50_max"]))
 
     # ---------------- 群体轨迹（两个口径的"活动量"）----------------
-    # 内存说明：逐对象拼接为 (200,200,2000) int16 ⇒ 200·200·2000·2 B = **160 MB**（可控）；
-    #            不在此处做 float64 全量转换（会到 640 MB）。
-    vol = np.concatenate(arrays, axis=-1)                      # (200,200,2000) int16
-    del arrays
-    n_frames = vol.shape[-1]
-    ever_sent = (vol < 0).any(axis=-1)
-    print("\n[② 群体轨迹] 体素数 = %d ；曾出现哨兵的体素 = %d（%.4f%%）⇒ 从轨迹中剔除"
-          % (vol.shape[0] * vol.shape[1], int(ever_sent.sum()),
-             100.0 * ever_sent.mean()))
+    # 内存纪律：**不做** `vol[valid]` 之类的花式索引（会物化 (n_valid,2000) float64 = 640 MB，
+    #           并使 percentile 在 80M 元素上排序 ⇒ 本次试跑即被 60 s 超时拦下，已改按对象分块）。
+    #           逐对象处理：单对象仅 (n_valid,10) float64 ≈ 3.2 MB。
+    ever_sent = np.zeros(arrays[0].shape[:2], bool)
+    for a_ in arrays:
+        np.logical_or(ever_sent, a_ < 0, out=ever_sent)
+    n_frames = int(sum(a_.shape[-1] for a_ in arrays))
+    n_vox = ever_sent.size
     valid = ~ever_sent
-    trace_mean = vol[valid].mean(axis=1).astype(np.float64)          # 空间均值 df/F
-    thr_hi = float(np.percentile(vol[valid], 99.0))
-    trace_frac = (vol[valid] > thr_hi).mean(axis=1).astype(np.float64)   # 高分位"活跃体素占比"
-    del vol
+    n_valid = int(valid.sum())
+    print("\n[② 群体轨迹] 体素数 = %d ；曾出现哨兵的体素 = %d（%.4f%%）；有效体素 = %d"
+          % (n_vox, int(ever_sent.sum()), 100.0 * ever_sent.mean(), n_valid))
+
+    # --- 阈值：用**直方图**在有效体素上取精确 p99（确定性、O(65536) 内存）---
+    hist = np.zeros(65536, np.int64)
+    for a_ in arrays:
+        vals = a_[valid]
+        h, _ = np.histogram(vals, bins=65536, range=(-32768, 32767))
+        hist += h
+    csum = np.cumsum(hist)
+    tot = int(csum[-1])
+    idx = int(np.searchsorted(csum, 0.99 * tot))
+    thr_hi = float(idx - 32768)
+    print("  有效体素直方图总样本 = %d ；p99 阈值 = %d（int16 原始单位）" % (tot, int(thr_hi)))
+
+    # --- 两条轨迹：逐对象累加（不物化大数组）---
+    means, fracs = [], []
+    for a_ in arrays:
+        sub = a_[valid].astype(np.float64)          # (n_valid, 10)
+        means.append(sub.mean(axis=0))
+        fracs.append((sub > thr_hi).mean(axis=0))
+    trace_mean = np.concatenate(means).astype(np.float64)
+    trace_frac = np.concatenate(fracs).astype(np.float64)
+    del means, fracs
     print("  轨迹长度 = %d 帧 = %.1f s（@%.6f Hz）" % (trace_mean.size, trace_mean.size / a.fps, a.fps))
     print("  口径A(空间均值 df/F)：mean=%.2f sd=%.2f | 口径B(>p99 活跃占比)：mean=%.5f" %
           (trace_mean.mean(), trace_mean.std(), trace_frac.mean()))
