@@ -262,14 +262,38 @@ $PY neural_exploration/tools/validate_p11_data_gate.py --determinism-check
 > **本节点保留反证证据**（大端解码，`tools/demo_m11_microns_decode.py` 一条命令可复核 + B3b 独立复现），
 > 并**建议**改判 `decoded(big-endian int16)`；**在裁定变更前，一切产出按 `format_unverified` 执行。**
 
-## §6e ★ P2 结论**显式收窄**（主 agent §四要求，写入结论段而非仅限制登记）
+## §6e ★ P2 结论**显式收窄**（RF-M11-B §四 + RF-M11-C §三，写入结论段而非仅限制登记）
 
-> **本里程碑的"结构-功能同源"仅就结构侧成立。**
-> 结构侧（EM/seg/seg_m1300）为**真实可达且自描述**（`measured`，体积/分辨率/bbox/SHA 齐备，含 shard 与对象级实测）；
-> **功能侧**因"体素序列 `format_unverified`（RF-M11-A/B 裁定）+ 逐细胞 ΔF/F 仅存 v8 DataJoint DB（`unavailable`）
-> + 144 field 中仅 2 个有 `functional_series`"，活动通道改由 **Allen NWB（跨制备/跨品系/跨实验室）**承担
-> ⇒ **功能侧为跨源代理，证据级别 `derived / cross_source`，不得声称"同源对照"**。
-> 该收窄已同步写入 **M12 交接缺口 G-1/G-2**。
+> **本里程碑的"结构-功能同源"仅就结构侧成立**：
+> **结构** = MICrONS EM/seg（`measured`；主 agent 独立复算 em 体积 **1.2861 mm³** 一致）；
+> **功能侧 MICrONS 不可用**（体素 `format_unverified`、逐细胞 `unavailable`、**144 field 中仅 2 个**有 `functional_series`）；
+> **活动通道为跨源代理（Allen Brain Observatory 2p 钙成像 / Allen NWB 电生理）**，
+> 证据级别 **`derived / cross_source`**；
+> **不得**声称任何"M11 用同源成像数据约束"的表述。
+> 该收窄已同步 **M12 交接缺口 G-1/G-2**（见 §6d）。
+
+## §6f-2 ★ 活动通道 = Allen **2p 钙成像**（RF-M11-C）：实测与自建目标带
+
+| 项 | 结果 |
+|---|---|
+| 探针（新增 8 源 G1–G8，`--extras-append` 追加进 `m11_source_reachability.csv`） | `visual-coding-2p/manifest.json` **200 / 1,340 B**、`stimulus_mappings.json` **200 / 17,907 B**（**刺激条件表已落盘**）、`ophys_experiments.json` 206、`ophys_experiment_data/*.nwb` 206、`ophys_experiment_analysis/*.h5` 206、`ophys_experiment_events/*_events.npz` 206 |
+| **★ 实测发现** | `events.npz` **不压缩**（npz=store）⇒ **`n_cells = bytes / (8 × n_frames)`**（`n_frames≈113,835`）：913 KB→**1 cell**、3.64 MB→**4**、16.36 MB→**18**、111.88 MB→**123** ⇒ 可在**不下载**的前提下选群体规模（据此列托管候选） |
+| 已落盘活动数据 | `593887846_events.npz`（1×114,130 帧）、`577885923_events.npz`（4×113,835 帧）+ `stimulus_mappings.json` |
+| **自建 dwell/τ 目标带** | `data/m11_dwell_reference.{csv,json}`（工具 `tools/build_m11_dwell_band.py`，**只读复用 B4 冻结 `analyse()`**：0.914 s 箱 → 5 帧平滑 → z → AR(1)；并列 H 法/Q 法/**未平滑 φ**） |
+| **口径警示（本轮最重要）** | `φ_smoothed ≈ 0.880` vs **`φ_unsmoothed ≈ 0.179`** ⇒ 平滑把 φ 抬高 **≈4.9×**（τ 7.1 s → ~1 s 量级）⇒ **τ 只能作粗粒度指标**，比值口径必须写明用哪一支（与 B4 `honest_limit` 同源） |
+| 样本量门实测触发 | low 态完整段仅 **1–4 段** ⇒ **KS vs 指数不可算** ⇒ 形状判据标 **`unavailable`（不是 fail）**；群体规模薄（1–4 cells）已列 caveats |
+| 帧率 | **30.9 Hz 为主口径但 `NEEDS_VERIFY`**（NWB `imaging_rate` 因网络未读回；帧数÷30.9=61.4 min 合理 vs ÷11=2.87 h 不合理）；**11 Hz 作敏感性并列** |
+| 托管作业 | `data/m11_b1_managed_jobs.json`：**J1**（本节点后台自建带，含日志/产物/完成标记）、**J2**（16.4 MB/18-cell 与 111.9 MB/123-cell npz，**REQUESTED**）、**J3**（NWB 采样率读回，**REQUESTED**） |
+
+## §6f-3 ★ S 门判据**预注册**（RF-M11-C §四；`data/m11_s_gate_criteria_prereg.csv`，12 行）
+
+主判据 = **形状 + 存在性 + 相对尺度**（非绝对 dwell 对齐）：
+① 占用非退化（两态各 ≥5% 帧）→ **S-1**；② 转换存在（≥1 且每态 bout ≥10，否则 `unavailable`）→ **S-2**；
+③ 低态 dwell **重尾**（p90/中位 ≥2 且 KS vs 指数 p<0.05，需 runs ≥5）→ **S-3**；
+④ 慢变量去趋势相关 ≥0.30 **且 lead-lag 峰值 lag>0** → **S-4**；⑤ 绝对尺度按**比值**报告 → **S-5**；
+⑥ 容差来源预先写清（B4：口径差 3.87× / 跨条件 6.9× / τ 跨条件 3.94× + 本轮自建带实测）→ **S-6**；
+⑦ 样本量硬门（<65 invalid / ≥130 形状 / ≥500 BIC）→ **S-7**；⑧ **双估计器一致性断言**（率 ≤2%、H vs Q、φ_smoothed vs φ_unsmoothed 并列）→ **S-8**；
+⑨ M10 失效级 no-go 对照仍为 0 → **S-9**；⑩ 基线不达标断言 → **S-10**；⑪ 消融致其消失 → **S-11**；⑫ dwell 分辨率地板登记 → **S-12**。
 
 ## §6f 🔴 优先级 4（四类参考量同口径重建）当前**不可执行** —— 显式登记 `blocked` + 待裁决
 
@@ -289,6 +313,12 @@ $PY neural_exploration/tools/validate_p11_data_gate.py --determinism-check
 **(a) 批 DQ-6**（取全量 `units.csv`，可算"率分布"一项，其余仍需 NWB/DB）；
 **(b) 批 NWB 续传/托管**（补齐 `/units`、`/acquisition` ⇒ 可算率分布 + units 计数）；
 **(c) 改判 R2 为 `decoded`**（则 2 个 field 的钙域四类参考量可在**同源**口径下重建，含 RF-M11-2 劈半自检）。
+
+## §6f-4 待裁决（新增 DQ-8）
+
+**DQ-8**：是否托管 **J2**（2p `events.npz`：16.4 MB/18-cell 与 111.9 MB/123-cell）与 **J3**（2p NWB 采样率读回）？
+影响：① 目标带的群体规模由 1–4 cells 提升到 18/123 cells（形状判据的样本量门才可能过）；② 帧率由"推断"升为"实测"。
+（清单与命令见 `data/m11_b1_managed_jobs.json`；本节点按 >10 min 纪律未自启。）
 
 ## §7 结论与下一步建议
 

@@ -739,3 +739,56 @@ B3b 落盘后应**新增行**（R-27+）而非修改 R-21（清单 §0.3 #8 只�
 | 把 0.25 µm/px 当 series 口径 | ① 一切**距离/尺度**物理量（感受野尺寸、空间相关长度、ROI/神经域半径、连接概率-距离关系）**系统性偏小 10×**；② FOV 被算成 **62×110 µm**（面积偏小 **100×**），与 `field_summaries` 的 620×1100 µm **直接冲突**；③ 任何"按物理距离配对/匹配"的对照（`dend_len`、突触-距离曲线）**口径不可比**；④ 空间下采样/池化窗口选错 ⇒ ROIs 归属错、ΔF/F 混入神经域 |
 | 把 2.5 µm/px 当 raw 子场口径 | raw 子场被算成 1100×620 µm（偏大 100×）⇒ 拼接拓扑（子场数）算错，P4 的层流 FOV 划分错 |
 | **纪律** | **凡使用空间尺度，必须写明取自哪个对象/字段，并做跨对象 FOV 交叉核对**（本轮已把该检查固化为断言 `P2.11f`）。|
+
+---
+
+## L30 — RF-M11-C 处置：活动通道改 Allen **2p 钙成像**（S 门目标带自建的前置）
+
+### L30.1 探针（8 源，`--extras-append`，判定词表落盘）
+| id | 源 | 实测 | 判定 |
+|---|---|---|---|
+| **G1** | `visual-coding-2p/manifest.json` | 200 / **1,340 B** | **REACHABLE**（自描述清单：BASEDIR + EXPERIMENTS/CONTAINERS/CELL_SPECIMENS/STIMULUS_MAPPINGS） |
+| G2 | `_manifest.json` | 200 / 1,165 B | REACHABLE |
+| **G3** | `stimulus_mappings.json` | 200 / **17,907 B** | **REACHABLE（刺激条件表已落盘）** |
+| G4 | `ophys_experiments.json`（Range 64 KB） | 206 | REACHABLE（11.4 MB 全量；**无帧率字段**，实测） |
+| **G5** | `ophys_experiment_events/593887846_events.npz`（913 KB 全量） | 200 / **913,278 B** | **REACHABLE（已落盘）** |
+| G6 | `…/638871662_events.npz`（Range 1 MB） | 206 | REACHABLE（未取全：网络退化，见 J2） |
+| G7 | `ophys_experiment_data/497256116.nwb`（Range 头） | 206 | REACHABLE（对象级）；**头解析受限**（见 L30.3） |
+| G8 | `ophys_experiment_analysis/…_analysis.h5`（Range 头） | 206 | REACHABLE（对象级） |
+
+### L30.2 ★ 关键实测：`events.npz` **不压缩** ⇒ 群体规模可由文件尺寸直接推出
+- 最小件 913,278 B → `ev.npy` shape **(1, 114,130)**；3,642,958 B → **(4, 113,835)**；
+  **元素数 × 8 B = 文件字节数**（913,278 /(8×114,130)=1.0；3,642,958/(8×113,835)=4.0）⇒ **npz=store（无 deflate）**。
+- ⇒ `n_cells = bytes / (8 × n_frames)`，`n_frames ≈ 113,835`（多个实验一致）；
+  例：16,358,638 B → **18 cells**；111,876,046 B → **123 cells**；331,278,574 B → **364 cells**。
+- 意义：可在**不下载**的前提下选"性价比最高"的群体规模件（本节点据此把 16.4 MB/18-cell 与 111.9 MB/123-cell
+  列为托管候选 J2）。
+
+### L30.3 NWB 采样率读回：**受阻，如实登记**（RF-M11-C §二.2 的第 1 项）
+- `ophys_experiment_data/497256116.nwb`（**176,019,299 B**）：Range 头 6 MB 请求**取到 5,100,116 B 后超时**（3.3 KB/s）；
+  稀疏法 h5py 打开成功：根组 11 键可读（`acquisition`/`stimulus`/`processing`/`general`…），但
+  **`/general`、`/processing` 落在前缀之外的洞**（`bad symbol table node signature`）⇒ **`imaging_rate` 不可读**。
+- **替代推断（明确标注 `NEEDS_VERIFY`）**：帧数 ÷ 30.9 Hz = **61.4 min**（合理 session 长度）vs ÷ 11 Hz = **2.87 h**（不合理）
+  ⇒ 自建带取 **30.9 Hz** 为主口径、**11 Hz 为敏感性并列**；`ophys_experiments.json` 实测**无帧率字段**。
+- ⇒ 已登记托管请求 **J3**（取 6 MB 前缀或全量）以免把"推断"当"实测"。
+
+### L30.4 自建 dwell/τ 目标带（**B4 冻结管线只读复用**）
+- 工具 `tools/build_m11_dwell_band.py`：**直接 import** `tools/validate_p10_state_structure.py`（**不改冻结件**）调用
+  `analyse(pop, dt_ms, …)` ⇒ **0.914 s 箱 → 5 帧滑动平均 → z → AR(1) φ/τ**，并**并列** H 法（2 状态高斯 HMM）/
+  Q 法（分位）/ **未平滑 φ** / 样本量门 / 内部一致性 / dwell 分辨率地板。
+- 产物：`data/m11_dwell_reference.{csv,json}` + `reports/neuro/m11_dwell_reference.png`；
+  日志 `data/m11_raw/allen/vc2p/dwell_band.log`；**登记为托管作业 J1**（HMM 为 Python 逐时间步循环 ⇒ >10 min）。
+- ⚠️ **本轮最重要的口径警示**：`φ_smoothed ≈ 0.880` vs **`φ_unsmoothed ≈ 0.179`** ⇒ 5 帧滑动平均把 φ 抬高 **≈4.9×**
+  （τ 从 7.1 s 变到 ~1.0 s 量级）⇒ **绝对 τ 只能作粗粒度指标**，比值口径必须写明用哪一支；
+  这与 B4 自己登记的 `honest_limit`（Ljung-Box 三口径全拒白噪）同源。
+- ⚠️ **样本量门实测触发**：1-cell 件的 low 态**完整段仅 1–4 段** ⇒ **KS vs 指数不可算** ⇒ 形状判据
+  标 `unavailable`（**不是 fail**）；群体规模薄（1–4 cells）已写入 caveats。
+- **禁止**：沿用 ZAPBench 的 26.5 s / 37.18 s（跨物种+跨帧率+跨口径）；本带与文献档（0.3–3 s, PMID 11017176）
+  并列但**不混用**。
+
+### L30.5 吞吐波动与托管作业（纪律）
+- 本轮实测：`bossdb-open-data` 194–349 → 16 KB/s；`api.brain-map.org` 1.6 KB/s；DANDI 7.2 KB/s；
+  **`allen-brain-observatory` 1.6–32 KB/s**（同一小时内 913 KB 件 28 KB/s、16.4 MB 件掉到 1.6 KB/s）
+  ⇒ 一切"≤300 MB 可整取"的判断都必须**当场测速**（教训 L22 #9 复现）。
+- 已登记 `data/m11_b1_managed_jobs.json`：**J1**（本节点后台跑，含日志与产物）/ **J2**（更大群体 npz，REQUESTED）/
+  **J3**（NWB 采样率读回，REQUESTED）；均含命令行、产物路径、完成标记。
