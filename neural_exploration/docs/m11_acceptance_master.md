@@ -160,6 +160,25 @@ M10-B1 交叉核对时发现（已入档）：λ×1 臂的模型群体序列**�
 **处置**：修 (e)(f) + **各加回归测试**；补跑 (a)–(d)(g)(h) 与全部 extensions；**G0 通过条件须为"全项 measured 且全过"**（不接受"两项 fail + 其余未跑"的 partial 表述）。
 **门链后果**：**G0 = fail ⇒ M11 的 G1/S 不得启动**，M11-B3 的 G1 工作**停在设计/工具态**（该约束已在 RF-M11-F 中重申）。
 
+## 3h. G1（P5）**设计/工具工作包验收通过**（R12，代码级核对）
+
+主agent 逐项查 `tools/validate_p11_resting.py`（82 KB），**RF-M11-3 的六条硬门全部落地**：
+
+| 硬门 | 实现证据 | 判定 |
+|---|---|---|
+| ① 样本量门（≥3 seed；零驱动臂总脉冲 ≥300，否则 `unavailable`） | `selfsustain_zero_drive_min_spikes=300`（判据带 L48，provenance 指 RF-M11-3）+ `sample_size_gate_unmet` ⇒ "点估计仅作描述性" | ✅ |
+| ② 自持比带 CI（点估计 ≤ 上限 **且** CI 上界 ≤ 上限×1.2 = 0.12） | `selfsustain_ci()`：池化 R + 对数正态泊松近似 + seed 自助；`selfsustain_ci_upper_factor=1.2` | ✅ |
+| ③ 双估计器一致性断言 | `rel_diff` ≤0.02 + **`selfsustain_ci_crosscheck_rel_tol=0.25`（两法 CI 交叉核对，超差 ⇒ 子判据 `invalid`）** | ✅ **加分**：把该律第 5 次实例化到 **CI 两法** |
+| ④ 时长三档（T 阶梯 1\|2\|4） | `selfsustain_duration_flip_max=0`，判据带直接引用主agent A12 的 0.0980/0.1082/0.1720 与"跨门限两次" | ✅ |
+| ⑤ 判别性断言（每轮给基线臂同判据值） | `_baseline_arm_value()` | ✅ |
+| ⑥ 口径标注（`protocol` + `estimator`） | `_proto_fields()` / `_emit(estimator=...)` / `is_primary_estimator` | ✅ |
+- 退化情形如实处理（零驱动臂 0 脉冲 ⇒ "R=0 为下界、对数正态近似退化"，不塞假 CI）✅；四态词表齐备（`unavailable` 48 / `invalid` 23）✅。
+
+**⇒ G1 设计与工具验收通过**（`docs/m11_b3_g1_design.md` 19 KB、`data/m11_p5_targets.csv` 33 KB、工具 82 KB）。
+
+**但执行被 G0 阻塞**（门链硬约束）：**G0 = fail ⇒ G1 不得启动**。已限其仅做两件事：① **M10 轨迹的纯离线自检**（证明工具可跑通、四态正确，**不得**当 M11 判据）；
+② **把 R9 后的"实测带"按"钙口径 vs 电生理口径"分列补入判据带**（同源、2 field、317.5 s/field、6.30 Hz；`wrong_usage_consequence` 写明混用偏差方向）。
+
 ## 4. 对 P2 判定的影响（诚实记录）
 
 **M11 的核心方法学卖点是"结构-功能同源"**，但本轮实测后必须**收窄**：

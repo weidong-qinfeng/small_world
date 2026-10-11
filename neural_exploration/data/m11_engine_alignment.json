@@ -136,6 +136,180 @@
   "crit_a_pass": true,
   "crit_a_note": "判据 (a)：解析（与引擎同一 Euler 递推的闭式）首发放步误差 ≤1 步（0.05 ms < 0.1 ms 容差）；链式传播逐级 ≥delay 步；稀疏链 M9≡M11(frozen) 逐位一致"
  },
- "started_at": "2026-10-11T21:47:00",
- "which": "merged:t1"
+ "t3": {
+  "step": {
+   "k=1": {
+    "total": 173,
+    "n_neurons_diff": 0,
+    "bit_identical": true
+   },
+   "k=2": {
+    "total": 173,
+    "n_neurons_diff": 0,
+    "bit_identical": true
+   },
+   "k=5": {
+    "total": 173,
+    "n_neurons_diff": 0,
+    "bit_identical": true
+   },
+   "control_rel_slots_k2": {
+    "total": 172,
+    "rel_diff_pct": -0.57803,
+    "n_neurons_diff": 11,
+    "bit_identical": false
+   }
+  },
+  "chunk": {
+   "k=1": {
+    "total": 173,
+    "n_neurons_diff": 0,
+    "bit_identical": true
+   },
+   "k=2": {
+    "total": 173,
+    "n_neurons_diff": 0,
+    "bit_identical": true
+   },
+   "k=5": {
+    "total": 173,
+    "n_neurons_diff": 0,
+    "bit_identical": true
+   },
+   "control_rel_slots_k2": {
+    "total": 172,
+    "rel_diff_pct": -0.57803,
+    "n_neurons_diff": 11,
+    "bit_identical": false
+   }
+  },
+  "crit_e_pass": true,
+  "control_falsifiable": true
+ },
+ "t2": {
+  "arms": {
+   "m9_adult": {
+    "ok": false,
+    "err": "IndexError: index 6 is out of bounds for dimension 0 with size 4"
+   },
+   "m10": {
+    "ok": true,
+    "spk_total": 2,
+    "counts": [
+     1,
+     1,
+     0,
+     0
+    ]
+   },
+   "m11_fix_4slot": {
+    "ok": true,
+    "spk_total": 2,
+    "counts": [
+     1,
+     1,
+     0,
+     0
+    ]
+   },
+   "m11_frozen_2slot": {
+    "ok": true,
+    "spk_total": 2,
+    "counts": [
+     1,
+     1,
+     0,
+     0
+    ]
+   }
+  },
+  "m9_raises": true,
+  "m11_ok": true,
+  "m11_frozen_vs_m10_bit_identical": true,
+  "slot_check": {
+   "observed": {
+    "E": 11.0,
+    "PV": 23.0,
+    "SST": 37.0,
+    "VIP": 47.0
+   },
+   "expected": {
+    "E": 11.0,
+    "PV": 23.0,
+    "SST": 37.0,
+    "VIP": 47.0
+   },
+   "rel_diff": {
+    "E": 0.0,
+    "PV": 0.0,
+    "SST": 0.0,
+    "VIP": 0.0
+   },
+   "all_within_2pct": true,
+   "spk_counts": [
+    1,
+    1,
+    0,
+    0
+   ]
+  },
+  "crit_f_pass": true
+ },
+ "t6": {
+  "sparse_single_delay": {
+   "m10_spk": 2216,
+   "m11_frozen_spk": 2216,
+   "bit_identical": true,
+   "n_neurons_diff": 0,
+   "m9_available": false,
+   "m9_vs_m11_frozen_bit": null,
+   "m9_err": "IndexError(E-M9-2 已知缺陷)"
+  },
+  "dense_single_delay": {
+   "m10_spk": 5635,
+   "m11_frozen_spk": 5635,
+   "bit_identical": true,
+   "n_neurons_diff": 0,
+   "m9_available": false,
+   "m9_vs_m11_frozen_bit": null,
+   "m9_err": "IndexError(E-M9-2 已知缺陷)"
+  },
+  "sparse_three_bins": {
+   "m10_spk": 2201,
+   "m11_frozen_spk": 2205,
+   "bit_identical": false,
+   "n_neurons_diff": 89,
+   "m9_available": false,
+   "m9_vs_m11_frozen_bit": null,
+   "m9_err": "IndexError(E-M9-2 已知缺陷)"
+  },
+  "dense_three_bins": {
+   "m10_spk": 5639,
+   "m11_frozen_spk": 5670,
+   "bit_identical": false,
+   "n_neurons_diff": 95,
+   "m9_available": false,
+   "m9_vs_m11_frozen_bit": null,
+   "m9_err": "IndexError(E-M9-2 已知缺陷)"
+  },
+  "fix_vs_m10_gaba_frac0": {
+   "m10_gaba_spk": 3233,
+   "m11_fix_spk": 3233,
+   "bit_identical": true,
+   "note": "修正档 == M10 的 gaba 路径（frac_slow=0）⇒ 冻结件内部两条路径本身不一致（E-M9-4）"
+  },
+  "three_bins_fp_order": {
+   "first_divergence": {
+    "step": 84,
+    "max_abs_dv_mV": 0.053333282470703125,
+    "ulp_float32_at_50mV": 5.9604644775390625e-06,
+    "spk_a": 0,
+    "spk_b": 0
+   },
+   "note": "单一共享环槽（M11）vs 每延迟一槽后求和（M10）：仅当两个延迟档的事件命中同一 (slot, post_off) 时浮点累加序不同 ⇒ 单 ULP 差异后混沌放大"
+  },
+  "off_equiv_pass": false
+ },
+ "started_at": "2026-10-11T21:47:28",
+ "which": "merged:t6"
 }

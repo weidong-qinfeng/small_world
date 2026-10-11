@@ -13,7 +13,7 @@
 
 | # | 文件 | 说明 |
 |---|---|---|
-| 1 | `data/m11_p5_targets.csv`（72 行） | **判据带 / 协议常数唯一定稿表**，逐行 provenance（PMID/DOI/数据文件::字段/清单行） |
+| 1 | `data/m11_p5_targets.csv`（**80 行**） | **判据带 / 协议常数唯一定稿表**，逐行 provenance（PMID/DOI/数据文件::字段/清单行） |
 | 2 | `data/m11_p5_targets.json` | 同一内容的机器可读版 + provenance ledger（本轮文献核读原文摘录、实测复算、冲突登记、未定稿带清单） |
 | 3 | `tools/validate_p11_resting.py` | **P5/G1 离线评估器**（只做分析，不做仿真）：接受注入的群体轨迹 / 逐神经元计数 / 聚合读数，输出 (a)–(i) + **四态** + 六项硬门 |
 | 4 | `docs/m11_b3_g1_design.md`（本文） | 判据表、协议、标定杠杆顺序、统计方案、张力识别、时长依赖处置、失败/反证路径 |
@@ -27,15 +27,15 @@
 
 ## §2 判据表（`data/m11_p5_targets.csv`）——覆盖与可用性
 
-**逐行 provenance 覆盖：72/72 行非空**（工具 `--check-targets` 机械校验：缺 provenance 即报错）。
+**逐行 provenance 覆盖：80/80 行非空**（工具 `--check-targets` 机械校验：缺 provenance 即报错）。
 
 | 证据级别 | 行数 | 代表键 | 来源 |
 |---|---|---|---|
 | `literature` | **17** | `rate_median_hz_lo/hi`（0.5 / 2.0 Hz）、`rate_median_hz_exc_*`、`rate_median_hz_inh_*`、`silent_frac_ca_active_per_wave_pct`(12%)、`unresponsive_neurons_pct_all_areas`(23%)、`proxy_steriade1993_upstate_duration_s`(0.8–1.5 s)、`proxy_sanzeni2020_isn`、`proxy_wehr2003_balanced_inhibition`、`proxy_monier2008_ei_diversity`、`proxy_buzsaki2014_lognormal_rates` 等 | PMID 30419013/40205214/19706480/31844315/8340806/11017176/32598278/14647382/17507551/18215425/24569488（**11 篇本轮逐条核读**：数值在摘要或 OA 全文中可见者才标 `literature`） |
-| `derived` | **42** | 全部门限/网格/口径常数（`selfsustain_ratio_max`=0.10、`selfsustain_ci_upper_factor`=1.2、`selfsustain_zero_drive_min_spikes`=300、`protocol_T_ladder_ratios`、`ei_ratio_lo/hi`=0.5/3.0、`calibration_tradeoff_requires_a_and_b`、`tension_detect_required` 等） | 清单 §4.5/§0.9 草案行 + RF-M11-3 裁决行 + `data/m10_calibration_targets.csv::字段` + `src/larval_zf_circuit.py::字段`（**均为设计选择/实测派生，不是文献值**） |
-| `measured` | **4** | `frame_rate_hz_microns_functional`=6.300006 Hz、`proxy_allen_celltypes_avg_firing_rate_median_all`=17.4130、`..._visp`=17.6338、`proxy_allen_celltypes_rate_lt_0p5_frac_visp`=0.0000 | `data/m11_microns_protocol.json::protocol.functional_series[0].frame_rate_hz`；`data/m11_allen_celltypes_metadata.csv::ef__avg_firing_rate`（n=1808 / VISp n=1490，本节点独立复算） |
+| `derived` | **48** | 全部门限/网格/口径常数（`selfsustain_ratio_max`=0.10、`selfsustain_ci_upper_factor`=1.2、`selfsustain_zero_drive_min_spikes`=300、`protocol_T_ladder_ratios`、`ei_ratio_lo/hi`=0.5/3.0、`calibration_tradeoff_requires_a_and_b`、`tension_detect_required` 等）+ R9/R10/R11 的门链与纪律登记行 | 清单 §4.5/§0.9 草案行 + RF-M11-3 裁决行 + R9/R10/R11 + `data/m10_calibration_targets.csv::字段` + `src/larval_zf_circuit.py::字段`（**均为设计选择/实测派生/裁决登记，不是文献值**） |
+| `measured` | **6** | `frame_rate_hz_microns_functional`=6.300006 Hz、`microns_activity_channel_voxel_series`（R9 可解码）、`microns_same_source_tau_band_ref`=8.003–9.015 s（R10，**归属 S 门**）、`proxy_allen_celltypes_avg_firing_rate_median_all`=17.4130、`..._visp`=17.6338、`proxy_allen_celltypes_rate_lt_0p5_frac_visp`=0.0000 | `data/m11_microns_protocol.json::protocol.functional_series[0].frame_rate_hz`；`data/m11_reference.csv::R-01/R-10..R-14`；`data/_mainagent_m11_same_source_band.csv::frame_mean\|native\|unsmoothed`；`data/m11_allen_celltypes_metadata.csv::ef__avg_firing_rate`（n=1808 / VISp n=1490，本节点独立复算） |
 | `literature_unverified` | **1** | `n_neuron_gear_full`=75909 | 清单 §0.9 标注「Nature 2025 摘要」⇒ **实测该摘要只给 'around 75,000'**（冲突 L6） |
-| `unavailable` | **8** | `rate_median_hz_measured_in_vivo_band`、`silent_frac_lo/hi`、`silent_frac_ephys_lo/hi`、`ei_ratio_measured`、`single_trial_wall_s_max`、`microns_activity_channel` | B1 未交付项 + R1/R2（MICrONS 活动永久不可用）+ G0 探针未回 |
+| `unavailable` | **8** | `rate_median_hz_measured_in_vivo_band`、`silent_frac_lo/hi`、`silent_frac_ephys_lo/hi`、`ei_ratio_measured`、`single_trial_wall_s_max`、`microns_activity_channel_percell` | B1 未交付项 + R1（逐细胞 only-in-DB，**R9 保持**）+ `m11_reference.csv::R-21`（仍 unverified）+ G0 探针未回 |
 
 **`final=0`（未定稿 ⇒ 依赖它的子判据强制 `unavailable`）：8 行** ——
 `(a)` 的**实测**带、`(b)` 的钙域/电生理域两个带、`(e)` 的实测量、`(g)` 的墙钟上限。
@@ -51,6 +51,15 @@
 | `proxy_sanzeni2020_isn` / `proxy_wehr2003_balanced_inhibition` / `proxy_monier2008_ei_diversity` | 小鼠 V1 清醒/轻麻醉（ISN）· **大鼠听皮层**在体 · 麻醉猫 V1 | 仅支撑 E/I 的**方向与量级**（抑制不弱于兴奋、E/I 同量级、个体多样 ⇒ 带不得窄）；**不能**支撑任何数值端点 |
 | `silent_frac_ca_active_per_wave_pct` / `unresponsive_neurons_pct_all_areas` | 小鼠 V1 2p（**每次自发波**招募口径）· Allen 2p（**对刺激可靠响应**口径） | 都不是「T 窗内零计数比例」；直接搬用 ⇒ 静默带口径错（12% 活跃被读成静默 0.12；23% 未响应被读成静默 0.23） |
 | `rate_median_hz_m10_fish_band` / `silent_frac_m10_fish_band` | 斑马鱼幼鱼（M10） | RF-M11-1 禁移植；若移植，M10 的「中位率 0.000 Hz + 静默 0.920」会被判成 (b) 通过 |
+| `microns_same_source_tau_band_ref`（8.003–9.015 s） | MICrONS **同源** 2 field × 2,000 帧 @6.300006 Hz（measured） | **归属 S 门（P6）/RF-M11-2**；在 P5/G1 内引用它判任何子判据 ⇒ **越界**；且 Q 法低态 dwell 1.11–1.27 s vs H 法 3.17–6.67 s（**2.6–6×**）⇒ 口径差必须并列 |
+
+### §2.2 R9 / R10 / R11 到位后的更正（跨节点并发，如实登记）
+
+| 项 | 内容 | 对本表的影响 |
+|---|---|---|
+| **R9**（反转） | MICrONS 功能**体素序列可解码**（大端 int16；200/200 对象通过；掩膜规则=无掩膜）；R2 的 `format_unverified` 被推翻；新增纪律「判不可解码前必须覆盖 dtype×字节序×排列×差分编码」 | 本表**首版按 R2 写 `microns_activity_channel = unavailable` ⇒ 已更正**为 `microns_activity_channel_voxel_series = measured` + `microns_activity_channel_percell = unavailable`（R1 保持）。本节点首读的 `m11_acceptance_master.md` 是 95 行的 R2 版本（21:46 被主agent 更新为 185 行的 R9/R10/R11 版）⇒ 见 notes **L11** |
+| **R10** | 主agent 独立建出**同源目标带**：原生帧未平滑 τ ≈ **8–9 s**（frame_mean 9.015 s / high_pixel_frac 8.003 s，n=2000）；S 门目标尺度定为 8–9 s；**Allen 2p 降为跨制备参照** | 新增 `microns_same_source_tau_band_ref`（measured，**归属 S 门**）+ `allen_2p_role_downgraded`。(a) 的当前 literature 锚**不改**（它来自小鼠 V1 胞外电生理文献，不是 Allen 图像） |
+| **R11** | **G0 引擎门验收裁定 = fail**（(e) 分段可组合性 fail、(f) 同步发放判别 fail；均为 M11 扩展引入的**对 M10 的回归**）⇒ **G1/S 不得启动；M11-B3 的 G1 工作停在设计/工具态** | 新增 `g0_engine_gate_status_fail` + `g1_start_precondition_all`。**本工作包的全部判定在 G0 全项复测通过之前不得发布**（工具与判据表处于待命态） |
 
 ---
 
@@ -135,6 +144,7 @@ M10 A4 的正体是「(a) 中位率 ∧ (b) 静默 同时成立」未达成，�
 | 双估计器不一致（>2%） | **整轮 `invalid`**、exit=2 | 先查口径（测量窗/时长/N/估计器实现），**不得**在 invalid 轮上做任何科学结论（M10 四次事故规程） |
 | (e) 无注入 | `(e)=unavailable` | 由 B2 的 G0 槽级断言 + P5 运行注入电流积分 |
 | **全部门条件不可达** | `G1=unavailable`/`fail` | **P6 不得启动**（清单 §0.5 门链）；登记为 P6 的输入约束（清单 §4.5(i)） |
+| **G0 = fail（R11，当前状态）** | 工具与判据表**待命**（不发布任何 P5 判定） | 门链：G0 → G1 → S；**G0 未全项过 ⇒ G1 不得启动**（R11 明示本工作包「停在设计/工具态」）。修复 (e)(f) + 补跑 (a)–(d)(g)(h) 与全部 extensions 后，本工具可直接消费其注入量 |
 
 ---
 

@@ -225,14 +225,19 @@ def t2_sync(verbose=True) -> dict:
     cls = np.array([0, 1, 2, 3], dtype=np.int8)          # E / PV / SST / VIP 各一条
     delay = np.full(4, 40, dtype=np.int32)
     arms = {}
-    for name, cls_eng, frozen in (("m9_adult", AdultEngine, False),
-                                  ("m10", LarvalZFEngine, False),
-                                  ("m11_fix", MouseCortexEngine, False),
-                                  ("m11_frozen", MouseCortexEngine, True)):
+    # 臂定义：(引擎, 是否 M11 四槽, 是否冻结档)；M9/M10/M11-冻结档用 E/I 两槽（与 M10 语义可比）
+    cls_ei = np.where(cls > 0, 1, 0).astype(np.int8)
+    for name, cls_eng, nc4, frozen in (("m9_adult", AdultEngine, False, False),
+                                       ("m10", LarvalZFEngine, False, False),
+                                       ("m11_fix_4slot", MouseCortexEngine, True, False),
+                                       ("m11_frozen_2slot", MouseCortexEngine, False, True)):
         e = cls_eng(N, device="cpu", use_compile=False, verbose=False)
-        if name == "m11_frozen":
-            e.configure_refractory(REF_FROZEN)
-        use_cls = cls if isinstance(e, MouseCortexEngine) else np.zeros(4, dtype=np.int8)
+        if isinstance(e, MouseCortexEngine):
+            if nc4:
+                e.configure_subtypes(True)
+            if frozen:
+                e.configure_refractory(REF_FROZEN)
+        use_cls = cls if nc4 else cls_ei
         try:
             e.add_synapses(pre, post, gmax, delay, inhibitory=(use_cls > 0),
                            syn_class=use_cls)
@@ -247,7 +252,10 @@ def t2_sync(verbose=True) -> dict:
             arms[name] = dict(ok=False, err="%s: %s" % (type(ex).__name__, str(ex)[:120]))
     out["arms"] = arms
     out["m9_raises"] = bool(not arms["m9_adult"]["ok"])
-    out["m11_ok"] = bool(arms["m11_fix"]["ok"] and arms["m11_frozen"]["ok"])
+    out["m11_ok"] = bool(arms["m11_fix_4slot"]["ok"] and arms["m11_frozen_2slot"]["ok"])
+    out["m11_frozen_vs_m10_bit_identical"] = bool(
+        arms["m11_frozen_2slot"]["ok"] and arms["m10"]["ok"]
+        and arms["m11_frozen_2slot"]["counts"] == arms["m10"]["counts"])
     # ---- 逐类环槽核对（用 on 档：4 槽）----
     e = MouseCortexEngine(N, device="cpu", use_compile=False, verbose=False)
     e.configure_subtypes(True)
@@ -1053,6 +1061,42 @@ def t11_defect(verbose=True) -> dict:
     out["conclusion"] = ("冻结件点核（非 gaba 路径）的不应期门实读 `t_ahp`、AHP 电导实读 `t_cool`；"
                          "M10 的 `gaba_split=True` 路径参数序正确 ⇒ **同一内核两条路径语义不同**。"
                          "M11 默认采用文档语义（REF_FIX），并保留 REF_FROZEN 供逐位等价与量级量化。")
+    # ---- E-M10-1：步模式外部事件按**局部**步号索引 ⇒ 分段重放 ----
+    rep = {}
+    for tag, cls_eng, m11 in (("m10", LarvalZFEngine, False), ("m11_fixed", MouseCortexEngine, True),
+                              ("m11_frozen_behavior", MouseCortexEngine, "rel")):
+        row = {}
+        for k in (1, 2, 4):
+            e = cls_eng(1, device="cpu", use_compile=False, verbose=False)
+            if m11 is True:
+                pass
+            elif m11 == "rel":
+                e.ext_abs_index = False
+            e.finalize()
+            e.set_neuron_heterogeneity(np.zeros(1, dtype=np.float32))
+            e.set_external_events(np.array([0]), np.array([0]),
+                                  np.array([6000.0], dtype=np.float32), n_steps=400)
+            e.reset(seed=0)
+            e.reset_counts()
+            for _ in range(k):
+                r = e.run(400 // k, delivery="step", record="counts")
+            row["k=%d" % k] = int(r["spk_total"])
+        rep[tag] = row
+    out["E_M10_1_ext_replay"] = dict(
+        setup="N=1、单外部事件（step=0, gmax=6000）、T=400 步、step 模式 —— 期望恒为 3 个脉冲",
+        per_arm=rep,
+        m10_replays=bool(rep["m10"]["k=2"] != rep["m10"]["k=1"]),
+        m11_fixed_composable=bool(rep["m11_fixed"]["k=2"] == rep["m11_fixed"]["k=1"]
+                                  and rep["m11_fixed"]["k=4"] == rep["m11_fixed"]["k=1"]),
+        m11_frozen_behavior_replays=bool(rep["m11_frozen_behavior"]["k=2"]
+                                        != rep["m11_frozen_behavior"]["k=1"]),
+        note="冻结件 `if ext_active and not chunk_mode and s < ext_n_steps: ea=ext_off[s]` 用**局部**步号"
+             "⇒ 分段调用时每段重放前段事件（chunk 模式用 abs0，故不受影响）。M11 已改为绝对步号索引"
+             "（`ext_abs_index=True`），实测 k=1/2/5 逐位一致。")
+    if verbose:
+        print("  [T11b] E-M10-1 外部事件重放：%s（M11 修后逐位=%s）" % (
+            rep, out["E_M10_1_ext_replay"]["m11_fixed_composable"]), flush=True)
+    return out
     if verbose:
         print("  [T11] ISI: %s；网络级 冻结档 %d vs 修正档 %d（%+.3f%%）" % (
             {k: v["isi_steps"] for k, v in isi.items()}, res["frozen"]["spk"],

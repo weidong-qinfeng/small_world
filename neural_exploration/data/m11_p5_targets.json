@@ -1,9 +1,14 @@
 {
  "generated_by": "M11 执行节点 B3（工作包 G1：P5 判据/协议设计与工具骨架）——逐行 provenance，无一行凭印象",
- "generated_at": "2026-10-11",
+ "generated_at": "2026-10-11（含 R9/R10/R11 到位后的更正）",
  "role": "M11 G1（P5 生理工作点门）判据带 + 协议常数；运行前定稿，不事后调；只允许新增行",
  "file": "data/m11_p5_targets.csv",
- "csv_sha256_file_bytes": "19f27b4638ec221e8db101b3f8581a1aa8bbb4cdd08484459afcae2e43e35a87",
+ "hash_basis": {
+  "csv_sha256_file_bytes": "600a515df55550e6c661c826522c2c65bbfd4b470409450f89e31b9567d8f3b3",
+  "rows_payload_sha256": "6839c710705b33abbf12fdc2e5b29d46f3fe31b546c9cfb00db299e8616b7c36",
+  "payload_definition": "csv 行按 key 排序的 canonical JSON（sort_keys=True, separators=(',',':')）",
+  "note": "跨节点比对 sha256 时必须声明基准（file_bytes / payload / semantic）——主agent 纪律 §6-3"
+ },
  "semantics": {
   "value_kind": [
    "point",
@@ -32,7 +37,7 @@
     "pmcid": "PMC6258373",
     "value_read": "spontaneous rates 0.5-1.0 Hz (excitatory) / 1.5-2.0 Hz (inhibitory)；all-LIF 底三四分位无自发发放 vs biophysical 半数或更少",
     "where": "OA 全文（Europe PMC fullTextXML）",
-    "used_for": "(a) 中位率带（主锚）+ 静默量级档"
+    "used_for": "(a) 中位率带主锚（literature）+ 类级带（E/I）+ 静默量级档"
    },
    {
     "pmid": "40205214",
@@ -46,7 +51,7 @@
     "doi": "10.1073/pnas.0907660106",
     "value_read": "'reaching 12% of active neurons per wave in adults'；'approximately 0.5 Hz in adults'",
     "where": "摘要",
-    "used_for": "(b) 钙域口径锚（每波招募口径）"
+    "used_for": "(b) 钙域口径锚（每波招募口径，非长窗零计数）"
    },
    {
     "pmid": "31844315",
@@ -54,7 +59,7 @@
     "pmcid": "PMC6948932",
     "value_read": "'In total, 77% of neurons were responsive to at least one of the visual stimuli'（⇒23% 未响应）",
     "where": "OA 全文",
-    "used_for": "(b) 的“不可直接使用”代理（口径不同）"
+    "used_for": "(b)「不可直接使用」的代理（口径=对刺激可靠响应）"
    },
    {
     "pmid": "8340806",
@@ -112,31 +117,60 @@
     "file": "data/m11_allen_celltypes_metadata.csv",
     "field": "ef__avg_firing_rate",
     "recompute": "n=1808 中位 17.4130 Hz（numpy 与 statistics.median 一致）；VISp（structure_parent__acronym==VISp）n=1490 中位 17.6338 Hz、L2/3 19.8220、L4 16.7383、L5 19.3125；spiny 12.9067 vs aspiny 34.1246；frac<0.5Hz=0.0000、frac<5Hz=0.0195",
-    "note": "与主agent 独立复算 17.4130 一致（B1 报告曾写 17.438 ⇒ 双估计器纪律已纠正）；in vitro 电流钳，跨制备代理，禁止用作 (a)/(b) 带"
+    "note": "与主agent 独立复算 17.4130 一致（B1 报告曾写 17.438 ⇒ 双估计器纪律已纠正）；in vitro 电流钳 ⇒ 跨制备代理，禁止用作 (a)/(b) 带"
    },
    {
     "file": "data/m11_microns_protocol.json",
     "field": "protocol.functional_series[0].frame_rate_hz",
     "recompute": "6.300006 Hz（B1 读回断言）",
-    "note": "序列本身 format_unverified（R2）⇒ 仅元数据可用"
+    "note": "与 data/m11_reference.csv::R-01 一致"
    },
    {
     "file": "data/m10_p5_gate1_ci.json",
     "field": "per_seed_ratio / ratio_pooled / se_log / ci95",
-    "recompute": "R=0.10153846、se_log=0.03654036、CI95=[0.09452067,0.10907730] ⇒ 本工具的 CI 实现被该 M10 实测件独立核对（见冒烟测试 S2）",
-    "note": "M10 只读；仅作工具校验，不作为 M11 判据"
+    "recompute": "R=0.1015384615、se_log=0.0365403631、逐 seed 比值 0.0987078/0.1056068/0.1005484 与本工具**逐位一致**；CI95 末端相对差 1.3e-6（M10 用 z=1.96，本工具用精确分位 1.959963984540054）",
+    "note": "M10 只读；仅作工具校验（冒烟 S2），**不是** M11 判据"
    }
   ],
-  "checklist_conflicts": [
+  "microns_m10_reference_crosscheck": [
+   {
+    "file": "data/m10_p6_poptraces/poptrace_M0_lamx0.0_n250.npy + poptrace_M0_lamx1.0_n250.npy",
+    "recompute": "1154/6710 = 0.1719836 ⇒ 与 docs/m10_acceptance_master.md §4.3 记录的 T=120 s 自持比 **0.1720** 一致",
+    "note": "工具在 M10 冻结轨迹上复现了 M10 的公开记录值（工具正确性证据）；M10 数值不得作为 M11 判据"
+   }
+  ],
+  "mainagent_rulings_incorporated": [
+   {
+    "id": "R9",
+    "content": "MICrONS 功能体素序列**可解码**（大端 int16；200/200 对象通过）⇒ R2 的 format_unverified 被反转；掩膜规则=无掩膜；新增纪律「判不可解码前必须覆盖 dtype×字节序×排列×差分编码」",
+    "effect_on_this_table": "本表首版按 R2 写 `microns_activity_channel=unavailable` ⇒ **已更正**为 `microns_activity_channel_voxel_series=measured` + `microns_activity_channel_percell=unavailable`（R1 保持）"
+   },
+   {
+    "id": "R10",
+    "content": "主agent 独立建出同源目标带：原生帧未平滑 τ ≈ **8–9 s**（frame_mean 9.015 s / high_pixel_frac 8.003 s；n=2000）；S 门目标尺度定为 8–9 s 量级；Allen 2p 降为跨制备参照",
+    "effect_on_this_table": "新增 `microns_same_source_tau_band_ref`（measured，**归属 S 门**，P5 越界使用受禁）+ `allen_2p_role_downgraded`"
+   },
+   {
+    "id": "R11",
+    "content": "G0 引擎门验收裁定 = **fail**（(e) 分段可组合性 fail、(f) 同步发放判别 fail；均为 M11 扩展引入的回归）⇒ **G1/S 不得启动；M11-B3 的 G1 工作停在设计/工具态**",
+    "effect_on_this_table": "新增 `g0_engine_gate_status_fail` + `g1_start_precondition_all`；本工作包的全部判定在 G0 复测全过之前**不得发布**"
+   }
+  ],
+  "checklist_and_doc_conflicts": [
    {
     "id": "L5",
     "conflict": "清单 §1.5 C3 把 PMID 11017176 作为「小鼠皮层 up/down 态 dwell 0.3–3 s 量级」的依据；实测该文为雪貂皮层切片 in vitro、摘要给 0.1–0.5 Hz、未出现 0.3–3 s（物种/制备/数值三重不符）",
-    "proposed_fix": "改用 PMID 8340806（猫在体、up 态 0.8–1.5 s、0.3–0.4 Hz；摘要已核）作量级锚并显式标注跨物种/跨麻醉；按「先改清单再改代码」由主agent 落清单"
+    "proposed_fix": "改用 PMID 8340806（猫在体、up 态 0.8–1.5 s、0.3–0.4 Hz；摘要已核）作量级锚并显式标注跨物种/跨麻醉；按「先改清单再改代码」由主agent 落清单。**注：R10 已用同源 MICrONS 数据自建 8–9 s 带，本冲突对 S 门的影响已被 R10 覆盖，但清单文字仍需更正**"
    },
    {
     "id": "L6",
     "conflict": "清单 §0.9 记 MICrONS 功能神经元数 75,909（标注出处「Nature 2025 摘要」）；实测该摘要只给 'around 75,000'",
-    "proposed_fix": "精确值改标 literature_unverified（本表已如此），或补全 75,909 的出处（论文正文/表格/SI）"
+    "proposed_fix": "精确值改标 literature_unverified（本表已如此），或补全 75,909 的出处（正文/表格/SI）"
+   },
+   {
+    "id": "L7",
+    "conflict": "docs/m11_acceptance_master.md §4「对 P2 判定的影响」仍写「功能侧：体素序列 format_unverified（R2）」与「活动通道改由 Allen NWB 承担」，**与同文档 §3d 的 R9 反转自相矛盾**（同一文件内旧段未同步）",
+    "proposed_fix": "请主agent 在 §4 加「（已被 R9 反转，见 §3d）」标注；本节点不修改非本工作包文件（冻结/他节点产物）"
    }
   ],
   "bands_not_finalized": [
@@ -376,9 +410,9 @@
    "value_kind": "unavailable",
    "unit": "Hz",
    "evidence_level": "unavailable",
-   "provenance": "docs/m11_data_gate_report.md §1（m11_tuning_reference.csv / m11_dwell_reference.csv 未交付）+ docs/m11_acceptance_master.md R1/R2/R3",
-   "note": "实测量通道未取得：MICrONS 活动侧 unavailable（R1/R2）、Allen in vivo NWB 仅目录 569 对象未下载（R3 仅批准解析已有 per-cell NWB = 电流钳 in vitro）⇒ 实测带当前不可得；上面的 literature 档为临时锚",
-   "wrong_usage_consequence": "把 literature 档写成 measured ⇒ 违反 RF-M11-1 的证据级别纪律",
+   "provenance": "docs/m11_data_gate_report.md §1（m11_tuning_reference.csv / m11_dwell_reference.csv 未交付）+ data/m11_reference.csv::R-21（dwell_tau_reference_band = unverified，未定稿）+ R1（逐细胞轨迹 only-in-DB）+ docs/m11_acceptance_master.md R3（Allen in vivo NWB 仅目录 569 对象未下载）",
+   "note": "实测量通道仍未取得：逐细胞轨迹 only-in-DB（R1）；体素序列虽已可解码（R9/R-10..R-14）但**逐细胞/逐 ROI 的发放率参考量尚未重建**（R-21 仍 unverified；无 ROI 提取管线）；Allen in vivo NWB 未下载 ⇒ 实测带当前不可得，上面的 literature 档为临时锚",
+   "wrong_usage_consequence": "把 literature 档写成 measured ⇒ 违反 RF-M11-1 的证据级别纪律；把「体素可解码（R9）」误读为「发放率实测带已可得」⇒ 越界（可解码 ≠ 已重建出率口径）",
    "final": "0"
   },
   {
@@ -822,14 +856,25 @@
    "final": "1"
   },
   {
-   "key": "microns_activity_channel",
+   "key": "microns_activity_channel_voxel_series",
+   "value": "measured",
+   "value_kind": "enum",
+   "unit": "",
+   "evidence_level": "measured",
+   "provenance": "data/m11_reference.csv::R-10（byte_order=big-endian）/R-11（parse_structural_gate=pass；lat_x=0.777 lat_y=0.761 frame=0.773）/R-12/R-13/R-14 + data/m11_microns_parse_validation.json + docs/m11_acceptance_master.md R9（主agent 裁定反转：R2 的 format_unverified 系漏测大端 int16）",
+   "note": "MICrONS 功能**体素序列可解码**（measured；200/200 对象完整性通过）；掩膜规则定稿 = 无掩膜（below-baseline 样本保留并登记 10,383/8e7 = 0.01298%）",
+   "wrong_usage_consequence": "把 R2 的「format_unverified/不可解码」继续沿用 ⇒ 与 R9 冲突（本表首版曾如此写，见 docs/m11_b3_notes.md L11）",
+   "final": "1"
+  },
+  {
+   "key": "microns_activity_channel_percell",
    "value": "unavailable",
    "value_kind": "unavailable",
    "unit": "",
    "evidence_level": "unavailable",
-   "provenance": "docs/m11_acceptance_master.md R1（逐细胞轨迹仅存于 v8 DataJoint DB：103.8 GB 镜像/116.2 GB dump，吞吐 36–58 KB/s ⇒ 20–30 天）+ R2（体素序列 format_unverified：逐轴 lag1–6 自相关 ≈0）",
-   "note": "永久性数据限制（非未测、非未命中）；活动通道改由 Allen 承担（R6）",
-   "wrong_usage_consequence": "把「同源结构-功能」写成成立 ⇒ 违反 R6 第 5 条（结构同源仅就结构侧成立）",
+   "provenance": "docs/m11_acceptance_master.md R1（逐细胞 ΔF/F / ROI 轨迹仅存于 v8 DataJoint DB：103.8 GB 镜像/116.2 GB dump，吞吐 36–58 KB/s ⇒ 20–30 天；**R9 明确 R1 保持不变**）",
+   "note": "逐细胞级仍不可用（永久性数据限制）；R9 后的「同源」表述 = 结构 + 功能**时间序列**（2 field，measured）+ 属性级（connectomics 表 unavailable）；**仅「逐细胞」级非同源**",
+   "wrong_usage_consequence": "把 R9 读成「逐细胞也可用」⇒ 越界（R9 只恢复到体素序列/时间序列级）",
    "final": "1"
   },
   {
@@ -940,6 +985,83 @@
    "provenance": "PMID 24569488 / DOI 10.1038/nrn3687（摘要原文：'the distribution of numerous parameters is in fact strongly skewed with a heavy tail, suggesting that skewed (typically lognormal) distributions are fundamental'）",
    "note": "发放率分布为重尾/对数正态 ⇒ 支撑两件事：① 主统计量取中位率（而非均值）；② 比值型判据用对数正态 CI 近似",
    "wrong_usage_consequence": "用均值代替中位数 ⇒ 受重尾支配（Allen in vitro 实测：均值 32.48 vs 中位 17.63 Hz，差 1.84×）",
+   "final": "1"
+  },
+  {
+   "key": "g0_engine_gate_status_fail",
+   "value": "fail",
+   "value_kind": "enum",
+   "unit": "",
+   "evidence_level": "derived",
+   "provenance": "docs/m11_acceptance_master.md R11（G0 验收裁定 = fail：判据 (e) 分段可组合性 fail、(f) 同步发放判别 fail；M10 内核在同判据下 (e) 0.0% 逐位一致、(f) 通过 ⇒ 两项均为 M11 扩展引入的回归）+ reports/neuro/m11_g0_engine_summary.json",
+   "note": "G0 = fail ⇒ **G1/S 不得启动**（门链 §0.5；R11 明示「M11-B3 的 G1 工作停在设计/工具态」）⇒ 本工作包的判据表与工具**处于待命态**，任何 P5 判定都不得在 G0 修复+全项复测通过之前发布",
+   "wrong_usage_consequence": "无视 G0=fail 而按本表跑 P5/G1 ⇒ 在未通过对齐门的引擎上调工作点（复演 M9/M10 的「用缺陷档引擎出判据」失败模式）",
+   "final": "1"
+  },
+  {
+   "key": "g1_start_precondition_all",
+   "value": "1",
+   "value_kind": "bool",
+   "unit": "",
+   "evidence_level": "derived",
+   "provenance": "docs/生物仿真M11实施清单.md §0.5 五门链（G2 → G0 → G1 → S）+ docs/m11_acceptance_master.md R11",
+   "note": "G1 启动前置 = G2 pass（已达成，B1）+ G0 全项 measured 且全过（**当前 fail**）+ 本表 P5 判据带定稿（当前 8 行 final=0）",
+   "wrong_usage_consequence": "把「G2 pass」当成「G1 可跑」⇒ 漏掉 G0 与判据带定稿两个前置",
+   "final": "1"
+  },
+  {
+   "key": "microns_same_source_tau_band_ref",
+   "value": "8.003|9.015",
+   "value_kind": "list",
+   "unit": "s",
+   "evidence_level": "measured",
+   "provenance": "data/_mainagent_m11_same_source_band.csv::frame_mean|native|unsmoothed（τ=9.0150 s，n=2000）与 high_pixel_frac|native|unsmoothed（τ=8.0030 s，n=2000）+ docs/m11_acceptance_master.md R10（同源原生帧未平滑 φ=0.9825/0.9804；0.9138 s 箱未平滑 τ=7.657/7.642 s）",
+   "note": "**S 门（P6）/RF-M11-2 的同源目标带**：MICrONS 同源 2 field × 2,000 帧 @6.300006 Hz ≈ 317 s；未平滑原生帧 τ ≈ 8–9 s 为 R10 采纳的目标尺度（**主agent 独立建带**）",
+   "wrong_usage_consequence": "**越界使用**：本行属 S 门；在 P5/G1 内引用它判任何子判据 ⇒ 判据越界（P5 只判工作点，不判慢状态）。另：**H 法低态 dwell 中位 3.17–6.67 s / Q 法 1.11–1.27 s 相差 2.6–6×** ⇒ 口径差必须并列，不得单取一个",
+   "final": "1"
+  },
+  {
+   "key": "allen_2p_role_downgraded",
+   "value": "cross_preparation_reference",
+   "value_kind": "enum",
+   "unit": "",
+   "evidence_level": "derived",
+   "provenance": "docs/m11_acceptance_master.md R9 第 2 条（S 门/P14 目标带优先用 MICrONS 同源成像自建；**Allen 2p 降为跨制备参照**）",
+   "note": "R9 后活动通道的主锚 = MICrONS 同源时间序列；Allen 2p / NWB 降为跨制备参照行",
+   "wrong_usage_consequence": "仍把 Allen 当主锚 ⇒ 与 R9 的「同源」恢复相冲突（但 (a) 的当前 literature 锚仍来自小鼠 V1 文献，非 Allen 图像）",
+   "final": "1"
+  },
+  {
+   "key": "discipline_undecodable_evidence_standard",
+   "value": "1",
+   "value_kind": "bool",
+   "unit": "",
+   "evidence_level": "derived",
+   "provenance": "docs/m11_acceptance_master.md R9 新增纪律（判为不可解码前必须覆盖 dtype × 字节序 LE/BE × 排列 行主/列主/Morton/分块 × 是否差分编码；任一维度未覆盖 ⇒ 只能写 unverified，不得写 unavailable/不可解码）",
+   "note": "判「不可用/不可解码」的举证标准（由主agent 自身错误得来）；本表所有 `unavailable` 行必须能说明已覆盖的维度",
+   "wrong_usage_consequence": "沿用「测了一种解码就判不可用」⇒ 重演 R2 被 R9 反转",
+   "final": "1"
+  },
+  {
+   "key": "discipline_throughput_measured_before_fetch",
+   "value": "1",
+   "value_kind": "bool",
+   "unit": "",
+   "evidence_level": "derived",
+   "provenance": "docs/m11_acceptance_master.md §5 DQ-4（8 路并发持续 17 min 仅聚合 10–16 KB/s ⇒ 两文件 ETA 5–8 h ⇒ 判不可行）",
+   "note": "取数决策必须有**实测吞吐**支撑（不得凭「应该很快」）；可达 ≠ 可行",
+   "wrong_usage_consequence": "凭可达性表就排下载作业 ⇒ 重演 DQ-4 的 5–8 h 无效等待",
+   "final": "1"
+  },
+  {
+   "key": "silent_frac_and_rate_band_must_record_estimator",
+   "value": "1",
+   "value_kind": "bool",
+   "unit": "",
+   "evidence_level": "derived",
+   "provenance": "docs/m11_acceptance_master.md §6 纪律 4（双估计器必须一致）+ 本表 estimator_primary/estimator_secondary",
+   "note": "(a)/(b) 的每一次报告必须同时给出 estimator（逐神经元 vs 群体轨迹）与口径定义（静默 = 计数==0 还是 rate<阈值），跨轮比较前核对",
+   "wrong_usage_consequence": "只报数值不报估计器/口径 ⇒ 重演 M10 的 ×1.3004/×1.15/43× 与 0.92 vs 0.51 的静默口径混淆",
    "final": "1"
   }
  ],
@@ -1170,9 +1292,9 @@
    "value_kind": "unavailable",
    "unit": "Hz",
    "evidence_level": "unavailable",
-   "provenance": "docs/m11_data_gate_report.md §1（m11_tuning_reference.csv / m11_dwell_reference.csv 未交付）+ docs/m11_acceptance_master.md R1/R2/R3",
-   "note": "实测量通道未取得：MICrONS 活动侧 unavailable（R1/R2）、Allen in vivo NWB 仅目录 569 对象未下载（R3 仅批准解析已有 per-cell NWB = 电流钳 in vitro）⇒ 实测带当前不可得；上面的 literature 档为临时锚",
-   "wrong_usage_consequence": "把 literature 档写成 measured ⇒ 违反 RF-M11-1 的证据级别纪律",
+   "provenance": "docs/m11_data_gate_report.md §1（m11_tuning_reference.csv / m11_dwell_reference.csv 未交付）+ data/m11_reference.csv::R-21（dwell_tau_reference_band = unverified，未定稿）+ R1（逐细胞轨迹 only-in-DB）+ docs/m11_acceptance_master.md R3（Allen in vivo NWB 仅目录 569 对象未下载）",
+   "note": "实测量通道仍未取得：逐细胞轨迹 only-in-DB（R1）；体素序列虽已可解码（R9/R-10..R-14）但**逐细胞/逐 ROI 的发放率参考量尚未重建**（R-21 仍 unverified；无 ROI 提取管线）；Allen in vivo NWB 未下载 ⇒ 实测带当前不可得，上面的 literature 档为临时锚",
+   "wrong_usage_consequence": "把 literature 档写成 measured ⇒ 违反 RF-M11-1 的证据级别纪律；把「体素可解码（R9）」误读为「发放率实测带已可得」⇒ 越界（可解码 ≠ 已重建出率口径）",
    "final": "0"
   },
   "rate_median_hz_m10_fish_band": {
@@ -1615,15 +1737,26 @@
    "wrong_usage_consequence": "N/A",
    "final": "1"
   },
-  "microns_activity_channel": {
-   "key": "microns_activity_channel",
+  "microns_activity_channel_voxel_series": {
+   "key": "microns_activity_channel_voxel_series",
+   "value": "measured",
+   "value_kind": "enum",
+   "unit": "",
+   "evidence_level": "measured",
+   "provenance": "data/m11_reference.csv::R-10（byte_order=big-endian）/R-11（parse_structural_gate=pass；lat_x=0.777 lat_y=0.761 frame=0.773）/R-12/R-13/R-14 + data/m11_microns_parse_validation.json + docs/m11_acceptance_master.md R9（主agent 裁定反转：R2 的 format_unverified 系漏测大端 int16）",
+   "note": "MICrONS 功能**体素序列可解码**（measured；200/200 对象完整性通过）；掩膜规则定稿 = 无掩膜（below-baseline 样本保留并登记 10,383/8e7 = 0.01298%）",
+   "wrong_usage_consequence": "把 R2 的「format_unverified/不可解码」继续沿用 ⇒ 与 R9 冲突（本表首版曾如此写，见 docs/m11_b3_notes.md L11）",
+   "final": "1"
+  },
+  "microns_activity_channel_percell": {
+   "key": "microns_activity_channel_percell",
    "value": "unavailable",
    "value_kind": "unavailable",
    "unit": "",
    "evidence_level": "unavailable",
-   "provenance": "docs/m11_acceptance_master.md R1（逐细胞轨迹仅存于 v8 DataJoint DB：103.8 GB 镜像/116.2 GB dump，吞吐 36–58 KB/s ⇒ 20–30 天）+ R2（体素序列 format_unverified：逐轴 lag1–6 自相关 ≈0）",
-   "note": "永久性数据限制（非未测、非未命中）；活动通道改由 Allen 承担（R6）",
-   "wrong_usage_consequence": "把「同源结构-功能」写成成立 ⇒ 违反 R6 第 5 条（结构同源仅就结构侧成立）",
+   "provenance": "docs/m11_acceptance_master.md R1（逐细胞 ΔF/F / ROI 轨迹仅存于 v8 DataJoint DB：103.8 GB 镜像/116.2 GB dump，吞吐 36–58 KB/s ⇒ 20–30 天；**R9 明确 R1 保持不变**）",
+   "note": "逐细胞级仍不可用（永久性数据限制）；R9 后的「同源」表述 = 结构 + 功能**时间序列**（2 field，measured）+ 属性级（connectomics 表 unavailable）；**仅「逐细胞」级非同源**",
+   "wrong_usage_consequence": "把 R9 读成「逐细胞也可用」⇒ 越界（R9 只恢复到体素序列/时间序列级）",
    "final": "1"
   },
   "frame_rate_hz_microns_functional": {
@@ -1734,6 +1867,83 @@
    "provenance": "PMID 24569488 / DOI 10.1038/nrn3687（摘要原文：'the distribution of numerous parameters is in fact strongly skewed with a heavy tail, suggesting that skewed (typically lognormal) distributions are fundamental'）",
    "note": "发放率分布为重尾/对数正态 ⇒ 支撑两件事：① 主统计量取中位率（而非均值）；② 比值型判据用对数正态 CI 近似",
    "wrong_usage_consequence": "用均值代替中位数 ⇒ 受重尾支配（Allen in vitro 实测：均值 32.48 vs 中位 17.63 Hz，差 1.84×）",
+   "final": "1"
+  },
+  "g0_engine_gate_status_fail": {
+   "key": "g0_engine_gate_status_fail",
+   "value": "fail",
+   "value_kind": "enum",
+   "unit": "",
+   "evidence_level": "derived",
+   "provenance": "docs/m11_acceptance_master.md R11（G0 验收裁定 = fail：判据 (e) 分段可组合性 fail、(f) 同步发放判别 fail；M10 内核在同判据下 (e) 0.0% 逐位一致、(f) 通过 ⇒ 两项均为 M11 扩展引入的回归）+ reports/neuro/m11_g0_engine_summary.json",
+   "note": "G0 = fail ⇒ **G1/S 不得启动**（门链 §0.5；R11 明示「M11-B3 的 G1 工作停在设计/工具态」）⇒ 本工作包的判据表与工具**处于待命态**，任何 P5 判定都不得在 G0 修复+全项复测通过之前发布",
+   "wrong_usage_consequence": "无视 G0=fail 而按本表跑 P5/G1 ⇒ 在未通过对齐门的引擎上调工作点（复演 M9/M10 的「用缺陷档引擎出判据」失败模式）",
+   "final": "1"
+  },
+  "g1_start_precondition_all": {
+   "key": "g1_start_precondition_all",
+   "value": "1",
+   "value_kind": "bool",
+   "unit": "",
+   "evidence_level": "derived",
+   "provenance": "docs/生物仿真M11实施清单.md §0.5 五门链（G2 → G0 → G1 → S）+ docs/m11_acceptance_master.md R11",
+   "note": "G1 启动前置 = G2 pass（已达成，B1）+ G0 全项 measured 且全过（**当前 fail**）+ 本表 P5 判据带定稿（当前 8 行 final=0）",
+   "wrong_usage_consequence": "把「G2 pass」当成「G1 可跑」⇒ 漏掉 G0 与判据带定稿两个前置",
+   "final": "1"
+  },
+  "microns_same_source_tau_band_ref": {
+   "key": "microns_same_source_tau_band_ref",
+   "value": "8.003|9.015",
+   "value_kind": "list",
+   "unit": "s",
+   "evidence_level": "measured",
+   "provenance": "data/_mainagent_m11_same_source_band.csv::frame_mean|native|unsmoothed（τ=9.0150 s，n=2000）与 high_pixel_frac|native|unsmoothed（τ=8.0030 s，n=2000）+ docs/m11_acceptance_master.md R10（同源原生帧未平滑 φ=0.9825/0.9804；0.9138 s 箱未平滑 τ=7.657/7.642 s）",
+   "note": "**S 门（P6）/RF-M11-2 的同源目标带**：MICrONS 同源 2 field × 2,000 帧 @6.300006 Hz ≈ 317 s；未平滑原生帧 τ ≈ 8–9 s 为 R10 采纳的目标尺度（**主agent 独立建带**）",
+   "wrong_usage_consequence": "**越界使用**：本行属 S 门；在 P5/G1 内引用它判任何子判据 ⇒ 判据越界（P5 只判工作点，不判慢状态）。另：**H 法低态 dwell 中位 3.17–6.67 s / Q 法 1.11–1.27 s 相差 2.6–6×** ⇒ 口径差必须并列，不得单取一个",
+   "final": "1"
+  },
+  "allen_2p_role_downgraded": {
+   "key": "allen_2p_role_downgraded",
+   "value": "cross_preparation_reference",
+   "value_kind": "enum",
+   "unit": "",
+   "evidence_level": "derived",
+   "provenance": "docs/m11_acceptance_master.md R9 第 2 条（S 门/P14 目标带优先用 MICrONS 同源成像自建；**Allen 2p 降为跨制备参照**）",
+   "note": "R9 后活动通道的主锚 = MICrONS 同源时间序列；Allen 2p / NWB 降为跨制备参照行",
+   "wrong_usage_consequence": "仍把 Allen 当主锚 ⇒ 与 R9 的「同源」恢复相冲突（但 (a) 的当前 literature 锚仍来自小鼠 V1 文献，非 Allen 图像）",
+   "final": "1"
+  },
+  "discipline_undecodable_evidence_standard": {
+   "key": "discipline_undecodable_evidence_standard",
+   "value": "1",
+   "value_kind": "bool",
+   "unit": "",
+   "evidence_level": "derived",
+   "provenance": "docs/m11_acceptance_master.md R9 新增纪律（判为不可解码前必须覆盖 dtype × 字节序 LE/BE × 排列 行主/列主/Morton/分块 × 是否差分编码；任一维度未覆盖 ⇒ 只能写 unverified，不得写 unavailable/不可解码）",
+   "note": "判「不可用/不可解码」的举证标准（由主agent 自身错误得来）；本表所有 `unavailable` 行必须能说明已覆盖的维度",
+   "wrong_usage_consequence": "沿用「测了一种解码就判不可用」⇒ 重演 R2 被 R9 反转",
+   "final": "1"
+  },
+  "discipline_throughput_measured_before_fetch": {
+   "key": "discipline_throughput_measured_before_fetch",
+   "value": "1",
+   "value_kind": "bool",
+   "unit": "",
+   "evidence_level": "derived",
+   "provenance": "docs/m11_acceptance_master.md §5 DQ-4（8 路并发持续 17 min 仅聚合 10–16 KB/s ⇒ 两文件 ETA 5–8 h ⇒ 判不可行）",
+   "note": "取数决策必须有**实测吞吐**支撑（不得凭「应该很快」）；可达 ≠ 可行",
+   "wrong_usage_consequence": "凭可达性表就排下载作业 ⇒ 重演 DQ-4 的 5–8 h 无效等待",
+   "final": "1"
+  },
+  "silent_frac_and_rate_band_must_record_estimator": {
+   "key": "silent_frac_and_rate_band_must_record_estimator",
+   "value": "1",
+   "value_kind": "bool",
+   "unit": "",
+   "evidence_level": "derived",
+   "provenance": "docs/m11_acceptance_master.md §6 纪律 4（双估计器必须一致）+ 本表 estimator_primary/estimator_secondary",
+   "note": "(a)/(b) 的每一次报告必须同时给出 estimator（逐神经元 vs 群体轨迹）与口径定义（静默 = 计数==0 还是 rate<阈值），跨轮比较前核对",
+   "wrong_usage_consequence": "只报数值不报估计器/口径 ⇒ 重演 M10 的 ×1.3004/×1.15/43× 与 0.92 vs 0.51 的静默口径混淆",
    "final": "1"
   }
  }

@@ -61,21 +61,91 @@
    }
   },
   "e_segment_composability": {
-   "status": "unavailable",
-   "note": "k=1/2/5 总脉冲与逐神经元计数逐位相同（step/chunk 两口径）；反例臂必现差异（本轮未运行）",
+   "status": "pass",
+   "note": "k=1/2/5 总脉冲与逐神经元计数逐位相同（step/chunk 两口径）；反例臂必现差异",
    "detail": {
-    "step": null,
-    "chunk": null,
-    "control_falsifiable": null
+    "step": {
+     "k=1": {
+      "total": 173,
+      "n_neurons_diff": 0,
+      "bit_identical": true
+     },
+     "k=2": {
+      "total": 173,
+      "n_neurons_diff": 0,
+      "bit_identical": true
+     },
+     "k=5": {
+      "total": 173,
+      "n_neurons_diff": 0,
+      "bit_identical": true
+     },
+     "control_rel_slots_k2": {
+      "total": 172,
+      "rel_diff_pct": -0.57803,
+      "n_neurons_diff": 11,
+      "bit_identical": false
+     }
+    },
+    "chunk": {
+     "k=1": {
+      "total": 173,
+      "n_neurons_diff": 0,
+      "bit_identical": true
+     },
+     "k=2": {
+      "total": 173,
+      "n_neurons_diff": 0,
+      "bit_identical": true
+     },
+     "k=5": {
+      "total": 173,
+      "n_neurons_diff": 0,
+      "bit_identical": true
+     },
+     "control_rel_slots_k2": {
+      "total": 172,
+      "rel_diff_pct": -0.57803,
+      "n_neurons_diff": 11,
+      "bit_identical": false
+     }
+    },
+    "control_falsifiable": true
    }
   },
   "f_synchronous_firing": {
-   "status": "unavailable",
-   "note": "M9 抛错 / M11 正常；且逐类环槽残量与独立重算一致（≤2%）（本轮未运行）",
+   "status": "pass",
+   "note": "M9 抛错 / M11 正常；且逐类环槽残量与独立重算一致（≤2%）",
    "detail": {
-    "m9_raises": null,
-    "m11_ok": null,
-    "slot_check": null
+    "m9_raises": true,
+    "m11_ok": true,
+    "slot_check": {
+     "observed": {
+      "E": 11.0,
+      "PV": 23.0,
+      "SST": 37.0,
+      "VIP": 47.0
+     },
+     "expected": {
+      "E": 11.0,
+      "PV": 23.0,
+      "SST": 37.0,
+      "VIP": 47.0
+     },
+     "rel_diff": {
+      "E": 0.0,
+      "PV": 0.0,
+      "SST": 0.0,
+      "VIP": 0.0
+     },
+     "all_within_2pct": true,
+     "spk_counts": [
+      1,
+      1,
+      0,
+      0
+     ]
+    }
    }
   },
   "g_target_density": {
@@ -97,10 +167,63 @@
  },
  "extensions": {
   "off_state_equivalence": {
-   "status": "unavailable",
-   "note": "新机制全关 + REF_FROZEN ⇒ 与 M9/M10 逐位一致（单延迟档稀疏/密集）；三延迟档 FP 累加序差异已定位到单 ULP（本轮未运行）",
-   "detail": {},
-   "fp_order": null
+   "status": "fail",
+   "note": "新机制全关 + REF_FROZEN ⇒ 与 M9/M10 逐位一致（单延迟档稀疏/密集）；三延迟档 FP 累加序差异已定位到单 ULP",
+   "detail": {
+    "sparse_single_delay": {
+     "m10_spk": 2216,
+     "m11_frozen_spk": 2216,
+     "bit_identical": true,
+     "n_neurons_diff": 0,
+     "m9_available": false,
+     "m9_vs_m11_frozen_bit": null,
+     "m9_err": "IndexError(E-M9-2 已知缺陷)"
+    },
+    "dense_single_delay": {
+     "m10_spk": 5635,
+     "m11_frozen_spk": 5635,
+     "bit_identical": true,
+     "n_neurons_diff": 0,
+     "m9_available": false,
+     "m9_vs_m11_frozen_bit": null,
+     "m9_err": "IndexError(E-M9-2 已知缺陷)"
+    },
+    "sparse_three_bins": {
+     "m10_spk": 2201,
+     "m11_frozen_spk": 2205,
+     "bit_identical": false,
+     "n_neurons_diff": 89,
+     "m9_available": false,
+     "m9_vs_m11_frozen_bit": null,
+     "m9_err": "IndexError(E-M9-2 已知缺陷)"
+    },
+    "dense_three_bins": {
+     "m10_spk": 5639,
+     "m11_frozen_spk": 5670,
+     "bit_identical": false,
+     "n_neurons_diff": 95,
+     "m9_available": false,
+     "m9_vs_m11_frozen_bit": null,
+     "m9_err": "IndexError(E-M9-2 已知缺陷)"
+    },
+    "fix_vs_m10_gaba_frac0": {
+     "m10_gaba_spk": 3233,
+     "m11_fix_spk": 3233,
+     "bit_identical": true,
+     "note": "修正档 == M10 的 gaba 路径（frac_slow=0）⇒ 冻结件内部两条路径本身不一致（E-M9-4）"
+    },
+    "off_equiv_pass": false
+   },
+   "fp_order": {
+    "first_divergence": {
+     "step": 84,
+     "max_abs_dv_mV": 0.053333282470703125,
+     "ulp_float32_at_50mV": 5.9604644775390625e-06,
+     "spk_a": 0,
+     "spk_b": 0
+    },
+    "note": "单一共享环槽（M11）vs 每延迟一槽后求和（M10）：仅当两个延迟档的事件命中同一 (slot, post_off) 时浮点累加序不同 ⇒ 单 ULP 差异后混沌放大"
+   }
   },
   "slot_encoding_assertions": {
    "status": "unavailable",
