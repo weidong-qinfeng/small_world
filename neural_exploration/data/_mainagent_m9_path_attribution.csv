@@ -1,0 +1,3 @@
+arm,lam0,n_neurons,n_edge,pop_rate_hz,n_spikes,rate_median_hz,silent_frac,ms_per_step,m9_recorded_hz,rel_dev_vs_recorded,frac_steps_ge2_spikes,mean_spikes_per_step,wall_s
+A_frozen,0.0,139255,15091983,4.678288,651475,0.0,0.585372,12.1431,4.6783,-3e-06,1.0,32.5737,291.7
+B_patched,0.0,139255,15091983,3.522538,490531,0.0,0.762249,7.515,4.6783,-0.247047,1.0,24.5266,184.5

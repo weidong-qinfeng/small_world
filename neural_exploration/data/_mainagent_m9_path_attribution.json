@@ -1,0 +1,62 @@
+[
+ {
+  "arm": "A_frozen",
+  "lam0": 0.0,
+  "seed": 0,
+  "device": "mps",
+  "n_neurons": 139255,
+  "n_edge": 15091983,
+  "protocol": {
+   "T_MS": 1000.0,
+   "SETTLE_MS": 300.0,
+   "SEGMENT": 2000,
+   "g_ext": 19.23076923076923,
+   "entry": "AdultCircuit.run_resting"
+  },
+  "pop_rate_hz": 4.678288032745682,
+  "n_spikes": 651475,
+  "rate_mean_hz": 4.678288032745682,
+  "rate_median_hz": 0.0,
+  "silent_frac": 0.5853721589889053,
+  "ms_per_step": 12.143091081249999,
+  "m9_recorded_hz": 4.6783,
+  "rel_dev_vs_recorded": -2.5580348242265873e-06,
+  "bug_trigger": {
+   "frac_steps_ge2_spikes": 1.0,
+   "mean_spikes_per_step": 32.57375,
+   "p99_spikes_per_step": 49.0
+  },
+  "wall_s": 291.7,
+  "frozen_file_modified": false
+ },
+ {
+  "arm": "B_patched",
+  "lam0": 0.0,
+  "seed": 0,
+  "device": "mps",
+  "n_neurons": 139255,
+  "n_edge": 15091983,
+  "protocol": {
+   "T_MS": 1000.0,
+   "SETTLE_MS": 300.0,
+   "SEGMENT": 2000,
+   "g_ext": 19.23076923076923,
+   "entry": "AdultCircuit.run_resting"
+  },
+  "pop_rate_hz": 3.5225377903845465,
+  "n_spikes": 490531,
+  "rate_mean_hz": 3.5225377903845465,
+  "rate_median_hz": 0.0,
+  "silent_frac": 0.7622491113425012,
+  "ms_per_step": 7.51501994375,
+  "m9_recorded_hz": 4.6783,
+  "rel_dev_vs_recorded": -0.24704747656530227,
+  "bug_trigger": {
+   "frac_steps_ge2_spikes": 1.0,
+   "mean_spikes_per_step": 24.52655,
+   "p99_spikes_per_step": 38.0
+  },
+  "wall_s": 184.5,
+  "frozen_file_modified": false
+ }
+]

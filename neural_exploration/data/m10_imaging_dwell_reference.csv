@@ -1,0 +1,1278 @@
+# M10-B4 成像侧 dwell 基准（同口径复核）—— 长表；由 tools/build_m10_imaging_dwell_reference.py 生成；value 一律来自真实运行，未测项在 JSON meta.not_run 中登记
+key,value,unit,method,scope,source,note
+a_ref_Q_occupancy_low,0.5003172991496383,frac,Q,全记录(7879帧),ZAPBench 8192 神经元子集,Q 法 = 50% 分位二值化（模型侧现用法）
+a_ref_Q_occupancy_high,0.4996827008503617,frac,Q,全记录(7879帧),ZAPBench 8192 神经元子集,Q 法 = 50% 分位二值化（模型侧现用法）
+a_ref_Q_transition_rate,0.05819444444444445,Hz,Q,全记录(7879帧),ZAPBench 8192 神经元子集,Q 法 = 50% 分位二值化（模型侧现用法）
+a_ref_Q_n_switches,419.0,count,Q,全记录(7879帧),ZAPBench 8192 神经元子集,Q 法 = 50% 分位二值化（模型侧现用法）
+a_ref_Q_dwell_low_n_bouts,210.0,bouts,Q,全记录(7879帧),ZAPBench 8192 神经元子集,Q 法 = 50% 分位二值化（模型侧现用法）
+a_ref_Q_dwell_low_median,6.853661632186825,s,Q,全记录(7879帧),ZAPBench 8192 神经元子集,Q 法 = 50% 分位二值化（模型侧现用法）
+a_ref_Q_dwell_low_mean,17.15373597084474,s,Q,全记录(7879帧),ZAPBench 8192 神经元子集,Q 法 = 50% 分位二值化（模型侧现用法）
+a_ref_Q_dwell_low_p90,41.396116258408405,s,Q,全记录(7879帧),ZAPBench 8192 神经元子集,Q 法 = 50% 分位二值化（模型侧现用法）
+a_ref_Q_dwell_low_median_interior,6.396750856707704,s,Q,全记录(7879帧),ZAPBench 8192 神经元子集,Q 法 = 50% 分位二值化（模型侧现用法） | 仅完整 bout（去首尾截断）
+a_ref_Q_dwell_low_mean_interior,16.59744788247604,s,Q,全记录(7879帧),ZAPBench 8192 神经元子集,Q 法 = 50% 分位二值化（模型侧现用法） | 仅完整 bout（去首尾截断）
+a_ref_Q_dwell_high_n_bouts,210.0,bouts,Q,全记录(7879帧),ZAPBench 8192 神经元子集,Q 法 = 50% 分位二值化（模型侧现用法）
+a_ref_Q_dwell_high_median,6.396750856707704,s,Q,全记录(7879帧),ZAPBench 8192 神经元子集,Q 法 = 50% 分位二值化（模型侧现用法）
+a_ref_Q_dwell_high_mean,17.131978314869542,s,Q,全记录(7879帧),ZAPBench 8192 神经元子集,Q 法 = 50% 分位二值化（模型侧现用法）
+a_ref_Q_dwell_high_p90,36.64424419342555,s,Q,全记录(7879帧),ZAPBench 8192 神经元子集,Q 法 = 50% 分位二值化（模型侧现用法）
+a_ref_Q_dwell_high_median_interior,6.396750856707704,s,Q,全记录(7879帧),ZAPBench 8192 神经元子集,Q 法 = 50% 分位二值化（模型侧现用法） | 仅完整 bout（去首尾截断）
+a_ref_Q_dwell_high_mean_interior,15.635530460414728,s,Q,全记录(7879帧),ZAPBench 8192 神经元子集,Q 法 = 50% 分位二值化（模型侧现用法） | 仅完整 bout（去首尾截断）
+a_ref_H2_occupancy_low,0.6719126792740195,frac,H(K=2),全记录(7879帧),ZAPBench 8192 神经元子集,"H 法 = 参考实现 gaussian_hmm_2state(seed=0,n_iter=60)"
+a_ref_H2_occupancy_high,0.32808732072598046,frac,H(K=2),全记录(7879帧),ZAPBench 8192 神经元子集,"H 法 = 参考实现 gaussian_hmm_2state(seed=0,n_iter=60)"
+a_ref_H2_transition_rate,0.019583333333333335,Hz,H(K=2),全记录(7879帧),ZAPBench 8192 神经元子集,"H 法 = 参考实现 gaussian_hmm_2state(seed=0,n_iter=60)"
+a_ref_H2_n_switches,141.0,count,H(K=2),全记录(7879帧),ZAPBench 8192 神经元子集,"H 法 = 参考实现 gaussian_hmm_2state(seed=0,n_iter=60)"
+a_ref_H2_dwell_low_n_bouts,71.0,bouts,H(K=2),全记录(7879帧),ZAPBench 8192 神经元子集,"H 法 = 参考实现 gaussian_hmm_2state(seed=0,n_iter=60)"
+a_ref_H2_dwell_low_median,26.50082497778906,s,H(K=2),全记录(7879帧),ZAPBench 8192 神经元子集,"H 法 = 参考实现 gaussian_hmm_2state(seed=0,n_iter=60)"
+a_ref_H2_dwell_low_mean,68.13762381370339,s,H(K=2),全记录(7879帧),ZAPBench 8192 神经元子集,"H 法 = 参考实现 gaussian_hmm_2state(seed=0,n_iter=60)"
+a_ref_H2_dwell_low_p90,196.47163345602232,s,H(K=2),全记录(7879帧),ZAPBench 8192 神经元子集,"H 法 = 参考实现 gaussian_hmm_2state(seed=0,n_iter=60)"
+a_ref_H2_dwell_low_median_interior,26.043914202309935,s,H(K=2),全记录(7879帧),ZAPBench 8192 神经元子集,"H 法 = 参考实现 gaussian_hmm_2state(seed=0,n_iter=60) | 仅完整 bout（去首尾截断）"
+a_ref_H2_dwell_low_mean_interior,67.20504777618625,s,H(K=2),全记录(7879帧),ZAPBench 8192 神经元子集,"H 法 = 参考实现 gaussian_hmm_2state(seed=0,n_iter=60) | 仅完整 bout（去首尾截断）"
+a_ref_H2_dwell_high_n_bouts,71.0,bouts,H(K=2),全记录(7879帧),ZAPBench 8192 神经元子集,"H 法 = 参考实现 gaussian_hmm_2state(seed=0,n_iter=60)"
+a_ref_H2_dwell_high_median,21.017895672039597,s,H(K=2),全记录(7879帧),ZAPBench 8192 神经元子集,"H 法 = 参考实现 gaussian_hmm_2state(seed=0,n_iter=60)"
+a_ref_H2_dwell_high_mean,33.27082689052196,s,H(K=2),全记录(7879帧),ZAPBench 8192 神经元子集,"H 法 = 参考实现 gaussian_hmm_2state(seed=0,n_iter=60)"
+a_ref_H2_dwell_high_p90,53.00164995557812,s,H(K=2),全记录(7879帧),ZAPBench 8192 神经元子集,"H 法 = 参考实现 gaussian_hmm_2state(seed=0,n_iter=60)"
+a_ref_H2_dwell_high_median_interior,21.017895672039597,s,H(K=2),全记录(7879帧),ZAPBench 8192 神经元子集,"H 法 = 参考实现 gaussian_hmm_2state(seed=0,n_iter=60) | 仅完整 bout（去首尾截断）"
+a_ref_H2_dwell_high_mean_interior,29.75141878048338,s,H(K=2),全记录(7879帧),ZAPBench 8192 神经元子集,"H 法 = 参考实现 gaussian_hmm_2state(seed=0,n_iter=60) | 仅完整 bout（去首尾截断）"
+a_ratio_low_dwell_median_H_over_Q,3.8666666666666667,x,Q vs H,全记录(7879帧),本工具 A 项,口径差标定量（同数据、同序列）
+a_ratio_low_dwell_median_interior_H_over_Q,4.071428571428571,x,Q vs H,全记录(7879帧),本工具 A 项,口径差标定量（同数据、同序列）
+a_ratio_low_dwell_mean_H_over_Q,3.972173987609064,x,Q vs H,全记录(7879帧),本工具 A 项,口径差标定量（同数据、同序列）
+a_ratio_low_dwell_p90_H_over_Q,4.746136865342166,x,Q vs H,全记录(7879帧),本工具 A 项,口径差标定量（同数据、同序列）
+a_ratio_transition_Q_over_H,2.971631205673759,x,Q vs H,全记录(7879帧),本工具 A 项,口径差标定量（同数据、同序列）
+a_ratio_low_dwell_median_H_over_Q_worst_case,4.142857142857143,x,Q vs H,全记录(7879帧),本工具 A 项,口径差标定量（同数据、同序列）
+a_ratio_low_dwell_median_H_over_Q_best_case,3.8,x,Q vs H,全记录(7879帧),本工具 A 项,口径差标定量（同数据、同序列）
+b_w1_nosm_Q_occupancy_low,0.5065363624825485,frac,Q,w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_nosm_Q_occupancy_high,0.4934636375174514,frac,Q,w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_nosm_Q_transition_rate,0.19819444444444448,Hz,Q,w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_nosm_Q_n_switches,1427.0,count,Q,w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_nosm_Q_dwell_low_n_bouts,714.0,bouts,Q,w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_nosm_Q_dwell_low_median,1.8276431019164867,s,Q,w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_nosm_Q_dwell_low_mean,5.107929705706371,s,Q,w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_nosm_Q_dwell_low_p90,12.793501713415408,s,Q,w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_nosm_Q_dwell_low_median_interior,1.8276431019164867,s,Q,w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w1_nosm_Q_dwell_low_mean_interior,4.926690100818355,s,Q,w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w1_nosm_Q_dwell_high_n_bouts,714.0,bouts,Q,w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_nosm_Q_dwell_high_median,1.8276431019164867,s,Q,w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_nosm_Q_dwell_high_mean,4.976103907739006,s,Q,w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_nosm_Q_dwell_high_p90,8.22439395862419,s,Q,w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_nosm_Q_dwell_high_median_interior,1.8276431019164867,s,Q,w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w1_nosm_Q_dwell_high_mean_interior,4.661387069894995,s,Q,w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w1_nosm_H2_occupancy_low,0.6975504505647925,frac,H(K=2),w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_nosm_H2_occupancy_high,0.3024495494352075,frac,H(K=2),w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_nosm_H2_transition_rate,0.03291666666666667,Hz,H(K=2),w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_nosm_H2_n_switches,237.0,count,H(K=2),w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_nosm_H2_dwell_low_n_bouts,119.0,bouts,H(K=2),w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_nosm_H2_dwell_low_median,23.759360324914326,s,H(K=2),w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_nosm_H2_dwell_low_mean,42.204733143416014,s,H(K=2),w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_nosm_H2_dwell_low_p90,95.58573423023235,s,H(K=2),w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_nosm_H2_dwell_low_median_interior,23.302449549435206,s,H(K=2),w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w1_nosm_H2_dwell_low_mean_interior,41.41625130953123,s,H(K=2),w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w1_nosm_H2_dwell_high_n_bouts,119.0,bouts,H(K=2),w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_nosm_H2_dwell_high_median,6.396750856707704,s,H(K=2),w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_nosm_H2_dwell_high_mean,18.299468537256253,s,H(K=2),w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_nosm_H2_dwell_high_p90,35.63904048737149,s,H(K=2),w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_nosm_H2_dwell_high_median_interior,5.939840081228581,s,H(K=2),w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w1_nosm_H2_dwell_high_mean_interior,16.108040898247,s,H(K=2),w=1帧(0.91s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w1_nosm_H_over_Q_low_dwell_median,13.0,x,Q vs H,w=1帧(0.91s)/nosm,本工具 B 项,口径差随箱宽
+b_w1_sm46_Q_occupancy_low,0.5003172991496383,frac,Q,w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_sm46_Q_occupancy_high,0.4996827008503617,frac,Q,w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_sm46_Q_transition_rate,0.05819444444444445,Hz,Q,w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_sm46_Q_n_switches,419.0,count,Q,w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_sm46_Q_dwell_low_n_bouts,210.0,bouts,Q,w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_sm46_Q_dwell_low_median,6.853661632186825,s,Q,w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_sm46_Q_dwell_low_mean,17.15373597084474,s,Q,w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_sm46_Q_dwell_low_p90,41.396116258408405,s,Q,w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_sm46_Q_dwell_low_median_interior,6.396750856707704,s,Q,w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w1_sm46_Q_dwell_low_mean_interior,16.59744788247604,s,Q,w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w1_sm46_Q_dwell_high_n_bouts,210.0,bouts,Q,w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_sm46_Q_dwell_high_median,6.396750856707704,s,Q,w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_sm46_Q_dwell_high_mean,17.131978314869542,s,Q,w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_sm46_Q_dwell_high_p90,36.64424419342555,s,Q,w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_sm46_Q_dwell_high_median_interior,6.396750856707704,s,Q,w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w1_sm46_Q_dwell_high_mean_interior,15.635530460414728,s,Q,w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w1_sm46_H2_occupancy_low,0.6719126792740195,frac,H(K=2),w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_sm46_H2_occupancy_high,0.32808732072598046,frac,H(K=2),w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_sm46_H2_transition_rate,0.019583333333333335,Hz,H(K=2),w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_sm46_H2_n_switches,141.0,count,H(K=2),w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_sm46_H2_dwell_low_n_bouts,71.0,bouts,H(K=2),w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_sm46_H2_dwell_low_median,26.50082497778906,s,H(K=2),w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_sm46_H2_dwell_low_mean,68.13762381370339,s,H(K=2),w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_sm46_H2_dwell_low_p90,196.47163345602232,s,H(K=2),w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_sm46_H2_dwell_low_median_interior,26.043914202309935,s,H(K=2),w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w1_sm46_H2_dwell_low_mean_interior,67.20504777618625,s,H(K=2),w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w1_sm46_H2_dwell_high_n_bouts,71.0,bouts,H(K=2),w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_sm46_H2_dwell_high_median,21.017895672039597,s,H(K=2),w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_sm46_H2_dwell_high_mean,33.27082689052196,s,H(K=2),w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_sm46_H2_dwell_high_p90,53.00164995557812,s,H(K=2),w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w1_sm46_H2_dwell_high_median_interior,21.017895672039597,s,H(K=2),w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w1_sm46_H2_dwell_high_mean_interior,29.75141878048338,s,H(K=2),w=1帧(0.91s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w1_sm46_H_over_Q_low_dwell_median,3.8666666666666667,x,Q vs H,w=1帧(0.91s)/sm46,本工具 B 项,口径差随箱宽
+b_w2_nosm_Q_occupancy_low,0.5026656511805027,frac,Q,w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_nosm_Q_occupancy_high,0.49733434881949734,frac,Q,w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_nosm_Q_transition_rate,0.08820563947420385,Hz,Q,w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_nosm_Q_n_switches,635.0,count,Q,w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_nosm_Q_dwell_low_n_bouts,318.0,bouts,Q,w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_nosm_Q_dwell_low_median,5.48292930574946,s,Q,w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_nosm_Q_dwell_low_mean,11.379664596838502,s,Q,w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_nosm_Q_dwell_low_p90,26.13529635740578,s,Q,w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_nosm_Q_dwell_low_median_interior,5.48292930574946,s,Q,w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w2_nosm_Q_dwell_low_mean_interior,10.994685789762586,s,Q,w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w2_nosm_Q_dwell_high_n_bouts,318.0,bouts,Q,w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_nosm_Q_dwell_high_median,3.6552862038329734,s,Q,w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_nosm_Q_dwell_high_mean,11.25897118444779,s,Q,w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_nosm_Q_dwell_high_p90,28.511232389897234,s,Q,w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_nosm_Q_dwell_high_median_interior,3.6552862038329734,s,Q,w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w2_nosm_Q_dwell_high_mean_interior,10.400845917531047,s,Q,w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w2_nosm_H2_occupancy_low,0.6915460776846916,frac,H(K=2),w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_nosm_H2_occupancy_high,0.30845392231530844,frac,H(K=2),w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_nosm_H2_transition_rate,0.021252697385123132,Hz,H(K=2),w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_nosm_H2_n_switches,153.0,count,H(K=2),w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_nosm_H2_dwell_low_n_bouts,77.0,bouts,H(K=2),w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_nosm_H2_dwell_low_median,27.4146465287473,s,H(K=2),w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_nosm_H2_dwell_low_mean,64.65584168338324,s,H(K=2),w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_nosm_H2_dwell_low_p90,159.00494986673445,s,H(K=2),w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_nosm_H2_dwell_low_median_interior,26.50082497778906,s,H(K=2),w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w2_nosm_H2_dwell_low_mean_interior,63.751077147113236,s,H(K=2),w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w2_nosm_H2_dwell_high_n_bouts,77.0,bouts,H(K=2),w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_nosm_H2_dwell_high_median,14.621144815331894,s,H(K=2),w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_nosm_H2_dwell_high_mean,28.838784010760147,s,H(K=2),w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_nosm_H2_dwell_high_p90,50.07742099251175,s,H(K=2),w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_nosm_H2_dwell_high_median_interior,14.621144815331894,s,H(K=2),w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w2_nosm_H2_dwell_high_mean_interior,25.56295549127928,s,H(K=2),w=2帧(1.83s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w2_nosm_H_over_Q_low_dwell_median,5.0,x,Q vs H,w=2帧(1.83s)/nosm,本工具 B 项,口径差随箱宽
+b_w2_sm46_Q_occupancy_low,0.5013962934755014,frac,Q,w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_sm46_Q_occupancy_high,0.4986037065244986,frac,Q,w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_sm46_Q_transition_rate,0.05597932709937661,Hz,Q,w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_sm46_Q_n_switches,403.0,count,Q,w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_sm46_Q_dwell_low_n_bouts,202.0,bouts,Q,w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_sm46_Q_dwell_low_median,7.310572407665947,s,Q,w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_sm46_Q_dwell_low_mean,17.869282803391393,s,Q,w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_sm46_Q_dwell_low_p90,43.68067013580404,s,Q,w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_sm46_Q_dwell_low_median_interior,7.310572407665947,s,Q,w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w2_sm46_Q_dwell_low_mean_interior,17.303506581826237,s,Q,w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w2_sm46_Q_dwell_high_n_bouts,202.0,bouts,Q,w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_sm46_Q_dwell_high_median,6.396750856707704,s,Q,w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_sm46_Q_dwell_high_mean,17.7697576839801,s,Q,w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_sm46_Q_dwell_high_p90,36.552862038329735,s,Q,w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_sm46_Q_dwell_high_median_interior,5.48292930574946,s,Q,w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w2_sm46_Q_dwell_high_mean_interior,16.212376371726844,s,Q,w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w2_sm46_H2_occupancy_low,0.6778370144706778,frac,H(K=2),w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_sm46_H2_occupancy_high,0.32216298552932215,frac,H(K=2),w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_sm46_H2_transition_rate,0.017918940932554795,Hz,H(K=2),w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_sm46_H2_n_switches,129.0,count,H(K=2),w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_sm46_H2_dwell_low_n_bouts,65.0,bouts,H(K=2),w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_sm46_H2_dwell_low_median,27.4146465287473,s,H(K=2),w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_sm46_H2_dwell_low_mean,75.07395510949262,s,H(K=2),w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_sm46_H2_dwell_low_p90,228.4553877395609,s,H(K=2),w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_sm46_H2_dwell_low_median_interior,26.50082497778906,s,H(K=2),w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w2_sm46_H2_dwell_low_mean_interior,74.19088716842238,s,H(K=2),w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w2_sm46_H2_dwell_high_n_bouts,65.0,bouts,H(K=2),w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_sm46_H2_dwell_high_median,23.759360324914326,s,H(K=2),w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_sm46_H2_dwell_high_mean,35.68121686664649,s,H(K=2),w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_sm46_H2_dwell_high_p90,55.194821677877904,s,H(K=2),w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w2_sm46_H2_dwell_high_median_interior,22.845538773956083,s,H(K=2),w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w2_sm46_H2_dwell_high_mean_interior,31.840969666201293,s,H(K=2),w=2帧(1.83s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w2_sm46_H_over_Q_low_dwell_median,3.75,x,Q vs H,w=2帧(1.83s)/sm46,本工具 B 项,口径差随箱宽
+b_w4_nosm_Q_occupancy_low,0.5017775520568817,frac,Q,w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_nosm_Q_occupancy_high,0.4982224479431183,frac,Q,w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_nosm_Q_transition_rate,0.04376666455053327,Hz,Q,w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_nosm_Q_n_switches,315.0,count,Q,w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_nosm_Q_dwell_low_n_bouts,158.0,bouts,Q,w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_nosm_Q_dwell_low_median,10.96585861149892,s,Q,w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_nosm_Q_dwell_low_mean,22.857106135360617,s,Q,w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_nosm_Q_dwell_low_p90,54.8292930574946,s,Q,w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_nosm_Q_dwell_low_median_interior,10.96585861149892,s,Q,w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w4_nosm_Q_dwell_low_mean_interior,22.164538000312046,s,Q,w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w4_nosm_Q_dwell_high_n_bouts,158.0,bouts,Q,w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_nosm_Q_dwell_high_median,7.310572407665947,s,Q,w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_nosm_Q_dwell_high_mean,22.695163075697135,s,Q,w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_nosm_Q_dwell_high_p90,41.30473410331264,s,Q,w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_nosm_Q_dwell_high_median_interior,7.310572407665947,s,Q,w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w4_nosm_Q_dwell_high_mean_interior,20.74433125869541,s,Q,w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w4_nosm_H2_occupancy_low,0.6876587100050787,frac,H(K=2),w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_nosm_H2_occupancy_high,0.3123412899949213,frac,H(K=2),w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_nosm_H2_transition_rate,0.012643703092376278,Hz,H(K=2),w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_nosm_H2_n_switches,91.0,count,H(K=2),w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_nosm_H2_dwell_low_n_bouts,46.0,bouts,H(K=2),w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_nosm_H2_dwell_low_median,25.587003426830815,s,H(K=2),w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_nosm_H2_dwell_low_mean,107.59255478238796,s,H(K=2),w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_nosm_H2_dwell_low_p90,274.146465287473,s,H(K=2),w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_nosm_H2_dwell_low_median_interior,25.587003426830815,s,H(K=2),w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w4_nosm_H2_dwell_low_mean_interior,107.05927148115242,s,H(K=2),w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w4_nosm_H2_dwell_high_n_bouts,46.0,bouts,H(K=2),w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_nosm_H2_dwell_high_median,29.242289630663787,s,H(K=2),w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_nosm_H2_dwell_high_mean,48.86958729037563,s,H(K=2),w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_nosm_H2_dwell_high_p90,109.6585861149892,s,H(K=2),w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_nosm_H2_dwell_high_median_interior,29.242289630663787,s,H(K=2),w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w4_nosm_H2_dwell_high_mean_interior,43.78220586368828,s,H(K=2),w=4帧(3.66s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w4_nosm_H_over_Q_low_dwell_median,2.3333333333333335,x,Q vs H,w=4帧(3.66s)/nosm,本工具 B 项,口径差随箱宽
+b_w4_sm46_Q_occupancy_low,0.5017775520568817,frac,Q,w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_sm46_Q_occupancy_high,0.4982224479431183,frac,Q,w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_sm46_Q_transition_rate,0.04376666455053327,Hz,Q,w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_sm46_Q_n_switches,315.0,count,Q,w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_sm46_Q_dwell_low_n_bouts,158.0,bouts,Q,w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_sm46_Q_dwell_low_median,10.96585861149892,s,Q,w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_sm46_Q_dwell_low_mean,22.857106135360617,s,Q,w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_sm46_Q_dwell_low_p90,54.8292930574946,s,Q,w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_sm46_Q_dwell_low_median_interior,10.96585861149892,s,Q,w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w4_sm46_Q_dwell_low_mean_interior,22.164538000312046,s,Q,w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w4_sm46_Q_dwell_high_n_bouts,158.0,bouts,Q,w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_sm46_Q_dwell_high_median,7.310572407665947,s,Q,w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_sm46_Q_dwell_high_mean,22.695163075697135,s,Q,w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_sm46_Q_dwell_high_p90,41.30473410331264,s,Q,w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_sm46_Q_dwell_high_median_interior,7.310572407665947,s,Q,w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w4_sm46_Q_dwell_high_mean_interior,20.74433125869541,s,Q,w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w4_sm46_H2_occupancy_low,0.6876587100050787,frac,H(K=2),w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_sm46_H2_occupancy_high,0.3123412899949213,frac,H(K=2),w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_sm46_H2_transition_rate,0.012643703092376278,Hz,H(K=2),w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_sm46_H2_n_switches,91.0,count,H(K=2),w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_sm46_H2_dwell_low_n_bouts,46.0,bouts,H(K=2),w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_sm46_H2_dwell_low_median,25.587003426830815,s,H(K=2),w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_sm46_H2_dwell_low_mean,107.59255478238796,s,H(K=2),w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_sm46_H2_dwell_low_p90,274.146465287473,s,H(K=2),w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_sm46_H2_dwell_low_median_interior,25.587003426830815,s,H(K=2),w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w4_sm46_H2_dwell_low_mean_interior,107.05927148115242,s,H(K=2),w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w4_sm46_H2_dwell_high_n_bouts,46.0,bouts,H(K=2),w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_sm46_H2_dwell_high_median,29.242289630663787,s,H(K=2),w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_sm46_H2_dwell_high_mean,48.86958729037563,s,H(K=2),w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_sm46_H2_dwell_high_p90,109.6585861149892,s,H(K=2),w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w4_sm46_H2_dwell_high_median_interior,29.242289630663787,s,H(K=2),w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w4_sm46_H2_dwell_high_mean_interior,43.78220586368828,s,H(K=2),w=4帧(3.66s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w4_sm46_H_over_Q_low_dwell_median,2.3333333333333335,x,Q vs H,w=4帧(3.66s)/sm46,本工具 B 项,口径差随箱宽
+b_w8_nosm_Q_occupancy_low,0.5,frac,Q,w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_nosm_Q_occupancy_high,0.5,frac,Q,w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_nosm_Q_transition_rate,0.026551367011065946,Hz,Q,w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_nosm_Q_n_switches,191.0,count,Q,w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_nosm_Q_dwell_low_n_bouts,96.0,bouts,Q,w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_nosm_Q_dwell_low_median,21.93171722299784,s,Q,w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_nosm_Q_dwell_low_mean,37.466683589287975,s,Q,w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_nosm_Q_dwell_low_p90,87.72686889199136,s,Q,w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_nosm_Q_dwell_low_median_interior,21.93171722299784,s,Q,w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w8_nosm_Q_dwell_low_mean_interior,36.552862038329735,s,Q,w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w8_nosm_Q_dwell_high_n_bouts,96.0,bouts,Q,w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_nosm_Q_dwell_high_median,14.621144815331894,s,Q,w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_nosm_Q_dwell_high_mean,37.466683589287975,s,Q,w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_nosm_Q_dwell_high_p90,65.79515166899353,s,Q,w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_nosm_Q_dwell_high_median_interior,14.621144815331894,s,Q,w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w8_nosm_Q_dwell_high_mean_interior,34.3981670129124,s,Q,w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w8_nosm_H2_occupancy_low,0.6422764227642277,frac,H(K=2),w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_nosm_H2_occupancy_high,0.35772357723577236,frac,H(K=2),w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_nosm_H2_transition_rate,0.007089632029132792,Hz,H(K=2),w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_nosm_H2_n_switches,51.0,count,H(K=2),w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_nosm_H2_dwell_low_n_bouts,26.0,bouts,H(K=2),w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_nosm_H2_dwell_low_median,36.552862038329735,s,H(K=2),w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_nosm_H2_dwell_low_mean,177.70314467864915,s,H(K=2),w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_nosm_H2_dwell_low_p90,497.1189237212844,s,H(K=2),w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_nosm_H2_dwell_low_median_interior,36.552862038329735,s,H(K=2),w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w8_nosm_H2_dwell_low_mean_interior,169.60527985784995,s,H(K=2),w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w8_nosm_H2_dwell_high_n_bouts,26.0,bouts,H(K=2),w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_nosm_H2_dwell_high_median,40.20814824216271,s,H(K=2),w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_nosm_H2_dwell_high_mean,98.9739033653236,s,H(K=2),w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_nosm_H2_dwell_high_p90,241.24888945297624,s,H(K=2),w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_nosm_H2_dwell_high_median_interior,36.552862038329735,s,H(K=2),w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w8_nosm_H2_dwell_high_mean_interior,89.77382916613782,s,H(K=2),w=8帧(7.31s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w8_nosm_H_over_Q_low_dwell_median,1.6666666666666667,x,Q vs H,w=8帧(7.31s)/nosm,本工具 B 项,口径差随箱宽
+b_w8_sm46_Q_occupancy_low,0.5,frac,Q,w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_sm46_Q_occupancy_high,0.5,frac,Q,w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_sm46_Q_transition_rate,0.026551367011065946,Hz,Q,w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_sm46_Q_n_switches,191.0,count,Q,w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_sm46_Q_dwell_low_n_bouts,96.0,bouts,Q,w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_sm46_Q_dwell_low_median,21.93171722299784,s,Q,w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_sm46_Q_dwell_low_mean,37.466683589287975,s,Q,w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_sm46_Q_dwell_low_p90,87.72686889199136,s,Q,w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_sm46_Q_dwell_low_median_interior,21.93171722299784,s,Q,w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w8_sm46_Q_dwell_low_mean_interior,36.552862038329735,s,Q,w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w8_sm46_Q_dwell_high_n_bouts,96.0,bouts,Q,w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_sm46_Q_dwell_high_median,14.621144815331894,s,Q,w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_sm46_Q_dwell_high_mean,37.466683589287975,s,Q,w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_sm46_Q_dwell_high_p90,65.79515166899353,s,Q,w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_sm46_Q_dwell_high_median_interior,14.621144815331894,s,Q,w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w8_sm46_Q_dwell_high_mean_interior,34.3981670129124,s,Q,w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w8_sm46_H2_occupancy_low,0.6422764227642277,frac,H(K=2),w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_sm46_H2_occupancy_high,0.35772357723577236,frac,H(K=2),w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_sm46_H2_transition_rate,0.007089632029132792,Hz,H(K=2),w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_sm46_H2_n_switches,51.0,count,H(K=2),w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_sm46_H2_dwell_low_n_bouts,26.0,bouts,H(K=2),w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_sm46_H2_dwell_low_median,36.552862038329735,s,H(K=2),w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_sm46_H2_dwell_low_mean,177.70314467864915,s,H(K=2),w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_sm46_H2_dwell_low_p90,497.1189237212844,s,H(K=2),w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_sm46_H2_dwell_low_median_interior,36.552862038329735,s,H(K=2),w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w8_sm46_H2_dwell_low_mean_interior,169.60527985784995,s,H(K=2),w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w8_sm46_H2_dwell_high_n_bouts,26.0,bouts,H(K=2),w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_sm46_H2_dwell_high_median,40.20814824216271,s,H(K=2),w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_sm46_H2_dwell_high_mean,98.9739033653236,s,H(K=2),w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_sm46_H2_dwell_high_p90,241.24888945297624,s,H(K=2),w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w8_sm46_H2_dwell_high_median_interior,36.552862038329735,s,H(K=2),w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w8_sm46_H2_dwell_high_mean_interior,89.77382916613782,s,H(K=2),w=8帧(7.31s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w8_sm46_H_over_Q_low_dwell_median,1.6666666666666667,x,Q vs H,w=8帧(7.31s)/sm46,本工具 B 项,口径差随箱宽
+b_w16_nosm_Q_occupancy_low,0.5,frac,Q,w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_nosm_Q_occupancy_high,0.5,frac,Q,w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_nosm_Q_transition_rate,0.015152350807362241,Hz,Q,w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_nosm_Q_n_switches,109.0,count,Q,w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_nosm_Q_dwell_low_n_bouts,55.0,bouts,Q,w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_nosm_Q_dwell_low_median,43.86343444599568,s,Q,w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_nosm_Q_dwell_low_mean,65.39639317402992,s,Q,w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_nosm_Q_dwell_low_p90,154.9841350425181,s,Q,w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_nosm_Q_dwell_low_median_interior,36.552862038329735,s,Q,w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w16_nosm_Q_dwell_low_mean_interior,64.4413419638702,s,Q,w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w16_nosm_Q_dwell_high_n_bouts,55.0,bouts,Q,w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_nosm_Q_dwell_high_median,29.242289630663787,s,Q,w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_nosm_Q_dwell_high_mean,65.39639317402992,s,Q,w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_nosm_Q_dwell_high_p90,192.99911156238105,s,Q,w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_nosm_Q_dwell_high_median_interior,21.93171722299784,s,Q,w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w16_nosm_Q_dwell_high_mean_interior,60.37991284850023,s,Q,w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w16_nosm_H2_occupancy_low,0.5833333333333334,frac,H(K=2),w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_nosm_H2_occupancy_high,0.4166666666666667,frac,H(K=2),w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_nosm_H2_transition_rate,0.0023632106763775973,Hz,H(K=2),w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_nosm_H2_n_switches,17.0,count,H(K=2),w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_nosm_H2_dwell_low_n_bouts,9.0,bouts,H(K=2),w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_nosm_H2_dwell_low_median,438.6343444599568,s,H(K=2),w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_nosm_H2_dwell_low_mean,466.25206244447264,s,H(K=2),w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_nosm_H2_dwell_low_p90,839.2537124000509,s,H(K=2),w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_nosm_H2_dwell_low_median_interior,314.35461352963574,s,H(K=2),w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w16_nosm_H2_dwell_low_mean_interior,469.70427719253706,s,H(K=2),w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w16_nosm_H2_dwell_high_n_bouts,9.0,bouts,H(K=2),w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_nosm_H2_dwell_high_median,116.96915852265515,s,H(K=2),w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_nosm_H2_dwell_high_mean,333.0371874603376,s,H(K=2),w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_nosm_H2_dwell_high_p90,810.011422769387,s,H(K=2),w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_nosm_H2_dwell_high_median_interior,109.6585861149892,s,H(K=2),w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w16_nosm_H2_dwell_high_mean_interior,297.90582561238733,s,H(K=2),w=16帧(14.62s)/nosm,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w16_nosm_H_over_Q_low_dwell_median,10.0,x,Q vs H,w=16帧(14.62s)/nosm,本工具 B 项,口径差随箱宽
+b_w16_sm46_Q_occupancy_low,0.5,frac,Q,w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_sm46_Q_occupancy_high,0.5,frac,Q,w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_sm46_Q_transition_rate,0.015152350807362241,Hz,Q,w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_sm46_Q_n_switches,109.0,count,Q,w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_sm46_Q_dwell_low_n_bouts,55.0,bouts,Q,w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_sm46_Q_dwell_low_median,43.86343444599568,s,Q,w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_sm46_Q_dwell_low_mean,65.39639317402992,s,Q,w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_sm46_Q_dwell_low_p90,154.9841350425181,s,Q,w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_sm46_Q_dwell_low_median_interior,36.552862038329735,s,Q,w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w16_sm46_Q_dwell_low_mean_interior,64.4413419638702,s,Q,w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w16_sm46_Q_dwell_high_n_bouts,55.0,bouts,Q,w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_sm46_Q_dwell_high_median,29.242289630663787,s,Q,w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_sm46_Q_dwell_high_mean,65.39639317402992,s,Q,w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_sm46_Q_dwell_high_p90,192.99911156238105,s,Q,w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_sm46_Q_dwell_high_median_interior,21.93171722299784,s,Q,w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w16_sm46_Q_dwell_high_mean_interior,60.37991284850023,s,Q,w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w16_sm46_H2_occupancy_low,0.5833333333333334,frac,H(K=2),w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_sm46_H2_occupancy_high,0.4166666666666667,frac,H(K=2),w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_sm46_H2_transition_rate,0.0023632106763775973,Hz,H(K=2),w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_sm46_H2_n_switches,17.0,count,H(K=2),w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_sm46_H2_dwell_low_n_bouts,9.0,bouts,H(K=2),w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_sm46_H2_dwell_low_median,438.6343444599568,s,H(K=2),w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_sm46_H2_dwell_low_mean,466.25206244447264,s,H(K=2),w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_sm46_H2_dwell_low_p90,839.2537124000509,s,H(K=2),w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_sm46_H2_dwell_low_median_interior,314.35461352963574,s,H(K=2),w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w16_sm46_H2_dwell_low_mean_interior,469.70427719253706,s,H(K=2),w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w16_sm46_H2_dwell_high_n_bouts,9.0,bouts,H(K=2),w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_sm46_H2_dwell_high_median,116.96915852265515,s,H(K=2),w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_sm46_H2_dwell_high_mean,333.0371874603376,s,H(K=2),w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_sm46_H2_dwell_high_p90,810.011422769387,s,H(K=2),w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性
+b_w16_sm46_H2_dwell_high_median_interior,109.6585861149892,s,H(K=2),w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w16_sm46_H2_dwell_high_mean_interior,297.90582561238733,s,H(K=2),w=16帧(14.62s)/sm46,ZAPBench 8192 神经元子集,B 项箱宽敏感性 | 仅完整 bout（去首尾截断）
+b_w16_sm46_H_over_Q_low_dwell_median,10.0,x,Q vs H,w=16帧(14.62s)/sm46,本工具 B 项,口径差随箱宽
+b_w16_over_w1_nosm_Q_low_median,24.0,x,Q,w16/w1/nosm,本工具 B 项,Q 法 dwell 随箱宽的放大倍数
+b_w16_over_w1_nosm_H_low_median,18.461538461538463,x,H(K=2),w16/w1/nosm,本工具 B 项,H 法 dwell 随箱宽的放大倍数
+b_w16_over_w1_sm46_Q_low_median,6.3999999999999995,x,Q,w16/w1/sm46,本工具 B 项,Q 法 dwell 随箱宽的放大倍数
+b_w16_over_w1_sm46_H_low_median,16.551724137931036,x,H(K=2),w16/w1/sm46,本工具 B 项,H 法 dwell 随箱宽的放大倍数
+c_K1_loglik,-11179.816703119504,nats,H(K=1),全记录(7879帧),本工具 C 项,最终参数下的对数似然（与 BIC 同口径）
+c_K1_BIC,22377.5773187815,,H(K=1),全记录(7879帧),本工具 C 项,p=2 自由参数
+c_K1_delta_BIC,20438.404008477104,,H(K=1),全记录(7879帧),本工具 C 项,相对 BIC 最优 K 的差
+c_K1_test_ll_per_frame,-1.3841200924362664,nats/frame,H(K=1),留出后20%,本工具 C 项,前 80% 训练
+c_K2_loglik,-3754.0113498705055,nats,H(K=2),全记录(7879帧),本工具 C 项,最终参数下的对数似然（与 BIC 同口径）
+c_K2_BIC,7570.826393639731,,H(K=2),全记录(7879帧),本工具 C 项,p=7 自由参数
+c_K2_delta_BIC,5631.653083335335,,H(K=2),全记录(7879帧),本工具 C 项,相对 BIC 最优 K 的差
+c_K2_test_ll_per_frame,-0.6781796666272029,nats/frame,H(K=2),留出后20%,本工具 C 项,前 80% 训练
+c_K3_loglik,-906.7829612534777,nats,H(K=3),全记录(7879帧),本工具 C 项,最终参数下的对数似然（与 BIC 同口径）
+c_K3_BIC,1939.1733103043948,,H(K=3),全记录(7879帧),本工具 C 项,p=14 自由参数
+c_K3_delta_BIC,0.0,,H(K=3),全记录(7879帧),本工具 C 项,相对 BIC 最优 K 的差
+c_K3_test_ll_per_frame,-0.3394618827417099,nats/frame,H(K=3),留出后20%,本工具 C 项,前 80% 训练
+c_best_by_bic,3.0,K,BIC,全记录(7879帧),本工具 C 项,
+c_best_by_cv,3.0,K,CV 留出似然,留出后20%,本工具 C 项,
+d_low_dwell_n_bouts,71.0,bouts,H(K=2),全记录,本工具 D 项,
+d_low_dwell_median,26.50082497778906,s,H(K=2),全记录,本工具 D 项,
+d_low_dwell_mean,68.13762381370339,s,H(K=2),全记录,本工具 D 项,
+d_low_dwell_p90,196.47163345602232,s,H(K=2),全记录,本工具 D 项,
+d_low_dwell_implied_geometric,65.69135757204846,s,H(K=2),全记录,本工具 D 项,1/(1-A00)·dt：HMM 自洽性核对
+d_ks_exponential_p,0.0016182261005191708,p,H(K=2),全记录,本工具 D 项,D=0.2204
+d_ks_geometric_A_p,0.003763084560678086,p,H(K=2),全记录,本工具 D 项,D=0.2070（p=1-A00）
+d_survival_log_r2,0.9545765350461104,,H(K=2),全记录,本工具 D 项,log 生存曲线直线性 → 指数/几何假设
+e_gain_Q_occupancy_low,0.5007704160246533,frac,Q,条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度
+e_gain_Q_occupancy_high,0.49922958397534667,frac,Q,条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度
+e_gain_Q_transition_rate,0.05564265536723164,Hz,Q,条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度
+e_gain_Q_n_switches,33.0,count,Q,条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度
+e_gain_Q_dwell_low_n_bouts,17.0,bouts,Q,条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度
+e_gain_Q_dwell_low_median,4.569107754791217,s,Q,条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度
+e_gain_Q_dwell_low_mean,17.470117885966417,s,Q,条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度
+e_gain_Q_dwell_low_p90,50.80847823327833,s,Q,条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度
+e_gain_Q_dwell_low_median_interior,3.6552862038329734,s,Q,条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_gain_Q_dwell_low_mean_interior,16.791470998857722,s,Q,条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_gain_Q_dwell_high_n_bouts,17.0,bouts,Q,条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度
+e_gain_Q_dwell_high_median,4.569107754791217,s,Q,条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度
+e_gain_Q_dwell_high_mean,17.41636367708652,s,Q,条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度
+e_gain_Q_dwell_high_p90,52.818885645386466,s,Q,条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度
+e_gain_Q_dwell_high_median_interior,4.569107754791217,s,Q,条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_gain_Q_dwell_high_mean_interior,15.135169437745905,s,Q,条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_gain_H2_occupancy_low,0.7303543913713405,frac,H(K=2),条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度
+e_gain_H2_occupancy_high,0.2696456086286595,frac,H(K=2),条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度
+e_gain_H2_transition_rate,0.018547551789077212,Hz,H(K=2),条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度
+e_gain_H2_n_switches,11.0,count,H(K=2),条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度
+e_gain_H2_dwell_low_n_bouts,6.0,bouts,H(K=2),条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度
+e_gain_H2_dwell_low_median,57.57075771036933,s,H(K=2),条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度
+e_gain_H2_dwell_low_mean,72.19190252570122,s,H(K=2),条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度
+e_gain_H2_dwell_low_p90,133.87485721538266,s,H(K=2),条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度
+e_gain_H2_dwell_low_median_interior,46.60489909887041,s,H(K=2),条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_gain_H2_dwell_low_mean_interior,56.83970046960274,s,H(K=2),条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_gain_H2_dwell_high_n_bouts,6.0,bouts,H(K=2),条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度
+e_gain_H2_dwell_high_median,30.613021957101154,s,H(K=2),条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度
+e_gain_H2_dwell_high_mean,26.653128569615433,s,H(K=2),条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度
+e_gain_H2_dwell_high_p90,42.49270211955832,s,H(K=2),条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度
+e_gain_H2_dwell_high_median_interior,21.93171722299784,s,H(K=2),条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_gain_H2_dwell_high_mean_interior,24.124888945297624,s,H(K=2),条件段 gain(649帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_gain_H2_equal_len_low_dwell_median,515.3953547404493,s,H(K=2),条件段 gain 前591帧,ZAPBench 条件分段,等长控制（最短段长）
+e_dots_Q_occupancy_low,0.5002820078962211,frac,Q,条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dots_Q_occupancy_high,0.49971799210377893,frac,Q,条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dots_Q_transition_rate,0.10307333772012284,Hz,Q,条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dots_Q_n_switches,167.0,count,Q,条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dots_Q_dwell_low_n_bouts,84.0,bouts,Q,条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dots_Q_dwell_low_median,4.569107754791217,s,Q,条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dots_Q_dwell_low_mean,9.649520424999546,s,Q,条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dots_Q_dwell_low_p90,21.017895672039597,s,Q,条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dots_Q_dwell_low_median_interior,4.569107754791217,s,Q,条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_dots_Q_dwell_low_mean_interior,9.743759910819824,s,Q,条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_dots_Q_dwell_high_n_bouts,84.0,bouts,Q,条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dots_Q_dwell_high_median,4.569107754791217,s,Q,条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dots_Q_dwell_high_mean,9.638641597011947,s,Q,条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dots_Q_dwell_high_p90,22.571392308668614,s,Q,条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dots_Q_dwell_high_median_interior,4.569107754791217,s,Q,条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_dots_Q_dwell_high_mean_interior,9.402453066486022,s,Q,条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_dots_H2_occupancy_low,0.6142131979695431,frac,H(K=2),条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dots_H2_occupancy_high,0.38578680203045684,frac,H(K=2),条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dots_H2_transition_rate,0.04752483236197281,Hz,H(K=2),条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dots_H2_n_switches,77.0,count,H(K=2),条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dots_H2_dwell_low_n_bouts,39.0,bouts,H(K=2),条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dots_H2_dwell_low_median,19.19025257012311,s,H(K=2),条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dots_H2_dwell_low_mean,25.51670946137249,s,H(K=2),条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dots_H2_dwell_low_p90,53.73270719634472,s,H(K=2),条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dots_H2_dwell_low_median_interior,19.647163345602234,s,H(K=2),条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_dots_H2_dwell_low_mean_interior,26.043914202309935,s,H(K=2),条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_dots_H2_dwell_high_n_bouts,39.0,bouts,H(K=2),条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dots_H2_dwell_high_median,10.96585861149892,s,H(K=2),条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dots_H2_dwell_high_mean,16.027024124498425,s,H(K=2),条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dots_H2_dwell_high_p90,30.156111181622045,s,H(K=2),条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dots_H2_dwell_high_median_interior,10.96585861149892,s,H(K=2),条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_dots_H2_dwell_high_mean_interior,15.679253979599334,s,H(K=2),条件段 dots(1773帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_dots_H2_equal_len_low_dwell_median,34.72521893641325,s,H(K=2),条件段 dots 前591帧,ZAPBench 条件分段,等长控制（最短段长）
+e_flash_Q_occupancy_low,0.5,frac,Q,条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_flash_Q_occupancy_high,0.5,frac,Q,条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_flash_Q_transition_rate,0.09341632791327915,Hz,Q,条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_flash_Q_n_switches,56.0,count,Q,条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_flash_Q_dwell_low_n_bouts,29.0,bouts,Q,条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_flash_Q_dwell_low_median,8.22439395862419,s,Q,条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_flash_Q_dwell_low_mean,10.335636852217373,s,Q,条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_flash_Q_dwell_low_p90,22.480010153572785,s,Q,条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_flash_Q_dwell_low_median_interior,7.310572407665947,s,Q,条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_flash_Q_dwell_low_mean_interior,9.104370266954351,s,Q,条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_flash_Q_dwell_high_n_bouts,28.0,bouts,Q,条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_flash_Q_dwell_high_median,4.569107754791217,s,Q,条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_flash_Q_dwell_high_mean,10.704766739796565,s,Q,条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_flash_Q_dwell_high_p90,27.41464652874731,s,Q,条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_flash_Q_dwell_high_median_interior,4.569107754791217,s,Q,条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_flash_Q_dwell_high_mean_interior,10.704766739796565,s,Q,条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_flash_H2_occupancy_low,0.8536585365853658,frac,H(K=2),条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_flash_H2_occupancy_high,0.14634146341463414,frac,H(K=2),条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_flash_H2_transition_rate,0.013345189701897022,Hz,H(K=2),条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_flash_H2_n_switches,8.0,count,H(K=2),条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_flash_H2_dwell_low_n_bouts,5.0,bouts,H(K=2),条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_flash_H2_dwell_low_median,21.93171722299784,s,H(K=2),条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_flash_H2_dwell_low_mean,102.34801370732326,s,H(K=2),条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_flash_H2_dwell_low_p90,270.49117908364,s,H(K=2),条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_flash_H2_dwell_low_median_interior,15.534966366290137,s,H(K=2),条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_flash_H2_dwell_low_mean_interior,17.058002284553876,s,H(K=2),条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_flash_H2_dwell_high_n_bouts,4.0,bouts,H(K=2),条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_flash_H2_dwell_high_median,15.534966366290137,s,H(K=2),条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_flash_H2_dwell_high_mean,21.93171722299784,s,H(K=2),条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_flash_H2_dwell_high_p90,37.83221220967128,s,H(K=2),条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_flash_H2_dwell_high_median_interior,15.534966366290137,s,H(K=2),条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_flash_H2_dwell_high_mean_interior,21.93171722299784,s,H(K=2),条件段 flash(656帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_flash_H2_equal_len_low_dwell_median,20.104074121081354,s,H(K=2),条件段 flash 前591帧,ZAPBench 条件分段,等长控制（最短段长）
+e_taxis_Q_occupancy_low,0.5038051750380518,frac,Q,条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度
+e_taxis_Q_occupancy_high,0.4961948249619482,frac,Q,条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度
+e_taxis_Q_transition_rate,0.09660536106883139,Hz,Q,条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度
+e_taxis_Q_n_switches,58.0,count,Q,条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度
+e_taxis_Q_dwell_low_n_bouts,30.0,bouts,Q,条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度
+e_taxis_Q_dwell_low_median,6.853661632186825,s,Q,条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度
+e_taxis_Q_dwell_low_mean,10.082497778905951,s,Q,条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度
+e_taxis_Q_dwell_low_p90,28.60261454499302,s,Q,条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度
+e_taxis_Q_dwell_low_median_interior,6.853661632186825,s,Q,条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_taxis_Q_dwell_low_mean_interior,9.464580349210378,s,Q,条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_taxis_Q_dwell_high_n_bouts,29.0,bouts,Q,条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度
+e_taxis_Q_dwell_high_median,7.310572407665947,s,Q,条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度
+e_taxis_Q_dwell_high_mean,10.272614676289217,s,Q,条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度
+e_taxis_Q_dwell_high_p90,18.093666708973217,s,Q,条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度
+e_taxis_Q_dwell_high_median_interior,7.310572407665947,s,Q,条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_taxis_Q_dwell_high_mean_interior,10.272614676289217,s,Q,条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_taxis_H2_occupancy_low,0.7990867579908676,frac,H(K=2),条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度
+e_taxis_H2_occupancy_high,0.2009132420091324,frac,H(K=2),条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度
+e_taxis_H2_transition_rate,0.03331219347201082,Hz,H(K=2),条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度
+e_taxis_H2_n_switches,20.0,count,H(K=2),条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度
+e_taxis_H2_dwell_low_n_bouts,11.0,bouts,H(K=2),条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度
+e_taxis_H2_dwell_low_median,19.19025257012311,s,H(K=2),条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度
+e_taxis_H2_dwell_low_mean,43.614210386643435,s,H(K=2),条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度
+e_taxis_H2_dwell_low_p90,113.31387231882218,s,H(K=2),条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度
+e_taxis_H2_dwell_low_median_interior,19.19025257012311,s,H(K=2),条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_taxis_H2_dwell_low_mean_interior,41.121969793120954,s,H(K=2),条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_taxis_H2_dwell_high_n_bouts,10.0,bouts,H(K=2),条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度
+e_taxis_H2_dwell_high_median,9.138215509582434,s,H(K=2),条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度
+e_taxis_H2_dwell_high_mean,12.062444472648812,s,H(K=2),条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度
+e_taxis_H2_dwell_high_p90,21.748952912806185,s,H(K=2),条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度
+e_taxis_H2_dwell_high_median_interior,9.138215509582434,s,H(K=2),条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_taxis_H2_dwell_high_mean_interior,12.062444472648812,s,H(K=2),条件段 taxis(657帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_taxis_H2_equal_len_low_dwell_median,19.647163345602234,s,H(K=2),条件段 taxis 前591帧,ZAPBench 条件分段,等长控制（最短段长）
+e_turning_Q_occupancy_low,0.5,frac,Q,条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度
+e_turning_Q_occupancy_high,0.5,frac,Q,条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度
+e_turning_Q_transition_rate,0.05838520494579947,Hz,Q,条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度
+e_turning_Q_n_switches,70.0,count,Q,条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度
+e_turning_Q_dwell_low_n_bouts,36.0,bouts,Q,条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度
+e_turning_Q_dwell_low_median,16.44878791724838,s,Q,条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度
+e_turning_Q_dwell_low_mean,16.65185937301688,s,Q,条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度
+e_turning_Q_dwell_low_p90,34.268308160934126,s,Q,条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度
+e_turning_Q_dwell_low_median_interior,16.44878791724838,s,Q,条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_turning_Q_dwell_low_mean_interior,16.663804752767966,s,Q,条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_turning_Q_dwell_high_n_bouts,35.0,bouts,Q,条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度
+e_turning_Q_dwell_high_median,10.96585861149892,s,Q,条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度
+e_turning_Q_dwell_high_mean,17.127626783674504,s,Q,条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度
+e_turning_Q_dwell_high_p90,38.56326945043788,s,Q,条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度
+e_turning_Q_dwell_high_median_interior,10.96585861149892,s,Q,条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_turning_Q_dwell_high_mean_interior,17.127626783674504,s,Q,条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_turning_H2_occupancy_low,0.46875,frac,H(K=2),条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度
+e_turning_H2_occupancy_high,0.53125,frac,H(K=2),条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度
+e_turning_H2_transition_rate,0.03503112296747968,Hz,H(K=2),条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度
+e_turning_H2_n_switches,42.0,count,H(K=2),条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度
+e_turning_H2_dwell_low_n_bouts,22.0,bouts,H(K=2),条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度
+e_turning_H2_dwell_low_median,25.130092651351692,s,H(K=2),条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度
+e_turning_H2_dwell_low_mean,25.545466083605437,s,H(K=2),条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度
+e_turning_H2_dwell_low_p90,37.37530143419216,s,H(K=2),条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度
+e_turning_H2_dwell_low_median_interior,25.130092651351692,s,H(K=2),条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_turning_H2_dwell_low_mean_interior,26.455133900241144,s,H(K=2),条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_turning_H2_dwell_high_n_bouts,21.0,bouts,H(K=2),条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度
+e_turning_H2_dwell_high_median,28.328468079705544,s,H(K=2),条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度
+e_turning_H2_dwell_high_mean,30.3301724294236,s,H(K=2),条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度
+e_turning_H2_dwell_high_p90,47.51872064982865,s,H(K=2),条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度
+e_turning_H2_dwell_high_median_interior,28.328468079705544,s,H(K=2),条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_turning_H2_dwell_high_mean_interior,30.3301724294236,s,H(K=2),条件段 turning(1312帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_turning_H2_equal_len_low_dwell_median,26.50082497778906,s,H(K=2),条件段 turning 前591帧,ZAPBench 条件分段,等长控制（最短段长）
+e_position_Q_occupancy_low,0.5025380710659898,frac,Q,条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度
+e_position_Q_occupancy_high,0.49746192893401014,frac,Q,条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度
+e_position_Q_transition_rate,0.1092453938710284,Hz,Q,条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度
+e_position_Q_n_switches,59.0,count,Q,条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度
+e_position_Q_dwell_low_n_bouts,30.0,bouts,Q,条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度
+e_position_Q_dwell_low_median,7.767483183145068,s,Q,条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度
+e_position_Q_dwell_low_mean,9.04683335448661,s,Q,条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度
+e_position_Q_dwell_low_p90,17.728138088589926,s,Q,条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度
+e_position_Q_dwell_low_median_interior,8.22439395862419,s,Q,条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_position_Q_dwell_low_mean_interior,9.29577094940282,s,Q,条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_position_Q_dwell_high_n_bouts,30.0,bouts,Q,条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度
+e_position_Q_dwell_high_median,5.939840081228581,s,Q,条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度
+e_position_Q_dwell_high_mean,8.955451199390785,s,Q,条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度
+e_position_Q_dwell_high_p90,19.37301688031476,s,Q,条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度
+e_position_Q_dwell_high_median_interior,5.48292930574946,s,Q,条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_position_Q_dwell_high_mean_interior,8.066838518803804,s,Q,条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_position_H2_occupancy_low,0.7106598984771574,frac,H(K=2),条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度
+e_position_H2_occupancy_high,0.2893401015228426,frac,H(K=2),条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度
+e_position_H2_transition_rate,0.06110335589396504,Hz,H(K=2),条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度
+e_position_H2_n_switches,33.0,count,H(K=2),条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度
+e_position_H2_dwell_low_n_bouts,17.0,bouts,H(K=2),条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度
+e_position_H2_dwell_low_median,20.104074121081354,s,H(K=2),条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度
+e_position_H2_dwell_low_mean,22.5767677295566,s,H(K=2),条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度
+e_position_H2_dwell_low_p90,40.20814824216271,s,H(K=2),条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度
+e_position_H2_dwell_low_median_interior,21.93171722299784,s,H(K=2),条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_position_H2_dwell_low_mean_interior,23.645132631044547,s,H(K=2),条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_position_H2_dwell_high_n_bouts,17.0,bouts,H(K=2),条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度
+e_position_H2_dwell_high_median,8.22439395862419,s,H(K=2),条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度
+e_position_H2_dwell_high_mean,9.19196971846233,s,H(K=2),条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度
+e_position_H2_dwell_high_p90,16.26602360705673,s,H(K=2),条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度
+e_position_H2_dwell_high_median_interior,7.767483183145068,s,H(K=2),条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_position_H2_dwell_high_mean_interior,8.45284934636375,s,H(K=2),条件段 position(591帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_position_H2_equal_len_low_dwell_median,20.104074121081354,s,H(K=2),条件段 position 前591帧,ZAPBench 条件分段,等长控制（最短段长）
+e_open loop_Q_occupancy_low,0.5015228426395939,frac,Q,条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度
+e_open loop_Q_occupancy_high,0.4984771573604061,frac,Q,条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度
+e_open loop_Q_transition_rate,0.07110208685843204,Hz,Q,条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度
+e_open loop_Q_n_switches,64.0,count,Q,条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度
+e_open loop_Q_dwell_low_n_bouts,32.0,bouts,Q,条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度
+e_open loop_Q_dwell_low_median,8.681304734103312,s,Q,条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度
+e_open loop_Q_dwell_low_mean,14.107120192917883,s,Q,条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度
+e_open loop_Q_dwell_low_p90,23.759360324914326,s,Q,条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度
+e_open loop_Q_dwell_low_median_interior,8.681304734103312,s,Q,条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_open loop_Q_dwell_low_mean_interior,14.107120192917883,s,Q,条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_open loop_Q_dwell_high_n_bouts,33.0,bouts,Q,条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度
+e_open loop_Q_dwell_high_median,8.22439395862419,s,Q,条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度
+e_open loop_Q_dwell_high_mean,13.596557015772651,s,Q,条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度
+e_open loop_Q_dwell_high_p90,21.017895672039597,s,Q,条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度
+e_open loop_Q_dwell_high_median_interior,5.48292930574946,s,Q,条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_open loop_Q_dwell_high_mean_interior,10.376296320558119,s,Q,条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_open loop_H2_occupancy_low,0.8243654822335026,frac,H(K=2),条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度
+e_open loop_H2_occupancy_high,0.17563451776649747,frac,H(K=2),条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度
+e_open loop_H2_transition_rate,0.014442611393119009,Hz,H(K=2),条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度
+e_open loop_H2_n_switches,13.0,count,H(K=2),条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度
+e_open loop_H2_dwell_low_n_bouts,7.0,bouts,H(K=2),条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度
+e_open loop_H2_dwell_low_median,132.50412488894528,s,H(K=2),条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度
+e_open loop_H2_dwell_low_mean,106.00329991115623,s,H(K=2),条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度
+e_open loop_H2_dwell_low_p90,176.18479502474932,s,H(K=2),条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度
+e_open loop_H2_dwell_low_median_interior,132.9610356644244,s,H(K=2),条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_open loop_H2_dwell_low_mean_interior,123.51821297118921,s,H(K=2),条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_open loop_H2_dwell_high_n_bouts,7.0,bouts,H(K=2),条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度
+e_open loop_H2_dwell_high_median,10.96585861149892,s,H(K=2),条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度
+e_open loop_H2_dwell_high_mean,22.58444690225373,s,H(K=2),条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度
+e_open loop_H2_dwell_high_p90,48.06701358040362,s,H(K=2),条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度
+e_open loop_H2_dwell_high_median_interior,10.052037060540677,s,H(K=2),条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_open loop_H2_dwell_high_mean_interior,11.575072978804416,s,H(K=2),条件段 open loop(985帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_open loop_H2_equal_len_low_dwell_median,101.89110293184413,s,H(K=2),条件段 open loop 前591帧,ZAPBench 条件分段,等长控制（最短段长）
+e_rotation_Q_occupancy_low,0.5015243902439024,frac,Q,条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_rotation_Q_occupancy_high,0.49847560975609756,frac,Q,条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_rotation_Q_transition_rate,0.07506669207317074,Hz,Q,条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_rotation_Q_n_switches,45.0,count,Q,条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_rotation_Q_dwell_low_n_bouts,23.0,bouts,Q,条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_rotation_Q_dwell_low_median,9.138215509582434,s,Q,条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_rotation_Q_dwell_low_mean,13.071621315880959,s,Q,条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_rotation_Q_dwell_low_p90,30.15611118162203,s,Q,条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_rotation_Q_dwell_low_median_interior,10.052037060540677,s,Q,条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_rotation_Q_dwell_low_mean_interior,13.291949832119903,s,Q,条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_rotation_Q_dwell_high_n_bouts,23.0,bouts,Q,条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_rotation_Q_dwell_high_median,5.48292930574946,s,Q,条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_rotation_Q_dwell_high_mean,12.992158572319372,s,Q,条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_rotation_Q_dwell_high_p90,18.093666708973224,s,Q,条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_rotation_Q_dwell_high_median_interior,5.48292930574946,s,Q,条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_rotation_Q_dwell_high_mean_interior,8.016707242497317,s,Q,条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_rotation_H2_occupancy_low,0.7164634146341463,frac,H(K=2),条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_rotation_H2_occupancy_high,0.28353658536585363,frac,H(K=2),条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_rotation_H2_transition_rate,0.01501333841463415,Hz,H(K=2),条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_rotation_H2_n_switches,9.0,count,H(K=2),条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_rotation_H2_dwell_low_n_bouts,5.0,bouts,H(K=2),条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_rotation_H2_dwell_low_median,93.20979819774082,s,H(K=2),条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_rotation_H2_dwell_low_mean,85.89922579007488,s,H(K=2),条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_rotation_H2_dwell_low_p90,122.26932351821297,s,H(K=2),条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_rotation_H2_dwell_low_median_interior,95.95126285061555,s,H(K=2),条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_rotation_H2_dwell_low_mean_interior,98.0073613402716,s,H(K=2),条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_rotation_H2_dwell_high_n_bouts,5.0,bouts,H(K=2),条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_rotation_H2_dwell_high_median,7.310572407665947,s,H(K=2),条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_rotation_H2_dwell_high_mean,33.99416169564665,s,H(K=2),条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_rotation_H2_dwell_high_p90,85.16816854930829,s,H(K=2),条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度
+e_rotation_H2_dwell_high_median_interior,6.853661632186825,s,H(K=2),条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_rotation_H2_dwell_high_mean_interior,12.336590937936286,s,H(K=2),条件段 rotation(656帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_rotation_H2_equal_len_low_dwell_median,88.18377966747049,s,H(K=2),条件段 rotation 前591帧,ZAPBench 条件分段,等长控制（最短段长）
+e_dark_Q_occupancy_low,0.5,frac,Q,条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dark_Q_occupancy_high,0.5,frac,Q,条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dark_Q_transition_rate,0.07842523148148149,Hz,Q,条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dark_Q_n_switches,43.0,count,Q,条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dark_Q_dwell_low_n_bouts,22.0,bouts,Q,条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dark_Q_dwell_low_median,4.112196979312095,s,Q,条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dark_Q_dwell_low_mean,12.46120296761241,s,Q,条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dark_Q_dwell_low_p90,21.292042137327083,s,Q,条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dark_Q_dwell_low_median_interior,2.74146465287473,s,Q,条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_dark_Q_dwell_low_mean_interior,7.35408771961634,s,Q,条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_dark_Q_dwell_high_n_bouts,22.0,bouts,Q,条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dark_Q_dwell_high_median,5.48292930574946,s,Q,条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dark_Q_dwell_high_mean,12.46120296761241,s,Q,条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dark_Q_dwell_high_p90,24.033506790201834,s,Q,条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dark_Q_dwell_high_median_interior,5.48292930574946,s,Q,条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_dark_Q_dwell_high_mean_interior,6.744873352310845,s,Q,条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_dark_H2_occupancy_low,0.7333333333333333,frac,H(K=2),条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dark_H2_occupancy_high,0.26666666666666666,frac,H(K=2),条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dark_H2_transition_rate,0.02006226851851852,Hz,H(K=2),条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dark_H2_n_switches,11.0,count,H(K=2),条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dark_H2_dwell_low_n_bouts,6.0,bouts,H(K=2),条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dark_H2_dwell_low_median,38.38050514024622,s,H(K=2),条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dark_H2_dwell_low_mean,67.01358040360451,s,H(K=2),条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dark_H2_dwell_low_p90,156.2634852138596,s,H(K=2),条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dark_H2_dwell_low_median_interior,25.587003426830815,s,H(K=2),条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_dark_H2_dwell_low_mean_interior,53.732707196344705,s,H(K=2),条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_dark_H2_dwell_high_n_bouts,6.0,bouts,H(K=2),条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dark_H2_dwell_high_median,21.017895672039597,s,H(K=2),条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dark_H2_dwell_high_mean,24.368574692219823,s,H(K=2),条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dark_H2_dwell_high_p90,44.777255996953926,s,H(K=2),条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度
+e_dark_H2_dwell_high_median_interior,20.104074121081354,s,H(K=2),条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_dark_H2_dwell_high_mean_interior,16.814316537631676,s,H(K=2),条件段 dark(600帧),ZAPBench 条件分段,E 项跨条件离散度 | 仅完整 bout（去首尾截断）
+e_dark_H2_equal_len_low_dwell_median,38.38050514024622,s,H(K=2),条件段 dark 前591帧,ZAPBench 条件分段,等长控制（最短段长）
+e_disp_H_low_dwell_median_median,25.130092651351692,,H_low_dwell_median,9 条件,本工具 E 项,跨条件中位
+e_disp_H_low_dwell_median_iqr_rel,1.4909090909090907,x,H_low_dwell_median,9 条件,本工具 E 项,"IQR/中位；IQR=[20.1041,57.5708]"
+e_disp_H_low_dwell_median_max_over_min,6.904761904761904,x,H_low_dwell_median,9 条件,本工具 E 项,跨条件极差倍数
+e_disp_H_transition_rate_median,0.02006226851851852,,H_transition_rate,9 条件,本工具 E 项,跨条件中位
+e_disp_H_transition_rate_iqr_rel,0.9977827050997782,x,H_transition_rate,9 条件,本工具 E 项,"IQR/中位；IQR=[0.0150,0.0350]"
+e_disp_H_transition_rate_max_over_min,4.578680203045685,x,H_transition_rate,9 条件,本工具 E 项,跨条件极差倍数
+e_disp_H_occupancy_low_median,0.7303543913713405,,H_occupancy_low,9 条件,本工具 E 项,跨条件中位
+e_disp_H_occupancy_low_iqr_rel,0.12107390680252728,x,H_occupancy_low,9 条件,本工具 E 项,"IQR/中位；IQR=[0.7107,0.7991]"
+e_disp_H_occupancy_low_max_over_min,1.8211382113821137,x,H_occupancy_low,9 条件,本工具 E 项,跨条件极差倍数
+e_disp_Q_low_dwell_median_median,7.767483183145068,,Q_low_dwell_median,9 条件,本工具 E 项,跨条件中位
+e_disp_Q_low_dwell_median_iqr_rel,0.5294117647058824,x,Q_low_dwell_median,9 条件,本工具 E 项,"IQR/中位；IQR=[4.5691,8.6813]"
+e_disp_Q_low_dwell_median_max_over_min,4.0,x,Q_low_dwell_median,9 条件,本工具 E 项,跨条件极差倍数
+e_disp_Q_transition_rate_median,0.07842523148148149,,Q_transition_rate,9 条件,本工具 E 项,跨条件中位
+e_disp_Q_transition_rate_iqr_rel,0.3251922082808441,x,Q_transition_rate,9 条件,本工具 E 项,"IQR/中位；IQR=[0.0711,0.0966]"
+e_disp_Q_transition_rate_max_over_min,1.9633389734912579,x,Q_transition_rate,9 条件,本工具 E 项,跨条件极差倍数
+e_disp_H_low_dwell_median_equal_len_median,34.72521893641325,,H_low_dwell_median_equal_len,9 条件,本工具 E 项,跨条件中位
+e_disp_H_low_dwell_median_equal_len_iqr_rel,1.9605263157894737,x,H_low_dwell_median_equal_len,9 条件,本工具 E 项,"IQR/中位；IQR=[20.1041,88.1838]"
+e_disp_H_low_dwell_median_equal_len_max_over_min,26.232558139534884,x,H_low_dwell_median_equal_len,9 条件,本工具 E 项,跨条件极差倍数
+e_disp_H_transition_rate_equal_len_median,0.020367785297988345,,H_transition_rate_equal_len,9 条件,本工具 E 项,跨条件中位
+e_disp_H_transition_rate_equal_len_iqr_rel,1.0000000000000002,x,H_transition_rate_equal_len,9 条件,本工具 E 项,"IQR/中位；IQR=[0.0130,0.0333]"
+e_disp_H_transition_rate_equal_len_max_over_min,33.0,x,H_transition_rate_equal_len,9 条件,本工具 E 项,跨条件极差倍数
+e_disp_H_half_split_low_dwell_median_median,27.87155730422642,,H_half_split_low_dwell_median,9 条件,本工具 E 项,跨条件中位
+e_disp_H_half_split_low_dwell_median_iqr_rel,1.6516393442622954,x,H_half_split_low_dwell_median,9 条件,本工具 E 项,"IQR/中位；IQR=[19.3045,65.3382]"
+e_disp_H_half_split_low_dwell_median_max_over_min,23.000000000000004,x,H_half_split_low_dwell_median,9 条件,本工具 E 项,跨条件极差倍数
+f_N8192_0_Q_occupancy_low,0.5003172991496383,frac,Q,N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N8192_0_Q_occupancy_high,0.4996827008503617,frac,Q,N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N8192_0_Q_transition_rate,0.05819444444444445,Hz,Q,N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N8192_0_Q_n_switches,419.0,count,Q,N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N8192_0_Q_dwell_low_n_bouts,210.0,bouts,Q,N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N8192_0_Q_dwell_low_median,6.853661632186825,s,Q,N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N8192_0_Q_dwell_low_mean,17.15373597084474,s,Q,N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N8192_0_Q_dwell_low_p90,41.396116258408405,s,Q,N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N8192_0_Q_dwell_low_median_interior,6.396750856707704,s,Q,N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N8192_0_Q_dwell_low_mean_interior,16.59744788247604,s,Q,N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N8192_0_Q_dwell_high_n_bouts,210.0,bouts,Q,N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N8192_0_Q_dwell_high_median,6.396750856707704,s,Q,N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N8192_0_Q_dwell_high_mean,17.131978314869542,s,Q,N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N8192_0_Q_dwell_high_p90,36.64424419342555,s,Q,N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N8192_0_Q_dwell_high_median_interior,6.396750856707704,s,Q,N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N8192_0_Q_dwell_high_mean_interior,15.635530460414728,s,Q,N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N8192_0_H2_occupancy_low,0.6719126792740195,frac,H(K=2),N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N8192_0_H2_occupancy_high,0.32808732072598046,frac,H(K=2),N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N8192_0_H2_transition_rate,0.019583333333333335,Hz,H(K=2),N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N8192_0_H2_n_switches,141.0,count,H(K=2),N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N8192_0_H2_dwell_low_n_bouts,71.0,bouts,H(K=2),N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N8192_0_H2_dwell_low_median,26.50082497778906,s,H(K=2),N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N8192_0_H2_dwell_low_mean,68.13762381370339,s,H(K=2),N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N8192_0_H2_dwell_low_p90,196.47163345602232,s,H(K=2),N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N8192_0_H2_dwell_low_median_interior,26.043914202309935,s,H(K=2),N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N8192_0_H2_dwell_low_mean_interior,67.20504777618625,s,H(K=2),N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N8192_0_H2_dwell_high_n_bouts,71.0,bouts,H(K=2),N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N8192_0_H2_dwell_high_median,21.017895672039597,s,H(K=2),N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N8192_0_H2_dwell_high_mean,33.27082689052196,s,H(K=2),N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N8192_0_H2_dwell_high_p90,53.00164995557812,s,H(K=2),N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N8192_0_H2_dwell_high_median_interior,21.017895672039597,s,H(K=2),N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N8192_0_H2_dwell_high_mean_interior,29.75141878048338,s,H(K=2),N=8192 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N8192_0_corr_with_full,0.9999999999999998,r,序列形状,N=8192 seed=0,本工具 F 项,与 N=8192 全长序列的 Pearson 相关
+f_N8192_0_fano,98.17740007428729,,计数统计,N=8192 seed=0,本工具 F 项,群体事件计数的 var/mean
+f_N4096_0_Q_occupancy_low,0.5036172103058764,frac,Q,N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_0_Q_occupancy_high,0.49638278969412364,frac,Q,N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_0_Q_transition_rate,0.05736111111111112,Hz,Q,N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_0_Q_n_switches,413.0,count,Q,N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_0_Q_dwell_low_n_bouts,207.0,bouts,Q,N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_0_Q_dwell_low_median,6.396750856707704,s,Q,N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_0_Q_dwell_low_mean,17.517120358465263,s,Q,N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_0_Q_dwell_low_p90,44.59449168676229,s,Q,N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_0_Q_dwell_low_median_interior,5.939840081228581,s,Q,N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_0_Q_dwell_low_mean_interior,16.954494989137892,s,Q,N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_0_Q_dwell_high_n_bouts,207.0,bouts,Q,N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_0_Q_dwell_high_median,6.396750856707704,s,Q,N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_0_Q_dwell_high_mean,17.26548833718691,s,Q,N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_0_Q_dwell_high_p90,36.91839065871304,s,Q,N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_0_Q_dwell_high_median_interior,6.396750856707704,s,Q,N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_0_Q_dwell_high_mean_interior,15.7434596327709,s,Q,N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_0_H2_occupancy_low,0.678639421246351,frac,H(K=2),N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_0_H2_occupancy_high,0.32136057875364893,frac,H(K=2),N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_0_H2_transition_rate,0.01902777777777778,Hz,H(K=2),N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_0_H2_n_switches,137.0,count,H(K=2),N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_0_H2_dwell_low_n_bouts,69.0,bouts,H(K=2),N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_0_H2_dwell_low_median,26.50082497778906,s,H(K=2),N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_0_H2_dwell_low_mean,70.81454830396706,s,H(K=2),N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_0_H2_dwell_low_p90,201.77179845158014,s,H(K=2),N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_0_H2_dwell_low_median_interior,26.043914202309935,s,H(K=2),N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_0_H2_dwell_low_mean_interior,69.89391009608565,s,H(K=2),N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_0_H2_dwell_high_n_bouts,69.0,bouts,H(K=2),N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_0_H2_dwell_high_median,20.104074121081354,s,H(K=2),N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_0_H2_dwell_high_mean,33.53327778298946,s,H(K=2),N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_0_H2_dwell_high_p90,55.194821677877904,s,H(K=2),N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_0_H2_dwell_high_median_interior,19.647163345602234,s,H(K=2),N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_0_H2_dwell_high_mean_interior,29.8604630327826,s,H(K=2),N=4096 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_0_corr_with_full,0.9984095025565948,r,序列形状,N=4096 seed=0,本工具 F 项,与 N=8192 全长序列的 Pearson 相关
+f_N4096_0_fano,50.34144422797312,,计数统计,N=4096 seed=0,本工具 F 项,群体事件计数的 var/mean
+f_N4096_1_Q_occupancy_low,0.5004442188094936,frac,Q,N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_1_Q_occupancy_high,0.4995557811905064,frac,Q,N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_1_Q_transition_rate,0.05930555555555556,Hz,Q,N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_1_Q_n_switches,427.0,count,Q,N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_1_Q_dwell_low_n_bouts,214.0,bouts,Q,N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_1_Q_dwell_low_median,6.396750856707704,s,Q,N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_1_Q_dwell_low_mean,16.8373755861138,s,Q,N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_1_Q_dwell_low_p90,43.31514151542077,s,Q,N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_1_Q_dwell_low_median_interior,6.396750856707704,s,Q,N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_1_Q_dwell_low_mean_interior,16.29004896238709,s,Q,N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_1_Q_dwell_high_n_bouts,214.0,bouts,Q,N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_1_Q_dwell_high_median,5.48292930574946,s,Q,N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_1_Q_dwell_high_mean,16.807484226970306,s,Q,N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_1_Q_dwell_high_p90,36.552862038329735,s,Q,N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_1_Q_dwell_high_median_interior,5.48292930574946,s,Q,N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_1_Q_dwell_high_mean_interior,15.513515156173746,s,Q,N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_1_H2_occupancy_low,0.6700088843761899,frac,H(K=2),N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_1_H2_occupancy_high,0.3299911156238101,frac,H(K=2),N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_1_H2_transition_rate,0.020972222222222225,Hz,H(K=2),N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_1_H2_n_switches,151.0,count,H(K=2),N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_1_H2_dwell_low_n_bouts,76.0,bouts,H(K=2),N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_1_H2_dwell_low_median,26.957735753268178,s,H(K=2),N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_1_H2_dwell_low_mean,63.47452588827062,s,H(K=2),N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_1_H2_dwell_low_p90,159.46186064221345,s,H(K=2),N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_1_H2_dwell_low_median_interior,26.50082497778906,s,H(K=2),N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_1_H2_dwell_low_mean_interior,62.541946947582176,s,H(K=2),N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_1_H2_dwell_high_n_bouts,76.0,bouts,H(K=2),N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_1_H2_dwell_high_median,15.078055590811015,s,H(K=2),N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_1_H2_dwell_high_mean,31.262316216992534,s,H(K=2),N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_1_H2_dwell_high_p90,54.8292930574946,s,H(K=2),N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_1_H2_dwell_high_median_interior,14.621144815331894,s,H(K=2),N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_1_H2_dwell_high_mean_interior,27.975123746668356,s,H(K=2),N=4096 seed=1,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_1_corr_with_full,0.998529082569262,r,序列形状,N=4096 seed=1,本工具 F 项,与 N=8192 全长序列的 Pearson 相关
+f_N4096_1_fano,49.568710690383874,,计数统计,N=4096 seed=1,本工具 F 项,群体事件计数的 var/mean
+f_N4096_2_Q_occupancy_low,0.5006980581292042,frac,Q,N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_2_Q_occupancy_high,0.4993019418707958,frac,Q,N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_2_Q_transition_rate,0.05652777777777779,Hz,Q,N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_2_Q_n_switches,407.0,count,Q,N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_2_Q_dwell_low_n_bouts,204.0,bouts,Q,N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_2_Q_dwell_low_median,7.310572407665947,s,Q,N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_2_Q_dwell_low_mean,17.67169616926603,s,Q,N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_2_Q_dwell_low_p90,45.691077547912165,s,Q,N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_2_Q_dwell_low_median_interior,7.310572407665947,s,Q,N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_2_Q_dwell_low_mean_interior,17.10151759650427,s,Q,N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_2_Q_dwell_high_n_bouts,204.0,bouts,Q,N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_2_Q_dwell_high_median,6.396750856707704,s,Q,N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_2_Q_dwell_high_mean,17.62242147779279,s,Q,N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_2_Q_dwell_high_p90,37.466683589287975,s,Q,N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_2_Q_dwell_high_median_interior,6.396750856707704,s,Q,N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_2_Q_dwell_high_mean_interior,16.268724557453652,s,Q,N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_2_H2_occupancy_low,0.672928036552862,frac,H(K=2),N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_2_H2_occupancy_high,0.32707196344713796,frac,H(K=2),N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_2_H2_transition_rate,0.022083333333333337,Hz,H(K=2),N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_2_H2_n_switches,159.0,count,H(K=2),N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_2_H2_dwell_low_n_bouts,80.0,bouts,H(K=2),N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_2_H2_dwell_low_median,24.21627110039345,s,H(K=2),N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_2_H2_dwell_low_mean,60.56352328975758,s,H(K=2),N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_2_H2_dwell_low_p90,197.7509836273639,s,H(K=2),N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_2_H2_dwell_low_median_interior,23.759360324914326,s,H(K=2),N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_2_H2_dwell_low_mean_interior,59.64131540178105,s,H(K=2),N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_2_H2_dwell_high_n_bouts,80.0,bouts,H(K=2),N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_2_H2_dwell_high_median,14.621144815331894,s,H(K=2),N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_2_H2_dwell_high_mean,29.436476710242413,s,H(K=2),N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_2_H2_dwell_high_p90,50.89986038837421,s,H(K=2),N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_2_H2_dwell_high_median_interior,14.621144815331894,s,H(K=2),N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_2_H2_dwell_high_mean_interior,26.281045111102898,s,H(K=2),N=4096 seed=2,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_2_corr_with_full,0.9986442914618437,r,序列形状,N=4096 seed=2,本工具 F 项,与 N=8192 全长序列的 Pearson 相关
+f_N4096_2_fano,49.98077126922186,,计数统计,N=4096 seed=2,本工具 F 项,群体事件计数的 var/mean
+f_N4096_3_Q_occupancy_low,0.5006980581292042,frac,Q,N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_3_Q_occupancy_high,0.4993019418707958,frac,Q,N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_3_Q_transition_rate,0.05875000000000001,Hz,Q,N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_3_Q_n_switches,423.0,count,Q,N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_3_Q_dwell_low_n_bouts,212.0,bouts,Q,N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_3_Q_dwell_low_median,7.310572407665947,s,Q,N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_3_Q_dwell_low_mean,17.004839710048444,s,Q,N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_3_Q_dwell_low_p90,40.116766087066885,s,Q,N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_3_Q_dwell_low_median_interior,7.310572407665947,s,Q,N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_3_Q_dwell_low_mean_interior,16.453118825072824,s,Q,N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_3_Q_dwell_high_n_bouts,212.0,bouts,Q,N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_3_Q_dwell_high_median,6.396750856707704,s,Q,N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_3_Q_dwell_high_mean,16.95742444089495,s,Q,N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_3_Q_dwell_high_p90,36.552862038329735,s,Q,N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_3_Q_dwell_high_median_interior,6.396750856707704,s,Q,N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_3_Q_dwell_high_mean_interior,15.470002748923436,s,Q,N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_3_H2_occupancy_low,0.6763548673689554,frac,H(K=2),N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_3_H2_occupancy_high,0.32364513263104455,frac,H(K=2),N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_3_H2_transition_rate,0.020694444444444446,Hz,H(K=2),N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_3_H2_n_switches,149.0,count,H(K=2),N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_3_H2_dwell_low_n_bouts,75.0,bouts,H(K=2),N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_3_H2_dwell_low_median,24.673181875872572,s,H(K=2),N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_3_H2_dwell_low_mean,64.93006726741972,s,H(K=2),N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_3_H2_dwell_low_p90,190.80593984008127,s,H(K=2),N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_3_H2_dwell_low_median_interior,24.21627110039345,s,H(K=2),N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_3_H2_dwell_low_mean_interior,64.00455538671048,s,H(K=2),N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_3_H2_dwell_high_n_bouts,75.0,bouts,H(K=2),N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_3_H2_dwell_high_median,16.44878791724838,s,H(K=2),N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_3_H2_dwell_high_mean,31.069932732580273,s,H(K=2),N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_3_H2_dwell_high_p90,53.00164995557812,s,H(K=2),N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_3_H2_dwell_high_median_interior,15.534966366290137,s,H(K=2),N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_3_H2_dwell_high_mean_interior,27.68632320605921,s,H(K=2),N=4096 seed=3,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_3_corr_with_full,0.9985352570663142,r,序列形状,N=4096 seed=3,本工具 F 项,与 N=8192 全长序列的 Pearson 相关
+f_N4096_3_fano,50.156634859297085,,计数统计,N=4096 seed=3,本工具 F 项,群体事件计数的 var/mean
+f_N4096_4_Q_occupancy_low,0.5026018530270339,frac,Q,N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_4_Q_occupancy_high,0.49739814697296614,frac,Q,N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_4_Q_transition_rate,0.061527777777777785,Hz,Q,N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_4_Q_n_switches,443.0,count,Q,N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_4_Q_dwell_low_n_bouts,222.0,bouts,Q,N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_4_Q_dwell_low_median,6.396750856707704,s,Q,N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_4_Q_dwell_low_mean,16.300600638714613,s,Q,N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_4_Q_dwell_low_p90,40.116766087066885,s,Q,N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_4_Q_dwell_low_median_interior,6.396750856707704,s,Q,N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_4_Q_dwell_low_mean_interior,15.770657897532761,s,Q,N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_4_Q_dwell_high_n_bouts,222.0,bouts,Q,N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_4_Q_dwell_high_median,5.48292930574946,s,Q,N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_4_Q_dwell_high_mean,16.13183179371782,s,Q,N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_4_Q_dwell_high_p90,36.552862038329735,s,Q,N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_4_Q_dwell_high_median_interior,5.48292930574946,s,Q,N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_4_Q_dwell_high_mean_interior,14.716248415657864,s,Q,N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_4_H2_occupancy_low,0.6762279477091001,frac,H(K=2),N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_4_H2_occupancy_high,0.32377205229089984,frac,H(K=2),N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_4_H2_transition_rate,0.01930555555555556,Hz,H(K=2),N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_4_H2_n_switches,139.0,count,H(K=2),N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_4_H2_dwell_low_n_bouts,70.0,bouts,H(K=2),N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_4_H2_dwell_low_median,26.957735753268178,s,H(K=2),N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_4_H2_dwell_low_mean,69.55487462150744,s,H(K=2),N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_4_H2_dwell_low_p90,227.63294834369842,s,H(K=2),N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_4_H2_dwell_low_median_interior,26.50082497778906,s,H(K=2),N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_4_H2_dwell_low_mean_interior,68.62932285602344,s,H(K=2),N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_4_H2_dwell_high_n_bouts,70.0,bouts,H(K=2),N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_4_H2_dwell_high_median,21.017895672039597,s,H(K=2),N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_4_H2_dwell_high_mean,33.30226823563541,s,H(K=2),N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_4_H2_dwell_high_p90,53.36717857596142,s,H(K=2),N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N4096_4_H2_dwell_high_median_interior,21.017895672039597,s,H(K=2),N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_4_H2_dwell_high_mean_interior,29.7455536732205,s,H(K=2),N=4096 seed=4,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N4096_4_corr_with_full,0.9984267542255285,r,序列形状,N=4096 seed=4,本工具 F 项,与 N=8192 全长序列的 Pearson 相关
+f_N4096_4_fano,49.641449270516446,,计数统计,N=4096 seed=4,本工具 F 项,群体事件计数的 var/mean
+f_N2048_0_Q_occupancy_low,0.5015864957481914,frac,Q,N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_0_Q_occupancy_high,0.4984135042518086,frac,Q,N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_0_Q_transition_rate,0.06458333333333334,Hz,Q,N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_0_Q_n_switches,465.0,count,Q,N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_0_Q_dwell_low_n_bouts,233.0,bouts,Q,N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_0_Q_dwell_low_median,6.396750856707704,s,Q,N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_0_Q_dwell_low_mean,15.499668538141536,s,Q,N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_0_Q_dwell_low_p90,36.552862038329735,s,Q,N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_0_Q_dwell_low_median_interior,6.396750856707704,s,Q,N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_0_Q_dwell_low_mean_interior,14.991400098909802,s,Q,N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_0_Q_dwell_high_n_bouts,233.0,bouts,Q,N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_0_Q_dwell_high_median,5.48292930574946,s,Q,N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_0_Q_dwell_high_mean,15.40161901550653,s,Q,N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_0_Q_dwell_high_p90,34.72521893641325,s,Q,N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_0_Q_dwell_high_median_interior,5.48292930574946,s,Q,N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_0_Q_dwell_high_mean_interior,14.053945231978501,s,Q,N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_0_H2_occupancy_low,0.6571899987308034,frac,H(K=2),N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_0_H2_occupancy_high,0.3428100012691966,frac,H(K=2),N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_0_H2_transition_rate,0.022083333333333337,Hz,H(K=2),N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_0_H2_n_switches,159.0,count,H(K=2),N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_0_H2_dwell_low_n_bouts,80.0,bouts,H(K=2),N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_0_H2_dwell_low_median,23.302449549435206,s,H(K=2),N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_0_H2_dwell_low_mean,59.1470998857723,s,H(K=2),N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_0_H2_dwell_low_p90,172.25536235562913,s,H(K=2),N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_0_H2_dwell_low_median_interior,22.845538773956083,s,H(K=2),N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_0_H2_dwell_low_mean_interior,58.20696258761874,s,H(K=2),N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_0_H2_dwell_high_n_bouts,80.0,bouts,H(K=2),N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_0_H2_dwell_high_median,15.078055590811015,s,H(K=2),N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_0_H2_dwell_high_mean,30.852900114227694,s,H(K=2),N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_0_H2_dwell_high_p90,53.18441426576978,s,H(K=2),N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_0_H2_dwell_high_median_interior,14.621144815331894,s,H(K=2),N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_0_H2_dwell_high_mean_interior,27.72696528666974,s,H(K=2),N=2048 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_0_corr_with_full,0.995642191208741,r,序列形状,N=2048 seed=0,本工具 F 项,与 N=8192 全长序列的 Pearson 相关
+f_N2048_0_fano,25.1556741116737,,计数统计,N=2048 seed=0,本工具 F 项,群体事件计数的 var/mean
+f_N2048_1_Q_occupancy_low,0.5053940855438508,frac,Q,N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_1_Q_occupancy_high,0.49460591445614926,frac,Q,N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_1_Q_transition_rate,0.06986111111111112,Hz,Q,N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_1_Q_n_switches,503.0,count,Q,N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_1_Q_dwell_low_n_bouts,252.0,bouts,Q,N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_1_Q_dwell_low_median,5.026018530270338,s,Q,N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_1_Q_dwell_low_mean,14.439831015538592,s,Q,N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_1_Q_dwell_low_p90,33.628633075263366,s,Q,N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_1_Q_dwell_low_median_interior,4.569107754791217,s,Q,N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_1_Q_dwell_low_mean_interior,13.965814619425585,s,Q,N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_1_Q_dwell_high_n_bouts,252.0,bouts,Q,N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_1_Q_dwell_high_median,4.569107754791217,s,Q,N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_1_Q_dwell_high_mean,14.131597555889977,s,Q,N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_1_Q_dwell_high_p90,32.80619367940094,s,Q,N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_1_Q_dwell_high_median_interior,4.569107754791217,s,Q,N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_1_Q_dwell_high_mean_interior,12.86995690293781,s,Q,N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_1_H2_occupancy_low,0.7004696027414646,frac,H(K=2),N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_1_H2_occupancy_high,0.29953039725853536,frac,H(K=2),N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_1_H2_transition_rate,0.020694444444444446,Hz,H(K=2),N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_1_H2_n_switches,149.0,count,H(K=2),N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_1_H2_dwell_low_n_bouts,75.0,bouts,H(K=2),N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_1_H2_dwell_low_median,24.673181875872572,s,H(K=2),N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_1_H2_dwell_low_mean,67.2450818631806,s,H(K=2),N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_1_H2_dwell_low_p90,192.2680543216147,s,H(K=2),N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_1_H2_dwell_low_median_interior,24.21627110039345,s,H(K=2),N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_1_H2_dwell_low_mean_interior,66.35085396349515,s,H(K=2),N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_1_H2_dwell_high_n_bouts,75.0,bouts,H(K=2),N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_1_H2_dwell_high_median,15.534966366290137,s,H(K=2),N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_1_H2_dwell_high_mean,28.754918136819388,s,H(K=2),N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_1_H2_dwell_high_p90,49.346363751745145,s,H(K=2),N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_1_H2_dwell_high_median_interior,15.078055590811015,s,H(K=2),N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_1_H2_dwell_high_mean_interior,25.377071448907973,s,H(K=2),N=2048 seed=1,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_1_corr_with_full,0.9954711027366906,r,序列形状,N=2048 seed=1,本工具 F 项,与 N=8192 全长序列的 Pearson 相关
+f_N2048_1_fano,24.568121669178222,,计数统计,N=2048 seed=1,本工具 F 项,群体事件计数的 var/mean
+f_N2048_2_Q_occupancy_low,0.503490290646021,frac,Q,N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_2_Q_occupancy_high,0.4965097093539789,frac,Q,N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_2_Q_transition_rate,0.06680555555555556,Hz,Q,N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_2_Q_n_switches,481.0,count,Q,N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_2_Q_dwell_low_n_bouts,241.0,bouts,Q,N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_2_Q_dwell_low_median,6.396750856707704,s,Q,N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_2_Q_dwell_low_mean,15.042033579466187,s,Q,N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_2_Q_dwell_low_p90,38.38050514024622,s,Q,N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_2_Q_dwell_low_median_interior,6.396750856707704,s,Q,N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_2_Q_dwell_low_mean_interior,14.548800609214366,s,Q,N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_2_Q_dwell_high_n_bouts,241.0,bouts,Q,N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_2_Q_dwell_high_median,5.48292930574946,s,Q,N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_2_Q_dwell_high_mean,14.833485092732978,s,Q,N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_2_Q_dwell_high_p90,32.89757583449676,s,Q,N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_2_Q_dwell_high_median_interior,5.48292930574946,s,Q,N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_2_Q_dwell_high_mean_interior,13.516943774590683,s,Q,N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_2_H2_occupancy_low,0.6682320091382155,frac,H(K=2),N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_2_H2_occupancy_high,0.3317679908617845,frac,H(K=2),N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_2_H2_transition_rate,0.021805555555555557,Hz,H(K=2),N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_2_H2_n_switches,157.0,count,H(K=2),N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_2_H2_dwell_low_n_bouts,79.0,bouts,H(K=2),N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_2_H2_dwell_low_median,26.50082497778906,s,H(K=2),N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_2_H2_dwell_low_mean,60.902157794875336,s,H(K=2),N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_2_H2_dwell_low_p90,152.97372763041,s,H(K=2),N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_2_H2_dwell_low_median_interior,26.043914202309935,s,H(K=2),N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_2_H2_dwell_low_mean_interior,59.972468196862145,s,H(K=2),N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_2_H2_dwell_high_n_bouts,79.0,bouts,H(K=2),N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_2_H2_dwell_high_median,14.621144815331894,s,H(K=2),N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_2_H2_dwell_high_mean,30.237082711453777,s,H(K=2),N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_2_H2_dwell_high_p90,53.73270719634472,s,H(K=2),N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_2_H2_dwell_high_median_interior,14.621144815331894,s,H(K=2),N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_2_H2_dwell_high_mean_interior,27.05146104054595,s,H(K=2),N=2048 seed=2,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_2_corr_with_full,0.9957464288165354,r,序列形状,N=2048 seed=2,本工具 F 项,与 N=8192 全长序列的 Pearson 相关
+f_N2048_2_fano,24.710844197057533,,计数统计,N=2048 seed=2,本工具 F 项,群体事件计数的 var/mean
+f_N2048_3_Q_occupancy_low,0.5024749333671785,frac,Q,N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_3_Q_occupancy_high,0.4975250666328214,frac,Q,N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_3_Q_transition_rate,0.06402777777777778,Hz,Q,N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_3_Q_n_switches,461.0,count,Q,N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_3_Q_dwell_low_n_bouts,231.0,bouts,Q,N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_3_Q_dwell_low_median,5.48292930574946,s,Q,N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_3_Q_dwell_low_mean,15.661556364691277,s,Q,N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_3_Q_dwell_low_p90,39.29432669120447,s,Q,N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_3_Q_dwell_low_median_interior,5.48292930574946,s,Q,N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_3_Q_dwell_low_mean_interior,15.149572060016443,s,Q,N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_3_Q_dwell_high_n_bouts,231.0,bouts,Q,N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_3_Q_dwell_high_median,5.48292930574946,s,Q,N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_3_Q_dwell_high_mean,15.507274804139886,s,Q,N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_3_Q_dwell_high_p90,35.63904048737149,s,Q,N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_3_Q_dwell_high_median_interior,5.48292930574946,s,Q,N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_3_Q_dwell_high_mean_interior,14.307266978263627,s,Q,N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_3_H2_occupancy_low,0.672928036552862,frac,H(K=2),N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_3_H2_occupancy_high,0.32707196344713796,frac,H(K=2),N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_3_H2_transition_rate,0.02013888888888889,Hz,H(K=2),N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_3_H2_n_switches,145.0,count,H(K=2),N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_3_H2_dwell_low_n_bouts,73.0,bouts,H(K=2),N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_3_H2_dwell_low_median,26.50082497778906,s,H(K=2),N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_3_H2_dwell_low_mean,66.37098442713159,s,H(K=2),N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_3_H2_dwell_low_p90,175.0882091635994,s,H(K=2),N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_3_H2_dwell_low_median_interior,26.50082497778906,s,H(K=2),N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_3_H2_dwell_low_mean_interior,65.43977662139865,s,H(K=2),N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_3_H2_dwell_high_n_bouts,73.0,bouts,H(K=2),N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_3_H2_dwell_high_median,21.017895672039597,s,H(K=2),N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_3_H2_dwell_high_mean,32.25915255916977,s,H(K=2),N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_3_H2_dwell_high_p90,52.636121335194815,s,H(K=2),N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_3_H2_dwell_high_median_interior,21.017895672039597,s,H(K=2),N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_3_H2_dwell_high_mean_interior,28.84883868511232,s,H(K=2),N=2048 seed=3,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_3_corr_with_full,0.9959061565888495,r,序列形状,N=2048 seed=3,本工具 F 项,与 N=8192 全长序列的 Pearson 相关
+f_N2048_3_fano,25.45109593477341,,计数统计,N=2048 seed=3,本工具 F 项,群体事件计数的 var/mean
+f_N2048_4_Q_occupancy_low,0.5013326564284808,frac,Q,N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_4_Q_occupancy_high,0.4986673435715192,frac,Q,N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_4_Q_transition_rate,0.06319444444444446,Hz,Q,N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_4_Q_n_switches,455.0,count,Q,N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_4_Q_dwell_low_n_bouts,228.0,bouts,Q,N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_4_Q_dwell_low_median,6.396750856707704,s,Q,N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_4_Q_dwell_low_mean,15.831557571425705,s,Q,N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_4_Q_dwell_low_p90,40.482294707450194,s,Q,N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_4_Q_dwell_low_median_interior,6.396750856707704,s,Q,N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_4_Q_dwell_low_mean_interior,15.313555858348712,s,Q,N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_4_Q_dwell_high_n_bouts,228.0,bouts,Q,N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_4_Q_dwell_high_median,5.48292930574946,s,Q,N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_4_Q_dwell_high_mean,15.747389796995343,s,Q,N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_4_Q_dwell_high_p90,36.552862038329735,s,Q,N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_4_Q_dwell_high_median_interior,5.48292930574946,s,Q,N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_4_Q_dwell_high_mean_interior,14.524529320957454,s,Q,N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_4_H2_occupancy_low,0.6722934382535855,frac,H(K=2),N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_4_H2_occupancy_high,0.3277065617464145,frac,H(K=2),N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_4_H2_transition_rate,0.02125,Hz,H(K=2),N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_4_H2_n_switches,153.0,count,H(K=2),N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_4_H2_dwell_low_n_bouts,77.0,bouts,H(K=2),N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_4_H2_dwell_low_median,22.845538773956083,s,H(K=2),N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_4_H2_dwell_low_mean,62.86380201851708,s,H(K=2),N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_4_H2_dwell_low_p90,191.9025257012312,s,H(K=2),N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_4_H2_dwell_low_median_interior,22.845538773956083,s,H(K=2),N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_4_H2_dwell_low_mean_interior,61.93545801297252,s,H(K=2),N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_4_H2_dwell_high_n_bouts,77.0,bouts,H(K=2),N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_4_H2_dwell_high_median,15.534966366290137,s,H(K=2),N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_4_H2_dwell_high_mean,30.64269148797642,s,H(K=2),N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_4_H2_dwell_high_p90,51.90506409442823,s,H(K=2),N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N2048_4_H2_dwell_high_median_interior,15.534966366290137,s,H(K=2),N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_4_H2_dwell_high_mean_interior,27.37857462542,s,H(K=2),N=2048 seed=4,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N2048_4_corr_with_full,0.9958480009934968,r,序列形状,N=2048 seed=4,本工具 F 项,与 N=8192 全长序列的 Pearson 相关
+f_N2048_4_fano,25.801066467057506,,计数统计,N=2048 seed=4,本工具 F 项,群体事件计数的 var/mean
+f_N1024_0_Q_occupancy_low,0.5043787282650083,frac,Q,N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_0_Q_occupancy_high,0.49562127173499176,frac,Q,N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_0_Q_transition_rate,0.07347222222222223,Hz,Q,N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_0_Q_n_switches,529.0,count,Q,N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_0_Q_dwell_low_n_bouts,265.0,bouts,Q,N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_0_Q_dwell_low_median,5.48292930574946,s,Q,N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_0_Q_dwell_low_mean,13.703874881162488,s,Q,N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_0_Q_dwell_low_p90,35.63904048737149,s,Q,N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_0_Q_dwell_low_median_interior,5.48292930574946,s,Q,N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_0_Q_dwell_low_mean_interior,13.25041248889453,s,Q,N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_0_Q_dwell_high_n_bouts,265.0,bouts,Q,N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_0_Q_dwell_high_median,4.569107754791217,s,Q,N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_0_Q_dwell_high_mean,13.465936439592229,s,Q,N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_0_Q_dwell_high_p90,34.35969031602995,s,Q,N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_0_Q_dwell_high_median_interior,4.569107754791217,s,Q,N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_0_Q_dwell_high_mean_interior,12.270823477829442,s,Q,N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_0_H2_occupancy_low,0.6941236197486991,frac,H(K=2),N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_0_H2_occupancy_high,0.30587638025130093,frac,H(K=2),N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_0_H2_transition_rate,0.019861111111111114,Hz,H(K=2),N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_0_H2_n_switches,143.0,count,H(K=2),N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_0_H2_dwell_low_n_bouts,72.0,bouts,H(K=2),N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_0_H2_dwell_low_median,25.587003426830815,s,H(K=2),N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_0_H2_dwell_low_mean,69.4123619748699,s,H(K=2),N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_0_H2_dwell_low_p90,229.55197360071068,s,H(K=2),N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_0_H2_dwell_low_median_interior,25.587003426830815,s,H(K=2),N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_0_H2_dwell_low_mean_interior,68.51087486972858,s,H(K=2),N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_0_H2_dwell_high_n_bouts,72.0,bouts,H(K=2),N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_0_H2_dwell_high_median,16.44878791724838,s,H(K=2),N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_0_H2_dwell_high_mean,30.58763802513009,s,H(K=2),N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_0_H2_dwell_high_p90,51.99644624952405,s,H(K=2),N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_0_H2_dwell_high_median_interior,16.44878791724838,s,H(K=2),N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_0_H2_dwell_high_mean_interior,26.899817485953925,s,H(K=2),N=1024 seed=0,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_0_corr_with_full,0.9887477632843391,r,序列形状,N=1024 seed=0,本工具 F 项,与 N=8192 全长序列的 Pearson 相关
+f_N1024_0_fano,12.564163402703862,,计数统计,N=1024 seed=0,本工具 F 项,群体事件计数的 var/mean
+f_N1024_1_Q_occupancy_low,0.5061556035029826,frac,Q,N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_1_Q_occupancy_high,0.4938443964970174,frac,Q,N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_1_Q_transition_rate,0.0751388888888889,Hz,Q,N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_1_Q_n_switches,541.0,count,Q,N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_1_Q_dwell_low_n_bouts,271.0,bouts,Q,N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_1_Q_dwell_low_median,5.48292930574946,s,Q,N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_1_Q_dwell_low_mean,13.447676550632748,s,Q,N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_1_Q_dwell_low_p90,31.983754283538516,s,Q,N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_1_Q_dwell_low_median_interior,5.48292930574946,s,Q,N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_1_Q_dwell_low_mean_interior,13.003342217709521,s,Q,N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_1_Q_dwell_high_n_bouts,271.0,bouts,Q,N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_1_Q_dwell_high_median,4.569107754791217,s,Q,N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_1_Q_dwell_high_mean,13.120589132024076,s,Q,N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_1_Q_dwell_high_p90,31.983754283538516,s,Q,N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_1_Q_dwell_high_median_interior,4.569107754791217,s,Q,N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_1_Q_dwell_high_mean_interior,12.099674239539704,s,Q,N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_1_H2_occupancy_low,0.6634090620637136,frac,H(K=2),N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_1_H2_occupancy_high,0.3365909379362863,frac,H(K=2),N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_1_H2_transition_rate,0.023750000000000004,Hz,H(K=2),N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_1_H2_n_switches,171.0,count,H(K=2),N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_1_H2_dwell_low_n_bouts,86.0,bouts,H(K=2),N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_1_H2_dwell_low_median,20.560984896560477,s,H(K=2),N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_1_H2_dwell_low_mean,55.541223800683,s,H(K=2),N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_1_H2_dwell_low_p90,141.1854296230486,s,H(K=2),N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_1_H2_dwell_low_median_interior,20.104074121081354,s,H(K=2),N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_1_H2_dwell_low_mean_interior,54.62502706375099,s,H(K=2),N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_1_H2_dwell_high_n_bouts,86.0,bouts,H(K=2),N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_1_H2_dwell_high_median,14.621144815331894,s,H(K=2),N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_1_H2_dwell_high_mean,28.179706431875132,s,H(K=2),N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_1_H2_dwell_high_p90,49.80327452722426,s,H(K=2),N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_1_H2_dwell_high_median_interior,14.621144815331894,s,H(K=2),N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_1_H2_dwell_high_mean_interior,25.221474806447517,s,H(K=2),N=1024 seed=1,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_1_corr_with_full,0.9893429355721464,r,序列形状,N=1024 seed=1,本工具 F 项,与 N=8192 全长序列的 Pearson 相关
+f_N1024_1_fano,12.751705248118471,,计数统计,N=1024 seed=1,本工具 F 项,群体事件计数的 var/mean
+f_N1024_2_Q_occupancy_low,0.5092016753395101,frac,Q,N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_2_Q_occupancy_high,0.4907983246604899,frac,Q,N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_2_Q_transition_rate,0.06736111111111112,Hz,Q,N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_2_Q_n_switches,485.0,count,Q,N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_2_Q_dwell_low_n_bouts,243.0,bouts,Q,N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_2_Q_dwell_low_median,6.396750856707704,s,Q,N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_2_Q_dwell_low_mean,15.087457047096594,s,Q,N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_2_Q_dwell_low_p90,34.72521893641325,s,Q,N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_2_Q_dwell_low_median_interior,6.396750856707704,s,Q,N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_2_Q_dwell_low_mean_interior,14.598488082663508,s,Q,N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_2_Q_dwell_high_n_bouts,243.0,bouts,Q,N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_2_Q_dwell_high_median,5.48292930574946,s,Q,N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_2_Q_dwell_high_mean,14.542172582533034,s,Q,N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_2_Q_dwell_high_p90,36.187333417946455,s,Q,N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_2_Q_dwell_high_median_interior,5.48292930574946,s,Q,N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_2_Q_dwell_high_mean_interior,13.409009617573233,s,Q,N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_2_H2_occupancy_low,0.6980581292042137,frac,H(K=2),N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_2_H2_occupancy_high,0.30194187079578627,frac,H(K=2),N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_2_H2_transition_rate,0.020694444444444446,Hz,H(K=2),N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_2_H2_n_switches,149.0,count,H(K=2),N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_2_H2_dwell_low_n_bouts,75.0,bouts,H(K=2),N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_2_H2_dwell_low_median,25.587003426830815,s,H(K=2),N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_2_H2_dwell_low_mean,67.01358040360451,s,H(K=2),N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_2_H2_dwell_low_p90,233.75555273511873,s,H(K=2),N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_2_H2_dwell_low_median_interior,25.130092651351692,s,H(K=2),N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_2_H2_dwell_low_mean_interior,66.11622410581668,s,H(K=2),N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_2_H2_dwell_high_n_bouts,75.0,bouts,H(K=2),N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_2_H2_dwell_high_median,14.621144815331894,s,H(K=2),N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_2_H2_dwell_high_mean,28.98641959639548,s,H(K=2),N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_2_H2_dwell_high_p90,53.001649955578195,s,H(K=2),N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_2_H2_dwell_high_median_interior,14.621144815331894,s,H(K=2),N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_2_H2_dwell_high_mean_interior,25.599352366708626,s,H(K=2),N=1024 seed=2,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_2_corr_with_full,0.9894039159238172,r,序列形状,N=1024 seed=2,本工具 F 项,与 N=8192 全长序列的 Pearson 相关
+f_N1024_2_fano,13.345952908241266,,计数统计,N=1024 seed=2,本工具 F 项,群体事件计数的 var/mean
+f_N1024_3_Q_occupancy_low,0.500190379489783,frac,Q,N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_3_Q_occupancy_high,0.49980962051021705,frac,Q,N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_3_Q_transition_rate,0.06625,Hz,Q,N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_3_Q_n_switches,477.0,count,Q,N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_3_Q_dwell_low_n_bouts,239.0,bouts,Q,N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_3_Q_dwell_low_median,6.396750856707704,s,Q,N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_3_Q_dwell_low_mean,15.068496787976722,s,Q,N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_3_Q_dwell_low_p90,36.7356263485214,s,Q,N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_3_Q_dwell_low_median_interior,6.396750856707704,s,Q,N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_3_Q_dwell_low_mean_interior,14.571230192800561,s,Q,N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_3_Q_dwell_high_n_bouts,239.0,bouts,Q,N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_3_Q_dwell_high_median,5.48292930574946,s,Q,N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_3_Q_dwell_high_mean,15.057026224575573,s,Q,N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_3_Q_dwell_high_p90,36.552862038329735,s,Q,N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_3_Q_dwell_high_median_interior,5.48292930574946,s,Q,N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_3_Q_dwell_high_mean_interior,13.937698445287493,s,Q,N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_3_H2_occupancy_low,0.6665820535600965,frac,H(K=2),N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_3_H2_occupancy_high,0.3334179464399035,frac,H(K=2),N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_3_H2_transition_rate,0.02125,Hz,H(K=2),N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_3_H2_n_switches,153.0,count,H(K=2),N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_3_H2_dwell_low_n_bouts,77.0,bouts,H(K=2),N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_3_H2_dwell_low_median,23.759360324914326,s,H(K=2),N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_3_H2_dwell_low_mean,62.32975046276226,s,H(K=2),N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_3_H2_dwell_low_p90,145.4803909125525,s,H(K=2),N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_3_H2_dwell_low_median_interior,23.302449549435206,s,H(K=2),N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_3_H2_dwell_low_mean_interior,61.39437946306304,s,H(K=2),N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_3_H2_dwell_high_n_bouts,77.0,bouts,H(K=2),N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_3_H2_dwell_high_median,17.362609468206625,s,H(K=2),N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_3_H2_dwell_high_mean,31.176743043731236,s,H(K=2),N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_3_H2_dwell_high_p90,55.74311460845284,s,H(K=2),N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_3_H2_dwell_high_median_interior,16.9056986927275,s,H(K=2),N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_3_H2_dwell_high_mean_interior,27.96774904643255,s,H(K=2),N=1024 seed=3,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_3_corr_with_full,0.9894494381400222,r,序列形状,N=1024 seed=3,本工具 F 项,与 N=8192 全长序列的 Pearson 相关
+f_N1024_3_fano,13.794668564695227,,计数统计,N=1024 seed=3,本工具 F 项,群体事件计数的 var/mean
+f_N1024_4_Q_occupancy_low,0.5118669881964716,frac,Q,N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_4_Q_occupancy_high,0.48813301180352836,frac,Q,N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_4_Q_transition_rate,0.07097222222222223,Hz,Q,N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_4_Q_n_switches,511.0,count,Q,N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_4_Q_dwell_low_n_bouts,256.0,bouts,Q,N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_4_Q_dwell_low_median,5.48292930574946,s,Q,N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_4_Q_dwell_low_mean,14.396259043025763,s,Q,N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_4_Q_dwell_low_p90,36.09595126285061,s,Q,N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_4_Q_dwell_low_median_interior,5.48292930574946,s,Q,N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_4_Q_dwell_low_mean_interior,13.92950732774389,s,Q,N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_4_Q_dwell_high_n_bouts,256.0,bouts,Q,N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_4_Q_dwell_high_median,4.569107754791217,s,Q,N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_4_Q_dwell_high_mean,13.728740956974233,s,Q,N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_4_Q_dwell_high_p90,31.526843508059397,s,Q,N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_4_Q_dwell_high_median_interior,4.569107754791217,s,Q,N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_4_Q_dwell_high_mean_interior,12.689576909580941,s,Q,N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_4_H2_occupancy_low,0.6683589287980708,frac,H(K=2),N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_4_H2_occupancy_high,0.3316410712019292,frac,H(K=2),N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_4_H2_transition_rate,0.021805555555555557,Hz,H(K=2),N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_4_H2_n_switches,157.0,count,H(K=2),N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_4_H2_dwell_low_n_bouts,79.0,bouts,H(K=2),N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_4_H2_dwell_low_median,25.587003426830815,s,H(K=2),N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_4_H2_dwell_low_mean,60.91372515627987,s,H(K=2),N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_4_H2_dwell_low_p90,188.7955324279731,s,H(K=2),N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_4_H2_dwell_low_median_interior,25.587003426830815,s,H(K=2),N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_4_H2_dwell_low_mean_interior,59.98418385777187,s,H(K=2),N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_4_H2_dwell_high_n_bouts,79.0,bouts,H(K=2),N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_4_H2_dwell_high_median,16.44878791724838,s,H(K=2),N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_4_H2_dwell_high_mean,30.225515350049236,s,H(K=2),N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_4_H2_dwell_high_p90,58.484579261327575,s,H(K=2),N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减
+f_N1024_4_H2_dwell_high_median_interior,15.991877141769258,s,H(K=2),N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_4_H2_dwell_high_mean_interior,27.754400695129213,s,H(K=2),N=1024 seed=4,ZAPBench 行子采样,F 项子采样衰减 | 仅完整 bout（去首尾截断）
+f_N1024_4_corr_with_full,0.990101035678995,r,序列形状,N=1024 seed=4,本工具 F 项,与 N=8192 全长序列的 Pearson 相关
+f_N1024_4_fano,14.032381460299021,,计数统计,N=1024 seed=4,本工具 F 项,群体事件计数的 var/mean
+f_N8192_H_low_dwell_median,26.50082497778906,s,H(K=2),N=8192,本工具 F 项,sd=0.000 n=1
+f_N8192_H_transition_rate,0.019583333333333335,Hz,H(K=2),N=8192,本工具 F 项,sd=0.00000
+f_N8192_Q_low_dwell_median,6.853661632186825,s,Q,N=8192,本工具 F 项,sd=0.000
+f_N8192_drift_vs_N8192,1.0,x,H(K=2),N=8192/8192,本工具 F 项,子采样偏差倍数
+f_N4096_H_low_dwell_median,25.861149892118288,s,H(K=2),N=4096,本工具 F 项,sd=1.316 n=5
+f_N4096_H_transition_rate,0.02041666666666667,Hz,H(K=2),N=4096,本工具 F 项,sd=0.00126
+f_N4096_Q_low_dwell_median,6.762279477091001,s,Q,N=4096,本工具 F 项,sd=0.501
+f_N4096_drift_vs_N8192,0.9758620689655172,x,H(K=2),N=4096/8192,本工具 F 项,子采样偏差倍数
+f_N2048_H_low_dwell_median,24.764564030968394,s,H(K=2),N=2048,本工具 F 项,sd=1.722 n=5
+f_N2048_H_transition_rate,0.021194444444444446,Hz,H(K=2),N=2048,本工具 F 项,sd=0.00080
+f_N2048_Q_low_dwell_median,5.939840081228583,s,Q,N=2048,本工具 F 项,sd=0.646
+f_N2048_drift_vs_N8192,0.9344827586206896,x,H(K=2),N=2048/8192,本工具 F 项,子采样偏差倍数
+f_N1024_H_low_dwell_median,24.21627110039345,s,H(K=2),N=1024,本工具 F 项,sd=2.191 n=5
+f_N1024_H_transition_rate,0.021472222222222226,Hz,H(K=2),N=1024,本工具 F 项,sd=0.00146
+f_N1024_Q_low_dwell_median,5.848457926132758,s,Q,N=1024,本工具 F 项,sd=0.501
+f_N1024_drift_vs_N8192,0.9137931034482758,x,H(K=2),N=1024/8192,本工具 F 项,子采样偏差倍数
