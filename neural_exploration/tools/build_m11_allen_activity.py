@@ -54,7 +54,8 @@ OBJECTS = [
     ("channels_prefix_1MB.csv", "channels.csv", 1048576, "0-1048575",
      "逐 channel 表（全量 6,613,329 B 未取 ⇒ 仅前缀）"),
     ("probe_810755797_lfp_head8MB.bin", "session_715093703/probe_810755797_lfp.nwb", 8388608, "0-8388607",
-     "LFP NWB(HDF5) 前缀 ⇒ 读回 sampling_rate / 电极与单元结构（全量 2,062,950,784 B **>2 GB 上限**）"),
+     "LFP NWB(HDF5) 前缀 ⇒ 试读电极/单元结构（全量 2,062,950,784 B **>2 GB 上限**；"
+     "**该前缀已按 >30 min 纪律主动停止**，采样率改由自描述 probes.csv 读回）"),
 ]
 
 
@@ -193,8 +194,15 @@ def main():
                                   "sample": units["sample"]} if units else {})),
                channels_csv=dict(full_bytes=6613329, landed="1 MB Range 前缀",
                                  **({"columns": chan["columns"], "n_columns": chan["n_columns"]} if chan else {})),
-               nwb_lfp=dict(full_bytes=2062950784, note="全量 **>2 GB 单文件上限** ⇒ 不下载，改用 Range 头解析",
-                            head=nwb_head),
+               nwb_lfp=dict(
+                   full_bytes=2062950784,
+                   status="unavailable（**主动停止**）",
+                   note="全量 2,062,950,784 B **>2 GB 单文件上限** ⇒ 不下载；2.31 MB 前缀的 HDF5 头仍不足以定位 "
+                        "`/general`（`open_failed: not a group`），而按实测 ~1.6 KB/s 取满 8.39 MB 前缀需 >60 min "
+                        "⇒ 按「>30 min 先汇报」纪律**停止**，登记 `unavailable` + 原因。"
+                        "**采样率与表结构不依赖该 NWB**：已由自描述 `probes.csv`（30 kHz / 2.5 kHz）与 "
+                        "`channels.csv`/`units.csv` 表头 readback 提供 ⇒ 回退源需求已满足。",
+                   head=nwb_head),
                voxel_channel=dict(
                    status="decoded（**不登记 format_unverified** —— 理由与证据见下）",
                    decode="大端 int16（`np.frombuffer(raw, '>i2').reshape(10,200,200)`）",

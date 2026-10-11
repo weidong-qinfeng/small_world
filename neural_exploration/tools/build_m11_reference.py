@@ -146,9 +146,9 @@ def main():
         add("R-23", "allen_ecephys.spike_sampling_rate_hz", "%.4f" % (sp.get("max") or 0), "Hz",
             "== 30000（spike-band；probes.csv 自描述）", "asserted", "measured",
             BUCKET_URL + "/probes.csv", act.get("generated_at", ""),
-            "**RF-M11-A 回退源采样率读回**（%d 个 probe 中 %d 个有值；均值 %.2f Hz）；"
-            "min=0 属无 spike 数据的占位行" % (sr.get("n_probes", 0), sr.get("n_with_sampling_rate", 0),
-                                              sp.get("mean") or 0))
+            "**RF-M11-A 回退源的采样率读回**（来源 = 自描述 `probes.csv`，非 NWB 头）："
+            "%d 个 probe 中 %d 个有值，均值 %.2f Hz；min=0 为无 spike 数据的占位行"
+            % (sr.get("n_probes", 0), sr.get("n_with_sampling_rate", 0), sp.get("mean") or 0))
         add("R-24", "allen_ecephys.lfp_sampling_rate_hz", "%.4f" % (lf.get("max") or 0), "Hz",
             "== 2500（LFP；probes.csv 自描述）", "asserted", "measured", BUCKET_URL + "/probes.csv",
             act.get("generated_at", ""),

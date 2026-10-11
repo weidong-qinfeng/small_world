@@ -1,6 +1,6 @@
 {
  "generated_by": "tools/validate_p11_data_gate.py",
- "generated_at": "2026-10-11T14:26:48Z",
+ "generated_at": "2026-10-11T14:30:31Z",
  "gate": "G2 (P1/P2 数据门)",
  "assertions": [
   {
@@ -237,6 +237,11 @@
    "assertion": "P1.8d MICrONS 体素解码证据在位（大端 int16，lat_x 与帧轴自相关过门）",
    "ok": true,
    "detail": "lat_x=0.814 帧轴lag1=0.8032 p50=1953.0（LE 对照：lat_x=-0.0011 帧轴lag1=0.0003）"
+  },
+  {
+   "assertion": "DET 复跑 verdict 一致（确定性）",
+   "ok": true,
+   "detail": "[{\"source_id\": \"2\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"3\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F7\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F8\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F9\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}]"
   }
  ],
  "failures": [],
@@ -258,5 +263,41 @@
   "n_assertions": 17,
   "n_failed": 0
  },
- "G2_gate": "pass"
+ "G2_gate": "pass",
+ "determinism_check": {
+  "note": "复跑固定子集（#2/#3/F7/F8/F9），比对 verdict 是否一致",
+  "comparisons": [
+   {
+    "source_id": "2",
+    "first": "REACHABLE",
+    "rerun": "REACHABLE",
+    "same": true
+   },
+   {
+    "source_id": "3",
+    "first": "REACHABLE",
+    "rerun": "REACHABLE",
+    "same": true
+   },
+   {
+    "source_id": "F7",
+    "first": "REACHABLE",
+    "rerun": "REACHABLE",
+    "same": true
+   },
+   {
+    "source_id": "F8",
+    "first": "REACHABLE",
+    "rerun": "REACHABLE",
+    "same": true
+   },
+   {
+    "source_id": "F9",
+    "first": "REACHABLE",
+    "rerun": "REACHABLE",
+    "same": true
+   }
+  ],
+  "all_same": true
+ }
 }

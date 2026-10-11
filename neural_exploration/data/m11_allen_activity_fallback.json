@@ -1,6 +1,6 @@
 {
  "generated_by": "tools/build_m11_allen_activity.py",
- "generated_at": "2026-10-11T14:26:48Z",
+ "generated_at": "2026-10-11T14:30:31Z",
  "ruling": "RF-M11-A：P2 功能通道回退到自描述源（HDF5/CSV）",
  "channel_priority": {
   "a": "Allen Brain Observatory Neuropixels ecephys-cache（**本轮已落**：自描述 CSV + NWB/HDF5）",
@@ -182,7 +182,8 @@
  },
  "nwb_lfp": {
   "full_bytes": 2062950784,
-  "note": "全量 **>2 GB 单文件上限** ⇒ 不下载，改用 Range 头解析",
+  "status": "unavailable（**主动停止**）",
+  "note": "全量 2,062,950,784 B **>2 GB 单文件上限** ⇒ 不下载；2.31 MB 前缀的 HDF5 头仍不足以定位 `/general`（`open_failed: not a group`），而按实测 ~1.6 KB/s 取满 8.39 MB 前缀需 >60 min ⇒ 按「>30 min 先汇报」纪律**停止**，登记 `unavailable` + 原因。**采样率与表结构不依赖该 NWB**：已由自描述 `probes.csv`（30 kHz / 2.5 kHz）与 `channels.csv`/`units.csv` 表头 readback 提供 ⇒ 回退源需求已满足。",
   "head": null
  },
  "voxel_channel": {
@@ -199,7 +200,7 @@
    "range": null,
    "expected_bytes": 1879,
    "use": "数据集清单（BASEDIR/sessions/probes/channels/units/session_data）",
-   "retrieved_at": "2026-10-11T14:26:48Z",
+   "retrieved_at": "2026-10-11T14:30:31Z",
    "bytes": 1879,
    "sha256": "f704d2f9127bcde83942815dd5ed6ebe757a1742f4745b45264bb5a323a4c62d",
    "verdict": "COMPLETE",
@@ -211,7 +212,7 @@
    "range": null,
    "expected_bytes": 7849,
    "use": "session 级元数据（type/specimen/age/sex/genotype/has_nwb）",
-   "retrieved_at": "2026-10-11T14:26:48Z",
+   "retrieved_at": "2026-10-11T14:30:31Z",
    "bytes": 7849,
    "sha256": "cdd12b8becac84d284f222718a2a94f4155893fb9f26f1a9c725f541acc738f8",
    "verdict": "COMPLETE",
@@ -223,7 +224,7 @@
    "range": null,
    "expected_bytes": 26954,
    "use": "**采样率读回**：sampling_rate / lfp_sampling_rate / has_lfp_data",
-   "retrieved_at": "2026-10-11T14:26:48Z",
+   "retrieved_at": "2026-10-11T14:30:31Z",
    "bytes": 26954,
    "sha256": "f555ce63317d5b6a83bfafd9f7e6a7b7393c0d7416952bafae0fe67412bfb6bf",
    "verdict": "COMPLETE",
@@ -235,7 +236,7 @@
    "range": "0-1048575",
    "expected_bytes": 1048576,
    "use": "逐 unit 质量表（全量 51,439,189 B **未取** ⇒ 仅前缀 schema/样本）",
-   "retrieved_at": "2026-10-11T14:26:48Z",
+   "retrieved_at": "2026-10-11T14:30:31Z",
    "bytes": 1048576,
    "sha256": "5b09eecda9bb76c7a8dc297528e3e1757fccea0914499c087be1fc78ed7f820d",
    "verdict": "RANGE_BOUNDED",
@@ -248,7 +249,7 @@
    "range": "0-1048575",
    "expected_bytes": 1048576,
    "use": "逐 channel 表（全量 6,613,329 B 未取 ⇒ 仅前缀）",
-   "retrieved_at": "2026-10-11T14:26:48Z",
+   "retrieved_at": "2026-10-11T14:30:31Z",
    "bytes": 1048576,
    "sha256": "297b5e1b2dd8698080c4f42ea6a379ccd4aef8c6d8fa07a2779b8710b935ae74",
    "verdict": "RANGE_BOUNDED",
@@ -260,12 +261,12 @@
    "url": "https://allen-brain-observatory.s3.amazonaws.com/visual-coding-neuropixels/ecephys-cache/session_715093703/probe_810755797_lfp.nwb",
    "range": "0-8388607",
    "expected_bytes": 8388608,
-   "use": "LFP NWB(HDF5) 前缀 ⇒ 读回 sampling_rate / 电极与单元结构（全量 2,062,950,784 B **>2 GB 上限**）",
-   "retrieved_at": "2026-10-11T14:26:48Z",
-   "bytes": 1564672,
-   "sha256": "52b325d93a42704298f99e52cedef6890b4f86111aa02802a212ca244320210a",
+   "use": "LFP NWB(HDF5) 前缀 ⇒ 试读电极/单元结构（全量 2,062,950,784 B **>2 GB 上限**；**该前缀已按 >30 min 纪律主动停止**，采样率改由自描述 probes.csv 读回）",
+   "retrieved_at": "2026-10-11T14:30:31Z",
+   "bytes": 2314240,
+   "sha256": "64082331ebb97604e228a2d39d2bdb5a6950c4931870269b07f7b673256f8215",
    "verdict": "INCOMPLETE",
-   "note": "期望 8388608 B，实收 1564672 B ⇒ **INCOMPLETE（不进统计，需重取）**；**不入统计**（stat_eligible=False），需重取",
+   "note": "期望 8388608 B，实收 2314240 B ⇒ **INCOMPLETE（不进统计，需重取）**；**不入统计**（stat_eligible=False），需重取",
    "stat_eligible": false
   }
  ]
