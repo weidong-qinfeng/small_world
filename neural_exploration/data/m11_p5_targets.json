@@ -1,12 +1,12 @@
 {
  "generated_by": "M11 执行节点 B3（工作包 G1：P5 判据/协议设计与工具骨架）——逐行 provenance，无一行凭印象",
- "generated_at": "2026-10-11（初审反馈后：**R9 口径分列升级，按「新增行 + 保留原行」纪律**）",
- "revision_note": "首版 72 行 → R9/R10/R11 到位后 80 行 → 主agent 初审反馈后 **94 行**（新增：口径分列 3 组 + 哨兵/样本范围 5 行 + 掩膜未决冲突 1 行 + Allen 参照 2 行 + R9/R10/R11 登记 5 行）。**旧行的 value/evidence_level/provenance 一律逐字保留**；`unavailable → measured` 的升级一律走新增行。",
+ "generated_at": "2026-10-11（验收后收尾：R10 实测锚补入 + 样本范围实测更正）",
+ "revision_note": "72 行（首版）→ 80（R9/R10/R11）→ 94（初审反馈：口径分列）→ **97 行**（本收尾轮：① 样本范围**实测更正**（落盘数据来自**单 field**，非 2 field）② 补入 R10 的**平滑档 τ** 与 **Q/H 双法 dwell/p90 锚**）。**旧行 value/evidence_level/provenance 一律逐字保留**；`unavailable→measured` 升级一律新增行。",
  "role": "M11 G1（P5 生理工作点门）判据带 + 协议常数；运行前定稿，不事后调；只允许新增行",
  "file": "data/m11_p5_targets.csv",
  "hash_basis": {
-  "csv_sha256_file_bytes": "033fd5064f8a21265c5e2a1e3158bf3bc4c8771919d0b7808619ad4eb2593686",
-  "rows_payload_sha256": "7cd531a3b8415298a60f9cbe333ec9712d59ece7197465ce7b198312ff33c460",
+  "csv_sha256_file_bytes": "a3273fb6ed01cb2652877b9b1f6a2c6041b78da17f754faab3ec0411fa2736a9",
+  "rows_payload_sha256": "55bce1039431f64dc6c0f682c4997ea3a7996cc438a9ae7156ad0b119b89e458",
   "payload_definition": "csv 行按 key 排序的 canonical JSON（sort_keys=True, separators=(',',':')）",
   "note": "跨节点比对 sha256 时必须声明基准（file_bytes / payload / semantic）——主agent 纪律 §6-3"
  },
@@ -65,7 +65,7 @@
     "microns_sentinel_mask_policy"
    ]
   },
-  "honest_status": "钙口径带本身仍 **unavailable**：R9 使数据**可解码**，但「ROI 掩膜 × 帧序列 → 逐 ROI ΔF/F → 事件检测 → 事件率中位」这条管线尚未建立（`m11_reference.csv::R-21` unverified）⇒ **可解码 ≠ 已重建出率口径**。已测的钙域「率」只有**群体状态转换率**（0.104–0.438 Hz，见 microns_calcium_measured_population_anchors），它不是逐细胞率，**不得**用作 P5 (a)。"
+  "honest_status": "钙口径带本身仍 **unavailable**：R9 使数据**可解码**，但「ROI 掩膜 × 帧序列 → 逐 ROI ΔF/F → 事件检测 → 事件率中位」这条管线尚未建立（`m11_reference.csv::R-21` unverified）⇒ **可解码 ≠ 已重建出率口径**。已测的钙域「率」只有**群体状态转换率**（0.104–0.438 Hz，见 microns_calcium_measured_population_anchors），它不是逐细胞率，**不得**用作 P5 (a)。（收尾轮补充：已测钙域的**完整**锚已补入 `microns_same_source_tau_band_smoothed_ref` 与 `microns_same_source_dwell_anchors`；但 **(a) 的钙口径带仍需逐 ROI 事件率管线** ⇒ 仍 `unavailable`。）"
  },
  "provenance_ledger": {
   "literature_verified_this_round": [
@@ -1209,9 +1209,9 @@
    "unit": "",
    "evidence_level": "measured",
    "provenance": "data/_mainagent_m11_same_source_band.csv（n=2000，两条管线）+ data/m11_microns_protocol.json::protocol.functional_series（frame_rate_hz 6.300006、frame_interval_s 0.15873）+ data/m11_reference.csv::R-03/R-04（单 field 40,000 帧 / 6,349.2 s）",
-   "note": "**样本范围（主agent 要求写进 note）**：可用功能时间序列仅 **2 个 field**（144 field 中）、每 field 本轮取 **2,000 帧 ≈ 317.46 s**；单 field 完整记录为 40,000 帧 / 6,349.2 s（**未全取**）⇒ 一切钙域统计的**总体外推范围**限于这 2 个 field / 317 s，不得写成「整卷/整动物」。",
+   "note": "**样本范围（主agent 要求写进 note）**：可用功能时间序列仅 **2 个 field**（144 field 中）、每 field 本轮取 **2,000 帧 ≈ 317.46 s**；单 field 完整记录为 40,000 帧 / 6,349.2 s（**未全取**）⇒ 一切钙域统计的**总体外推范围**限于这 2 个 field / 317 s，不得写成「整卷/整动物」。 **【实测更正（本节点 2026-10-11，append-only）】** 本行原写「2 fields」**不准确**：逐件核对 `data/m11_functional_subset_manifest.csv`（200 对象）＋磁盘 `data/m11_raw/microns/functional_subset/`（200 文件）＋主agent 探针 `_mainagent_m11_same_source_band.json`（`n_frames=2000`、`duration_s=317.46`）三处一致表明：落盘的 2,000 帧**全部来自单一 field `session4_scan7_field4`**；`protocol.json` 里**声明**的第二个 series （`session5_scan3_field1`）**从未取数**；R10 的「两个」指的是**两条分析管线**（frame_mean / high_pixel_frac），不是两个 field。⇒ 现行准确表述见新增行 `microns_functional_calcium_sample_scope_perfield_measured`；本行 final 置 0。",
    "wrong_usage_consequence": "把 2 field / 317 s 的统计外推为整卷/整动物 ⇒ 过度泛化（清单 §3.1「单个 field ≠ 整卷」）",
-   "final": "1"
+   "final": "0"
   },
   {
    "key": "microns_functional_sentinel_count",
@@ -1278,6 +1278,39 @@
    "note": "Allen BO Neuropixels（在体电生理、清醒）的**实测**率带当前不可得（仅目录）；补取路径 = 托管作业 J1（单 session NWB ≈100–250 MB，20–60 min）。与钙口径行分列（本行 = 电生理口径、在体、Allen 制备）。",
    "wrong_usage_consequence": "把「目录可达」当成「率带可得」⇒ 未测被当成已测；仍以 Allen Cell Types **in vitro**（17.41/17.63 Hz）顶上 ⇒ 高 8.7–34.8×（见 proxy_* 行）",
    "final": "0"
+  },
+  {
+   "key": "microns_functional_calcium_sample_scope_perfield_measured",
+   "value": "1 field(session4_scan7_field4)|200 chunks x 10 frames = 2000 frames|317.46 s|6.300006 Hz",
+   "value_kind": "list",
+   "unit": "",
+   "evidence_level": "measured",
+   "provenance": "data/m11_functional_subset_manifest.csv（200/200 对象，url 前缀唯一 = session4_scan7_field4，t_chunk 0–199，verdict 全 REACHABLE）+ 磁盘核验 data/m11_raw/microns/functional_subset/（200 文件同名前缀）+ data/_mainagent_m11_same_source_band.json（n_frames=2000、duration_s=317.46001511744595、frame_hz=6.300006）+ data/m11_reference.csv::R-07（blockSize [200,200,1,10] ⇒ 10 帧/chunk）",
+   "note": "**样本范围（实测更正版，三处证据一致）**：可用的功能时间序列 = **单 field**（`session4_scan7_field4`）× **200 chunk × 10 帧 = 2,000 帧 = 317.46 s**；**不是**「2 field × 317.5 s/field」。`protocol.json` 仅**声明** 2 个 series（第 2 个 `session5_scan3_field1` 未取数）；单 field 完整记录为 40,000 帧 / 6,349.2 s（本轮只取前 2,000 帧）。⇒ **R10 的「节点须做①两个 field 都建带 / ②给跨 field 离散度」仍然 open**：本带的**跨 field 通用性未测**、**跨 field 离散度 unavailable** ⇒ RF-M11-2 的「同阶窗」目前**只能**取跨条件离散度（Q/H 法 2.6–6×）作依据，不得声称来自跨 field。",
+   "wrong_usage_consequence": "把单 field 的统计写成「2 field / 整卷/整动物」⇒ 过度泛化（清单 §3.1「单个 field ≠ 整卷」）；把「两条管线」读成「两个 field」⇒ 把**方法学口径差**误当成**生物学变异**（这正是主agent 已登记的口径纪律所禁）",
+   "final": "1"
+  },
+  {
+   "key": "microns_same_source_tau_band_smoothed_ref",
+   "value": "29.68|30.48",
+   "value_kind": "list",
+   "unit": "s",
+   "evidence_level": "measured",
+   "provenance": "data/_mainagent_m11_same_source_band.csv::frame_mean|native|smooth5（τ=29.6828 s，n=1996）与 high_pixel_frac|native|smooth5（τ=30.4821 s，n=1996）+ docs/m11_acceptance_master.md R10（φ=0.9947/0.9948）",
+   "note": "**同源目标带的「5 帧平滑」档**（主agent 本轮要求一并补入）：τ **29.68/30.48 s** vs **未平滑 9.015/8.003 s** ⇒ 平滑把 τ 放大 **3.29×**（不是量级差）——与 ZAPBench 的 11.09× 放大形成对照（后者未平滑 φ=0.7615 ⇒ 慢结构主要来自平滑）。另并列降 0.9138 s 箱档：未平滑 7.657/7.642 s（n=333）、平滑 31.24/32.27 s（n=329）。**归属 S 门**。",
+   "wrong_usage_consequence": "只报平滑档（29–30 s）或只报未平滑档（8–9 s）⇒ 同一数据的 τ 相差 3.3×（跨箱宽再叠加 ⇒ 7.6–32 s 共 4.2×）；RF-M11-2 已要求「口径差倍数必须并列」（M10 实测口径差 H/Q=3.87×、未平滑 13.0×）",
+   "final": "1"
+  },
+  {
+   "key": "microns_same_source_dwell_anchors",
+   "value": "Q:dwell_med=1.11-1.27 s|Q:p90=7.0-7.6 s|Q:n=69/63|H:dwell_med=3.17-6.67 s|H:p90=32.6-34.2 s|H:n=17/16",
+   "value_kind": "list",
+   "unit": "",
+   "evidence_level": "measured",
+   "provenance": "docs/m11_acceptance_master.md R10（状态结构，原生帧：Q 法占用 0.500、转换率 0.438–0.400 Hz、低态 dwell 中位 1.11–1.27 s、p90 7.0–7.6 s、n=69/63；H 法 K=2 占用 0.613–0.642、转换率 0.104–0.110 Hz、低态 dwell 中位 3.17–6.67 s、p90 32.6–34.2 s、n=17/16；两法内部一致性断言均通过）",
+   "note": "**同源 dwell 锚（主agent 本轮要求补入）**：Q 法与 H 法的低态 dwell 中位相差 **2.6–6×**、p90 相差 **4.5×**，且 H 法 n=17/16 接近 RF-M11-4 的「bout 数 ≥10」下限（**再少即须判 `unavailable`**）。**归属 S 门**：RF-M11-4 四要素（占用非退化 / 转换存在 / p90÷中位 ≥2 且拒绝指数 / 消融致消失）须与这些锚同算法同参数判。占用 0.613–0.642 满足「两态各 ≥5%」✅。",
+   "wrong_usage_consequence": "用 Q 法锚去判 H 法实现（或反之）⇒ 2.6–6× 的口径差被读成机制差；在 P5/G1 内引用 ⇒ 越界（慢状态归 S 门）",
+   "final": "1"
   }
  ],
  "row_index": {
@@ -2245,9 +2278,9 @@
    "unit": "",
    "evidence_level": "measured",
    "provenance": "data/_mainagent_m11_same_source_band.csv（n=2000，两条管线）+ data/m11_microns_protocol.json::protocol.functional_series（frame_rate_hz 6.300006、frame_interval_s 0.15873）+ data/m11_reference.csv::R-03/R-04（单 field 40,000 帧 / 6,349.2 s）",
-   "note": "**样本范围（主agent 要求写进 note）**：可用功能时间序列仅 **2 个 field**（144 field 中）、每 field 本轮取 **2,000 帧 ≈ 317.46 s**；单 field 完整记录为 40,000 帧 / 6,349.2 s（**未全取**）⇒ 一切钙域统计的**总体外推范围**限于这 2 个 field / 317 s，不得写成「整卷/整动物」。",
+   "note": "**样本范围（主agent 要求写进 note）**：可用功能时间序列仅 **2 个 field**（144 field 中）、每 field 本轮取 **2,000 帧 ≈ 317.46 s**；单 field 完整记录为 40,000 帧 / 6,349.2 s（**未全取**）⇒ 一切钙域统计的**总体外推范围**限于这 2 个 field / 317 s，不得写成「整卷/整动物」。 **【实测更正（本节点 2026-10-11，append-only）】** 本行原写「2 fields」**不准确**：逐件核对 `data/m11_functional_subset_manifest.csv`（200 对象）＋磁盘 `data/m11_raw/microns/functional_subset/`（200 文件）＋主agent 探针 `_mainagent_m11_same_source_band.json`（`n_frames=2000`、`duration_s=317.46`）三处一致表明：落盘的 2,000 帧**全部来自单一 field `session4_scan7_field4`**；`protocol.json` 里**声明**的第二个 series （`session5_scan3_field1`）**从未取数**；R10 的「两个」指的是**两条分析管线**（frame_mean / high_pixel_frac），不是两个 field。⇒ 现行准确表述见新增行 `microns_functional_calcium_sample_scope_perfield_measured`；本行 final 置 0。",
    "wrong_usage_consequence": "把 2 field / 317 s 的统计外推为整卷/整动物 ⇒ 过度泛化（清单 §3.1「单个 field ≠ 整卷」）",
-   "final": "1"
+   "final": "0"
   },
   "microns_functional_sentinel_count": {
    "key": "microns_functional_sentinel_count",
@@ -2314,6 +2347,67 @@
    "note": "Allen BO Neuropixels（在体电生理、清醒）的**实测**率带当前不可得（仅目录）；补取路径 = 托管作业 J1（单 session NWB ≈100–250 MB，20–60 min）。与钙口径行分列（本行 = 电生理口径、在体、Allen 制备）。",
    "wrong_usage_consequence": "把「目录可达」当成「率带可得」⇒ 未测被当成已测；仍以 Allen Cell Types **in vitro**（17.41/17.63 Hz）顶上 ⇒ 高 8.7–34.8×（见 proxy_* 行）",
    "final": "0"
+  },
+  "microns_functional_calcium_sample_scope_perfield_measured": {
+   "key": "microns_functional_calcium_sample_scope_perfield_measured",
+   "value": "1 field(session4_scan7_field4)|200 chunks x 10 frames = 2000 frames|317.46 s|6.300006 Hz",
+   "value_kind": "list",
+   "unit": "",
+   "evidence_level": "measured",
+   "provenance": "data/m11_functional_subset_manifest.csv（200/200 对象，url 前缀唯一 = session4_scan7_field4，t_chunk 0–199，verdict 全 REACHABLE）+ 磁盘核验 data/m11_raw/microns/functional_subset/（200 文件同名前缀）+ data/_mainagent_m11_same_source_band.json（n_frames=2000、duration_s=317.46001511744595、frame_hz=6.300006）+ data/m11_reference.csv::R-07（blockSize [200,200,1,10] ⇒ 10 帧/chunk）",
+   "note": "**样本范围（实测更正版，三处证据一致）**：可用的功能时间序列 = **单 field**（`session4_scan7_field4`）× **200 chunk × 10 帧 = 2,000 帧 = 317.46 s**；**不是**「2 field × 317.5 s/field」。`protocol.json` 仅**声明** 2 个 series（第 2 个 `session5_scan3_field1` 未取数）；单 field 完整记录为 40,000 帧 / 6,349.2 s（本轮只取前 2,000 帧）。⇒ **R10 的「节点须做①两个 field 都建带 / ②给跨 field 离散度」仍然 open**：本带的**跨 field 通用性未测**、**跨 field 离散度 unavailable** ⇒ RF-M11-2 的「同阶窗」目前**只能**取跨条件离散度（Q/H 法 2.6–6×）作依据，不得声称来自跨 field。",
+   "wrong_usage_consequence": "把单 field 的统计写成「2 field / 整卷/整动物」⇒ 过度泛化（清单 §3.1「单个 field ≠ 整卷」）；把「两条管线」读成「两个 field」⇒ 把**方法学口径差**误当成**生物学变异**（这正是主agent 已登记的口径纪律所禁）",
+   "final": "1"
+  },
+  "microns_same_source_tau_band_smoothed_ref": {
+   "key": "microns_same_source_tau_band_smoothed_ref",
+   "value": "29.68|30.48",
+   "value_kind": "list",
+   "unit": "s",
+   "evidence_level": "measured",
+   "provenance": "data/_mainagent_m11_same_source_band.csv::frame_mean|native|smooth5（τ=29.6828 s，n=1996）与 high_pixel_frac|native|smooth5（τ=30.4821 s，n=1996）+ docs/m11_acceptance_master.md R10（φ=0.9947/0.9948）",
+   "note": "**同源目标带的「5 帧平滑」档**（主agent 本轮要求一并补入）：τ **29.68/30.48 s** vs **未平滑 9.015/8.003 s** ⇒ 平滑把 τ 放大 **3.29×**（不是量级差）——与 ZAPBench 的 11.09× 放大形成对照（后者未平滑 φ=0.7615 ⇒ 慢结构主要来自平滑）。另并列降 0.9138 s 箱档：未平滑 7.657/7.642 s（n=333）、平滑 31.24/32.27 s（n=329）。**归属 S 门**。",
+   "wrong_usage_consequence": "只报平滑档（29–30 s）或只报未平滑档（8–9 s）⇒ 同一数据的 τ 相差 3.3×（跨箱宽再叠加 ⇒ 7.6–32 s 共 4.2×）；RF-M11-2 已要求「口径差倍数必须并列」（M10 实测口径差 H/Q=3.87×、未平滑 13.0×）",
+   "final": "1"
+  },
+  "microns_same_source_dwell_anchors": {
+   "key": "microns_same_source_dwell_anchors",
+   "value": "Q:dwell_med=1.11-1.27 s|Q:p90=7.0-7.6 s|Q:n=69/63|H:dwell_med=3.17-6.67 s|H:p90=32.6-34.2 s|H:n=17/16",
+   "value_kind": "list",
+   "unit": "",
+   "evidence_level": "measured",
+   "provenance": "docs/m11_acceptance_master.md R10（状态结构，原生帧：Q 法占用 0.500、转换率 0.438–0.400 Hz、低态 dwell 中位 1.11–1.27 s、p90 7.0–7.6 s、n=69/63；H 法 K=2 占用 0.613–0.642、转换率 0.104–0.110 Hz、低态 dwell 中位 3.17–6.67 s、p90 32.6–34.2 s、n=17/16；两法内部一致性断言均通过）",
+   "note": "**同源 dwell 锚（主agent 本轮要求补入）**：Q 法与 H 法的低态 dwell 中位相差 **2.6–6×**、p90 相差 **4.5×**，且 H 法 n=17/16 接近 RF-M11-4 的「bout 数 ≥10」下限（**再少即须判 `unavailable`**）。**归属 S 门**：RF-M11-4 四要素（占用非退化 / 转换存在 / p90÷中位 ≥2 且拒绝指数 / 消融致消失）须与这些锚同算法同参数判。占用 0.613–0.642 满足「两态各 ≥5%」✅。",
+   "wrong_usage_consequence": "用 Q 法锚去判 H 法实现（或反之）⇒ 2.6–6× 的口径差被读成机制差；在 P5/G1 内引用 ⇒ 越界（慢状态归 S 门）",
+   "final": "1"
   }
+ },
+ "sample_scope_correction": {
+  "finding": "R10 的目标带建立在 **单 field × 2,000 帧 = 317.46 s** 上，不是「2 field × 317.5 s/field」",
+  "evidence": [
+   "data/m11_functional_subset_manifest.csv：200/200 对象 url 前缀唯一 = session4_scan7_field4，t_chunk 0–199，verdict 全 REACHABLE",
+   "磁盘 data/m11_raw/microns/functional_subset/：200 文件同名前缀",
+   "data/_mainagent_m11_same_source_band.json：n_frames=2000、duration_s=317.46001511744595（单一序列）",
+   "data/m11_microns_protocol.json：**声明** 2 个 series（session4_scan7_field4 / session5_scan3_field1），第 2 个**未取数**"
+  ],
+  "consequence": "R10 的「节点须做①两个 field 都建带 ②给跨 field 离散度」**仍然 open** ⇒ 本带**跨 field 通用性未测**；RF-M11-2 的「同阶窗」目前只能取跨条件离散度（Q/H 2.6–6×），不得声称来自跨 field",
+  "rows_added": [
+   "microns_functional_calcium_sample_scope_perfield_measured"
+  ],
+  "rows_superseded": [
+   "microns_functional_calcium_sample_scope（final 置 0 + 指针；value 逐字保留）"
+  ]
+ },
+ "same_source_band_full": {
+  "unsmoothed_native": "τ 9.015 / 8.003 s（φ 0.9825 / 0.9804，n=2000）",
+  "smoothed5_native": "τ 29.68 / 30.48 s（φ 0.9947 / 0.9948，n=1996）⇒ 平滑放大 3.29×",
+  "unsmoothed_box0.914": "τ 7.657 / 7.642 s（n=333）",
+  "smoothed5_box0.914": "τ 31.24 / 32.27 s（n=329）",
+  "occupancy": "Q 0.500；H 0.613–0.642",
+  "transition_hz": "Q 0.438–0.400；H 0.104–0.110",
+  "dwell_low_median_s": "Q 1.11–1.27（n=69/63）；H 3.17–6.67（n=17/16）",
+  "dwell_low_p90_s": "Q 7.0–7.6；H 32.6–34.2",
+  "caliber_spread": "跨法（Q/H）dwell 中位 2.6–6×、p90 4.5×；跨平滑 3.29×；跨箱宽 7.6–32 s 共 4.2× ⇒ **全部必须并列**（RF-M11-2）",
+  "ownership": "**S 门（P6）/RF-M11-2**；P5/G1 内引用即越界"
  }
 }
