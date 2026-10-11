@@ -1,6 +1,6 @@
 {
  "generated_by": "tools/build_m11_inventory.py",
- "generated_at": "2026-10-11T11:01:04Z",
+ "generated_at": "2026-10-11T12:04:01Z",
  "units": "bytes; evidence ∈ {measured, derived, literature, unavailable}",
  "microns_structure": {
   "evidence": "measured(元数据) + derived(chunk 计数); shard 清单 = measured(有界)",
@@ -271,11 +271,11 @@
  },
  "allen": {
   "evidence": "measured",
-  "celltypes_total_rows_reported": null,
-  "celltypes_rows_landed": null,
-  "celltypes_download_complete": null,
-  "celltypes_n_fields": null,
-  "celltypes_n_ef_fields": null,
+  "celltypes_total_rows_reported": 1920,
+  "celltypes_rows_landed": 1920,
+  "celltypes_download_complete": true,
+  "celltypes_n_fields": 54,
+  "celltypes_n_ef_fields": 11,
   "celltypes_n_unique_donors": 772,
   "ef_avg_firing_rate": {
    "n": 1808,
@@ -302,10 +302,16 @@
    "n_datasets": 0
   },
   "bo_neuropixels": {
-   "n_objects": null,
-   "bytes": null,
-   "truncated": null,
-   "object_probe": null
+   "n_objects": 569,
+   "bytes": 853705435599,
+   "truncated": false,
+   "object_probe": {
+    "url": "https://allen-brain-observatory.s3.amazonaws.com/visual-coding-neuropixels/ecephys-cache/session_715093703/probe_810755797_lfp.nwb",
+    "http_code": 200,
+    "content_length": 2062950784,
+    "retrieved_at": "2026-10-11T11:36:18Z",
+    "verdict": "REACHABLE"
+   }
   }
  },
  "literature": {
@@ -329,9 +335,25 @@
   "evidence": "measured(curl 两次探测)"
  },
  "inventory": {
-  "n_items": 224,
-  "total_bytes": 285924156,
-  "total_MB": 285.924
+  "n_items": 225,
+  "total_bytes": 285985347,
+  "total_MB": 285.985
+ },
+ "functional_connectomics_release": {
+  "evidence": "measured(列举 200：KeyCount=4)",
+  "objects": {
+   "node_data_v1_pkl": 294635032,
+   "edge_data_v1_pkl": 201511086,
+   "readme_v1_md": 5594,
+   "prefix": "iarpa_microns/minnie/functional_data/functional_connectomics/node_and_edge_properties/v1/"
+  },
+  "landed": "readme_v1.md 已落盘（schema/列语义）；两个 pkl **未取**（按 >30 min 纪律交主 agent 裁决 DQ-4）",
+  "contents_from_readme": {
+   "node_data": "逐神经元一行：nucleus_id / animal_id / scan_session / scan_idx / unit_id / nucleus_x,y,z(nm) / hva / brain_area / layer / **pref_ori, pref_dir, osi_iv, gosi_iv**（in vivo）/ in_vivo_mean_resp / mei / mask / readout_cvt(CvT)",
+   "edge_data": "逐对一行：pre/post nucleus_id / population(Connected|ADP|Same region) / n_synapses / synapse_size(cleft volume) / dend_len / pre,post_hva / pre,post_layer / proj_hva / **in_vivo_sig_corr_iv**（in vivo 信号相关）/ in_silico_sig_corr_cvt / delta_ori_iv",
+   "source": "Ding et al. 2025, DOI 10.1038/s41586-025-08840-3（readme 原文引用）"
+  },
+  "impact": "可得后 P2 的 C1（调谐/OSI 分布）与 C2（群体相关/有效维度）可**同源同口径**计算，并直接服务 H4（结构-功能映射）与 P8（层/区/类差异）"
  },
  "unavailable_register": [
   "MICrONS 逐细胞 ΔF/F 与 ROI 轨迹：仅存在于 v8 DataJoint MySQL 数据库（103.8 GB docker tar 或 116.2 GB SQL dump）→ 本轮未取（超预算）⇒ unavailable（非 0、非未命中）",

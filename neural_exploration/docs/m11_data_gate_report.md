@@ -15,8 +15,8 @@
 | 判据 | 一句话语义（清单 §0.4/§7） | 本轮判定 | 关键证据 |
 |---|---|---|---|
 | **P1** 皮层数据门 | 可达性表逐源实测 + 结构/morph-ephys/文献三类数据落盘 + 权威计数锚硬断言 + SHA 确定性 + 完整度分级 | **pass（附 §3 限制）** | **68 源逐行实测**（REACHABLE 51 / REACHABLE_NO_DATA 3 / NEEDS_VERIFY 3 / NEEDS_TOKEN 1 / BLOCKED 8 / NOT_EXIST 2；两次探测 **68/68 码一致**）；em/seg/seg_m1300 info 落盘 + shard 对象级 206×6；Allen **1,920 行** + NWB HEAD/Range/头解析；文献 37 行 provenance（**31 literature / 6 unverified**） |
-| **P2** 结构-功能同源数据门 | 结构与功能**同源**路径落盘 + **采集参数读回断言** + 四类参考量同口径可算 + 证据级别标注 | **partial_pass**（采集参数与同源路径已 `measured`；**四类参考量重建未交付**） | 帧率 **6.300006 Hz** 读回；掩膜格与 series **同格**（248×440×1 @2.5×2.5×10 µm）；136.3 MB 有界子集**可解压且字节数精确匹配** |
-| **G2（门）** | P1 ∧ P2 均过 | **pass（附限制）** | 见 §3 限制登记；**未启动** G0/G1/S（遵守前置门链） |
+| **P2** 结构-功能同源数据门 | 结构与功能**同源**路径落盘 + **采集参数读回断言** + 四类参考量同口径可算 + 证据级别标注 | **数据门范围 = pass（判定器 P2 8/8 断言）；全节 = `partial_pass`**（采集参数/同源路径/有界子集全 `measured`；**清单 §1.7 列出的三个参考量 CSV 属 P2 后续步，未交付 ⇒ 不写成 pass**） | 帧率 **6.300006 Hz** 读回断言通过；掩膜格与 series **同格**（248×440×1 @2.5×2.5×10 µm）；136.3 MB 有界子集 **chunk=20 B 头+gzip，解压 raw=800,000 B 精确匹配** |
+| **G2（门）** | P1 ∧ P2 均过 | **`pass`（判定器：P1 23/23、P2 8/8、共 32 条断言 0 失败；附 §3 限制）** | 判定器输出 `reports/neuro/m11_data_gate_summary.json`；**确定性复跑：5 个固定源 verdict 100% 一致**；**未启动** G0/G1/S（遵守前置门链） |
 
 **未通过/未交付项（不静默、不计入 fail 之外的语义）**：
 
@@ -48,7 +48,7 @@
 | Allen per-cell NWB | **measured（对象级 + 头）** | HEAD 200 / **91,560,414 B** / `486940961_ephys.nwb`；Range 0-99 → 206；**44.7 MB 可见前缀 + 稀疏文件头解析**：`nwb_version = NWB-1.0.5`、`file_create_date = 2018-02-28`、根组 11 键、`Sweep_10` = `CurrentClampSeries`（"Voltage recorded from cell during current-clamp recording"） | `m11_allen_sources.json` |
 | Allen BO Neuropixels 目录 | **measured** | **569 对象 / 853.7 GB**（未截断）；单体对象 2,062,950,784 B（LFP NWB，200） | 同上 |
 | 文献先验（§1.3 + §4.1 C-1..C-8） | **literature 31 / literature_unverified 6** | 清单 12 个 PMID **全部题录核对通过**；C-5/C-6/C-8 **由 unverified 升级** | `m11_literature_priors.csv` |
-| 落盘清单与确定性 | **measured** | 224 件逐件 **SHA-256 现场重算一致** | `m11_data_inventory.csv` |
+| 落盘清单与确定性 | **measured** | **224 件逐件 SHA-256 现场重算一致**（`P1.5b`）；**确定性复跑**：5 个固定源 verdict 全一致；**探针两次 HTTP 码 68/68 一致** | `m11_data_inventory.csv` / `m11_data_gate_summary.json` |
 | 未测项 | **unavailable**（8 条，逐条给原因） | 见 `m11_env_notes.md` L21 与 `m11_data_counts.json::unavailable_register` | — |
 
 **证据级别纪律**：`literature` **只**表示"题录经 Europe PMC 实测命中"，**不等于**全文/参数值已核实
@@ -136,6 +136,9 @@ $PY neural_exploration/tools/validate_p11_data_gate.py --determinism-check
 
 ---
 
+> **落盘位置说明**：原始下载件在 `neural_exploration/data/m11_raw/**`（**已被 `.gitignore` 排除**，仅本机留存，约 **280 MB 实际占用**）；
+> 权威清单 `data/m11_data_inventory.csv` 逐件记录 `bytes + SHA-256 + source_url + retrieved_at` ⇒ **可重取后逐件校验**。
+
 ## §6 交付物清单（全部新建；冻结件零修改）
 
 | 类别 | 文件 | 规模 |
@@ -145,7 +148,7 @@ $PY neural_exploration/tools/validate_p11_data_gate.py --determinism-check
 | 数据（JSON） | `m11_microns_structure.json` / `m11_microns_protocol.json` / `m11_allen_sources.json` / `m11_literature_priors.json` / `m11_data_counts.json` / `m11_functional_subset_summary.json` / `m11_functional_subset_verify.json` | 7 个 |
 | 原始落盘 | `data/m11_raw/{microns/struct, microns/functional, microns/functional_subset, microns/pdf_text, allen, probe, literature}` | 见清单 |
 | 报告 | `reports/neuro/m11_data_gate_summary.json` / `docs/m11_data_gate_report.md` / `docs/m11_env_notes.md`（L1–L23） | 3 个 |
-| 清单改写（唯一例外） | `docs/生物仿真M11实施清单.md` §0.7 #2（L220–L222 → L220–L227，RF-M11-1） | 9+/3− |
+| 清单改写（唯一例外） | `docs/生物仿真M11实施清单.md` §0.7 #2（L220–L222 → **L220–L227**，RF-M11-1；文件 1226 → **1232** 行） | 9+/3−（已由主 agent 提交 `b0996c1`，故当前 `git diff` 为空属正常） |
 
 ## §7 结论与下一步建议
 

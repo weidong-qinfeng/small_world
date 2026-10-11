@@ -969,5 +969,19 @@
    "correction": "本节点此前\"进程被反复重启\"的部分报告应归因于 QoS 饥饿（已更正登记）"
   },
   "M11_input": "M-6 教训（τ_rec=26 s 仍未产生回路尺度慢状态）已入 M11 的 S 门候选纪律"
+ },
+ "RF23_final": {
+  "M4_M5_rescope": "MECHANISM_NOT_IMPLEMENTED(scope)（非 partial/invalid）",
+  "defect": "增益仅乘外部事件幅度（larval_zf_engine.py L382/L403），不作用于突触电导/抑制权重/阈值",
+  "positive_control": {
+   "M0_M-1_M-4_lam0": "逐位相同（sha16 6b794438e487bddc / sum 1154）⇒ 对 M-4 即作用域未生效",
+   "M-6_lam0": "不同（sum 1175, 差 2329 步）",
+   "M-1_lam0_explanation": "稀疏工况（1154 spike/2.4M 步）可解释 ⇒ 不构成 STP 缺陷证据",
+   "hash_note": "主agent 报 6294245cc83d148e vs 本节点 6b794438e487bddc ⇒ 结论一致，前缀差异已并列"
+  },
+  "dose_response_retraction": "6 点曲线的“调质机制”解释作废（测的是输入侧缩放）",
+  "M11_handoff": "增益必须作用于状态变量（含抑制权重与阈值）；仅缩放输入幅度即等于未实施（M11 C-7 三联动）",
+  "new_protocol": "机制实验“阳性对照”硬条款：作用域断言 + 最小阳性对照（逐位不同）⇒ 否则 MECHANISM_NOT_IMPLEMENTED",
+  "P6_verdict": "不变；表述改为“调质增益未按规格实施，不计入否证”（删除“调质增益无一产生双态”）"
  }
 }

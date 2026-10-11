@@ -347,7 +347,14 @@ BigTIFF 头解析（`data/m11_raw/microns/functional/tif_head_17797_4_10_v1.bin`
   两个独立修正实现交叉一致到 1.7% ⇒ **M9 绝对值是"缺陷档"**；
   ② **跨物种/跨制备/跨口径不可移植**（果蝇/斑马鱼/小鼠 V1 的速率、相关、dwell 及量纲口径均不同）。
   **禁令保留**（M11 判据带只能来自 (a) MICRONS/Allen 同口径实测量 或 (b) 逐条 provenance 化文献）。
-- 改动范围核查：`git diff --stat` = **1 file changed, 9 insertions(+), 3 deletions(-)**（仅此一处，其余未动）。
+- 改动范围核查：改写完成时 `git diff --stat` = **1 file changed, 9 insertions(+), 3 deletions(-)**（仅此一处，其余未动）。
+- ⚠️ **提交状态说明（本节点不提交 git，主 agent 负责）**：该改写已由主 agent 的
+  `b0996c1 chore(M10/M11): 收口中间产物入库…` 提交入库 ⇒ 此后 `git diff` 对清单文件为空是**正常**的；
+  核对方式 = `git log -1 -- neural_exploration/docs/生物仿真M11实施清单.md` +
+  `git show HEAD:neural_exploration/docs/生物仿真M11实施清单.md | grep -c RF-M11-1`（实测 **1**），
+  且文件当前行数 **1232**（原 1226，+6）。同理，本节点本轮新建的 M11 产物亦已由主 agent 的
+  `fe7ddeb chore(M10/M11): 收口产物入库 + gitignore 大体积轨迹/原始数据` 一并入库
+  （其中 `data/m11_raw/` 被 `.gitignore` 排除，仅本机留存 ≈280 MB）。
 
 ---
 

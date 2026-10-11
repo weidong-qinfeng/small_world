@@ -41,6 +41,7 @@ LIT_CSV = os.path.join(DATA, "m11_literature_priors.csv")
 REACH_CSV = os.path.join(DATA, "m11_source_reachability.csv")
 SUBSET_MANIFEST = os.path.join(DATA, "m11_functional_subset_manifest.csv")
 SUBSET_SUMMARY = os.path.join(DATA, "m11_functional_subset_summary.json")
+S3_LIST_URL = "https://bossdb-open-data.s3.amazonaws.com/"
 OUT_INV = os.path.join(DATA, "m11_data_inventory.csv")
 OUT_CNT = os.path.join(DATA, "m11_data_counts.json")
 
@@ -142,6 +143,11 @@ def main():
     rt = pr.get("protocol", {}).get("raw_scan_bigtiff", {})
     add("microns_raw_scan_header", tifbin, rt.get("url", ""), rt.get("retrieved_at", ""),
         "measured(Range 0-65535, HTTP 206)", "BigTIFF 头 → shape [320000,440,248]（**未下载 70 GB 大档**）")
+    # (B2) 功能连接组学发布（Ding et al. 2025）：readme 落盘 + 两个大 pkl 仅登记（未取）
+    add("microns_functional_meta", os.path.join(RAW, "microns", "functional_connectomics_readme_v1.md"),
+        S3_LIST_URL + "?list-type=2&prefix=iarpa_microns/minnie/functional_data/functional_connectomics/"
+                      "node_and_edge_properties/v1/", utcnow(), "measured(HTTP 200 / 5,594 B)",
+        "node/edge 表 schema 与列语义（含 in vivo OSI / 信号相关 / 层与区标注）")
     for fn in ("access_v8_README.md", "filestructure.txt"):
         p = os.path.join(RAW, "microns", fn)
         add("microns_tech_doc", p, "", "", "measured(HTTP 200)", "功能数据管线/目录语义 provenance")
@@ -326,6 +332,22 @@ def main():
                           evidence="measured(curl 两次探测)"),
         inventory=dict(n_items=len(inv), total_bytes=total_bytes_downloaded,
                        total_MB=round(total_bytes_downloaded / 1e6, 3)),
+        functional_connectomics_release=dict(
+            evidence="measured(列举 200：KeyCount=4)",
+            objects=dict(node_data_v1_pkl=294635032, edge_data_v1_pkl=201511086,
+                         readme_v1_md=5594, prefix="iarpa_microns/minnie/functional_data/"
+                                                      "functional_connectomics/node_and_edge_properties/v1/"),
+            landed="readme_v1.md 已落盘（schema/列语义）；两个 pkl **未取**（按 >30 min 纪律交主 agent 裁决 DQ-4）",
+            contents_from_readme=dict(
+                node_data="逐神经元一行：nucleus_id / animal_id / scan_session / scan_idx / unit_id / "
+                          "nucleus_x,y,z(nm) / hva / brain_area / layer / **pref_ori, pref_dir, osi_iv, gosi_iv**"
+                          "（in vivo）/ in_vivo_mean_resp / mei / mask / readout_cvt(CvT)",
+                edge_data="逐对一行：pre/post nucleus_id / population(Connected|ADP|Same region) / n_synapses / "
+                          "synapse_size(cleft volume) / dend_len / pre,post_hva / pre,post_layer / proj_hva / "
+                          "**in_vivo_sig_corr_iv**（in vivo 信号相关）/ in_silico_sig_corr_cvt / delta_ori_iv",
+                source="Ding et al. 2025, DOI 10.1038/s41586-025-08840-3（readme 原文引用）"),
+            impact="可得后 P2 的 C1（调谐/OSI 分布）与 C2（群体相关/有效维度）可**同源同口径**计算，"
+                   "并直接服务 H4（结构-功能映射）与 P8（层/区/类差异）"),
         unavailable_register=[
             "MICrONS 逐细胞 ΔF/F 与 ROI 轨迹：仅存在于 v8 DataJoint MySQL 数据库"
             "（103.8 GB docker tar 或 116.2 GB SQL dump）→ 本轮未取（超预算）⇒ unavailable（非 0、非未命中）",

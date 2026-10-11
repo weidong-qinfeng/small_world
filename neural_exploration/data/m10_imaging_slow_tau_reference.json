@@ -59,7 +59,7 @@
    "full_71721_neurons": "not_run：本机只落盘子集 8192 列（原始 71721 列未下载，zenodo 吞吐限制见 provenance）"
   },
   "command": "PYTHONHASHSEED=0 OMP_NUM_THREADS=1 MPLBACKEND=Agg ./.venv-m10/bin/python -m neural_exploration.tools.build_m10_imaging_dwell_reference --stages G --merge",
-  "timestamp": "2026-10-11T17:05:07",
+  "timestamp": "2026-10-11T19:36:18",
   "scope": "stage G only"
  },
  "G": {
@@ -96,12 +96,15 @@
     "phi": 0.975721329291989,
     "tau_s": 37.18008016781669
    },
+   "baseline_rule": "τ 基准 = **全记录** full_record.tau_s（37.180 s）；first80pct 已废弃、不作基准",
+   "full_record_tau_s": 37.18008016781669,
+   "deprecated_first80pct_tau_s": 42.33218972215647,
    "first80pct": {
     "n": 6303,
     "phi": 0.9786444109709881,
     "tau_s": 42.33218972215647
    },
-   "note": "C 项 AR(1)（42.33 s）是**前 80% 段**拟合值（为与 HMM 同一切分）；全记录拟合给出另一个值。**τ 基准取全记录值**，并把该窗口依赖作为一项口径不确定度登记"
+   "note": "**口径更正**：τ 基准 = **全记录** τ = 37.180 s（n=7879，见 full_record）；first80pct 的 42.332 s（n=6303）只是为与 HMM 同切分而拟合的**前 80% 段**对照值，**已废弃、不作基准**（两值相对差 13.9%，登记为窗口口径不确定度）"
   },
   "residual_whiteness": {
    "ar1_smoothed": {

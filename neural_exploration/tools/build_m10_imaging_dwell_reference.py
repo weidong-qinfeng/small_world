@@ -1167,15 +1167,21 @@ def main() -> int:
                                  "不一致即为估计器口径事故（对照主 agent 发现的 pop_rate_hz vs "
                                  "pop_trace_mean_hz 13–15% 事故）"),
             # 估计窗口口径核对：C 项的 AR(1) 是在**前 80%**（CV 训练段）上拟合的，
-            # 与全记录拟合不是同一次估计 —— 两者差 12%，必须并列登记并选定基准
+            # 与全记录拟合不是同一次估计 —— 两者差 ~13.9%，必须并列登记并选定基准。
+            # **口径裁定（2026-10-11 更正）**：τ 基准 = **全记录**值（本 dict 的 full_record）；
+            # first80pct 只是"为与 HMM 同切分"而拟合的对照值，**已废弃、不得用作基准**。
             tau_window_check=dict(
                 full_record=dict(n=int(ser_ref.size), phi=ar_z["phi"], tau_s=ar_z["tau_s"]),
                 first80pct=dict(n=int(0.8 * ser_ref.size),
                                 phi=ar_fit(ser_ref[: int(0.8 * ser_ref.size)], 1)["phi"],
                                 tau_s=ar_fit(ser_ref[: int(0.8 * ser_ref.size)], 1)["tau_s"]),
-                note="C 项 AR(1)（42.33 s）是**前 80% 段**拟合值（为与 HMM 同一切分）；"
-                     "全记录拟合给出另一个值。**τ 基准取全记录值**，并把该窗口依赖作为一项"
-                     "口径不确定度登记"),
+                # 注：本 note 用 f-string 直接从实测值生成（不写死常数），避免口径再次漂移。
+                note=f"**口径更正**：τ 基准 = **全记录** τ = {ar_z['tau_s']:.3f} s"
+                     f"（n={ser_ref.size}，见 full_record）；"
+                     f"first80pct 的 {tau_80['tau_s']:.3f} s（n={tau_80['n']}）只是"
+                     f"为与 HMM 同切分而拟合的**前 80% 段**对照值，**已废弃、不作基准**"
+                     f"（两值相对差 {abs(tau_80['tau_s'] - ar_z['tau_s']) / ar_z['tau_s'] * 100:.1f}%，"
+                     f"登记为窗口口径不确定度）"),
             residual_whiteness=dict(ar1_smoothed=lb_s, ar1_unsmoothed=lb_u, ar4_smoothed=lb4,
                                     ar1_lag1_resid_autocorr_smoothed=ar_z["lag1_resid_autocorr"],
                                     ar1_lag1_resid_autocorr_unsmoothed=ar_fit(bin_sum(pop, 1), 1)
@@ -1451,6 +1457,11 @@ def main() -> int:
             rec["C_CV最优状态数"] = results["C"]["best_by_cv_common"]
             rec["C_AR1留出ll每帧"] = results["C"]["ar_vs_hmm"]["best_ar_test_ll_per_frame"]
             rec["C_AR1_τ_s"] = [a["ar1_tau_s"] for a in results["C"]["ar_baseline"] if a["p"] == 1][0]
+            # 伴随说明键（**不重命名、不改值**）：C_AR1_τ_s 的口径是**前 80% 段**（CV 训练切分），
+            # **不作为 τ 基准**；τ 基准 = 全记录值，见 results["G"]["tau_full_record_s"]。
+            rec["C_AR1_τ_s_note"] = ("C_AR1_τ_s 是**前 80% 段（CV 训练切分 n=6303）**拟合值，"
+                                     "**已废弃、不作基准**；τ 基准 = **全记录**值，见 G.tau_full_record_s"
+                                     "（与 C.tau_window_check.full_record 同值），依据见报告 §11.1③")
             rec["C_结论"] = ("BIC 与 4/4 折留出似然都选 K=3（不是 2）；且 3 参数连续 AR(1) 的留出似然"
                              "（−0.176/帧）优于 7 参数 K=2（−0.678）与 14 参数 K=3（−0.339）⇒ "
                              "ZAPBench 群体慢活动更支持**连续慢过程**，26.5 s 依赖人为 2 状态离散化")

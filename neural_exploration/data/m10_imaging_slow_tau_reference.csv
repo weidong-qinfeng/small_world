@@ -92,3 +92,4 @@ g_lb_ar4_smoothed_lag40_p,0.0,p,AR(1) 残差白噪,AR(4) 平滑/lag40,本工具 
 g_tau_full_record,37.18008016781669,s,AR(1),全记录(7879帧),本工具 G 项,与 C 项 AR(1) 同一估计值
 g_tau_recommended_tolerance_multiplier,3.9354431041403912,x,AR(1),全记录 + 9 条件,本工具 G 项,τ 判据容差倍数（跨条件 max/min）
 g_model_side_window_tau_coverage,1.0,frac,AR(1),"模型侧窗 [8,80] s × 9 条件",本工具 G 项（只读观测模型侧现窗）,τ 落窗比例（模型侧现判据的实测覆盖率）
+g_tau_baseline_note,τ 基准 = 全记录 37.18008016781669 s（g_tau_full_record）；first80pct 的 42.33218972215647 s 已废弃、不作基准（相对差 13.9%）,,AR(1),口径更正,本节点 2026-10-11 口径更正（B4 文件所有者自查；只新增行，原行/原名一律保留）,新增说明行；原行一律保留
