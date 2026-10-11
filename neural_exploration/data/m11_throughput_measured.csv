@@ -11,3 +11,6 @@ allen-brain-observatory（2p events 16.4 MB）,**1.6 KB/s**（掉速）,16 min �
 allen-brain-observatory（2p NWB 176 MB，Range 6 MB）,"**3,310 B/s**",1540 s 取 5.1 MB 后超时,curl -w
 主 agent 实测：S3 单连接 / 8 路并发（DQ-4）,17 KB/s / 聚合 10–16 KB/s,**294 MB ⇒ 5–8 h ⇒ DQ-4 = unavailable（吞吐限制）**,主 agent 亲测
 GCS 镜像（MICrONS 功能数据）,**HTTP 404**,功能数据**未镜像**到 GCS（结构侧有镜像）,curl
+Allen BO NP `units.csv`（51,439,189 B）**续传**,**5,904,351 B/s（=5.9 MB/s）**（`curl -C -`，rc=206，49,718,869 B / 8.42 s）,DQ-6 由主 agent 批准；本节点 2026-10-12 07:03 实测为**快档** ⇒ 与昨夜 1.6 KB/s 相差约 **3,600×** ⇒ **禁止用单次实测外推**：>50 MB 取数前必须当场复测
+Allen BO NP `channels.csv`（6,613,329 B）,2,705,821 B/s（=2.7 MB/s，2.44 s，HTTP 200）,**单件 <50 MB 且为连接链必需键**（`ecephys_structure_acronym` / probe→session）⇒ 本节点直接取全（未并发；先取 channels 再续传 units）
+Allen BO NP S3（HEAD 探测）,**Accept-Ranges: bytes** ⇒ 支持 Range 续传；`units.csv` ETag `…-7` = 7 段（part=8 MiB）,**可作为完整性判据**：`md5(concat(md5(part_i))) == ETag 前缀` 复算通过 ⇒ 逐字节等同服务器对象（**强于单次 sha256**，锚在服务器侧）

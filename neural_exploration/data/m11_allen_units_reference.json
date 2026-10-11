@@ -1,0 +1,400 @@
+{
+  "generated_by": "neural_exploration/tools/parse_m11_allen_units.py",
+  "generated_at": "2026-10-12 07:05:03",
+  "dataset": "Allen Brain Observatory Visual Coding Neuropixels (units/channels/probes/sessions.csv)",
+  "integrity": {
+    "units": {
+      "path": "neural_exploration/data/m11_raw/allen/bo_ecephys/units.csv",
+      "size": 51439189,
+      "size_expected": 51439189,
+      "size_ok": true,
+      "sha256": "1dffbe8dac7f222ec2ef4f7810465ac173a0acf29b44d980274e7a664679f078",
+      "sha_basis": "file_bytes",
+      "etag_expected": "5555828a72d2c9f9035c86e2ff310708",
+      "etag_recomputed": "5555828a72d2c9f9035c86e2ff310708",
+      "etag_part_size": 8388608,
+      "etag_n_parts": 7,
+      "etag_ok": true,
+      "ends_with_newline": true,
+      "status": "COMPLETE"
+    },
+    "channels": {
+      "path": "neural_exploration/data/m11_raw/allen/bo_ecephys/channels.csv",
+      "size": 6613329,
+      "size_expected": 6613329,
+      "size_ok": true,
+      "sha256": "d2932f1e60f0bd9013a02160f137cb7718654f3ae54eefb1358b7696f3caed98",
+      "sha_basis": "file_bytes",
+      "etag_expected": null,
+      "ends_with_newline": true,
+      "status": "COMPLETE"
+    }
+  },
+  "counts": {
+    "n_units": 135275,
+    "n_channels": 123224,
+    "n_probes": 332,
+    "n_sessions": 58,
+    "n_joined": 135275,
+    "unresolved_channel": 0,
+    "unresolved_probe": 0,
+    "unresolved_session": 0
+  },
+  "epoch_scope": {
+    "field": "epoch_name_quality_metrics",
+    "values": {
+      "complete_session": 135275
+    },
+    "interpretation": "整会话（含视觉刺激呈现）口径",
+    "consequence": "**不是自发率**；只能作 (a) 自发率带的**上界候选**，不得直接登记为 measured 自发率；须与钙域（MICRONS）分列"
+  },
+  "quality": {
+    "good": 99180,
+    "noise": 36095
+  },
+  "empty_fields": {
+    "d_prime": 6788,
+    "halfwidth": 5952,
+    "isolation_distance": 6874,
+    "l_ratio": 7270,
+    "max_drift": 5946,
+    "nn_hit_rate": 10875,
+    "nn_miss_rate": 1289,
+    "recovery_slope": 7920,
+    "repolarization_slope": 1,
+    "silhouette_score": 19524,
+    "velocity_above": 5337,
+    "velocity_below": 6699
+  },
+  "degenerate_metrics": {
+    "isolation_distance_ge_1e4": 1536,
+    "isi_violations_gt_20": 6436,
+    "both_or_either": 7894,
+    "near_silent_lt_0.01Hz": 4343,
+    "fraction_of_units": 0.058355
+  },
+  "band_candidates_complete_session_scope": {
+    "all_units": {
+      "n": 135275,
+      "median": 2.77480420897487,
+      "p10": 0.0514818686704094,
+      "p25": 0.713360133351056,
+      "p75": 6.13360848551939,
+      "p90": 11.494271835569,
+      "min": 9.3349174397809e-05,
+      "max": 139.45674912825
+    },
+    "quality_good": {
+      "n": 99180,
+      "median": 3.17460156243311,
+      "p10": 0.115238333823634,
+      "p25": 1.04163583752835,
+      "p75": 6.88209393250293,
+      "p90": 12.4081142409289,
+      "min": 9.3349174397809e-05,
+      "max": 115.494991927962
+    },
+    "quality_good_excl_degenerate": {
+      "n": 96513,
+      "median": 3.30898500351249,
+      "p10": 0.181739567604613,
+      "p25": 1.20572885954711,
+      "p75": 7.03951286666188,
+      "p90": 12.5943417923805,
+      "min": 9.3349174397809e-05,
+      "max": 115.494991927962
+    }
+  },
+  "calcium_cross_scope": {
+    "calcium_nyquist_hz": 3.150003,
+    "ephys_p90_over_ca_nyquist": 3.9390801345042847,
+    "ephys_median_over_ca_nyquist": 1.0078090600018825
+  },
+  "per_session_band": {
+    "n_sessions": 58,
+    "median_of_session_medians_hz": 2.79798802915613,
+    "p10": 2.332401958946685,
+    "p90": 3.3786903259612098,
+    "min": 1.3905963787149,
+    "max": 4.03846111740104,
+    "spread_max_over_min": 2.904121698585988
+  },
+  "session_type_isolation": {
+    "brain_observatory_1.1": {
+      "n_sessions": 32,
+      "n_units": 74072,
+      "good_rate": {
+        "n": 54164,
+        "median": 3.390158878399355,
+        "p10": 0.13256186059947,
+        "p25": 1.15724652190335,
+        "p75": 7.1954503254889,
+        "p90": 12.6882979172122,
+        "min": 9.58041315953289e-05,
+        "max": 88.829414698074
+      }
+    },
+    "functional_connectivity": {
+      "n_sessions": 26,
+      "n_units": 61203,
+      "good_rate": {
+        "n": 45016,
+        "median": 2.94110340012796,
+        "p10": 0.0953028445373281,
+        "p25": 0.923708540600472,
+        "p75": 6.49198178756487,
+        "p90": 12.044391327053,
+        "min": 9.3349174397809e-05,
+        "max": 115.494991927962
+      }
+    }
+  },
+  "by_session_csv": "neural_exploration/data/m11_allen_units_by_session.csv",
+  "by_structure_csv": "neural_exploration/data/m11_allen_units_by_structure.csv",
+  "by_area_group_csv": "neural_exploration/data/m11_allen_rate_band_by_area_group.csv",
+  "area_group_bands": {
+    "VISp（与 MICrONS minnie65 同名区，最同口径）": {
+      "n_units": 10750,
+      "fraction_of_all_units": 0.0795,
+      "n_sessions": 56,
+      "rate_all_units": {
+        "n": 10750,
+        "median": 2.413115336830915,
+        "p10": 0.134478569048071,
+        "p25": 0.92165610417882,
+        "p75": 4.78424898771797,
+        "p90": 9.51288661560609,
+        "min": 0.000207904083589639,
+        "max": 79.4341792058219
+      },
+      "rate_quality_good": {
+        "n": 8603,
+        "median": 2.48496852951443,
+        "p10": 0.213988827018921,
+        "p25": 1.03496589628138,
+        "p75": 5.19790395894867,
+        "p90": 10.2971474337042,
+        "min": 0.000311574532761792,
+        "max": 79.4341792058219
+      },
+      "rate_quality_good_excl_degenerate": {
+        "n": 8550,
+        "median": 2.501977011334445,
+        "p10": 0.230479629417971,
+        "p25": 1.0647184297041,
+        "p75": 5.21413046438634,
+        "p90": 10.3206480780739,
+        "min": 0.00191193960930555,
+        "max": 79.4341792058219
+      },
+      "per_session_median_band_hz": {
+        "n_sessions": 56,
+        "median_of_medians": 2.5790052860030426,
+        "p10": 1.96906561408213,
+        "p90": 3.1437141800495,
+        "min": 1.48833700519419,
+        "max": 4.90051815442169,
+        "spread_max_over_min": 3.292613257158312
+      },
+      "cross_scope_vs_calcium": {
+        "calcium_event_rate_nyquist_hz": 3.150003,
+        "median_over_nyquist": 0.7942776598417352,
+        "fraction_good_rate_gt_nyquist": 0.4128654970760234,
+        "n_good_clean": 8550
+      }
+    },
+    "visual_cortex_all（VIS*）": {
+      "n_units": 49995,
+      "fraction_of_all_units": 0.3696,
+      "n_sessions": 58,
+      "rate_all_units": {
+        "n": 49995,
+        "median": 2.48572750179403,
+        "p10": 0.0869883915491278,
+        "p25": 0.820105860253582,
+        "p75": 5.10140707810153,
+        "p90": 9.83614549769693,
+        "min": 9.58041315953289e-05,
+        "max": 139.02463322642
+      },
+      "rate_quality_good": {
+        "n": 40294,
+        "median": 2.6564769355671354,
+        "p10": 0.190829618278563,
+        "p25": 1.04287320697597,
+        "p75": 5.46696015651003,
+        "p90": 10.3459738717503,
+        "min": 9.58041315953289e-05,
+        "max": 88.620163142687
+      },
+      "rate_quality_good_excl_degenerate": {
+        "n": 39941,
+        "median": 2.68940798752131,
+        "p10": 0.219585711079083,
+        "p25": 1.08725121662883,
+        "p75": 5.51366593784632,
+        "p90": 10.3840413685781,
+        "min": 9.58041315953289e-05,
+        "max": 88.620163142687
+      },
+      "per_session_median_band_hz": {
+        "n_sessions": 58,
+        "median_of_medians": 2.759754066640765,
+        "p10": 2.234014693685385,
+        "p90": 3.10700679023555,
+        "min": 1.8340141561640948,
+        "max": 3.61657898161422,
+        "spread_max_over_min": 1.9719471463505072
+      },
+      "cross_scope_vs_calcium": {
+        "calcium_event_rate_nyquist_hz": 3.150003,
+        "median_over_nyquist": 0.853779500375495,
+        "fraction_good_rate_gt_nyquist": 0.4390225582734533,
+        "n_good_clean": 39941
+      }
+    },
+    "hippocampus（CA1/CA3/CA2/DG/SUB/HPF，非同源）": {
+      "n_units": 44659,
+      "fraction_of_all_units": 0.3301,
+      "n_sessions": 52,
+      "rate_all_units": {
+        "n": 44659,
+        "median": 2.33495006812809,
+        "p10": 0.0324456887902902,
+        "p25": 0.372038021622567,
+        "p75": 5.25047112538737,
+        "p90": 10.0113139010836,
+        "min": 9.3349174397809e-05,
+        "max": 139.45674912825
+      },
+      "rate_quality_good": {
+        "n": 28300,
+        "median": 2.700738118934395,
+        "p10": 0.0455375090452998,
+        "p25": 0.554302055320535,
+        "p75": 5.96712025543254,
+        "p90": 11.1585940597082,
+        "min": 9.3349174397809e-05,
+        "max": 98.835508081985
+      },
+      "rate_quality_good_excl_degenerate": {
+        "n": 26814,
+        "median": 2.95014081604331,
+        "p10": 0.0805711743240035,
+        "p25": 0.844039157287884,
+        "p75": 6.23200046229638,
+        "p90": 11.5675638554792,
+        "min": 9.3349174397809e-05,
+        "max": 98.835508081985
+      },
+      "per_session_median_band_hz": {
+        "n_sessions": 52,
+        "median_of_medians": 2.805166624473625,
+        "p10": 1.8685404601825701,
+        "p90": 3.92249892604048,
+        "min": 1.330220466142165,
+        "max": 5.06295275903372,
+        "spread_max_over_min": 3.806100483265776
+      },
+      "cross_scope_vs_calcium": {
+        "calcium_event_rate_nyquist_hz": 3.150003,
+        "median_over_nyquist": 0.9365517480597034,
+        "fraction_good_rate_gt_nyquist": 0.4800850302081002,
+        "n_good_clean": 26814
+      }
+    }
+  },
+  "layer_registration": {
+    "area_level": "measured（ecephys_structure_acronym 为区级，58 个）",
+    "lamina_level": "derived（acronym 不含层号；须由 CCF 深度 + 皮层表面/厚度模型派生）",
+    "ccf_depth_available_n": 135275
+  },
+  "structure_registration": {
+    "n_structures": 58,
+    "n_sessions_covered": 58,
+    "ccf_dorsal_ventral_range": [
+      -1250.0,
+      4890.0
+    ],
+    "top12": [
+      {
+        "structure_acronym": "CA1",
+        "n_units": 26620,
+        "n_sessions": 52,
+        "rate_median_hz": 2.347839732408855
+      },
+      {
+        "structure_acronym": "grey",
+        "n_units": 13906,
+        "n_sessions": 21,
+        "rate_median_hz": 3.129089503924185
+      },
+      {
+        "structure_acronym": "VISp",
+        "n_units": 10750,
+        "n_sessions": 56,
+        "rate_median_hz": 2.413115336830915
+      },
+      {
+        "structure_acronym": "DG",
+        "n_units": 9678,
+        "n_sessions": 51,
+        "rate_median_hz": 1.939976566161815
+      },
+      {
+        "structure_acronym": "VISal",
+        "n_units": 7886,
+        "n_sessions": 44,
+        "rate_median_hz": 2.44783403647615
+      },
+      {
+        "structure_acronym": "VISrl",
+        "n_units": 7838,
+        "n_sessions": 50,
+        "rate_median_hz": 2.591981585366025
+      },
+      {
+        "structure_acronym": "VISam",
+        "n_units": 7291,
+        "n_sessions": 50,
+        "rate_median_hz": 2.62330960999772
+      },
+      {
+        "structure_acronym": "VISl",
+        "n_units": 6443,
+        "n_sessions": 42,
+        "rate_median_hz": 2.52203487633254
+      },
+      {
+        "structure_acronym": "LP",
+        "n_units": 5700,
+        "n_sessions": 43,
+        "rate_median_hz": 4.952773699695346
+      },
+      {
+        "structure_acronym": "VISpm",
+        "n_units": 5052,
+        "n_sessions": 36,
+        "rate_median_hz": 2.464098085572175
+      },
+      {
+        "structure_acronym": "CA3",
+        "n_units": 4972,
+        "n_sessions": 50,
+        "rate_median_hz": 1.957353947578065
+      },
+      {
+        "structure_acronym": "APN",
+        "n_units": 4852,
+        "n_sessions": 45,
+        "rate_median_hz": 3.80156525909901
+      }
+    ]
+  },
+  "caveats": [
+    "① 口径：complete_session（含刺激）⇒ 非自发率；自发率带仍需 NWB 的 spontaneous epoch（本轮 unavailable）。",
+    "② 退化指标：近静默单元（firing_rate < 0.01 Hz，n=4343）的 isolation_distance / isi_violations 退化，已单独登记并在 clean 带中剔除。",
+    "③ 钙域与电生理域**分列**：本表为 spike 率；MICrONS 为钙事件口径（6.30 Hz 成像 ⇒ 事件率 Nyquist=3.150 Hz）。",
+    "④ 独立性单位应为 **session**（同一 session 内单元共享探针/动物）⇒ 跨 session 带见 per_session_band。"
+  ]
+}

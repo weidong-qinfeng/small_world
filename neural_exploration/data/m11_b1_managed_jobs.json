@@ -69,6 +69,34 @@
    "url_pattern": "https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/functional_data/functional_series/session5_scan3_field1/0/0/0/{t}（t=0..199）",
    "why": "当前同源带仅 1 个 field 的 1 个子块 ⇒ **跨 field 离散度缺失**（替代：时间半劈 3.23×、空间半劈 1.29×、代理 1.30×、状态分辨率 2.16×、箱宽 1.18×、平滑 2.9×）",
    "after": "重跑 tools/build_m11_dwell_band_microns.py 后并入跨 field 离散度"
+  },
+  {
+   "id": "J6",
+   "kind": "resume_then_parse（主 agent 托管作业 DQ-6 的接管）",
+   "title": "续传并解析 Allen BO Neuropixels 全量 units.csv（+ channels.csv 连接键）",
+   "status": "COMPLETED（2026-10-12 07:03–07:05）",
+   "handover_note": "主 agent 的托管作业**已死**：实测无 `curl` 进程、`/tmp/ma_units_dl.log` 0 字节、产物停在 1,720,320 B / 51,439,189 B = 3.35%，至 07:01 已 8.5 h 无增长。本节点当场复测吞吐后自行续传（**不得外推历史吞吐**：昨夜 1.6 KB/s vs 今晨 5.9 MB/s，差 ~3,600×）",
+   "command": "curl -sS -C - -L --max-time 1800 -o neural_exploration/data/m11_raw/allen/bo_ecephys/units.csv https://allen-brain-observatory.s3.amazonaws.com/visual-coding-neuropixels/ecephys-cache/units.csv  ；随后 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 ./.venv-m11/bin/python neural_exploration/tools/parse_m11_allen_units.py",
+   "log": "neural_exploration/data/m11_raw/allen/bo_ecephys/parse_units.log",
+   "outputs": [
+    "neural_exploration/data/m11_raw/allen/bo_ecephys/units.csv",
+    "neural_exploration/data/m11_raw/allen/bo_ecephys/channels.csv",
+    "neural_exploration/data/m11_allen_units_reference.json",
+    "neural_exploration/data/m11_allen_units_by_session.csv",
+    "neural_exploration/data/m11_allen_units_by_structure.csv",
+    "neural_exploration/data/m11_allen_rate_band_by_area_group.csv"
+   ],
+   "integrity": "size==Content-Length=51,439,189 ∧ **S3 多段 ETag 复算通过**（md5(concat(md5(part_i)))==\"5555828a…-7\"，part=8 MiB × 7 段）⇒ 逐字节等同服务器对象 ∧ 末字节换行 ∧ 非 27 字段行 0 ⇒ COMPLETE；sha256=1dffbe8dac7f222ec2ef4f7810465ac173a0acf29b44d980274e7a664679f078（basis=file_bytes）",
+   "completion_marker": "parse_units.log 末尾打印 ALL_DONE",
+   "resource": "1 thread, no GPU；续传 8.42 s + 解析 4.1 s",
+   "bytes_new": 57832198,
+   "findings": [
+    "(a) 带上界候选 = VISp good 中位 2.485 Hz（**口径 complete_session 含刺激 ⇒ 非自发率**）",
+    "跨口径 = 0.794×Nyquist，41.29% good VISp 单元率 > Nyquist（替换 B3 估计 63.5%）",
+    "层/区：区级 measured / 层 derived（acronym 无层号）；CCF 深度全量可用",
+    "P14 隔离：BO1.1 3.390 Hz vs FC 2.941 Hz（1.15×）⇒ 口径可比",
+    "退化登记 5.84%（近静默单元指标退化）⇒ 从带中剔除"
+   ]
   }
  ]
 }
