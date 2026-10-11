@@ -1,0 +1,17 @@
+# M10 P6 判决表（RF-19 定稿）——主判据 = AR(1) τ（0.914 s 箱 + 5 帧平滑 + z，B4 口径）
+# 成像基准 τ = 37.180 s；窗 = [9.4, 146.3] s（±3.94×，B4 跨条件极差定）
+# 并列次级：分位法 Q dwell（成像 6.854 s）/ H 法 K=2 dwell（成像 26.501 s）/ K=2·K3 BIC（n_frames≥500 才报，否则 unavailable）
+# 四态：pass / fail / invalid / unavailable（未测不入分母）；形状类判据要求 n_frames ≥ 130（RF-18）
+# P6 = not passed（❌ 反证，具定量依据）；限定于校准工作点（g_exc=1，准静态扫描未检出上态）所在参数区域，
+#   不得外推为“任何机制都不可能”（RF-17/19 定稿措辞）
+# 零驱动臂 M0/M-1/M-4 三条 trace 逐位相同（sha16=6b794438e487bddc）⇒ 该组 invalid（无级别判别力）
+level,lam,n_frames,status,tau_ar1_s,tau_window_lo,tau_window_hi,ar1_phi,ar1_holdout_ll_per_frame,ar1_resid_whiten,dwell_Q_s,dwell_H_K2_s,occ_low,occ_high,trans_hz,p90_over_med,ks_exp_p,internal_consistency,bic_K2_K3,gate3_state_structure,sha16,evidence_note
+M-1,0.0,131,invalid（该组零驱动 trace 逐位相同 ⇒ 无级别判别力）,unavailable,9.4,146.3,-0.09564567624482072,,,0.0,0.914,0.214,0.786,0.46779,1.0,1.1458803685653675e-10,True,unavailable(<500),unavailable,6b794438e487bddc,"成像：τ=37.180s 窗[9.4,146.3] dwellQ=6.854 dwellH=26.501 occ=0.672 trans=0.0196"
+M-4,0.0,131,invalid（该组零驱动 trace 逐位相同 ⇒ 无级别判别力）,unavailable,9.4,146.3,-0.09564567624482072,,,0.0,0.914,0.214,0.786,0.46779,1.0,1.1458803685653675e-10,True,unavailable(<500),unavailable,6b794438e487bddc,"成像：τ=37.180s 窗[9.4,146.3] dwellQ=6.854 dwellH=26.501 occ=0.672 trans=0.0196"
+M-6,0.0,131,invalid（占用退化/无转换 ⇒ 状态结构不可判）,3.0723,9.4,146.3,0.7427193484761723,-1.0468259041732129,False,0.0,0.0,1.0,0.0,0.0,,,,unavailable(<500),unavailable,8d51b1462a72b561,"成像：τ=37.180s 窗[9.4,146.3] dwellQ=6.854 dwellH=26.501 occ=0.672 trans=0.0196"
+M0,0.0,131,invalid（该组零驱动 trace 逐位相同 ⇒ 无级别判别力）,unavailable,9.4,146.3,-0.09564567624482072,,,0.0,0.914,0.214,0.786,0.46779,1.0,1.1458803685653675e-10,True,unavailable(<500),unavailable,6b794438e487bddc,"成像：τ=37.180s 窗[9.4,146.3] dwellQ=6.854 dwellH=26.501 occ=0.672 trans=0.0196"
+M-1,1.0,131,measured,1.5812,9.4,146.3,0.5610506535082683,-1.2441091325439235,False,1.371,0.914,0.634,0.366,0.78522,4.0,2.3111266710183455e-08,True,unavailable(<500),True,14db616b6b79c0bb,"成像：τ=37.180s 窗[9.4,146.3] dwellQ=6.854 dwellH=26.501 occ=0.672 trans=0.0196"
+M-4,1.0,131,measured,2.3106,9.4,146.3,0.673352676377376,-0.9747085096611865,False,1.828,0.914,0.611,0.389,0.72675,3.8000000000000043,1.4933874578638302e-07,True,unavailable(<500),True,8e06149d9fe41a4f,"成像：τ=37.180s 窗[9.4,146.3] dwellQ=6.854 dwellH=26.501 occ=0.672 trans=0.0196"
+M-6,1.0,131,measured,2.2102,9.4,146.3,0.6613528237255,-1.132690390374665,False,0.914,0.914,0.687,0.313,0.67663,4.0,2.3659922028295712e-05,True,unavailable(<500),True,472a6e16831a1a39,"成像：τ=37.180s 窗[9.4,146.3] dwellQ=6.854 dwellH=26.501 occ=0.672 trans=0.0196"
+M0,1.0,131,measured,1.8398,9.4,146.3,0.6085391379051723,-1.204964441138249,False,0.914,0.914,0.511,0.489,0.83534,2.0,6.703601403140914e-13,True,unavailable(<500),True,a853d8296d784cd9,"成像：τ=37.180s 窗[9.4,146.3] dwellQ=6.854 dwellH=26.501 occ=0.672 trans=0.0196"
+M0,4.0,131,measured,1.8477,9.4,146.3,0.6098297142844471,-1.191761598658788,False,0.914,0.914,0.344,0.656,0.68498,1.0,1.0420875016086967e-13,True,unavailable(<500),False,e1fbb4beb1936b02,"成像：τ=37.180s 窗[9.4,146.3] dwellQ=6.854 dwellH=26.501 occ=0.672 trans=0.0196"

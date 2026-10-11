@@ -1,0 +1,33 @@
+{
+ "generated_by": "(RF-18 offline recompute on managed-job pop traces)",
+ "config": {
+  "arms": "λ×1.0, n=250, T=120 s = 131 frames",
+  "frame_s": 0.9138261902586128,
+  "imaging_ref": {
+   "tau_ar1_s": 37.18,
+   "window_s": [
+    9.4,
+    146.3
+   ],
+   "dwell_Q_s": 6.854,
+   "occupancy_low": 0.672,
+   "transition_hz": 0.0196,
+   "p90_over_median": 7.4,
+   "ks_exp_p": 0.0016
+  }
+ },
+ "verdict": "**P6 = not passed（❌ 反证，样本量达标）**：模型 AR(1) τ = 1.58–2.31 s vs 成像 37.180 s（差 16–24×，全部窗外）；转换率 0.68–0.84 Hz vs 0.0196 Hz（快 35–43×）；**占用同量级**（0.51–0.69 vs 0.672）。各机制级相对基线的位移均 ≤×1.5，**无一机制把慢时间尺度推向成像量级**。",
+ "zero_drive_data_integrity": {
+  "finding": "poptrace_{M0,M-1,M-4}_lamx0.0_n250.npy **逐位相同**（sha256 6b794438e487bddc）",
+  "impact": "零驱动臂**无级别判别力** ⇒ 该组状态结构行判 `invalid`（非 fail）；λ×1.0 臂的 trace 互不相同 ✅（有效）",
+  "note": "疑为托管作业对同一 level 重复执行/配置未生效 —— 请主agent 侧核对（作业由您启动）"
+ },
+ "rf10_first_round": "已撤回为 invalid（16 帧，样本不足；RF-18）",
+ "four_state": {
+  "M0/M-1/M-4/M-6 @λ×1.0": "measured（n_frames=131 ≥130）",
+  "M0/M-1/M-4 @λ×0": "invalid（三条 trace 逐位相同，无判别力）",
+  "M-6 @λ×0": "invalid（占用退化 [1.0,0.0]、转换率 0）",
+  "BIC/K 选择": "unavailable（131 < 500）"
+ },
+ "internal_consistency": "四条臂 dwell ≈ 1/(2·转换率) 相对差 0.30 ≤1.0 ✅ 通过（A3 断言）"
+}

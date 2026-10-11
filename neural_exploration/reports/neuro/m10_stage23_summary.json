@@ -905,5 +905,45 @@
   },
   "device_note": "validate_p10_resting / mechanism_ladder 的 --device 默认 **cpu**（非 MPS）⇒ 本节点启动的是 CPU 作业（OMP=1），如实说明",
   "M7_status": "暂缓；如需开跑须提交一页可证伪假设与 M-6 失败模式的差异说明，由主agent 裁决"
+ },
+ "RF19_final": {
+  "judgement_table": "data/m10_p6_judgement_table.{csv,json}（主判据 AR(1) τ + 四态 + n_frames + evidence_note）",
+  "P6_conclusion_verbatim": "P6 = not passed（❌ 反证，具定量依据）：同口径下模型低态 dwell 0.020 s vs 成像 6.854 s（×343）、转换率 54–58 Hz vs ~0.02 Hz（×~3000）、占用同量级；已实施全部预注册机制均未把群体状态时间尺度提到成像量级；限定于校准工作点（g_exc=1，准静态扫描未检出上态）所在参数区域，不得外推为“任何机制都不可能”。",
+  "tau_primary_131frames": {
+   "M0": 1.8398,
+   "M-1": 1.5812,
+   "M-4": 2.3106,
+   "M-6": 2.2102,
+   "M0_lam4": 1.8477,
+   "imaging": 37.18,
+   "window": [
+    9.4,
+    146.3
+   ],
+   "verdict": "全部窗外（差 16–24×）"
+  },
+  "four_state": {
+   "measured": [
+    "M0/M-1/M-4/M-6 @λ×1.0",
+    "M0 @λ×4.0"
+   ],
+   "invalid": [
+    "M0/M-1/M-4 @λ×0.0（trace 逐位相同）",
+    "M-6 @λ×0.0（占用退化）"
+   ],
+   "unavailable": [
+    "BIC/K 选择（需 ≥500 帧）"
+   ]
+  },
+  "zero_drive_integrity": "poptrace_{M0,M-1,M-4}_lamx0.0_n250.npy 逐位相同（sha256 6b794438e487bddc）⇒ 该组 invalid",
+  "lessons": {
+   "L29": "双估计器必须一致（已硬断言 ≤2%）",
+   "L30": "并发编辑协议（行号+sha256+声明+重读）",
+   "L31": "判据静默变松（SAME_ORDER_WINDOW 口径混用 ⇒ 实际放宽 26.5×）"
+  },
+  "budget": {
+   "gpu_h": 1.3,
+   "cpu_h": 5.0
+  }
  }
 }
