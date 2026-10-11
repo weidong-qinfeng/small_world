@@ -263,21 +263,25 @@ $PY neural_exploration/tools/validate_p11_data_gate.py --determinism-check
 > **本节点保留反证证据**（大端解码，`tools/demo_m11_microns_decode.py` 一条命令可复核 + B3b 独立复现），
 > 并**建议**改判 `decoded(big-endian int16)`；**在裁定变更前，一切产出按 `format_unverified` 执行。**
 
-## §6e ★★ R8：「同源」三级表述（**按主 agent 口径 = 计划/缺口，不是"本轮已得"**）
+## §6e ★★ RF-M11-D：**R2/R6 反转后的"同源"最终表述**（主 agent 独立复核确认本节点解码结论）
 
-> **① 结构同源 ✅ `measured`**：MICrONS EM/seg/seg_m1300（em 体积 1.2861 mm³，主 agent 独立复算一致）。
-> **② 属性级同源 = 通道已确认存在且可达，但本轮 `unavailable（吞吐限制）`**：
-> `functional_connectomics/node_and_edge_properties/v1`（Ding et al. 2025，**DOI 10.1038/s41586-025-08840-3**）
-> —— **HEAD 200**、**schema 由 `readme_v1.md` 实证**（node **26 列** / edge **19 列**：`layer`/`brain_area`/`pref_ori`/
-> `osi_iv`/`gosi_iv`/`in_vivo_mean_resp`；`population∈{Connected, ADP, Same region}`/`n_synapses`/`in_vivo_sig_corr_iv`…）；
-> 但 **`node_data_v1.pkl` 294,635,032 B / `edge_data_v1.pkl` 201,511,086 B 受吞吐限制本轮未取到**
-> （**主 agent 实测 10–16 KB/s ⇒ ETA 5–8 h**，GCS 无该数据镜像 ⇒ 404）⇒ **判 `unavailable（吞吐限制）`**。
-> **③ 时间序列级非同源 ❌**：该表**不含时间序列** ⇒ S 门与 dwell/τ 目标带仍用 **Allen 2p 代理**（R6，`derived/cross_source`）；
-> 逐细胞 ΔF/F 仍 `unavailable`（v8 DataJoint DB，DQ-1/R1 裁定不下载）。
+> **① 结构同源 ✅ `measured`**：MICrONS EM/seg/seg_m1300（em 体积 **1.2861 mm³**，主 agent 独立复算一致）。
+> **② 功能时间序列同源 ✅ `measured`（R2 反转）**：MICrONS **功能体素序列**由 `format_unverified` 改为
+> **`measured`（可解码：大端 int16；200/200 对象完整性通过；lat_x 0.777 / 帧间 0.773）**，
+> **允许并鼓励**用于统计（**须应用哨兵掩膜** `int16 < 0 ⇔ uint16 > 65000`，本轮实测 **10,383 / 80,000,000 = 0.01298%**）。
+> **③ 属性级同源 = 设计可达、本轮 `unavailable（吞吐限制）`**：`functional_connectomics` node/edge pkl（HEAD 200、
+> readme schema 实证 node 26 列 / edge 19 列、DOI 10.1038/s41586-025-08840-3），但 294.6 + 201.5 MB 受吞吐限制（10–16 KB/s ⇒ 5–8 h）。
+> **④ 逐细胞级仍非同源 ❌**：ΔF/F 轨迹仅在 v8 DataJoint DB（R1 保持，DQ-1 裁定不下载）。
 
-⇒ **纪律（主 agent §二）**：**P7/P8/P14 的"同源属性对照"在本轮为 `unavailable`；其匹配负对照材料
-（`Connected`/`ADP`/`Same region`）亦因此未得** ⇒ **不得**写成"已具备"、**不得**写成"已排除"；
-**必须**写进 **M12 交接缺口**（G-7）与本里程碑**限制正文**（本段即正文）。
+⇒ **最终表述**：**"结构（EM/seg）+ 功能时间序列（2 field 体素序列，`measured`）+ 属性级（connectomics 表，本轮 `unavailable`）"**；
+**只有"逐细胞"级仍非同源**（R1）。**S 门/P14 的 dwell/τ 目标带优先用同源自建**（本报告 §6i），
+**Allen 2p 降为跨制备参照**（外部效度/稳健性），不再是 S 门主目标。
+
+> **举证标准（新增纪律，RF-M11-D §四）**：把一个格式判为"不可解/不可用"**之前**，必须证明测试集覆盖
+> **dtype × 字节序(LE/BE) × 排列(行主/列主/Morton/分块) × 是否差分编码** 全部维度；
+> **任一维未覆盖 ⇒ 只能写 `unverified`，不得写 `unavailable/不可解码`**。
+> 本条由主 agent 本轮**自身错误**得来（其测试集漏测 `>i2` ⇒ 误判"不可解码"并据此发出降级裁定；
+> 本节点以 18 假设 × 6 判据的结构门纠正，主 agent 独立复算后确认并反转裁定）。**该过程已如实入档。**
 
 ## §6f-2 ★ 活动通道 = Allen **2p 钙成像**（RF-M11-C）：实测与自建目标带
 
@@ -352,11 +356,23 @@ $PY neural_exploration/tools/validate_p11_data_gate.py --determinism-check
 | **C1 调谐类**（OSI/DSI/半宽） | ✖ 两条路都不可算（属性表未取 + 2p events 无刺激标签） | 0 | — | **`unavailable`** |
 | **C2 率分布** | △ 逐细胞事件率可算 | **n=5 细胞**（门 ≥130） | median **0.1096** | **`thin`**（不得作判据带） |
 | **C2 成对相关** | △ 4-cell 件可算 | **6 对** | median **0.0538** | **`thin`** |
-| **C3 dwell/τ 目标带** | ✅（B4 冻结管线） | **4,070 bins**（门 ≥130 ✅）/ low 态完整段 ≥453（门 ≥5 ✅） | dwell **2.74 s**、p90/中位 **3.23**、转换 **0.377 Hz**、τ **6.46 s** | **`measured`** |
+| **C3 dwell/τ 目标带（同源主带，RF-M11-D）** | ✅（B4 冻结管线，**MICrONS 自体素序列**） | **333 bins**（门 ≥130 ✅；**BIC 门 ≥500 ❌ ⇒ K 选择 `unavailable`**）；low 态完整段 **6**（门 ≥5 ✅ / ≥10 ❌） | dwell 中位 **12.86 s**（物理；模块口径 12.34 s）、p90/中位 **5.78**、转换 **0.046 Hz**、**τ 32.5 s**；占用 0.631/0.369 | **`measured`（但 S-2 `unavailable`、S-3 KS 腿不过）** |
+| C3-b 跨制备参照（Allen 2p） | ✅ 保留为参照 | 4,070 bins | dwell **2.74 s**、τ **6.46 s** | `measured`（**跨制备**；与同源带差 **dwell 4.69× / τ 5.04×**） |
 | **C4 行为类** | ✖ 需凭据 | 0 | — | **`unavailable（NEEDS_TOKEN）`** |
 
-⇒ **净结果**：四类中**仅 C3 达 `measured`**；C2 为 `thin`；C1/C4 为 `unavailable`。
+⇒ **净结果**：**C3 现有同源自建主带**（`measured`，附窗口/样本量限制）**+ 跨制备参照**；C2 为 `thin`；C1/C4 为 `unavailable`。
 （有效维度 / 相位随机化代理地板**未算**：需更多细胞与同管线地板。）
+
+### S 门判据体检（同源主带；如实四态）
+| 判据 | 结果 |
+|---|---|
+| **S-1 占用非退化** | ✅ **pass**（低/高态 **0.631 / 0.369**，均 ≥5%） |
+| **S-2 转换存在（每态 bout ≥10）** | **`unavailable`**（低态完整段仅 **6**；转换率 0.046 Hz） |
+| **S-3 低态重尾 ∧ 拒绝指数** | **`fail/thin`**：p90/中位 **5.78** ✅ 重尾，但 **KS vs 指数 p = 0.558（未拒指数）**，且完整段仅 6 |
+| **S-7 样本量门** | valid ✅（333 ≥65）/ shape ✅（≥130）/ **BIC ❌（333 < 500）⇒ K 选择 `unavailable`** |
+| **窗口长度限制** | **317.46 s 窗 vs dwell 中位 12.86 s ⇒ 约 25 个低态周期**；时间半劈离散度 **3.23×**（13.7 vs 44.3 s）⇒ 估计不稳，**须随带登记** |
+| 口径差（自测） | H vs Q dwell **1.69×**；掩膜开/关 **1.00×**；空间半劈 **1.29×**；φ_平滑 vs 未平滑差 **0.084**（同源序列本身已含 6 帧箱均值 ⇒ 平滑影响远小于 Allen 2p 的 5.6×） |
+| 箱宽口径差 | 冻结模块以 **0.9138 s**/箱，实际 **6 × 0.15873 = 0.9524 s** ⇒ **4.2% 系统偏差**；已并列 `*_module` / `*_physical` 两种时间基 |
 
 ## §7 结论与下一步建议
 
