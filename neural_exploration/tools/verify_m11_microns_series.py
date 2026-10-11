@@ -562,8 +562,8 @@ def main(argv=None) -> int:
             sentinel_exact=bool(sentinels["neg16"] == pf.get("n_int16_negative")),
             u16gt_exact=bool(sentinels["u16gt"] == pf.get("n_uint16_gt_65000")),
             vmin_exact=bool(gmin == pf.get("vmin_global")),
-            p50_min_match=bool(abs(min(p50[">i2"]) - pf.get("p50_min", -1)) < 1e-6),
-            p50_max_match=bool(abs(max(p50[">i2"]) - pf.get("p50_max", -1)) < 1e-6),
+            p50_min_match=bool(abs(min(p50[">"]) - pf.get("p50_min", -1)) < 1e-6),
+            p50_max_match=bool(abs(max(p50[">"]) - pf.get("p50_max", -1)) < 1e-6),
             rel_lat_x=float((st[">i2（正解）"]["px_h"] - pf.get("lat_x_mean", float("nan"))) / pf.get("lat_x_mean", 1)),
             rel_frame=float((st[">i2（正解）"]["ft"] - pf.get("frame_mean", float("nan"))) / pf.get("frame_mean", 1)))
     print("\n=== 交叉核对（先算后比）===")

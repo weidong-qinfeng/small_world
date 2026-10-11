@@ -1,6 +1,6 @@
 {
  "generated_by": "tools/validate_p11_data_gate.py",
- "generated_at": "2026-10-11T15:28:13Z",
+ "generated_at": "2026-10-11T15:46:16Z",
  "gate": "G2 (P1/P2 数据门)",
  "assertions": [
   {
@@ -156,7 +156,7 @@
   {
    "assertion": "P2.10 未取项显式登记 unavailable + 原因（未测 ≠ 未命中）",
    "ok": true,
-   "detail": "n_unavailable=6"
+   "detail": "n_unavailable=7"
   },
   {
    "assertion": "P1.7a 逐对象完整性门（http→大小→SHA→解压→尺寸自洽）全部 COMPLETE",
@@ -287,6 +287,16 @@
    "assertion": "P1.11b 报告与计数锚的 firing_rate 统计一致（n/min/median/max 与独立复算一致）",
    "ok": true,
    "detail": "n=1808 min=1.984915 median=17.413 max=261.210274（主 agent 独立值：1808/1.985/17.4130/261.210）"
+  },
+  {
+   "assertion": "P2.11h 掩膜格层同格：由 **chunk 键索引范围实测**（非元数据声明）确认并集 == series dims",
+   "ok": true,
+   "detail": "n_chunks=8 union=[0, 248, 0, 440] series_dims=[248, 440]；像素层：**unresolved（形式未自证）**：`field_seg_masks` 为 `compressed_segmen"
+  },
+  {
+   "assertion": "DET 复跑 verdict 一致（确定性）",
+   "ok": true,
+   "detail": "[{\"source_id\": \"2\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"3\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F7\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F8\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F9\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}]"
   }
  ],
  "failures": [],
@@ -296,6 +306,7 @@
   "MICrONS 全 144 field 的扫描级 fps/nframes/nfields：在数据库 Scan 表内 → 本轮 unavailable；框架内时间口径由 field_summaries（无时间轴）+ functional_series（仅 2 field，6.3001 Hz）给出",
   "Allen synphys 桶对象级读取：403 AccessDenied（桶存在、不可 list）→ NEEDS_VERIFY",
   "IBL OpenAlyx 数据集表：403 需凭据 → NEEDS_TOKEN（P12 走公开桶 + 论文档回退）",
+  "**四类参考量（率分布 / 群体相关 / 状态结构 / dwell）= 当前不可执行**（`blocked`，非未测、非未命中）：① R2 禁用 MICrONS 体素序列（否则 2 个 field 的钙域参考量本可算）；② R3 的本地 Allen NWB 中 `/units`、`/acquisition`、`/general` 落在稀疏洞内不可读，且下载被禁/网络 1.6–16 KB/s（DANDI 7.2 KB/s）；③ 逐细胞 ΔF/F 仅在 v8 DB（R1 不下载）；④ 唯一剩余实测路径 = 全量 `units.csv`（51,439,189 B，逐 unit firing_rate/质量）⇒ **DQ-6 待批**；⇒ 请裁决：批 DQ-6 / 续传 NWB / 或改判 R2 以启用 2 field 钙域参考量",
   "MICrONS minnie CAVE 表 API（info/materialize）：404 / 503 → REACHABLE_NO_DATA / BLOCKED"
  ],
  "P1": {
@@ -305,8 +316,44 @@
  },
  "P2": {
   "verdict": "pass",
-  "n_assertions": 19,
+  "n_assertions": 20,
   "n_failed": 0
  },
- "G2_gate": "pass"
+ "G2_gate": "pass",
+ "determinism_check": {
+  "note": "复跑固定子集（#2/#3/F7/F8/F9），比对 verdict 是否一致",
+  "comparisons": [
+   {
+    "source_id": "2",
+    "first": "REACHABLE",
+    "rerun": "REACHABLE",
+    "same": true
+   },
+   {
+    "source_id": "3",
+    "first": "REACHABLE",
+    "rerun": "REACHABLE",
+    "same": true
+   },
+   {
+    "source_id": "F7",
+    "first": "REACHABLE",
+    "rerun": "REACHABLE",
+    "same": true
+   },
+   {
+    "source_id": "F8",
+    "first": "REACHABLE",
+    "rerun": "REACHABLE",
+    "same": true
+   },
+   {
+    "source_id": "F9",
+    "first": "REACHABLE",
+    "rerun": "REACHABLE",
+    "same": true
+   }
+  ],
+  "all_same": true
+ }
 }

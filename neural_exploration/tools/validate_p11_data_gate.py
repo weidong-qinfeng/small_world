@@ -426,6 +426,14 @@ def main():
                      "n=%s min=%s median=%s max=%s（主 agent 独立值：1808/1.985/17.4130/261.210）"
                      % (efr.get("n"), efr.get("min"), efr.get("median"), efr.get("max"))))
 
+    # ---------------- P2.11h 掩膜格层对齐（R4 的"实际索引"要求）----------------
+    mg = ga.get("mask_grid_check") or {}
+    A.append(assert_("P2.11h 掩膜格层同格：由 **chunk 键索引范围实测**（非元数据声明）确认并集 == series dims",
+                     bool(mg.get("grid_identical")) and (mg.get("n_chunks") or 0) >= 8,
+                     "n_chunks=%s union=%s series_dims=%s；像素层：%s"
+                     % (mg.get("n_chunks"), mg.get("union_coverage_xy"), mg.get("series_dims_xy"),
+                        str(mg.get("pixel_level_alignment"))[:60])))
+
     # ---------------- 判定 ----------------
     for a in A:
         if not a["ok"]:

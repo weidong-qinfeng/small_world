@@ -154,19 +154,22 @@ $PY neural_exploration/tools/fetch_m11_allen.py --all
 # ⑥ 文献 provenance 化（Europe PMC；37 行）
 $PY neural_exploration/tools/build_m11_literature_priors.py
 
-# ⑦ 权威清单 + 计数锚
-$PY neural_exploration/tools/build_m11_inventory.py
-
-# ⑧ 主 agent 复核后的三项门（完整性 / 解析 / 参考锚）
-$PY neural_exploration/tools/verify_m11_downloads.py --refetch      # 完整性门（5 步判定链）
+# ⑦ 主 agent 复核后的门（完整性 / 解析 / 空间口径 / 参考锚）——**必须在 ⑧ 之前**
+$PY neural_exploration/tools/verify_m11_downloads.py --refetch            # 完整性门（5 步判定链）
 $PY neural_exploration/tools/validate_m11_microns_parse.py --n-full 200   # 解析门（18 假设 × 6 判据）
-$PY neural_exploration/tools/build_m11_reference.py                 # 参考锚（含 6.300006 Hz 读回断言）
+$PY neural_exploration/tools/verify_m11_grid_alignment.py                 # 空间口径 10× 与同格性（实像素）
+$PY neural_exploration/tools/build_m11_reference.py                       # 参考锚 R-01..R-29
+
+# ⑧ 权威清单 + 计数锚（**必须最后重建**：它对 ⑦ 的产物逐件重算 SHA ⇒ 顺序错会触发 P1.5b）
+$PY neural_exploration/tools/build_m11_inventory.py
 
 # ⑨ P1/P2 判定（含确定性复跑子集）
 $PY neural_exploration/tools/validate_p11_data_gate.py --determinism-check
 ```
 
-> 曾坑（已固化）：① 子集运行**禁止**覆盖全量 CSV（`--only` 必须显式 `--out`）；
+> 曾坑（已固化）：⓪ **产物顺序纪律**：`build_m11_inventory.py` 对其余产物逐件重算 SHA-256，
+> 因此**必须最后运行**；本轮曾把 reference 生成放在 inventory 之后 ⇒ 被自家断言 `P1.5b` 抓到（已修）；
+> ① 子集运行**禁止**覆盖全量 CSV（`--only` 必须显式 `--out`）；
 > ② `curl --max-time` 曾失效（925.9 s）⇒ 父进程 `Popen + kill`；③ Cell Types criteria 必须 percent-encode + 分页；
 > ④ 功能 chunk = **20 B 头 + gzip**，`useZlib:false` 不可按 raw-deflate 解。
 
@@ -267,6 +270,25 @@ $PY neural_exploration/tools/validate_p11_data_gate.py --determinism-check
 > + 144 field 中仅 2 个有 `functional_series`"，活动通道改由 **Allen NWB（跨制备/跨品系/跨实验室）**承担
 > ⇒ **功能侧为跨源代理，证据级别 `derived / cross_source`，不得声称"同源对照"**。
 > 该收窄已同步写入 **M12 交接缺口 G-1/G-2**。
+
+## §6f 🔴 优先级 4（四类参考量同口径重建）当前**不可执行** —— 显式登记 `blocked` + 待裁决
+
+主 agent 优先级 4 指定"只用 ① Allen NWB 活动 ② MICrONS 结构 ③ 2 field 元数据；禁用体素序列"。
+逐项核对后，**现有裁定与网络条件下三条输入实际都取不到**：
+
+| 指定输入 | 实际状态 | 阻塞原因 |
+|---|---|---|
+| ① Allen NWB **活动** | **不可用** | 本地 `head_sparse.nwb` 仅 44,695,552 B **真实**前缀；`/units`（spike times）、`/acquisition`（采样率）、`/general/extracellular_ephys` 均在稀疏洞内 ⇒ `unavailable`；续传被禁且网络 1.6–16 KB/s（DANDI 7.2 KB/s） |
+| ② MICrONS **结构** | ✅ 可用 | 但结构通道**不含活动**，无法给出率分布/相关/状态结构 |
+| ③ 2 field **元数据** | 只有元数据（6.300006 Hz / 40,000 帧 / FOV / 掩膜格） | **无像素** ⇒ 给不出任何分布/相关/dwell |
+| （备选）MICrONS 体素序列 | **R2 禁用** | 若启用，2 个 field 的钙域参考量本可同口径重建（每 field 40,000 帧 × 105.8 min） |
+| （备选）`units.csv` 全量 51,439,189 B | 未取 | 网络退化 ⇒ 预计 >30 min（**DQ-6 待批**）；含逐 unit `firing_rate`/质量指标 ⇒ 可支撑"率分布"一项 |
+
+⇒ **判定：`blocked`（前置输入不可得），不是"未测"、不是"未命中"**；已同步写入
+`m11_data_counts.json::unavailable_register`。**请裁决三选一**：
+**(a) 批 DQ-6**（取全量 `units.csv`，可算"率分布"一项，其余仍需 NWB/DB）；
+**(b) 批 NWB 续传/托管**（补齐 `/units`、`/acquisition` ⇒ 可算率分布 + units 计数）；
+**(c) 改判 R2 为 `decoded`**（则 2 个 field 的钙域四类参考量可在**同源**口径下重建，含 RF-M11-2 劈半自检）。
 
 ## §7 结论与下一步建议
 

@@ -214,6 +214,153 @@
       "text": "该 τ 与块序重排对照可区分（差 76.1%）"
     }
   },
+  "crosscheck": {
+    "sources": {
+      "band": "_mainagent_m11_same_source_band.json",
+      "parse": "m11_microns_parse_validation.json",
+      "order_note": "本块在自身全部计算完成后才读对方文件（RF-33 要求先算后比）"
+    },
+    "comparisons": [
+      {
+        "mine_label": "bin1_spatial_mean_dfF",
+        "theirs_key": "frame_mean|native|unsmoothed",
+        "smoothed": false,
+        "my_n": 2000,
+        "their_n": 2000,
+        "n_match": true,
+        "my_phi": 0.9825306782165436,
+        "their_phi": 0.9825467867749567,
+        "rel_phi": -1.6394698583185347e-05,
+        "my_tau_s": 9.006616532314862,
+        "their_tau_s": 9.015002930996193,
+        "rel_tau": -0.000930271320544602,
+        "over_5pct": false,
+        "tau_with_b4_nominal_dt": null,
+        "tau_nominal_vs_theirs": null
+      },
+      {
+        "mine_label": "bin1_spatial_mean_dfF",
+        "theirs_key": "frame_mean|native|smooth5",
+        "smoothed": true,
+        "my_n": 1996,
+        "their_n": 1996,
+        "n_match": true,
+        "my_phi": 0.9946595210851301,
+        "their_phi": 0.9946667367312143,
+        "rel_phi": -7.254335364530109e-06,
+        "my_tau_s": 29.64261907674861,
+        "their_tau_s": 29.682831668943596,
+        "rel_tau": -0.0013547424532633174,
+        "over_5pct": false,
+        "tau_with_b4_nominal_dt": null,
+        "tau_nominal_vs_theirs": null
+      },
+      {
+        "mine_label": "bin6_spatial_mean_dfF",
+        "theirs_key": "frame_mean|box0.914|unsmoothed",
+        "smoothed": false,
+        "my_n": 333,
+        "their_n": 333,
+        "n_match": true,
+        "my_phi": 0.8874512891925317,
+        "their_phi": 0.8875079050578795,
+        "rel_phi": -6.379195613371272e-05,
+        "my_tau_s": 7.976272428208702,
+        "their_tau_s": 7.657471505762383,
+        "rel_tau": 0.04163266193108463,
+        "over_5pct": false,
+        "tau_with_b4_nominal_dt": 7.653380266738157,
+        "tau_nominal_vs_theirs": -0.0005342806723012034
+      },
+      {
+        "mine_label": "bin6_spatial_mean_dfF",
+        "theirs_key": "frame_mean|box0.914|smooth5",
+        "smoothed": true,
+        "my_n": 329,
+        "their_n": 329,
+        "n_match": true,
+        "my_phi": 0.9711979450606326,
+        "their_phi": 0.9711714324777664,
+        "rel_phi": 2.7299590967777753e-05,
+        "my_tau_s": 32.58788278961139,
+        "their_tau_s": 31.239492605454533,
+        "rel_tau": 0.04316299887410543,
+        "over_5pct": false,
+        "tau_with_b4_nominal_dt": 31.268673596796813,
+        "tau_nominal_vs_theirs": 0.0009341058035361456
+      }
+    ],
+    "attribution": {
+      "dt_dimension": "box 路径**唯一**系统性差异：对方 bin 为 6 帧/n=333（与我相同），但 τ=−dt/lnφ 用 **B4 标称 dt=0.913826 s**；实测箱宽 = 6/6.300006 = **0.952380 s**（+4.22%）⇒ 其 box 路径 τ 系统性偏低 4.22%（把 dt 换成实测值即复现我方值）",
+      "trace_dimension": "trace 口径（我方=剔除「曾现哨兵」体素的空间均值；对方=frame_mean 且逐元素排除哨兵）⇒ φ 相对差 ≤0.01% ⇒ **该维度在本次量级下可忽略**（已量化，非声明）",
+      "unresolved": "Q/H dwell 仍差 2.1×（我方 H 低态 dwell 6.59 s vs 对方 3.17 s）：H 序列 run 数仅 14–17、p90/中位≈7（重尾）⇒ 中位 dwell 的抽样不确定度大；且对方 A 矩阵 [[0.9798,0.0202],[0.0375,0.9625]] 在 occ_low=0.6425 下蕴含约 52.8 次切换，而其自报 n_switches=35 ⇒ **对方记录内部不一致**。故该差异**未定位**，需 B1 提供其 HMM 的拟合序列（平滑/未平滑）、初始化与迭代设置。"
+    },
+    "parse_metrics": {
+      "theirs": {
+        "lat_x_mean": 0.7768,
+        "lat_y_mean": 0.7613,
+        "frame_mean": 0.7728,
+        "p50_min": 1212.0,
+        "p50_max": 2797.0,
+        "n_neg": 10383,
+        "n_u16gt": 10383,
+        "vmin": -138.0
+      },
+      "mine": {
+        "sentinels": {
+          "neg16": 10383,
+          "u16gt": 10383,
+          "both": 10383,
+          "u16gt_not_neg": 0,
+          "total": 80000000,
+          "ratio_of_total": 0.0001297875,
+          "equiv_int16_neg_iff_u16gt65000": true
+        },
+        "structure_pooled": {
+          "px_h": 0.779222335392576,
+          "px_v": 0.7977021090281923,
+          "ft": 0.7987254768893741,
+          "p50_median": 1784.0,
+          "p50_min": 1212.0,
+          "p50_max": 2797.0,
+          "n_prod": 79600000
+        },
+        "structure_per_object": {
+          "px_h": {
+            "median": 0.7752704337164051,
+            "min": 0.628913962563683,
+            "max": 0.8548999013967388,
+            "n": 200
+          },
+          "px_v": {
+            "median": 0.7835352676551088,
+            "min": 0.6154982002326714,
+            "max": 0.8867808190568702,
+            "n": 200
+          },
+          "ft": {
+            "median": 0.7724065083872829,
+            "min": 0.5843696139252239,
+            "max": 0.8818133733939922,
+            "n": 200
+          }
+        },
+        "p50": {
+          ">i2": 1784.0
+        }
+      },
+      "note": "我方为**中位+区间**、对方为**均值+区间**（统计量口径不同，非数据不同）",
+      "agreement": {
+        "sentinel_exact": true,
+        "u16gt_exact": true,
+        "vmin_exact": true,
+        "p50_min_match": true,
+        "p50_max_match": true,
+        "rel_lat_x": 0.003118351432255367,
+        "rel_frame": 0.033547459742978875
+      }
+    }
+  },
   "bands": [
     {
       "label": "bin1_spatial_mean_dfF",
@@ -836,11 +983,11 @@
     "TAU_MIN_FRAMES": 300,
     "MIN_FRAMES_BIC": 500
   },
-  "wallclock_s": 25.605237007141113,
-  "cpu_s": 25.179594,
+  "wallclock_s": 23.160855054855347,
+  "cpu_s": 23.116978,
   "determinism": "gzip 确定性 + HMM seed=0 + 无随机采样 ⇒ 可复跑逐位一致",
   "artifacts_sha256_file_bytes": {
-    "_b3_m11_series_reference.json": "c885fe1d7cf8afe7b814d663e8d29d83cfc7a258e85917facb2520e3a5d18cd9",
+    "_b3_m11_series_reference.json": "a667411317550d771a0ba89e362ef672eb33a0df74f6def0846553cff21b90ed",
     "_b3_m11_series_reference.csv": "bb485950cc58265f3935b1dbc80bc346fa1d5cc21471650a7ec0b57ef85ce71a"
   }
 }

@@ -373,3 +373,89 @@
 含事件时的差异是 **E-M10-2 的语义差异**，量化为 **+5.75%/+4.9%**。
 **本节点早期"单 ULP FP 累加序"的主张已撤回**（`m11_g0_engine_summary.json` 的对应措辞亦已改写），
 请勿据此去排查 FP 累加序 —— 该方向经实测为**否**。
+
+---
+
+## B2-L13 — RF-M11-H 答复：**是修了引擎（不是放松判据）**；`off_state_equivalence` 的差异是**语义级**（非 ULP）
+
+> **关于评审快照**：RF-M11-H 表格里的 `(b)(c)(d)(g)(h) = unavailable`、`off_state_equivalence = fail`、
+> `positive_controls / slot_encoding_assertions / no_leak = unavailable`、`gate_verdict = partial`
+> 对应的是本节点 **22:07–22:08 的中间态**（此时 (e)(f) 刚修好、其余判据尚未复跑；且 `off_state_equivalence`
+> 当时包含"三延迟档**含**外部事件"的无效比较臂）。**当前工作树状态（见文末指纹）**：
+> `gate_verdict=pass`、`criterion_counts={n_total:11, n_measured:11, n_pass:11, n_fail:0, n_unavailable:0}`。
+> 仓库中他人代提交的副本可能滞后于工作树 ⇒ 请以 `reports/neuro/m11_g0_engine_summary.json` 的
+> `evidence.*_sha256` 为准比对。
+
+### B2-L13.1 (e)(f) 由 fail→pass 的三样证据（RF-M11-H §二，缺一不可）
+
+**(1) 引擎侧改动（含行号与修改前行为）**
+
+| 判据 | 改动 | 修改前行为 |
+|---|---|---|
+| **(e)** | `src/mouse_cortex_engine.py`：L211 新增形参 `ext_abs_index: bool = True`、L244 属性、**L707–715 改为 `_eid = (abs0 + s) if self.ext_abs_index else s`** 并按绝对步号取外部事件区间；另新增 L939 `assert_composable_for_segmentation()` 守卫 | 步模式按 `ext_off[s]`（**局部**步号）取事件 ⇒ 分段调用**每段重放前段事件**：n=400/T=4000/三延迟档/E1b on 下 **k=2 → 172 脉冲、11 个神经元计数不同；k=5 → 165、28 个不同**（与 RF-M11-F/G 引用数字逐位一致）；chunk 路径不抛错也不差异（因其原本用 `abs0+a0`） |
+| **(f)** | **引擎侧未改**（守卫本来就是对的）；改的是**测试夹具**：`tools/scan_m11_engine.py::t2_sync` 的臂定义改为**按臂选定编码**（M9/M10/M11-冻结档 → E/I 两槽；M11-修正档 → 四槽） | 该臂把 `cls=2/3` 喂给 **E1b 关闭**（`n_ch=2`）的引擎 ⇒ 被 L450 配置级守卫在 `finalize()` 拒绝：`ValueError: E1b 关闭态但存在 syn_class>1 的边 ⇒ 拒绝（会静默丢类）` ⇒ 按四态纪律该臂 = **`invalid`**（非内核失败） |
+
+**(2) 根因一句话**
+- **(e)**：**不是** per-class 投递的 `base/slot` 索引算术（该算术与 M10 E5-FIX **逐字同源**：`t_row[idx] − (cumsum(c)−c)`），
+  而是 **冻结件步模式用局部步号索引外部事件**（`larval_zf_engine.py` L377 `ea = int(ext_off[s])`）
+  ⇒ 分段重放事件；**step 失败 / chunk 通过** 的分界由此而来（chunk 用 `abs0 + a0`）。修成绝对步号后逐位一致。
+  **证据**：`data/m11_compose_matrix.json`（96 格）——修正档**全 BIT**；失败**只**出现在 `ext_abs_index=False`，
+  且需同时满足 `step ∧ ext 表非空 ∧ k>1`，与活动密度/延迟档数/E1b **无关**；
+  `data/m11_minrepro_delivery.json`（MR1–MR6 全过）给出索引级证据（含 M9 `[0,1,7]` vs 期望 `[0,1,3]`）。
+- **(f)**：`m11_ok=False` 来自**被测臂本身无效**（四类标签 × E1b 关闭），被配置守卫正确拦下；与 (e) **不同源**
+  （异常在 `finalize` 配置校验，(e) 在 `run()` 事件索引；栈顶分别 L450 / L709）。
+
+**(3) 判据未改的证据**（RF-M11-H §二.3 点名要求）
+- **(e)**：判据仍是 `tot == base[0]` **且** `np.array_equal(cnt, base[1])` —— **无任何容差**；
+  本轮唯一的改动是 **k 列表由 `{1,2,5}` 扩到 `{1,2,3,5,10}`（更严）**，以及把交付落点级证据（MR5）并列。
+- **(f)**：判据与阈值均未改（`M9 抛错 ∧ M11 不抛错 ∧ 逐类落槽残量与独立重算 ≤2%`；实测 rel_diff **全 0**）。
+- 两者均已写入 `m11_g0_engine_summary.json::criteria_adjustments`（机器可读登记表）+ 每项判据新增
+  `root_cause` / `fix` 字段；三处上游缺陷另立 `defect_log`（含文件/行、修改前行为、修法、验证）。
+
+### B2-L13.2 `extensions.off_state_equivalence`：量化、定性与处置（RF-M11-H §三）
+
+| 臂 | M10 | M11-冻结档 | 差异神经元 | `max|Δcounts|` | `max|Δv|` | 判定 |
+|---|---|---|---|---|---|---|
+| 三延迟档 **无** ext（纯网络语义） | 2201 | **2201** | **0** | **0** | **0 mV** | **逐位一致** |
+| 密集 × 三延迟档 **无** ext | 5639 | **5639** | **0** | **0** | **0 mV** | **逐位一致** |
+| 单延迟档 **含** ext | 2279 | **2279** | **0** | **0** | — | **逐位一致** |
+| 三延迟档 **含** ext | 2201 | 2257 | **102/200** | **3** | **9.64 mV**（`max|Δg_e|=63.76`）| **语义差异**（M10 丢事件）|
+
+- **ULP 判定**：**不存在"1 ULP 级"差异** —— 有效臂上差异**恰为 0**；无效臂（含 ext 三延迟档）的差异量级
+  = `float32 spacing(50 mV) = 3.81e-06 mV` 的 **2.5×10⁶ 倍**（`max|Δv| = 9.64 mV`），总脉冲 **+2.54%**
+  ⇒ **定性 = 语义差异（E-M10-2，冻结件在多延迟组下丢弃全部外部事件）**，**不是浮点累加次序**。
+  （本节点早前基于"首现差异 3.8e-06 mV ≈ 1 ULP"的**中间结论已撤回**；该 3.8e-06 出现在双方都走冻结索引的
+  诊断臂上，随后被 `no-ext` 的**逐位 0 差**与 `含-ext` 的**语义级差异**双向否证。）
+- **处置：选 (a) 修到逐位一致（已实现）**，理由：① 引擎侧无需引入任何容差——纯网络语义下三延迟档
+  （含密集工况）**已经逐位一致**；② 含 ext 的差异根因在 M10 侧（丢弃驱动），M11 交付事件是**正确行为**，
+  为其设容差反而会把上游缺陷固化为"可接受偏差"；③ 因此**没有**新增容差判据，也就**不需要**写"计数差 ≤1"
+  这类放松条款（清单/env notes 无需为此新增容差行）。
+- **对"语义等价是否成立"的说明**：等价性主张限定在"**M10 自身输入语义良定义**"的配置上
+  （单延迟档含 ext；多延迟档纯网络）——这两类配置下 M11（机制全关 + `REF_FROZEN`）与 M9/M10 **逐位相同**
+  ⇒ **语义等价成立**；多延迟 + 含 ext 的情形不是等价问题，而是 **E-M10-2 缺陷本身**（已单独登记 + 已在 M11 修正）。
+- **对 M11 后续判据的稳健性**：由于有效臂是**逐位**（0 差），状态结构 / AR(1) τ 等下游判据**不存在**
+  "微小计数差异被放大"的风险；多延迟 + 含 ext 的组合在 M11 内**不产生任何差异**（M11 恒定交付事件），
+  故 S 门/功能门不受此影响。
+- **比较对象变更已显式登记**（`criteria_adjustments`）：由"三延迟档**含** ext"改为"三延迟档**纯网络**"
+  + **新增**密集×三延迟档逐位臂（此前从未测过）；**判据本身仍为逐位、无容差** ⇒ 属**替换无效比较为
+  有效且更严比较**，不是放宽。
+
+### B2-L13.3 其余要求（RF-M11-H §四）—— 全部已满足（当前工作树）
+
+| 要求 | 状态 |
+|---|---|
+| (b) 静默比 + KS | ✅ 3 档密度 0.475/1.950/17.925 Hz：静默差 **0.000 pp**、KS **p=1.000** |
+| (c) 逐类电导积分（引擎累积 vs 独立闭式 ≤2%） | ✅ **E 1.5e−7 / PV 3.8e−6 / SST 6.2e−6 / VIP 2.6e−6** |
+| (d) 同参数重跑 + 分段 + 跨进程逐位 | ✅ 与 (e)(h) 同源，逐位 |
+| (g) 3 档目标密度复测 | ✅ 3 档全过；**MICrONS 钙域锚仍 `unavailable`**（B1 L11.3/L11.5 口径未决）|
+| (h) 3 新进程 × 2 档 | ✅ `on` 244 / `off_frozen` 3730，sha256 三进程相同 |
+| extensions：`slot_encoding_assertions` | ✅ 逐类 6208/525/508/559（三途径一致）+ 负对照被拦截且断言可证伪 |
+| extensions：`positive_controls` | ✅ E1b ∫比 1.7273/1.7274（rel 2.5e−6）+ τ 相同换标签逐位；E2b 189 vs 574 逐位不同 + `alive`；E3b 到达步 64/104（Δ=40）+ 单共享环槽 |
+| extensions：`no_leak` | ✅ 5 段 RSS 增长 0.79 MB |
+| **(e)(f) 回归测试** | ✅ `test_step_segment_composability_k_scan[step/chunk]`（k=1/2/3/5/10）+ `test_sync_firing_delivery_no_raise_and_per_class_slots` + `test_compose_matrix_and_domain_guard`；**pytest 11 passed** |
+| G0 通过条件 | ✅ `gate_pass_condition` 已写死："11 项判据全 `pass`；有 `unavailable` ⇒ `incomplete`；有 `fail` ⇒ `fail`"；当前 **11/11 measured 且全 pass** |
+| 算力 | ✅ `OMP_NUM_THREADS=1`、零 MPS 作业、>10 min 交托管（J1–J4）|
+
+**当前状态指纹**：`reports/neuro/m11_g0_engine_summary.json::evidence.alignment_json_sha256` +
+`criterion_states`（11 项）；一键复核：
+`./.venv-m11/bin/python -c "import json;d=json.load(open('neural_exploration/reports/neuro/m11_g0_engine_summary.json'));print(d['gate_verdict'],d['criterion_counts'])"`

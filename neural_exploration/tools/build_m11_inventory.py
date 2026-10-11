@@ -458,6 +458,12 @@ def main():
             "框架内时间口径由 field_summaries（无时间轴）+ functional_series（仅 2 field，6.3001 Hz）给出",
             "Allen synphys 桶对象级读取：403 AccessDenied（桶存在、不可 list）→ NEEDS_VERIFY",
             "IBL OpenAlyx 数据集表：403 需凭据 → NEEDS_TOKEN（P12 走公开桶 + 论文档回退）",
+            "**四类参考量（率分布 / 群体相关 / 状态结构 / dwell）= 当前不可执行**（`blocked`，"
+            "非未测、非未命中）：① R2 禁用 MICrONS 体素序列（否则 2 个 field 的钙域参考量本可算）；"
+            "② R3 的本地 Allen NWB 中 `/units`、`/acquisition`、`/general` 落在稀疏洞内不可读，"
+            "且下载被禁/网络 1.6–16 KB/s（DANDI 7.2 KB/s）；③ 逐细胞 ΔF/F 仅在 v8 DB（R1 不下载）；"
+            "④ 唯一剩余实测路径 = 全量 `units.csv`（51,439,189 B，逐 unit firing_rate/质量）⇒ **DQ-6 待批**；"
+            "⇒ 请裁决：批 DQ-6 / 续传 NWB / 或改判 R2 以启用 2 field 钙域参考量",
             "MICrONS minnie CAVE 表 API（info/materialize）：404 / 503 → REACHABLE_NO_DATA / BLOCKED",
         ],
     )

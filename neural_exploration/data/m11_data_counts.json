@@ -1,6 +1,6 @@
 {
  "generated_by": "tools/build_m11_inventory.py",
- "generated_at": "2026-10-11T15:28:13Z",
+ "generated_at": "2026-10-11T15:46:10Z",
  "units": "bytes; evidence ∈ {measured, derived, literature, unavailable}",
  "microns_structure": {
   "evidence": "measured(元数据) + derived(chunk 计数); shard 清单 = measured(有界)",
@@ -387,7 +387,7 @@
  "grid_alignment": {
   "evidence": "measured(实像素) + derived(尺度扫描)",
   "generated_by": "tools/verify_m11_grid_alignment.py",
-  "generated_at": "2026-10-11T15:10:44Z",
+  "generated_at": "2026-10-11T15:28:53Z",
   "question": "文档 4 px/µm 与元数据 2.5 µm/px 的 10× 差属于哪一层的口径？",
   "provenance": {
    "doc": "data/m11_raw/microns/pdf_text/functional_data_technical_documentation_v3.pdf.txt —— 原文 '4 px/µm xy resolution (440×248 px/field) to tile a 1100×1200 µm² FOV'",
@@ -569,6 +569,120 @@
    "note": "对 series 做随机平移后与对齐后 summary 的相关（|r| 均值）⇒ 地板参考；对齐值应显著高于该地板"
   },
   "alignment_verdict": "同格性**通过（实像素）**：尺度扫描峰值唯一出现在 **f=2.50**（r=0.126），其余因子 r∈[−0.07,−0.01]；朝向/平移搜索后最佳为 identity，位移 0,0，r=0.126（地板 0.014）。峰值 r 偏低属**对比机制差异**（summary 为结构投影/归一化 0–1，series 为 GCaMP 时间均值），但**唯一正相关出现在 2.5 口径**这一点足以判定 2.5 µm/px 才是 series 的空间口径；0.25 µm/px 需 f≈25，实测 r=-0.031（无峰值）。",
+  "mask_grid_check": {
+   "mask_chunks": [
+    "0-128_0-128_0-1",
+    "0-128_128-256_0-1",
+    "0-128_256-384_0-1",
+    "0-128_384-440_0-1",
+    "128-248_0-128_0-1",
+    "128-248_128-256_0-1",
+    "128-248_256-384_0-1",
+    "128-248_384-440_0-1"
+   ],
+   "n_chunks": 8,
+   "chunk_spans": [
+    {
+     "x": [
+      0,
+      128
+     ],
+     "y": [
+      0,
+      128
+     ]
+    },
+    {
+     "x": [
+      0,
+      128
+     ],
+     "y": [
+      128,
+      256
+     ]
+    },
+    {
+     "x": [
+      0,
+      128
+     ],
+     "y": [
+      256,
+      384
+     ]
+    },
+    {
+     "x": [
+      0,
+      128
+     ],
+     "y": [
+      384,
+      440
+     ]
+    },
+    {
+     "x": [
+      128,
+      248
+     ],
+     "y": [
+      0,
+      128
+     ]
+    },
+    {
+     "x": [
+      128,
+      248
+     ],
+     "y": [
+      128,
+      256
+     ]
+    },
+    {
+     "x": [
+      128,
+      248
+     ],
+     "y": [
+      256,
+      384
+     ]
+    },
+    {
+     "x": [
+      128,
+      248
+     ],
+     "y": [
+      384,
+      440
+     ]
+    }
+   ],
+   "union_coverage_xy": [
+    0,
+    248,
+    0,
+    440
+   ],
+   "series_dims_xy": [
+    248,
+    440
+   ],
+   "grid_identical": true,
+   "evidence_level": "measured（**由 chunk 键的索引范围互补铺满**得出，不是引用元数据声明）",
+   "mask_info_resolution_nm": [
+    2500,
+    2500,
+    10000
+   ],
+   "pixel_level_alignment": "**unresolved（形式未自证）**：`field_seg_masks` 为 `compressed_segmentation`（data_type uint64，块尺寸 8×8×8，chunk 前缀=裸 gzip）；在**无官方规范/客户端**（PyPI 不可达、无 `bossdb`/`intern`）的条件下，本节点未能自证解码（实测头部 uint32 序列 [1, 16777744, 512, 33554996, 532, …] 不符合已知布局）⇒ **未使用其像素值**；R4 要求的'实际索引对齐'由 **summaries↔series 实像素**（尺度峰值 f=2.5、位移 (0,0)、地板×9）承担——**该检验验证的正是 10× 所在的「层级/尺度」问题**，而掩膜的格层则由上表 chunk 键覆盖实测确认。"
+  },
+  "mask_grid_verdict": "格层：**同格（measured）**——8 个 chunk 的 x/y 索引范围互补且无重叠，并集恰为 [0,248)×[0,440)，与 series dims [248, 440] **逐值相同**；像素层：**unresolved（形式未自证，未用其像素）**。",
   "fov_crosscheck": {
    "series_from_metadata": {
     "px": [
@@ -713,7 +827,7 @@
     "exists": true,
     "note": "",
     "bytes_on_disk": 10679,
-    "sha256": "f7504c4b0a13b91d5d1ee6b8e5efd63000a66dd6a66c0da331359e27ee18c572",
+    "sha256": "1936dbc54d30b1780753b166443fa94c716c48d4a260498f79d8d079ea5dc507",
     "status": "COMPLETE"
    },
    {
@@ -722,16 +836,16 @@
     "declared_bytes": null,
     "exists": true,
     "note": "空间口径 10× 差与同格性的实像素判定（RF-M11-B §四）",
-    "bytes_on_disk": 6273,
-    "sha256": "1267da15bdc23e1ee13aa2cd262deac1ad04904d572ae7ad7f164dde854ed78d",
+    "bytes_on_disk": 8478,
+    "sha256": "846c6185f4813b311a1592ed965184dff7ff90117327e6cd91e4bd7dbde8ef42",
     "status": "COMPLETE"
    }
   ]
  },
  "inventory": {
   "n_items": 236,
-  "total_bytes": 288486271,
-  "total_MB": 288.486
+  "total_bytes": 288488476,
+  "total_MB": 288.488
  },
  "functional_connectomics_release": {
   "evidence": "measured(列举 200：KeyCount=4)",
@@ -755,6 +869,7 @@
   "MICrONS 全 144 field 的扫描级 fps/nframes/nfields：在数据库 Scan 表内 → 本轮 unavailable；框架内时间口径由 field_summaries（无时间轴）+ functional_series（仅 2 field，6.3001 Hz）给出",
   "Allen synphys 桶对象级读取：403 AccessDenied（桶存在、不可 list）→ NEEDS_VERIFY",
   "IBL OpenAlyx 数据集表：403 需凭据 → NEEDS_TOKEN（P12 走公开桶 + 论文档回退）",
+  "**四类参考量（率分布 / 群体相关 / 状态结构 / dwell）= 当前不可执行**（`blocked`，非未测、非未命中）：① R2 禁用 MICrONS 体素序列（否则 2 个 field 的钙域参考量本可算）；② R3 的本地 Allen NWB 中 `/units`、`/acquisition`、`/general` 落在稀疏洞内不可读，且下载被禁/网络 1.6–16 KB/s（DANDI 7.2 KB/s）；③ 逐细胞 ΔF/F 仅在 v8 DB（R1 不下载）；④ 唯一剩余实测路径 = 全量 `units.csv`（51,439,189 B，逐 unit firing_rate/质量）⇒ **DQ-6 待批**；⇒ 请裁决：批 DQ-6 / 续传 NWB / 或改判 R2 以启用 2 field 钙域参考量",
   "MICrONS minnie CAVE 表 API（info/materialize）：404 / 503 → REACHABLE_NO_DATA / BLOCKED"
  ]
 }

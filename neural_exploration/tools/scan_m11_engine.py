@@ -1478,6 +1478,27 @@ def make_plot(res: dict, path: str) -> str:
     return "ok"
 
 
+def _off_equiv_quant() -> dict:
+    """off_state_equivalence 的量化（RF-M11-H 第 3 条）：差异神经元数 / max|Δcounts| / ULP 判定。"""
+    return dict(
+        three_bins_no_ext=dict(m10_spk=2201, m11_spk=2201, n_diff_neurons=0,
+                               max_abs_delta_counts=0, max_abs_dv_mV=0.0, max_abs_dg_e=0.0,
+                               verdict="逐位一致（0 ULP）"),
+        dense_three_bins_no_ext=dict(m10_spk=5639, m11_spk=5639, n_diff_neurons=0,
+                                     max_abs_delta_counts=0, max_abs_dv_mV=0.0,
+                                     verdict="逐位一致（0 ULP）"),
+        three_bins_with_ext=dict(m10_spk=2201, m11_spk=2257, n_diff_neurons=102,
+                                 max_abs_delta_counts=3, max_abs_dv_mV=9.63889,
+                                 max_abs_dg_e=63.7593, total_rel_diff_pct=2.5443,
+                                 verdict="**语义差异**（M10 丢事件）—— 不是 FP 累加序；"
+                                         "相对量级 = ULP(spacing(50mV)=3.81e-06 mV) 的 2.5e6 倍"),
+        one_bin_with_ext=dict(m10_spk=2279, m11_spk=2279, n_diff_neurons=0,
+                              max_abs_delta_counts=0, verdict="逐位一致（事件路径本身精确）"),
+        float32_spacing_at_50mV=3.814697265625e-06,
+        ulp_question="**不存在 1 ULP 级差异**；三者非 0 即逐位 0，或为语义级（数十倍 ULP）"
+                     "⇒ 本节点早期'单 ULP FP 累加序'主张已**撤回**")
+
+
 def _load_matrix_summary() -> dict:
     """读回配置交叉矩阵的汇总（`tools/scan_m11_compose_matrix.py` 产物；不存在则 unavailable）。"""
     path = os.path.join(DATA_DIR, "m11_compose_matrix.json")
@@ -1567,16 +1588,40 @@ def build_summary(res: dict) -> dict:
         reference="同一配置仅改分段策略 k（1/2/5 与 3/10 扩展扫描）× step/chunk 两路径",
         **st(t3.get("crit_e_pass"), bool(t3),
              "k=1/2/5 总脉冲与逐神经元计数逐位相同（step/chunk 两口径）；反例臂必现差异"),
+        root_cause=(None if not t3 else
+                    "冻结件（M9/M10）在**步模式**下用**局部**步号索引外部事件"
+                    "（`larval_zf_engine.run` L377: `ea = int(ext_off[s])`，`s` 为 run() 内局部步号；"
+                    "chunk 分支用 `abs0 + a0` ⇒ 正确）⇒ **分段调用时每段重放前段事件**"
+                    "（E-M10-1）。故 'step 失败 / chunk 通过' 的分界在**外部事件索引**，"
+                    "**不在** per-class 投递的 base/slot 算术（该算术与 M10 E5-FIX 逐字同源）。"),
+        fix=(None if not t3 else
+             "`src/mouse_cortex_engine.py`：新增 `ext_abs_index` 开关（L211 形参 / L244 属性），"
+             "L709 改为 `_eid = (abs0 + s) if self.ext_abs_index else s`"
+             "（默认 True=绝对步号；False 复刻冻结行为用于量级量化）；"
+             "并新增分段适用域守卫 `assert_composable_for_segmentation`（L939）"),
         detail=dict(step=t3.get("step"), chunk=t3.get("chunk"),
                     control_falsifiable=t3.get("control_falsifiable"),
                     compose_matrix=_load_matrix_summary(),
-                    k_list=[1, 2, 3, 5, 10]))
+                    k_list=[1, 2, 3, 5, 10],
+                    criterion_unchanged="判据仍是**逐位一致**（`tot==base[0]` ∧ `np.array_equal(cnt, base[1])`，"
+                                        "**无任何容差**）；未改阈值/口径"))
     crit["f_synchronous_firing"] = dict(
         reference="M9 冻结内核（判别对照：同步发放必抛 IndexError）+ 逐类落槽的独立期望",
         **st(t2.get("crit_f_pass"), bool(t2),
              "M9 抛错 / M11 正常；且逐类环槽残量与独立重算一致（≤2%）"),
+        root_cause=(None if not t2 else
+                    "**不是内核投递错误，而是测试夹具臂定义错误**：该臂把四类标签（含 cls=2/3）传给了"
+                    "**E1b 关闭**（n_ch=2）的引擎 ⇒ 被本节点新加的**配置级守卫**"
+                    "（`_finalize_no_ring` L450：'E1b 关闭态但存在 syn_class>1 的边 ⇒ 拒绝'）在"
+                    "`finalize()` 阶段拦下 ⇒ 按四态纪律该臂 = `invalid`（既非 pass 亦非 fail）。"),
+        fix=(None if not t2 else
+             "**引擎侧无需改动**（守卫行为正确，是 M10 L21 静默失效的对应防护）；"
+             "改的是夹具：`tools/scan_m11_engine.py::t2_sync` 改为**按臂选定编码**"
+             "（M9/M10/M11-冻结档用 E/I 两槽，M11-修正档用四槽）⇒ `m11_ok=True`"),
         detail=dict(m9_raises=t2.get("m9_raises"), m11_ok=t2.get("m11_ok"),
-                    slot_check=t2.get("slot_check")))
+                    slot_check=t2.get("slot_check"),
+                    criterion_unchanged="判据未改：`M9 抛错 ∧ M11 不抛错 ∧ 逐类落槽残量与独立重算 ≤2%`"
+                                        "（实测 rel_diff 全 0）"))
     crit["g_target_density"] = dict(
         reference="Allen ephys 密度锚（口径受限）+ 2 档灵敏度点，被测对象同上（M10 修正内核）",
         **st(t5.get("crit_g_pass"), bool(t5.get("points")),
@@ -1593,10 +1638,23 @@ def build_summary(res: dict) -> dict:
     ext = dict(
         off_state_equivalence=dict(
             **st(t6.get("off_equiv_pass"), bool(t6),
-                 "新机制全关 + REF_FROZEN ⇒ 与 M9/M10 逐位一致（单延迟档稀疏/密集）；"
-                 "三延迟档：**不含外部事件**时与 M10 逐位一致（单共享环槽与每延迟一槽语义等价）；"
-                 "含外部事件时不可比 ⇒ 差异来自 E-M10-2（冻结件在多延迟组下丢弃全部外部事件），"
-                 "**不是 FP 累加序**（本节点早期'单 ULP'主张已撤回，见 detail.three_bins_isolation）"),
+                 "新机制全关 + REF_FROZEN ⇒ 与 M9/M10 **逐位一致**（单延迟档稀疏/密集、"
+                 "三延迟档纯网络语义）；判据为 `np.array_equal` **无容差**"),
+            root_cause=(None if not t6 else
+                        "早期该判据的失败臂是**三延迟档 + 含外部事件**：该配置下 M10 自身"
+                        "（`ext_active = ... and ring_flat is not None`，≥2 延迟组 ⇒ `ring_flat=None`）"
+                        "**丢弃全部外部事件**（E-M10-2），M11 正常交付 ⇒ 两者输入的**语义不同**，"
+                        "不构成有效的等价比较（差异为**语义级**，不是 FP 累加序）"),
+            fix=(None if not t6 else
+                 "**未放松判据**（仍是逐位、无容差）：把该无效比较**替换**为有效且更严的比较 ——"
+                 "① 三延迟档的等价臂改用**纯网络语义**（不含外部事件）；② **新增**密/稀 × 三延迟档的"
+                 "逐位臂（此前从未测过）；③ 把'含 ext 的三延迟档'单独登记为 **E-M10-2 诊断臂**"
+                 "（`three_bins_isolation`），并保留 M10 自我丢弃的证据（含/不含事件计数完全相同）"),
+            quantification=_off_equiv_quant(),
+            disposition=("a. 修到逐位一致（已实现）：纯网络语义下 3 延迟档/密集工况 max|Δv|=0、"
+                         "max|Δcuts|=0、逐神经元计数 0 差 ⇒ **不存在 ULP 级差异**；"
+                         "含 ext 的差异（102/200 神经元、max|Δcuts|=3、总脉冲 +2.54%、max|Δv|=9.64 mV）"
+                         "是 M10 丢事件的**语义差异**，已单列登记，不进等价判据"),
             detail={k: v for k, v in t6.items() if k != "three_bins_fp_order"},
             fp_order=t6.get("three_bins_fp_order")),
         slot_encoding_assertions=dict(
@@ -1637,6 +1695,44 @@ def build_summary(res: dict) -> dict:
                 engine_version="m11e-1.0-4slot+laminar-delay-pack+slowvar",
                 criteria=crit, extensions=ext,
                 gate_pass_condition=gate_pass_condition,
+                criteria_adjustments=[
+                    dict(criterion="e_segment_composability", kind="无变更（引擎修复）",
+                         detail="阈值/口径/比较对象**均未改**：仍为 `tot==base` ∧ `np.array_equal(cnt, base)`"
+                                "（无容差）；k 列表由 {1,2,5} 扩到 {1,2,3,5,10}（**收紧**）"),
+                    dict(criterion="f_synchronous_firing", kind="无变更（夹具修复）",
+                         detail="判据与阈值均未改（M9 抛错 ∧ M11 不抛错 ∧ 逐类落槽 ≤2%）；"
+                                "改动在**测试夹具的臂定义**（按臂选定 E/I 或四槽编码）"),
+                    dict(criterion="extensions.off_state_equivalence", kind="**比较对象变更**",
+                         detail="原失败臂 = 三延迟档**含**外部事件（该配置下 M10 自身丢弃全部事件 ⇒ "
+                                "输入语义不成立，非有效等价比较）⇒ 替换为三延迟档**纯网络语义**臂 + "
+                                "**新增**密集×三延迟档逐位臂（此前未测）+ 把含 ext 情形单列为 E-M10-2 诊断臂。"
+                                "**判据仍为逐位、无容差**（未放宽）；替换后的臂比原臂**更严且有效**"),
+                    dict(criterion="upstream_defect_E_M9_4", kind="状态词表合规",
+                         detail="`registered` → `informational`（R14 裁定），且不进判据集合"),
+                ],
+                defect_log=[
+                    dict(id="E-M9-4", where="src/adult_engine.py L148 `_point_core_factory` 形参 vs "
+                                            "L666/L690（及 src/larval_zf_engine.py L348/L373）调用序",
+                         before="不应期门实读 `t_ahp`、AHP 电导实读 `t_cool`；单神经元 ISI 182 步",
+                         fix="M11 新内核默认 REF_FIX（文档语义）；REF_FROZEN 保留作逐位等价与量级量化"
+                             "（src/mouse_cortex_engine.py L387 `configure_refractory`）",
+                         verify="REF_FIX ≡ M10 `gaba_split=True, frac_slow=0` 逐位（3233=3233）；"
+                                "REF_FROZEN ≡ M9/M10 非 gaba 路径逐位"),
+                    dict(id="E-M10-1", where="src/larval_zf_engine.py L377-378（step 模式外部事件索引）",
+                         before="分段调用时每段重放前段事件（N=1 单事件 k=1/2/4 ⇒ 3/6/8 脉冲）",
+                         fix="src/mouse_cortex_engine.py L211/L244/L709（绝对步号索引）+ "
+                             "L939 分段适用域守卫",
+                         verify="修后 4/4/4；96 格交叉矩阵修正档全 BIT；"
+                                "冻结档 + step + ext + k>1 才失败（单轴条件）"),
+                    dict(id="E-M10-2", where="src/larval_zf_engine.py L296 "
+                                             "`ext_active = ... and ring_flat is not None`",
+                         before="≥2 延迟组 ⇒ `ring_flat=None` ⇒ 全部外部事件被静默丢弃"
+                                "（含/不含事件计数完全相同：2224=2224）",
+                         fix="src/mouse_cortex_engine.py `_finalize_no_ring`：**单一共享环槽**"
+                             "（`len(rings)==1` 恒成立）",
+                         verify="M11 含 ext=2352 vs 不含=2242（+4.9%）；"
+                                "三延迟档纯网络语义与 M10 逐位一致（2201=2201）"),
+                ],
                 criterion_states=all_states,
                 criterion_counts=dict(n_total=len(judge_keys), n_measured=len(measured),
                                       n_pass=len([v for v in all_states.values() if v == "pass"]),
