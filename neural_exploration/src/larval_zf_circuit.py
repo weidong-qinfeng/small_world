@@ -111,10 +111,15 @@ def bout_stats(pop_counts: np.ndarray, dt_ms: float = DT_MS, bin_ms: float = 100
     m = pop_counts[:nb * b].reshape(nb, b).sum(axis=1)
     silent = m == 0
     active = ~silent
-    # 由静默峰分隔的连续 active 段
+    # **判据可证伪性修正（M10 实测，见 docs/m10_env_notes.md L19）**：
+    # 首版把"记录起点/终点"也算作分隔 → **完全无静默的记录被算成 1 个贯穿全程的 bout**
+    # （饱和网络的 bout_fraction = 1.0）⇒ 该判据无法证伪（M9 B1 纪律）。
+    # 修正：bout **必须两侧都被静默箱界定**（interior bout）⇒ 无静默 ⇒ 0 bout ⇒ bout_fraction = 0。
     d = np.diff(np.r_[0, active.astype(np.int8), 0])
     starts = np.flatnonzero(d == 1)
     ends = np.flatnonzero(d == -1)
+    interior = (starts > 0) & (ends < nb)          # 两侧均有静默箱
+    starts = starts[interior]; ends = ends[interior]
     lengths = ends - starts
     good = lengths >= min_bout_bins
     n_bouts = int(good.sum())

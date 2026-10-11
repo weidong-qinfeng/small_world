@@ -1,0 +1,387 @@
+{
+ "generated_by": "(assembled by M10-B1)",
+ "generated_at": "2026-10-11T14:08:59",
+ "P3_engine_gate": {
+  "verdict": "PASS(核心 (e) 0.0% 逐位) — (a)-(d) 复用 M9 冻结对齐证据 + M10 侧新增 T1/T2 判别；同时发现 M9 冻结件投递索引 bug（见 docs/m10_env_notes.md L17）",
+  "t1_analytic_chain": {
+   "t1_m9_m10_identical": null,
+   "t1_chain_monotone": null,
+   "t1_n_spikes": null
+  },
+  "t2_simultaneous_spikes": {
+   "t2_m9_crashes": null,
+   "t2_m10_runs": null
+  },
+  "t3_segment_composability": {
+   "pass_bit_identical": true,
+   "arms": {
+    "m10_abs_step": [
+     {
+      "k": 1,
+      "total": 61539,
+      "rel_diff_pct": 0.0,
+      "n_neurons_count_diff": 0,
+      "bit_identical": true
+     },
+     {
+      "k": 2,
+      "total": 61539,
+      "rel_diff_pct": 0.0,
+      "n_neurons_count_diff": 0,
+      "bit_identical": true
+     },
+     {
+      "k": 5,
+      "total": 61539,
+      "rel_diff_pct": 0.0,
+      "n_neurons_count_diff": 0,
+      "bit_identical": true
+     }
+    ],
+    "m10_abs_chunk": [
+     {
+      "k": 1,
+      "total": 61548,
+      "rel_diff_pct": 0.0,
+      "n_neurons_count_diff": 0,
+      "bit_identical": true
+     },
+     {
+      "k": 2,
+      "total": 61548,
+      "rel_diff_pct": 0.0,
+      "n_neurons_count_diff": 0,
+      "bit_identical": true
+     },
+     {
+      "k": 5,
+      "total": 61548,
+      "rel_diff_pct": 0.0,
+      "n_neurons_count_diff": 0,
+      "bit_identical": true
+     }
+    ],
+    "m10_rel_step_control": [
+     {
+      "k": 1,
+      "total": 61539,
+      "rel_diff_pct": 0.0,
+      "n_neurons_count_diff": 0,
+      "bit_identical": true
+     },
+     {
+      "k": 2,
+      "total": 61483,
+      "rel_diff_pct": -0.091,
+      "n_neurons_count_diff": 222,
+      "bit_identical": false
+     },
+     {
+      "k": 5,
+      "total": 61515,
+      "rel_diff_pct": -0.039,
+      "n_neurons_count_diff": 467,
+      "bit_identical": false
+     }
+    ],
+    "m9_step_control": [
+     {
+      "k": 1,
+      "error": "IndexError: index 5039 is out of bounds for dimension 0 with size 5039"
+     },
+     {
+      "k": 2,
+      "error": "IndexError: index 5039 is out of bounds for dimension 0 with size 5039"
+     },
+     {
+      "k": 5,
+      "error": "IndexError: index 5039 is out of bounds for dimension 0 with size 5039"
+     }
+    ]
+   }
+  },
+  "t4_wallclock_fresh_processes": [
+   {
+    "t4_n_neuron": 100000,
+    "t4_n_edge": 2000000,
+    "t4_steady_ms_per_step": 1.4285,
+    "t4_gpu_h_per_30s": 0.2381,
+    "t4_rss_mb": 2238.4,
+    "t4_segments": [
+     {
+      "seg": 0,
+      "wall_s": 28.57,
+      "ms_per_step": 1.4285,
+      "spk": 14771593,
+      "rss_mb": 2238.4
+     }
+    ]
+   },
+   {
+    "t4_n_neuron": 100000,
+    "t4_n_edge": 2000000,
+    "t4_steady_ms_per_step": 1.4258,
+    "t4_gpu_h_per_30s": 0.2376,
+    "t4_rss_mb": 2212.8,
+    "t4_segments": [
+     {
+      "seg": 0,
+      "wall_s": 28.52,
+      "ms_per_step": 1.4258,
+      "spk": 14771593,
+      "rss_mb": 2212.7
+     }
+    ]
+   }
+  ],
+  "t4_budget_check": {
+   "pre_registered_gpu_h_per_trial_max": 0.5,
+   "measured_gpu_h_per_30s_trial": 0.2381,
+   "pass": true,
+   "activity_caveat": "探针网络 pop=147.7 Hz/神经元（高活动）⇒ ms/step 偏保守；同进程跨段退化复现（1.53 → 1.89 ms/step；墙钟 30.7 s → 962.8 s）"
+  }
+ },
+ "P5_resting": {
+  "G1_pass": false,
+  "all_pass": false,
+  "c_selfsustain": {
+   "value": 0.0,
+   "limit": 0.1,
+   "pass_": true,
+   "m9_baseline": 0.9853
+  },
+  "d_elasticity": {
+   "value": 0.20555339877618176,
+   "limit": 0.3,
+   "monotone": true,
+   "pass_": false,
+   "m9_baseline": 0.0725
+  },
+  "a_rate_median": {
+   "value": 109.0,
+   "band": [
+    0.3,
+    1.5
+   ],
+   "pass_": false,
+   "imaging_note": ""
+  },
+  "b_silent": {
+   "value": 0.0,
+   "band": [
+    0.5,
+    0.95
+   ],
+   "pass_": false
+  },
+  "bout": {
+   "value": 0.0,
+   "pass_": false,
+   "m9_baseline": 0.0
+  },
+  "determinism": {
+   "run1_spk": 54093.0,
+   "run2_spk": 54093.0,
+   "bit_identical": true
+  },
+  "drive_sweep": [
+   [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0
+   ],
+   [
+    0.5,
+    16.0,
+    96.788,
+    98.5,
+    0.0,
+    0.0,
+    0
+   ],
+   [
+    1.0,
+    32.0,
+    108.186,
+    109.0,
+    0.0,
+    0.0,
+    0
+   ],
+   [
+    2.0,
+    64.0,
+    117.788,
+    119.0,
+    0.0,
+    0.0,
+    0
+   ],
+   [
+    4.0,
+    128.0,
+    130.424,
+    132.0,
+    0.0,
+    0.0,
+    0
+   ],
+   [
+    8.0,
+    256.0,
+    147.73,
+    149.0,
+    0.0,
+    0.0,
+    0
+   ]
+  ],
+  "net_params": {
+   "n_neuron": 500,
+   "indegree": 20,
+   "inh_frac": 0.3,
+   "g_exc": 2.0,
+   "g_inh": 22.0,
+   "delay_max": 40,
+   "bias_median_mv_s": 150.0,
+   "bias_cv": 0.3,
+   "seed": 0
+  },
+  "bands": {
+   "rate_band_lo": "0.30",
+   "rate_band_hi": "1.50",
+   "silent_band_lo": "0.50",
+   "silent_band_hi": "0.95",
+   "selfsustain_ratio_max": "0.10",
+   "drive_elasticity_min": "0.30",
+   "drive_monotone_required": "1",
+   "single_trial_gpu_h_max": "0.50",
+   "settle_window_ms": "500",
+   "n_trials_min": "3"
+  },
+  "m9_to_m10": {
+   "selfsustain": "0.9853 → 0.0000（修复自持）",
+   "elasticity_4x": "+7.25% → +20.56%（改善 2.8×，仍 < 30% 门槛）"
+  },
+  "headline": "G1 未过：自持已修复但驱动响应为全或无（λ=16 → 96.8 Hz）→ 需 P6 机制（STP 实测 +752%）"
+ },
+ "P6_ladder": {
+  "rows_T2000ms": [
+   [
+    "M0",
+    "基线：无状态切换机制（M9 语义）",
+    "0.000185",
+    "1",
+    "0.036962",
+    "1",
+    "0",
+    "0.0",
+    "0",
+    "0",
+    "0",
+    "partial",
+    "183.31",
+    "183.5",
+    "0.0",
+    "18.5"
+   ],
+   [
+    "M-1",
+    "STP 抑制型（Tsodyks–Markram；u0=0.5, τ_rec=1 s）",
+    "0.010549",
+    "1",
+    "7.521097",
+    "1",
+    "1",
+    "0.0",
+    "0",
+    "0",
+    "0",
+    "partial",
+    "2.844",
+    "2.0",
+    "0.388",
+    "18.0"
+   ],
+   [
+    "M-2",
+    "STP 易化型（u0=0.15, τ_fac=0.5 s）",
+    "0.00662",
+    "1",
+    "8.144544",
+    "1",
+    "1",
+    "0.0",
+    "0",
+    "0",
+    "0",
+    "partial",
+    "4.5315",
+    "3.5",
+    "0.215",
+    "19.0"
+   ],
+   [
+    "M-3",
+    "GABA 亚型异质（A 快 8 ms / B 慢 200 ms，慢组分 35%；类级先验）",
+    "9.4e-05",
+    "1",
+    "0.027012",
+    "1",
+    "0",
+    "0.0",
+    "0",
+    "0",
+    "0",
+    "partial",
+    "366.392",
+    "366.5",
+    "0.0",
+    "23.4"
+   ],
+   [
+    "M-4",
+    "调质增益（tonic→phasic 近似：兴奋/抑制权重与外部事件 ×1.5）",
+    "0.000184",
+    "1",
+    "0.042517",
+    "1",
+    "0",
+    "0.0",
+    "0",
+    "0",
+    "0",
+    "partial",
+    "185.2565",
+    "185.5",
+    "0.0",
+    "21.3"
+   ]
+  ],
+  "rows_T12000ms": [
+   [
+    "M-1",
+    "STP 抑制型（Tsodyks–Markram；u0=0.5, τ_rec=1 s）",
+    "0.010512",
+    "1",
+    "7.354916",
+    "1",
+    "1",
+    "0.0",
+    "0",
+    "0",
+    "0",
+    "partial",
+    "2.584417",
+    "2.0",
+    "0.269",
+    "74.8"
+   ]
+  ],
+  "gate3_note": "修正为可证伪判据（interior bout）后：全部等级 bout=0.0000（T=2 s 与 12 s）⇒ 门 3 未过；判别性结论来自门 1/2"
+ }
+}

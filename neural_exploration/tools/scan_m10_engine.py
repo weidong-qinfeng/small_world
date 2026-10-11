@@ -233,9 +233,13 @@ def t4_wallclock(N=100_000, n_seg=4, seg_steps=20_000, edges_per_neuron=20,
                          spk=int(r["spk_total"]), rss_mb=round(rss_mb(), 1)))
         print(f"    seg {s}: {rows[-1]['wall_s']}s  {rows[-1]['ms_per_step']} ms/step  "
               f"spk={rows[-1]['spk']}  RSS={rows[-1]['rss_mb']}MB", flush=True)
-    steady = [r["ms_per_step"] for r in rows[1:]]      # 禁用段 0（预热）
+    steady = [r["ms_per_step"] for r in rows[1:]]      # 优先禁用段 0（M9 预热纪律）
+    note = "steady=segments[1:]"
+    if not steady:
+        steady = [r["ms_per_step"] for r in rows]
+        note = "single_segment:steady=seg0(含 MPS 预热，20k 步摊薄；跨进程复跑一致性见报告)"
     med = float(np.median(steady)) if steady else float("nan")
-    return dict(t4_n_neuron=N, t4_n_edge=E, t4_segments=rows,
+    return dict(t4_n_neuron=N, t4_n_edge=E, t4_segments=rows, t4_steady_note=note,
                 t4_steady_ms_per_step=med,
                 t4_gpu_h_per_30s=round(med * 600_000 / 1000.0 / 3600.0, 4),
                 t4_build_s=round(time.time() - t_build, 1), t4_rss_mb=round(rss_mb(), 1))

@@ -1,0 +1,16 @@
+key,value
+generated_by,tools/scan_m10_engine.py
+started_at,2026-10-11T13:51:21
+t4_n_neuron,100000
+t4_n_edge,2000000
+t4_segments[0].seg,0
+t4_segments[0].wall_s,28.57
+t4_segments[0].ms_per_step,1.4285
+t4_segments[0].spk,14771593
+t4_segments[0].rss_mb,2238.4
+t4_steady_note,single_segment:steady=seg0(含 MPS 预热，20k 步摊薄；跨进程复跑一致性见报告)
+t4_steady_ms_per_step,1.4285
+t4_gpu_h_per_30s,0.2381
+t4_build_s,29.1
+t4_rss_mb,2238.4
+elapsed_s,
