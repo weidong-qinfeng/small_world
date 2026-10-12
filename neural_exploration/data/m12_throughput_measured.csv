@@ -1,0 +1,54 @@
+# M12 数据门 S2/S7/S5 的**当场实测吞吐**依据（generated_by=tools/probe_m12_sources.py；口径：取数决策必须有**当场**实测吞吐支撑，禁止按锚/按早前实测外推 —— M11-R40/R56）
+utc,source,http_code,bytes,seconds,bytes_per_s,probe_or_fetch
+2026-10-12T02:34:30Z,S2:api.brain-map.org model::Structure (full table) [probe 1 MiB · Range 不支持，登记为失败],000,0,30.010,0.0,probe_1MiB_RANGE_UNSUPPORTED
+2026-10-12T02:35:00Z,S2:api.brain-map.org model::Structure (full table) [probe 时间上限 GET 30s 窗口内 0 字节],000,0,30.018,0.0,probe_window_too_short(ttfb=30.0s)
+2026-10-12T02:35:35Z,S2:api.brain-map.org model::Structure (full table) [fetch],200,7238867,35.265,205268.3,fetch
+2026-10-12T02:35:37Z,S7:allen-bo ecephys-cache sessions.csv (sessions.csv) [probe whole-object <1 MiB],206,7849,0.632,12419.0,probe_whole_object
+2026-10-12T02:35:39Z,S7:allen-bo ecephys-cache sessions.csv 渠道参照 channels.csv(6.6 MB) [probe 1 MiB · 同通道大对象],206,1048576,1.724,608381.5,probe_ref_1MiB
+2026-10-12T02:35:39Z,S7:allen-bo ecephys-cache sessions.csv (sessions.csv) [fetch],200,7849,0.647,12136.2,fetch
+2026-10-12T02:35:41Z,S7:allen-bo ecephys-cache probes.csv (probes.csv) [probe whole-object <1 MiB],206,26954,0.838,32146.3,probe_whole_object
+2026-10-12T02:35:42Z,S7:allen-bo ecephys-cache probes.csv 渠道参照 channels.csv(6.6 MB) [probe 1 MiB · 同通道大对象],206,1048576,1.503,697655.8,probe_ref_1MiB
+2026-10-12T02:35:43Z,S7:allen-bo ecephys-cache probes.csv (probes.csv) [fetch],200,26954,0.840,32079.8,fetch
+2026-10-12T02:35:48Z,"S5:ibl-public aggregates/.../trials.pqt(全量行为表, 探针路径) (24.2 MB 全量聚合表) [probe 1 MiB]",206,1048576,3.168,331017.2,probe_1MiB
+2026-10-12T02:40:06Z,S5:ibl-public 白名单首个 session 行为表(48629 B) (代表路径) [probe whole-object <1 MiB],206,48629,1.135,42863.7,probe_whole_object
+2026-10-12T02:40:10Z,S5:ibl-public 白名单首个 session 行为表(48629 B) 渠道参照 aggregates trials.pqt(24.2 MB) [probe 1 MiB · 同通道大对象],206,1048576,3.252,322393.3,probe_ref_1MiB
+2026-10-12T02:40:11Z,S5:ibl churchlandlab/CSHL024/2020-09-12/001 (trials table) [fetch],200,48629,1.030,47195.7,fetch
+2026-10-12T02:40:12Z,S5:ibl churchlandlab_ucla/FD_14/2023-05-24/001 (trials table) [fetch],200,39349,1.109,35495.8,fetch
+2026-10-12T02:40:13Z,S5:ibl hausserlab/PL015/2022-02-20/001 (trials table) [fetch],200,63731,1.160,54962.2,fetch
+2026-10-12T02:40:14Z,S5:ibl mainenlab/ZFM-01576/2020-12-01/001 (trials table) [fetch],200,66197,1.131,58523.3,fetch
+2026-10-12T02:40:16Z,S5:ibl steinmetzlab/NR_0017/2022-03-22/001 (trials table) [fetch],200,70412,1.227,57397.8,fetch
+2026-10-12T02:40:17Z,S5:ibl wittenlab/dop_47/2022-06-05/001 (trials table) [fetch],200,58240,1.132,51428.4,fetch
+2026-10-12T02:40:18Z,S5:ibl zadorlab/CSH_ZAD_001/2019-08-09/001 (trials table) [fetch],200,16473,0.809,20367.6,fetch
+2026-10-12T02:40:19Z,S5:ibl churchlandlab/CSHL025/2020-10-08/001 (trials table) [fetch],200,59067,1.151,51333.5,fetch
+2026-10-12T02:40:20Z,S5:ibl churchlandlab_ucla/FD_21/2023-04-25/002 (trials table) [fetch],200,46755,1.164,40182.2,fetch
+2026-10-12T02:40:21Z,S5:ibl hausserlab/PL016/2022-01-17/001 (trials table) [fetch],200,37594,1.210,31060.3,fetch
+2026-10-12T02:40:22Z,S5:ibl hoferlab/SWC_002/2019-06-11/001 (trials table) [fetch],200,38200,1.142,33450.2,fetch
+2026-10-12T02:40:23Z,S5:ibl steinmetzlab/NR_0019/2022-04-29/001 (trials table) [fetch],200,48663,1.096,44399.5,fetch
+2026-10-12T02:40:24Z,S5:ibl wittenlab/dop_48/2022-06-19/002 (trials table) [fetch],200,46535,1.068,43592.1,fetch
+2026-10-12T02:40:25Z,S5:ibl zadorlab/CSH_ZAD_002/2019-08-09/001 (trials table) [fetch],200,25690,0.926,27748.8,fetch
+2026-10-12T02:40:26Z,S5:ibl churchlandlab/CSHL029/2020-07-27/001 (trials table) [fetch],200,52827,0.915,57743.6,fetch
+2026-10-12T02:40:27Z,S5:ibl churchlandlab_ucla/FD_24/2023-06-06/001 (trials table) [fetch],200,64932,1.129,57517.0,fetch
+2026-10-12T02:40:29Z,S5:ibl hausserlab/PL017/2021-11-07/001 (trials table) [fetch],200,45861,1.212,37845.5,fetch
+2026-10-12T02:40:30Z,S5:ibl hoferlab/SWC_003/2019-06-11/001 (trials table) [fetch],200,37066,1.099,33717.9,fetch
+2026-10-12T02:40:31Z,S5:ibl mainenlab/ZFM-01592/2020-10-20/001 (trials table) [fetch],200,53827,1.089,49426.6,fetch
+2026-10-12T02:40:32Z,S5:ibl mrsicflogellab/IBL_005/2019-07-23/002 (trials table) [fetch],200,41282,0.945,43688.6,fetch
+2026-10-12T02:40:33Z,S5:ibl steinmetzlab/NR_0020/2022-05-08/001 (trials table) [fetch],200,44930,0.949,47328.3,fetch
+2026-10-12T02:40:34Z,S5:ibl wittenlab/dop_49/2022-06-14/001 (trials table) [fetch],200,47016,1.159,40555.6,fetch
+2026-10-12T02:40:35Z,S5:ibl zadorlab/CSH_ZAD_003/2019-08-09/001 (trials table) [fetch],200,24831,1.216,20414.8,fetch
+2026-10-12T02:40:36Z,S5:ibl churchlandlab/CSHL034/2019-10-01/001 (trials table) [fetch],200,18680,0.868,21522.3,fetch
+2026-10-12T02:40:37Z,S5:ibl churchlandlab_ucla/FD_28/2023-11-14/001 (trials table) [fetch],200,70549,1.260,55991.8,fetch
+2026-10-12T02:40:39Z,S5:ibl hausserlab/PL024/2021-12-04/001 (trials table) [fetch],200,36994,1.206,30680.5,fetch
+2026-10-12T02:40:40Z,S5:ibl hoferlab/SWC_006/2019-06-17/001 (trials table) [fetch],200,64865,1.150,56416.2,fetch
+2026-10-12T02:40:41Z,S5:ibl mainenlab/ZFM-01935/2021-02-03/001 (trials table) [fetch],200,59297,1.161,51070.7,fetch
+2026-10-12T02:40:42Z,S5:ibl mrsicflogellab/SWC_004/2019-06-11/001 (trials table) [fetch],200,21009,0.752,27924.4,fetch
+2026-10-12T02:40:43Z,S5:ibl steinmetzlab/NR_0021/2022-06-23/003 (trials table) [fetch],200,52860,1.077,49069.9,fetch
+2026-10-12T02:40:44Z,S5:ibl wittenlab/dop_50/2022-09-12/001 (trials table) [fetch],200,56134,1.111,50524.3,fetch
+2026-10-12T02:40:45Z,S5:ibl zadorlab/CSH_ZAD_004/2019-08-09/001 (trials table) [fetch],200,23014,0.809,28444.6,fetch
+2026-10-12T02:40:46Z,S5:ibl churchlandlab/CSHL045/2019-11-04/001 (trials table) [fetch],200,28553,1.209,23619.4,fetch
+2026-10-12T02:40:47Z,S5:ibl churchlandlab_ucla/FD_36/2023-11-14/001 (trials table) [fetch],200,65774,1.092,60227.6,fetch
+2026-10-12T02:40:48Z,S5:ibl cortexlab/KS014/2019-08-06/001 (trials table) [fetch],200,44069,1.234,35706.9,fetch
+2026-10-12T02:40:50Z,S5:ibl hausserlab/PL030/2022-09-12/001 (trials table) [fetch],200,40758,1.214,33564.0,fetch
+2026-10-12T02:40:51Z,S5:ibl mainenlab/ZFM-01936/2021-01-19/001 (trials table) [fetch],200,47184,1.122,42044.1,fetch
+2026-10-12T02:40:52Z,S5:ibl wittenlab/dop_53/2022-10-02/001 (trials table) [fetch],200,37185,1.331,27947.4,fetch
+2026-10-12T02:40:53Z,S5:ibl zadorlab/CSH_ZAD_005/2019-08-09/001 (trials table) [fetch],200,19192,0.931,20613.2,fetch
+2026-10-12T02:40:54Z,S5:ibl churchlandlab/CSHL046/2019-11-04/001 (trials table) [fetch],200,33674,1.273,26458.5,fetch

@@ -1,0 +1,489 @@
+{
+ "generated_by": "tools/probe_m12_sources.py",
+ "generated_at": "2026-10-12T02:33:54Z",
+ "interpreter": "/Users/weidong/ai/small_world/.venv-m10/bin/python",
+ "python": "3.9.6",
+ "only": "all",
+ "probe_only": false,
+ "max_sessions": 40,
+ "sources": {
+  "S2": {
+   "source": "S2",
+   "verdict": "REACHABLE",
+   "probe_1mib_Bps": 0.0,
+   "probe_main_Bps": 0.0,
+   "probe_note": "**0 字节**：TTFB=30.0 s >= 探针窗 30s => **探针窗短于服务端生成时延**；`B/s=0` **不是**链路吞吐（**不得据此判 TOO_SLOW**）；转'整件取数即测量'路径",
+   "t1_total_rows": 13709,
+   "graph_counts": {
+    "1": 1327,
+    "2": 40,
+    "17": 2692
+   },
+   "bytes_per_row": 534.54,
+   "est_total_bytes": 7328008,
+   "eta_est_s": null,
+   "eta_actual_s": 35.265386,
+   "full_url": "https://api.brain-map.org/api/v2/data/query.json?criteria=model::Structure,rma::options[num_rows$eqall]",
+   "integrity": {
+    "verdict": "COMPLETE",
+    "size": 7238867,
+    "sha256": "230a1b936202f657534e90c14e4496c70db608baf52dfe073b3bc69757d3ea67",
+    "etag_ok": true,
+    "part_size": null,
+    "reasons": [
+     "服务端未给 Content-Length（chunked）⇒ 门 ① 不适用，改以语义锚 + 两次独立取数 sha256 一致性替代",
+     "单段 ETag = 全对象 md5",
+     "msg 行数=13709；必需字段齐（id/acronym/name/parent_structure_id/depth/graph_id/structure_id_path）",
+     "行数自洽：parsed=13709 == expected=13709"
+    ],
+    "rows_parsed": 13709,
+    "repeat_sha256_match": "NOT_NEEDED(服务端 ETag=全对象 md5 复算通过 => 逐字节等同服务器对象)"
+   },
+   "missing_dimension": ""
+  },
+  "S7": {
+   "source": "S7",
+   "items": [
+    {
+     "name": "sessions.csv",
+     "url": "https://allen-brain-observatory.s3.amazonaws.com/visual-coding-neuropixels/ecephys-cache/sessions.csv",
+     "verdict": "REACHABLE",
+     "bytes": 7849,
+     "sha256": "cdd12b8becac84d284f222718a2a94f4155893fb9f26f1a9c725f541acc738f8",
+     "m11_sha256_match": true,
+     "rows": 58,
+     "etag_ok": true,
+     "probe_main_Bps": 608381.5381044936,
+     "probe_1mib_Bps": 12418.969742902484
+    },
+    {
+     "name": "probes.csv",
+     "url": "https://allen-brain-observatory.s3.amazonaws.com/visual-coding-neuropixels/ecephys-cache/probes.csv",
+     "verdict": "REACHABLE",
+     "bytes": 26954,
+     "sha256": "f555ce63317d5b6a83bfafd9f7e6a7b7393c0d7416952bafae0fe67412bfb6bf",
+     "m11_sha256_match": true,
+     "rows": 332,
+     "etag_ok": true,
+     "probe_main_Bps": 697655.8201302862,
+     "probe_1mib_Bps": 32146.30300818506
+    }
+   ]
+  },
+  "S5": {
+   "source": "S5",
+   "verdict": "REACHABLE",
+   "n_complete": 40,
+   "n_total": 40,
+   "total_bytes_complete": 1797898,
+   "skipped": [
+    "angelakilab/CSP001/2019-08-07/001: alf 内无 `_ibl_trials.table.*.pqt`（5 个对象）",
+    "cortexlab/KS002/2019-03-14/001: alf 内无 `_ibl_trials.table.*.pqt`（0 个对象）",
+    "danlab/DY_001/2019-03-04/001: alf 内无 `_ibl_trials.table.*.pqt`（0 个对象）",
+    "hoferlab/SWC_001/2019-05-13/001: alf 内无 `_ibl_trials.table.*.pqt`（0 个对象）",
+    "mrsicflogellab/IBL_001/2019-04-08/008: alf 内无 `_ibl_trials.table.*.pqt`（0 个对象）",
+    "angelakilab/CSP003/2019-08-07/001: alf 内无 `_ibl_trials.table.*.pqt`（5 个对象）",
+    "cortexlab/KS003/2019-03-14/001: alf 内无 `_ibl_trials.table.*.pqt`（0 个对象）",
+    "danlab/DY_002/2019-03-06/001: alf 内无 `_ibl_trials.table.*.pqt`（0 个对象）",
+    "mainenlab/ZFM-01577/2020-10-27/001: alf 内无 `_ibl_trials.table.*.pqt`（2 个对象）",
+    "mrsicflogellab/IBL_002/2019-04-08/002: alf 内无 `_ibl_trials.table.*.pqt`（0 个对象）",
+    "angelakilab/CSP004/2019-09-16/002: alf 内无 `_ibl_trials.table.*.pqt`（4 个对象）",
+    "cortexlab/KS004/2019-03-15/001: alf 内无 `_ibl_trials.table.*.pqt`（0 个对象）",
+    "danlab/DY_003/2019-03-13/001: alf 内无 `_ibl_trials.table.*.pqt`（0 个对象）",
+    "angelakilab/CSP005/2019-09-17/001: alf 内无 `_ibl_trials.table.*.pqt`（5 个对象）",
+    "cortexlab/KS005/2019-03-15/002: alf 内无 `_ibl_trials.table.*.pqt`（0 个对象）",
+    "danlab/DY_005/2019-05-07/001: alf 内无 `_ibl_trials.table.*.pqt`（0 个对象）",
+    "angelakilab/CSP006/2019-09-16/001: alf 内无 `_ibl_trials.table.*.pqt`（5 个对象）",
+    "danlab/DY_006/2019-05-29/001: alf 内无 `_ibl_trials.table.*.pqt`（0 个对象）",
+    "hoferlab/SWC_007/2019-06-19/001: alf 内无 `_ibl_trials.table.*.pqt`（15 个对象）",
+    "mrsicflogellab/SWC_005/2019-05-31/001: alf 内无 `_ibl_trials.table.*.pqt`（0 个对象）",
+    "steinmetzlab/NR_0023/2022-09-20/001: alf 内无 `_ibl_trials.table.*.pqt`（4 个对象）",
+    "angelakilab/CSP009/2020-03-10/001: alf 内无 `_ibl_trials.table.*.pqt`（5 个对象）"
+   ],
+   "labs": [
+    "angelakilab",
+    "churchlandlab",
+    "churchlandlab_ucla",
+    "cortexlab",
+    "danlab",
+    "hausserlab",
+    "hoferlab",
+    "mainenlab",
+    "mrsicflogellab",
+    "registration",
+    "steinmetzlab",
+    "wittenlab",
+    "zadorlab"
+   ],
+   "items": [
+    {
+     "eid": "churchlandlab/CSHL024/2020-09-12/001",
+     "partition": "A",
+     "bytes": 48629,
+     "sha256": "d1c4f0f1a7b73b9ad8c17c98a9d589913d92404571e9503e558c90082c5a2419",
+     "verdict": "COMPLETE",
+     "rows": 580,
+     "etag_ok": true
+    },
+    {
+     "eid": "churchlandlab_ucla/FD_14/2023-05-24/001",
+     "partition": "A",
+     "bytes": 39349,
+     "sha256": "95825ffd758e6ef9d870cd01b5bc4b3c80de772e676c93b9fba999a8c7e96f12",
+     "verdict": "COMPLETE",
+     "rows": 446,
+     "etag_ok": true
+    },
+    {
+     "eid": "hausserlab/PL015/2022-02-20/001",
+     "partition": "A",
+     "bytes": 63731,
+     "sha256": "f39b58993abc357af48134efebc26048e22ab897d80711725215f47b170f8840",
+     "verdict": "COMPLETE",
+     "rows": 817,
+     "etag_ok": true
+    },
+    {
+     "eid": "mainenlab/ZFM-01576/2020-12-01/001",
+     "partition": "A",
+     "bytes": 66197,
+     "sha256": "5d7a3d6bef406e3f295e08a77a854877a688dc50e64c954d26b598ede0ddd179",
+     "verdict": "COMPLETE",
+     "rows": 848,
+     "etag_ok": true
+    },
+    {
+     "eid": "steinmetzlab/NR_0017/2022-03-22/001",
+     "partition": "A",
+     "bytes": 70412,
+     "sha256": "d9997b2c68db2372d2b393d50c9f0b8ab3739a617dbbe9d1cad188e2558dbe50",
+     "verdict": "COMPLETE",
+     "rows": 911,
+     "etag_ok": true
+    },
+    {
+     "eid": "wittenlab/dop_47/2022-06-05/001",
+     "partition": "A",
+     "bytes": 58240,
+     "sha256": "585a3d5aec249287475e2c02abe5d9b3de30c7a5974b3d8c99658344c37f7344",
+     "verdict": "COMPLETE",
+     "rows": 740,
+     "etag_ok": true
+    },
+    {
+     "eid": "zadorlab/CSH_ZAD_001/2019-08-09/001",
+     "partition": "A",
+     "bytes": 16473,
+     "sha256": "fd225e7e309ca5364db71a9a86d2f3175f01c3c8a1c507879e07057761817d43",
+     "verdict": "COMPLETE",
+     "rows": 117,
+     "etag_ok": true
+    },
+    {
+     "eid": "churchlandlab/CSHL025/2020-10-08/001",
+     "partition": "A",
+     "bytes": 59067,
+     "sha256": "f6417883542d7400a3fbfa0d1ad623681b585af59631f90fc42745de213ed52e",
+     "verdict": "COMPLETE",
+     "rows": 740,
+     "etag_ok": true
+    },
+    {
+     "eid": "churchlandlab_ucla/FD_21/2023-04-25/002",
+     "partition": "A",
+     "bytes": 46755,
+     "sha256": "2468aba170f65f09283258826ce234d4f15ca1b4187620ba906e46b68ab14fb8",
+     "verdict": "COMPLETE",
+     "rows": 553,
+     "etag_ok": true
+    },
+    {
+     "eid": "hausserlab/PL016/2022-01-17/001",
+     "partition": "A",
+     "bytes": 37594,
+     "sha256": "87f7998b4837ee941273890e4bf8499710e8c62938845e5f3f82703c1d9b072d",
+     "verdict": "COMPLETE",
+     "rows": 426,
+     "etag_ok": true
+    },
+    {
+     "eid": "hoferlab/SWC_002/2019-06-11/001",
+     "partition": "A",
+     "bytes": 38200,
+     "sha256": "b7eac318c3aee74c8b962f1c7fd64467d9217fe470c511194adfd3b63ad380c3",
+     "verdict": "COMPLETE",
+     "rows": 429,
+     "etag_ok": true
+    },
+    {
+     "eid": "steinmetzlab/NR_0019/2022-04-29/001",
+     "partition": "A",
+     "bytes": 48663,
+     "sha256": "8cbcbedb00d4dbf2865e5fb60eb06a16856d8e2f4e8710c84859276a690cab8b",
+     "verdict": "COMPLETE",
+     "rows": 581,
+     "etag_ok": true
+    },
+    {
+     "eid": "wittenlab/dop_48/2022-06-19/002",
+     "partition": "A",
+     "bytes": 46535,
+     "sha256": "5da0a68a67a6716506746adb94e3750eda3af560b69c316b382c8a05118a2a08",
+     "verdict": "COMPLETE",
+     "rows": 559,
+     "etag_ok": true
+    },
+    {
+     "eid": "zadorlab/CSH_ZAD_002/2019-08-09/001",
+     "partition": "B",
+     "bytes": 25690,
+     "sha256": "d7bb16722189a402a0a445b42c510cec69774627414e11eda98baa409f7e74b0",
+     "verdict": "COMPLETE",
+     "rows": 281,
+     "etag_ok": true
+    },
+    {
+     "eid": "churchlandlab/CSHL029/2020-07-27/001",
+     "partition": "B",
+     "bytes": 52827,
+     "sha256": "289e6f8369d64161baf701e3a900cfa7d105fd6e9048746a48c9e266dcce50c0",
+     "verdict": "COMPLETE",
+     "rows": 645,
+     "etag_ok": true
+    },
+    {
+     "eid": "churchlandlab_ucla/FD_24/2023-06-06/001",
+     "partition": "B",
+     "bytes": 64932,
+     "sha256": "868ea0668dcf8901efe1062c613f22f611db2bd4e413f90d11dbc00e3df206e6",
+     "verdict": "COMPLETE",
+     "rows": 851,
+     "etag_ok": true
+    },
+    {
+     "eid": "hausserlab/PL017/2021-11-07/001",
+     "partition": "B",
+     "bytes": 45861,
+     "sha256": "0653afacc4858628952f4198ee3695a0077e5348d00334f3b9cd6389eeb9ed73",
+     "verdict": "COMPLETE",
+     "rows": 546,
+     "etag_ok": true
+    },
+    {
+     "eid": "hoferlab/SWC_003/2019-06-11/001",
+     "partition": "B",
+     "bytes": 37066,
+     "sha256": "76fb2fd68ccbace400c921254e93dbc5d2f01451ba5d8b6b9031aef5417bf4fd",
+     "verdict": "COMPLETE",
+     "rows": 411,
+     "etag_ok": true
+    },
+    {
+     "eid": "mainenlab/ZFM-01592/2020-10-20/001",
+     "partition": "B",
+     "bytes": 53827,
+     "sha256": "c637b3493c398466a067ac14edd73078676d35bc9703397751a27451544cbf99",
+     "verdict": "COMPLETE",
+     "rows": 660,
+     "etag_ok": true
+    },
+    {
+     "eid": "mrsicflogellab/IBL_005/2019-07-23/002",
+     "partition": "B",
+     "bytes": 41282,
+     "sha256": "3620007b38e0ec87e112387450220b34a03a5a4eb87e4fee23b398517e067320",
+     "verdict": "COMPLETE",
+     "rows": 476,
+     "etag_ok": true
+    },
+    {
+     "eid": "steinmetzlab/NR_0020/2022-05-08/001",
+     "partition": "B",
+     "bytes": 44930,
+     "sha256": "f9cf3f8bbbd0ce86bd7af3911722c40dbaa1ffbce34f5fa56e2f6b73ed8c7cfd",
+     "verdict": "COMPLETE",
+     "rows": 525,
+     "etag_ok": true
+    },
+    {
+     "eid": "wittenlab/dop_49/2022-06-14/001",
+     "partition": "B",
+     "bytes": 47016,
+     "sha256": "0ffb6b535c0c84f94ea6d027f491a9dd234cbfcfec73dd4c1364cbd0b75712e2",
+     "verdict": "COMPLETE",
+     "rows": 566,
+     "etag_ok": true
+    },
+    {
+     "eid": "zadorlab/CSH_ZAD_003/2019-08-09/001",
+     "partition": "B",
+     "bytes": 24831,
+     "sha256": "5118acbe2c6b9e96a99b20650d0be644e129b9cef69d0e86ccf20584cee73f21",
+     "verdict": "COMPLETE",
+     "rows": 268,
+     "etag_ok": true
+    },
+    {
+     "eid": "churchlandlab/CSHL034/2019-10-01/001",
+     "partition": "B",
+     "bytes": 18680,
+     "sha256": "168c0927195abd115122bc6b0e2865396f85acafa37a905cb4c83c1ade8172ae",
+     "verdict": "COMPLETE",
+     "rows": 135,
+     "etag_ok": true
+    },
+    {
+     "eid": "churchlandlab_ucla/FD_28/2023-11-14/001",
+     "partition": "B",
+     "bytes": 70549,
+     "sha256": "9f0250ad2624f1dc11ab0fe0e28adcac34f68f63d8aaaef9ebd8b413eeeca512",
+     "verdict": "COMPLETE",
+     "rows": 913,
+     "etag_ok": true
+    },
+    {
+     "eid": "hausserlab/PL024/2021-12-04/001",
+     "partition": "B",
+     "bytes": 36994,
+     "sha256": "e35522be7a5b7f71eb4b1746afa80998c4f5d6eb87abe30df73dd9b98e636e20",
+     "verdict": "COMPLETE",
+     "rows": 416,
+     "etag_ok": true
+    },
+    {
+     "eid": "hoferlab/SWC_006/2019-06-17/001",
+     "partition": "C",
+     "bytes": 64865,
+     "sha256": "7896a917e701bea36a14727333248a792d24cf2c9c0832edb580b8c7cf2b296e",
+     "verdict": "COMPLETE",
+     "rows": 828,
+     "etag_ok": true
+    },
+    {
+     "eid": "mainenlab/ZFM-01935/2021-02-03/001",
+     "partition": "C",
+     "bytes": 59297,
+     "sha256": "7c01622023f1ce43588469bef51ecff3839d3fe5804282ffe59b1216244cee09",
+     "verdict": "COMPLETE",
+     "rows": 743,
+     "etag_ok": true
+    },
+    {
+     "eid": "mrsicflogellab/SWC_004/2019-06-11/001",
+     "partition": "C",
+     "bytes": 21009,
+     "sha256": "96dc0fc85e6757a353a794193466bbd4599dda80eccd80fca32af9d36e80732d",
+     "verdict": "COMPLETE",
+     "rows": 169,
+     "etag_ok": true
+    },
+    {
+     "eid": "steinmetzlab/NR_0021/2022-06-23/003",
+     "partition": "C",
+     "bytes": 52860,
+     "sha256": "ed90ef1d68c636278c5743ed07408c65f9f4f2dba024afa11cc908458c1a18cb",
+     "verdict": "COMPLETE",
+     "rows": 645,
+     "etag_ok": true
+    },
+    {
+     "eid": "wittenlab/dop_50/2022-09-12/001",
+     "partition": "C",
+     "bytes": 56134,
+     "sha256": "cacf4ca4d1400a502af5a13ed1a65432a1b18fc105cf7d50cea2f39fd17fdd6c",
+     "verdict": "COMPLETE",
+     "rows": 706,
+     "etag_ok": true
+    },
+    {
+     "eid": "zadorlab/CSH_ZAD_004/2019-08-09/001",
+     "partition": "C",
+     "bytes": 23014,
+     "sha256": "dc7eb9099a7d202d0d856b843060f7439e5898ce5f044e6b208de548ee302720",
+     "verdict": "COMPLETE",
+     "rows": 232,
+     "etag_ok": true
+    },
+    {
+     "eid": "churchlandlab/CSHL045/2019-11-04/001",
+     "partition": "C",
+     "bytes": 28553,
+     "sha256": "c011b4b1faacf22f137b227b5d735c3b2883167806ea02828f15a67dda9995b3",
+     "verdict": "COMPLETE",
+     "rows": 282,
+     "etag_ok": true
+    },
+    {
+     "eid": "churchlandlab_ucla/FD_36/2023-11-14/001",
+     "partition": "C",
+     "bytes": 65774,
+     "sha256": "2a55004a4fdc918c6983b53b62dda73569fc1935f908e957df4fb65b08e72acc",
+     "verdict": "COMPLETE",
+     "rows": 841,
+     "etag_ok": true
+    },
+    {
+     "eid": "cortexlab/KS014/2019-08-06/001",
+     "partition": "C",
+     "bytes": 44069,
+     "sha256": "dd1ddc595cd882ba926a43e38977b8af86dba6867db9d5eb4f7790ed4c465f63",
+     "verdict": "COMPLETE",
+     "rows": 513,
+     "etag_ok": true
+    },
+    {
+     "eid": "hausserlab/PL030/2022-09-12/001",
+     "partition": "C",
+     "bytes": 40758,
+     "sha256": "3730076259a8f9e6b52e5d6ba4dbbaefd514926e0810ebd009db8d733311d2f5",
+     "verdict": "COMPLETE",
+     "rows": 487,
+     "etag_ok": true
+    },
+    {
+     "eid": "mainenlab/ZFM-01936/2021-01-19/001",
+     "partition": "C",
+     "bytes": 47184,
+     "sha256": "603d5b73b086e1a343439d5263e3224af92df6de7c993f70936d2d4d03140c38",
+     "verdict": "COMPLETE",
+     "rows": 560,
+     "etag_ok": true
+    },
+    {
+     "eid": "wittenlab/dop_53/2022-10-02/001",
+     "partition": "C",
+     "bytes": 37185,
+     "sha256": "c90da2a6e68733d357a3e673349a8689fe3bacc0402739f99ec7472792d1b4b6",
+     "verdict": "COMPLETE",
+     "rows": 430,
+     "etag_ok": true
+    },
+    {
+     "eid": "zadorlab/CSH_ZAD_005/2019-08-09/001",
+     "partition": "C",
+     "bytes": 19192,
+     "sha256": "4a724fbdea12dac92d4c0bc3f18fe40e708c6894585912280f087bd7b074e4a0",
+     "verdict": "COMPLETE",
+     "rows": 163,
+     "etag_ok": true
+    },
+    {
+     "eid": "churchlandlab/CSHL046/2019-11-04/001",
+     "partition": "D",
+     "bytes": 33674,
+     "sha256": "0fb7a55246992f68dba5be7dda17067892abf70743b0b045c37b2bae07bdf33b",
+     "verdict": "COMPLETE",
+     "rows": 359,
+     "etag_ok": true
+    }
+   ],
+   "trials_bytes": 24212510,
+   "eta_trials": 73.1457826756382,
+   "probe_trials_note": "1 MiB 探针 331017.2 B/s（3.168 s）→ 主档 probe_1MiB 331017.2 B/s",
+   "probe_whitelist_note": "目标对象 48629 B <1 MiB ⇒ `probe_whole_object` 42863.7 B/s（**单件端到端，含握手，不得当链路吞吐**）；同通道大对象 `probe_ref_1MiB` 322393.3 B/s ⇒ **主档取后者**",
+   "probe_repr_Bps": 322393.25436782755,
+   "probe_repr_1MiB_Bps": 42863.66553136877,
+   "public_tree_bytes": 1024
+  }
+ }
+}

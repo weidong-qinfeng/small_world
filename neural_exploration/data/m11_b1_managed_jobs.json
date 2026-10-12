@@ -21,7 +21,7 @@
    "id": "J2",
    "kind": "request_hosted",
    "title": "取更大群体规模的 2p events 件（提升目标带的群体统计量）",
-   "status": "J2-a **DONE**（2026-10-12 07:3x）/ J2-b 仍待裁",
+   "status": "**J2-a ✅ + J2-b ✅ 均已完成**",
    "objects": [
     {
      "url": "https://allen-brain-observatory.s3.amazonaws.com/visual-coding-2p/ophys_experiment_events/638871662_events.npz",
@@ -43,6 +43,37 @@
     "shape": "16 cells × 127,800 frames",
     "npz_store_selfcheck": "16,358,638/(8×127,800)=16.0002 ⇒ 实测 16 cells（你记的\"18-cell\"为估计值）",
     "note": "目标带群体规模 1–4 → 16（缓解 thin）；band 重建见 J7"
+   },
+   "j2b_result": {
+    "url": "https://allen-brain-observatory.s3.amazonaws.com/visual-coding-2p/ophys_experiment_events/497060401_events.npz",
+    "bytes": 111876046,
+    "content_length_match": true,
+    "etag": "27284d013060e2cda883633dcd6a6e7c-7",
+    "etag_recompute": "通过（part=16 MiB × 7 段）⇒ 逐字节等同服务器对象",
+    "sha256": "ba1987cfdaac9a516ae9ca58afaa2219f283c1161c572547bc420d5f9669a6af",
+    "probe_30s_B_per_s": 1723363,
+    "fetch_B_per_s": 1172412,
+    "fetch_time_s": 95.4,
+    "attempts": 1,
+    "shape": "**132 cells × 105,943 frames**（npz=store 判据自证：111,876,046/(8×105,943)=132.0003）⇒ 你记的\"123-cell\"为估计值，**实测 132**",
+    "subdir": "data/m11_raw/allen/vc2p/j2b/（独立子目录，未覆盖既有件）",
+    "caliber_transfer_check": {
+     "caliber": "**逐细胞事件迹**（`ev` 每行 = 1 个 cell）⇒ 与 MICrONS **代理分箱**不同口径",
+     "transferable_proportion_like": [
+      "占用比例 occupancy",
+      "静默比例（零计数占比）",
+      "p90/中位（形状比值）",
+      "转换率**比值**（跨条件相对尺度）",
+      "τ 比值"
+     ],
+     "not_transferable_absolute_rate": [
+      "每神经元绝对发放率（跨域不可比：钙指示剂衰减/阈值/Nyquist 折叠）",
+      "MICrONS 代理分箱的聚合事件率（≈多神经元）↔ 本件逐细胞率 **不可互填**"
+     ],
+     "note": "按 R59-20：**比例类 ✓ 可跨口径转移；绝对率类 ✗ 不可**。★ 本件的率是**逐细胞**口径（比 MICRONS 代理分箱更接近神经元），但仍**不得**与 MICrONS 钙域代理率互换填表（一个是 neuron、一个是 ≈multi-neuron 分箱）",
+     "n_cells": 132,
+     "n_frames": 105943
+    }
    }
   },
   {
@@ -82,7 +113,7 @@
    "id": "J4",
    "kind": "request_hosted",
    "title": "延长**同源** dwell/τ 主带的时间窗（提升 S 门判据的样本量）",
-   "status": "REQUESTED（未自启：网络实测 1.6–32 KB/s；按 RF-M11-D 不再下载大对象）",
+   "status": "**视为已完成**（由 J5 执行；见 J5 的 j4_mapping）",
    "why": "当前同源主带仅覆盖 t∈[0,2000) 帧 = **317.46 s / 333 箱**；低态完整段仅 6（S-2 门要求 ≥10）、BIC 门需 ≥500 箱（差 167 箱 ≈ 1,002 帧 ≈ 101 片）⇒ 判据 S-2/S-3/BIC 现在无法判定",
    "minimal_fix": {
     "objects": "同一 (x,y) 块的 t 分片（`functional_series/session4_scan7_field4/0/0/0/{t}`）",
@@ -96,11 +127,12 @@
    "id": "J5",
    "kind": "request_hosted",
    "title": "取**第二个 field** 的体素序列（RF-M11-E §一.① 要求「两个 field 都建带」）",
-   "status": "REQUESTED（未自启：按 >10 min 纪律交主 agent）",
+   "status": "**COMPLETED**（= 主 agent R42 的 **J4**：同一件事——取第二个 field，一举两得）",
    "cost": "约 **33.4 MB** = 200 片 × 167 KB（`functional_series/session5_scan3_field1` 的 (0,0,0) 块，blockSize 100×100×1×10 ⇒ 167 KB/片）；实测 20–30 KB/s ⇒ **19–28 min**",
    "url_pattern": "https://bossdb-open-data.s3.amazonaws.com/iarpa_microns/minnie/functional_data/functional_series/session5_scan3_field1/0/0/0/{t}（t=0..199）",
    "why": "当前同源带仅 1 个 field 的 1 个子块 ⇒ **跨 field 离散度缺失**（替代：时间半劈 3.23×、空间半劈 1.29×、代理 1.30×、状态分辨率 2.16×、箱宽 1.18×、平滑 2.9×）",
-   "after": "重跑 tools/build_m11_dwell_band_microns.py 后并入跨 field 离散度"
+   "after": "重跑 tools/build_m11_dwell_band_microns.py 后并入跨 field 离散度",
+   "j4_mapping": "主 agent R42 ③ 批准的 **J4**（\"优先取第二个 field：延长窗长 × 补 cross-field 离散度\"）**与本节点的 J5 是同一作业**，已按 R42 ③ 的四条纪律执行：① 先跑 30 s 吞吐探针；② 探针为准（96–121 KB/s）；③ 优先第二个 field；④ 分片落**独立子目录** `functional_subset_f2/`（不覆盖 field4）。结果：200/200 片 COMPLETE、31,472,642 B；**cross-field 离散度已由 unavailable 变实测**（dwell 1.125× / τ 1.01× / 静默 1.0208×）"
   },
   {
    "id": "J6",
@@ -147,6 +179,25 @@
    ],
    "why_slow": "HMM K=2 + Q 法逐时间步（B4 冻结实现）；每件 events.npz × 每套帧率假设",
    "completion_marker": "日志末尾 ALL_DONE / 产物 mtime",
+   "resource": "1 thread, no GPU"
+  },
+  {
+   "id": "J8",
+   "kind": "background_self_run",
+   "title": "以 J2-a(16) + J2-b(132) 四件重建 Allen 2p 目标带（B4 冻结管线 × 多帧率假设）",
+   "status": "RUNNING（2026-10-12 08:2x 起）",
+   "command": "PYTHONHASHSEED=0 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 ./.venv-m11/bin/python neural_exploration/tools/build_m11_dwell_band.py",
+   "log": "neural_exploration/data/m11_raw/allen/vc2p/j2b/dwell_band_j2b.log",
+   "outputs": [
+    "neural_exploration/data/m11_dwell_reference_allen2p.json",
+    "neural_exploration/data/m11_dwell_reference_allen2p.csv"
+   ],
+   "add_only_snapshots": [
+    "m11_dwell_reference_allen2p_v1_thin.*（1–4 cells）",
+    "m11_dwell_reference_allen2p_v2_3exps.*（含 16-cell）"
+   ],
+   "guard": "工具默认输出已改 _allen2p 且带防覆盖守卫（不得写同源主带 m11_dwell_reference.*）",
+   "why_slow": "HMM K=2 + Q 法逐时间步；本次新增 132-cell × 105,943 帧件",
    "resource": "1 thread, no GPU"
   }
  ]

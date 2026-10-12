@@ -168,13 +168,17 @@ M11 立此条时的横轴是"**同一天内摆动 3,600×**（1.6 KB/s ↔ 5.9 M
 |---|---|---|---|
 | `api.brain-map.org`（S2 全表 7.24 MB） | 1.6–16 KB/s | **197–212 KB/s**（端到端；TTFB 31 s） | **12–130×** |
 | Allen BO 同桶（S7 渠道参照 1 MiB Range） | 1.6–28 KB/s（同源记录） | **602,633–729,926 B/s** | **21–456×** |
-| IBL 公开桶（S5 `trials.pqt` 1 MiB Range） | 10–17 KB/s | **221,230–310,284 B/s** | **13–31×** |
+| IBL 公开桶（S5 `trials.pqt` 1 MiB Range） | 10–17 KB/s | **221,230–322,393 B/s** | **13–32×** |
 
 ⇒ **操作规则（本节点执行，写进产物）**：凡以吞吐为由的判决，**必须**登记
 **① 判决时刻（`utc` 列）② 当时实测吞吐（`bytes`/`seconds`/`bytes_per_s`）③ "须以当场探针复核"
 （复核周期 ≤24 h）**。三个 CSV 均含 `utc` 首列。
 
-**本例（正面）**：S5 的全量聚合表 `trials.pqt`（24,212,510 B）当场实测 ETA = **106–109 s**
+**同日同小时的二次抖动（本轮自证）**：S5 全量聚合表 `trials.pqt` 的当场 ETA，
+第一轮 **109.4 s**、第二轮 **73.1 s**（**1.50×**）；S2 全表三次 34.2 / 35.3 / 36.8 s（1.08×）。
+⇒ 连"同一小时内的两次探针"都不能互相替代。
+
+**本例（正面）**：S5 的全量聚合表 `trials.pqt`（24,212,510 B）当场实测 ETA = **73–109 s**
 ⇒ 它的四态**不是** `unavailable（吞吐限制）`，而是 **`unavailable（预算限制，非吞吐限制）`**
 ——"未取"与"不可取"是两件事。判据行 `M12-S5-05` 已按此措辞登记（含判决时刻与当时吞吐）。
 
@@ -324,3 +328,93 @@ print(len(r), Counter(x['verdict'] for x in r))"
 | `data/m12_probe_b1_summary.json` / `data/m12_probe_b1_counts.json` | 机器可读汇总/计数锚（供报告引用，防"引陈旧数字"） |
 | `data/m12_raw/**` | 落盘对象（S2 全表 + S7 两表 + 40 个 IBL 试次表 + 日志 + run1 副本） |
 | `docs/m12_env_notes.md` | 本文件 |
+
+---
+
+## L17 — 断言表（**逐条机验**；16/16 通过）
+
+由 `tools/build_m12_inventory.py` 从落盘产物直接计算，写入
+`data/m12_probe_b1_counts.json::assertions`。**报告引用计数时必须引这里，不得引记忆**（M11-R58/R63）。
+
+| id | 断言 | 结果 |
+|---|---|---|
+| A1 | S2 全表落盘字节 == 7,238,867（且与 T1b 零成本估计偏差 \|−1.2%\| ≤ 5%） | ✅ |
+| A2 | S2 服务端 ETag = md5(全对象) 复算通过（**他证**） | ✅ |
+| A3 | S2 语义锚：`msg` 行数 == T1 `count$eqtrue` 的 13709 | ✅ |
+| A4 | S2 三基准 sha256 齐备（file_bytes / payload / semantic） | ✅ |
+| A5 | S7 两表 `size == Content-Length` | ✅ |
+| A6 | S7 两表单段 ETag md5 复算通过 | ✅ |
+| A7 | S7 sha256 与 M11 已落盘件逐字节一致（跨节点独立复测） | ✅ |
+| A8 | S5 白名单 40 件全部 `COMPLETE`（**零 INCOMPLETE ⇒ 全部可进统计**） | ✅ |
+| A9 | S5 40 件 `size == Content-Length` | ✅ |
+| A10 | S5 40 件 parquet 解析成功且行数 > 0 | ✅ |
+| A11 | 白名单**已预注册**（枚举规则 + A/B/C/D 归属写在 CSV 列中，出数前定死） | ✅ |
+| A12 | 台账 70 行全部 distinct（无重复入账） | ✅ |
+| A13 | 台账递归覆盖 ≥6 个目录（`os.walk`；含 `probe/run1/` 子目录与空目录） | ✅ |
+| A14 | **无稀疏虚增**（`apparent > real` 的件数 == 0） | ✅ |
+| A15 | 判据表 append-only：既有 ref_id 全部保留 | ✅ |
+| A16 | 吞吐 CSV 每行带 `utc` 且 `bytes_per_s` 与 `bytes/seconds` 自洽（≤1%） | ✅ |
+
+**五项元数据（本轮，机读自 `data/m12_probe_b1_counts.json`）**
+
+| 元数据 | 值 |
+|---|---|
+| **断言** | **16**（通过 16 / 失败 0） |
+| **行数** | 台账 **70** 行（distinct 70）；完整性门 **43** 行；吞吐 **52** 行；判据表 **34** 行；白名单 **40** 行 |
+| **件数** | **43 个取数对象**（S2 1 + S7 2 + IBL 40），**43/43 `COMPLETE`** |
+| **总量** | 落盘 **9.847 MB（真实）** / 9.538 MB（表观）；完整性门 COMPLETE 对象合计 **9,071,568 B** |
+| **notes 行数** | 本文件 L1–L17（行数由 `wc -l docs/m12_env_notes.md` 给出） |
+
+**台账"表观 vs 真实"**：`apparent_vs_real_ratio = 0.968`（<1）
+⇒ 本节点**没有稀疏虚增**（`apparent > real` 的件数 **0**）；<1 的原因是**块取整开销**
+（69 件小文件各自占用整数个 4 KB 块）——**两个方向都登记**，不得只报一个（M11-R63）。
+
+---
+
+## L18 — ★ 附录：本节点的**在写文件被并发提交卷入**（R41-3 的复发，附量化后果）
+
+**事实（本轮实测，可复算）**：
+
+```bash
+cd /Users/weidong/ai/small_world
+git log -1 --format='%H %ci %s'
+git show --stat --oneline HEAD | grep m12
+git show HEAD:neural_exploration/docs/m12_env_notes.md | wc -l   # 326（在写中间态）
+wc -l neural_exploration/docs/m12_env_notes.md                   # 370（本节点最终版）
+git diff --stat HEAD -- neural_exploration/docs/m12_env_notes.md # +46 / -2
+```
+
+主 agent 的提交 **`fc6afed`（2026-10-12 11:02:19 +0800）** 把本节点**正在写入**的
+`docs/m12_env_notes.md` 纳入了提交（提交时 **326 行**；本节点最终版 **370 行**，
+diff **+46 / −2**）。
+
+**这**正是 `docs/m12_list_review_master.md` §R41-3 刚刚立下的纪律所禁止的动作**
+（原文：「**禁止**用 `git add -A`／宽 pathspec 把"正在被节点写入的文件"纳入提交；
+优先显式列举已确认完成的路径」）。
+
+**量化后果（为什么这不是"无害的中间态"）**：HEAD 版里含着**已被本节点后续更正的数字**——
+
+| HEAD（326 行版） | 本节点最终版（370 行） |
+|---|---|
+| `trials.pqt` 当场 ETA = `106–109 s` | `73–109 s`（第二轮实测 73.1 s ⇒ 同小时 1.50× 抖动） |
+| IBL 桶吞吐 `221,230–310,284 B/s`（13–31×） | `221,230–322,393 B/s`（13–32×） |
+| 章节范围 `L1–L16` | `L1–L18`（新增断言表 L17 与本条 L18） |
+
+⇒ **引用 HEAD 副本会引到 2 处陈旧数字**。这与 M11-R32「跨节点核对须以**磁盘工作树 + sha256** 为准，
+不得以 `git show HEAD:` 副本代替」是同一条纪律的**同一实例的复发**。
+
+**本节点的处置**：
+1. **不自行改写历史提交**（越权）；**在本文档中显式登记**该事实与量化差额，供主 agent 裁决；
+2. 所有对外数字一律**以工作树为准**（本文件与 `data/m12_probe_b1_counts.json` 均来自工作树）；
+3. 供主 agent 复核用的**单一命令**（两值应分别为 `326` 与 `370`，且 diff 为 `+46/−2`）：
+
+```bash
+cd /Users/weidong/ai/small_world && \
+  echo "HEAD=$(git show HEAD:neural_exploration/docs/m12_env_notes.md | wc -l) \
+WT=$(wc -l < neural_exploration/docs/m12_env_notes.md)" && \
+  git diff --stat HEAD -- neural_exploration/docs/m12_env_notes.md
+```
+
+**建议（不越权执行）**：下一次提交时按 R41-3 改为**显式列举路径**
+（`git add <已完成件1> <已完成件2> …`），并在此之前对每个待提交件确认
+「节点已回报完成」**且**「mtime 在回报之后稳定／两次核查间字节数不变」。
