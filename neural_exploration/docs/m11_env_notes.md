@@ -1083,3 +1083,32 @@ B3b 落盘后应**新增行**（R-27+）而非修改 R-21（清单 §0.3 #8 只�
 `field_seg_masks` 的 `compressed_segmentation` 本节点**未自证解码**（无官方客户端、PyPI 不可达）
 ⇒ 真实 ROI/神经毡掩膜这一维**未覆盖**，故本轮用**代理**并逐行标注 `proxy` ——
 **按 R9 纪律写"未覆盖此维"，不写"不可用"**。若后续要真实 ROI，需先独立自证解码器（另立工作项）。
+
+---
+
+## L39 🔴【事故留档】两工具共用同一输出路径 ⇒ **后跑者静默覆盖 S 门主带**（2026-10-12 07:42）
+
+### L39.1 事实链（可复算）
+- 我在后台跑 J7（用 J2-a 的 16-cell 件重建 Allen 2p 带）：`tools/build_m11_dwell_band.py`。
+- 该工具的 `OUT_CSV/OUT_JSON` **与**同源 MICRONS 工具的 `OUT_CSV/OUT_JSON` **逐字相同**
+  （`data/m11_dwell_reference.{csv,json}`）⇒ 07:42:48 它**覆盖了 S 门主带（R-32）**，
+  使 `m11_dwell_reference.json` 由 **MICrONS 同源带**变为 **Allen 2p 带**（`band.source` 变 None、`cross_field` 消失）。
+- **发现方式**：作业输出的 `wrote .../m11_dwell_reference.json` 行 ⇒ 立刻核对该文件 `generated_by` 与 `band.source`。
+- **影响面**：R-32（同源目标带）、R-40/J2 带、判定器 P1.20e、S 门主带口径 —— 全部依赖该文件。
+- **处置**：
+  ① **先抢救**（保住 17 min 计算）：把被写出的 Allen 带另存为 `m11_dwell_reference_allen2p_v2_3exps.{json,csv}`
+     （**3 实验**，含 **16 cells**、n_bins 4,564、dwell 中位 18.28 s@30.9 Hz），再提升为 canonical `_allen2p.{json,csv}`；
+  ② **恢复主带**：重跑 `tools/build_m11_dwell_band_microns.py` ⇒ 核对 `band.source = MICrONS …`、
+     `cross_field = dwell 1.125× / τ 1.010×`、`n_frames=2000`、`frame_rate=6.300006` ✓；
+  ③ **根因修复**：把 Allen 工具的默认输出改为 `m11_dwell_reference_allen2p.{csv,json}`（与既有"跨制备参照"命名一致），
+     并加**防覆盖守卫**：输出路径指向同源主带时 **拒绝写入并退出 3**（除非显式 `--force-primary`）；
+  ④ **三重核验**：`fs.stat` mtime + 文件内容 `generated_by/band.source` + 进程表。
+
+### L39.2 ★ 新增纪律（建议进跨里程碑）
+- **"输出路径是接口契约"**：两个节点/两个工具**不得共用同一产物路径**；共用时**后跑者静默覆盖**，
+  且**下游断言可能仍然通过**（因为覆盖后的文件在结构上"合法"）⇒ 这是**最难发现的一类数据事故**。
+- **配套三件套**：① 每个产物**声明唯一 owner**；② 写入前**校验 owner**（不匹配则拒绝）；
+  ③ **产物内自带 `generated_by`**（本轮正是靠它当场抓出覆盖）。
+- **与既有纪律同族**：`disk_verified` 表观 vs 真实、稀疏文件三处标注、双估计器一致 —— 都是"**防止'看起来对'**"。
+- **运行长作业时的额外纪律**：后台作业的日志**不得经 `| tail` 管道**（会缓冲到结束才落盘 ⇒ 失去增量可观测性）；
+  本次 J7 的日志因此 0 字节，只能靠"进程表 + 产物 mtime"判断进度。

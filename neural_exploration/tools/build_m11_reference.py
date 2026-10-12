@@ -411,6 +411,28 @@ def main():
             "λ1/Σλ=0.799 / 0.961** ⇒ **被单一共同模式（全局/神经毡分量）主导**；**去掉逐箱跨单元均值后**"
             "平均 r 塌到 **−0.00825 / +0.02915**（代理地板 ≈0±0.008）⇒ **本轮窗口内未检出全局模式以外的成对群体结构**。"
             "⇒ **禁止**把 0.79/0.96 作为群体同步/相关证据写入 P14（否则为测量假象）；有效维度 PR：1.6→9.0 / 1.1→4.2")
+    # ---- R-43：J3 帧率实测的**路径实证**（新增行；值为预算阻塞）----
+    add("R-43", "allen2p_imaging_rate_path_located",
+        "path found / value unavailable(预算)", "-",
+        "`imaging_rate` 数据集存在（dtype |S4、storage 4 B、addr 176,018,211）；值需全件 >50 MB",
+        "unverified", "measured(路径) + unavailable(取值)",
+        "data/m11_raw/allen/vc2p/nwb_497256116_headtail.nwb", "2026-10-12T07:35:00Z",
+        "**J3（帧率实测，×2.8 量纲因子）进展**：零下载路径先试（6 MB 前缀 + **稀疏文件法**，三处标注）⇒ "
+        "`h5py` 可读**顶层与 /general 组**；**已定位** `/general/optophysiology/imaging_plane_1/imaging_rate`"
+        "（**|S4 ⇒ 值形如 `11.0`/`30.9`**）。**但取值不可读**：标量字符串堆数据落在中间 **130.9 MB 洞**内 ⇒ "
+        "需全件 **176,019,299 B > 50 MB** ⇒ 按「≥50 MB 一律先问」**未自取**。"
+        "**吞吐当场复测 = 1.09–5.6 MB/s**（远高于 50 KB/s 门）⇒ 原 `unavailable（吞吐限制）` 依据**已过期**，"
+        "现阻塞为**预算裁决**；获批后取值 **≈31 s**")
+    # ---- R-44：J2-a 16-cell 件（新增行；群体规模 1–4 → 16）----
+    add("R-44", "allen2p_events_group_size_16cells",
+        "16 cells × 127,800 frames", "cells",
+        "`npz=store` 判据自证：16,358,638 B / (8 × 127,800) = 16.0002 ⇒ 实测 16",
+        "asserted", "measured",
+        "data/m11_raw/allen/vc2p/638871662_events.npz", "2026-10-12T07:35:00Z",
+        "**J2-a 交付（缓解 `thin`）**：群体规模由 **1–4 cells 升到 16 cells**（HTTP 200、**3.29 MB/s**、4.97 s）。"
+        "★ 你记的「18-cell」为**估计值**，**实测 16**（判据 `bytes/(8×n_frames)` 自证）。"
+        "带重建（J7，B4 冻结管线 × 多帧率假设）在后台运行；**v1（1–4 cells）带已按 add-only 快照保留**于 "
+        "`m11_dwell_reference_allen2p_v1_thin.{csv,json}`")
     with open(OUT, "w", newline="", encoding="utf-8") as f:
         f.write("# M11 参考锚（generated_by=tools/build_m11_reference.py；**只允许新增行**；"
                 "status ∈ {asserted, NEEDS_VERIFY, unverified}；**unverified 行不得作为判据带**）\n")

@@ -1,6 +1,6 @@
 {
  "generated_by": "tools/build_m11_dwell_band_microns.py",
- "generated_at": "2026-10-11T22:53:35Z",
+ "generated_at": "2026-10-12T00:00:16Z",
  "ruling": "RF-M11-D：体素序列 = `measured`（大端 int16）；**S 门/P14 目标带优先同源自建**；Allen 2p 降为跨制备参照",
  "decode_pipeline": "`>i2` → (10,200,200) → 哨兵掩膜(int16<0) → 逐帧有效像素均值 → **B4 冻结 analyse()**（0.914 s 箱 → 5 帧平滑 → z → AR(1)；H 法+Q 法；含未平滑 φ）",
  "band": {
@@ -1616,11 +1616,11 @@
   },
   "cross_preparation_allen2p": {
    "source": "Allen BO 2p（跨制备参照，非 S 门主目标）",
-   "dwell_median_s": 2.7414785707758385,
-   "tau_s": 6.456401129449646,
-   "n_bins": 4070.5,
-   "ratio_dwell_vs_same_source": 4.69,
-   "ratio_tau_vs_same_source": 5.041
+   "dwell_median_s": 3.655304761034451,
+   "tau_s": 7.123439821772231,
+   "n_bins": 4076.0,
+   "ratio_dwell_vs_same_source": 3.517,
+   "ratio_tau_vs_same_source": 4.569
   },
   "s_gate_health_check": {
    "S1_occupancy_degenerate_free": {

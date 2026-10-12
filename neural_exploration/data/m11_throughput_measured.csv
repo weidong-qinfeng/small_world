@@ -14,3 +14,6 @@ GCS 镜像（MICrONS 功能数据）,**HTTP 404**,功能数据**未镜像**到 G
 Allen BO NP `units.csv`（51,439,189 B）**续传**,**5,904,351 B/s（=5.9 MB/s）**（`curl -C -`，rc=206，49,718,869 B / 8.42 s）,DQ-6 由主 agent 批准；本节点 2026-10-12 07:03 实测为**快档** ⇒ 与昨夜 1.6 KB/s 相差约 **3,600×** ⇒ **禁止用单次实测外推**：>50 MB 取数前必须当场复测
 Allen BO NP `channels.csv`（6,613,329 B）,2,705,821 B/s（=2.7 MB/s，2.44 s，HTTP 200）,**单件 <50 MB 且为连接链必需键**（`ecephys_structure_acronym` / probe→session）⇒ 本节点直接取全（未并发；先取 channels 再续传 units）
 Allen BO NP S3（HEAD 探测）,**Accept-Ranges: bytes** ⇒ 支持 Range 续传；`units.csv` ETag `…-7` = 7 段（part=8 MiB）,**可作为完整性判据**：`md5(concat(md5(part_i))) == ETag 前缀` 复算通过 ⇒ 逐字节等同服务器对象（**强于单次 sha256**，锚在服务器侧）
+Allen 2p NWB `497256116.nwb`（176,019,299 B）**30 s 探针**,1,116,049 B/s（=1.09 MB/s，Range 4 MB / 3.76 s）,J3 吞吐门（<50 KB/s 立即停）**通过**；你此前"该 NWB 仅 3.3 KB/s"的依据**已过期**（吞吐只有小时级有效期）
+Allen 2p 同件后续 Range,**5,624,077 B/s（5.6 MB/s）**（25,100,116 B / 4.46 s）,⇒ 取数瓶颈**已从吞吐转为预算阈值**（全件 176 MB > 50 MB ⇒ 须主 agent 批准）
+Allen 2p `638871662_events.npz`（16,358,638 B，J2-a）,3,288,907 B/s（=3.29 MB/s，4.97 s / HTTP 200）,**16 cells × 127,800 帧**（`npz=store` 判据自证：16,358,638/(8×127,800)=**16.0002**）⇒ 群体规模由 1–4 提升到 **16**（你此前记"18-cell"为估计值，**实测为 16**）

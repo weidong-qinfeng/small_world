@@ -1,6 +1,6 @@
 {
  "generated_by": "tools/build_m11_inventory.py",
- "generated_at": "2026-10-11T23:22:26Z",
+ "generated_at": "2026-10-12T00:02:32Z",
  "units": "bytes; evidence ∈ {measured, derived, literature, unavailable}",
  "microns_structure": {
   "evidence": "measured(元数据) + derived(chunk 计数); shard 清单 = measured(有界)",
@@ -2752,11 +2752,11 @@
   },
   "cross_preparation_allen2p": {
    "source": "Allen BO 2p（跨制备参照，非 S 门主目标）",
-   "dwell_median_s": 2.7414785707758385,
-   "tau_s": 6.456401129449646,
-   "n_bins": 4070.5,
-   "ratio_dwell_vs_same_source": 4.69,
-   "ratio_tau_vs_same_source": 5.041
+   "dwell_median_s": 3.655304761034451,
+   "tau_s": 7.123439821772231,
+   "n_bins": 4076.0,
+   "ratio_dwell_vs_same_source": 3.517,
+   "ratio_tau_vs_same_source": 4.569
   },
   "s_gate_health_check": {
    "S1_occupancy_degenerate_free": {
@@ -2936,7 +2936,7 @@
    }
   ]
  },
- "throughput_measured_n": 14,
+ "throughput_measured_n": 17,
  "literature": {
   "n_rows": 37,
   "by_status": {
@@ -3026,8 +3026,8 @@
     "declared_bytes": null,
     "exists": true,
     "note": "",
-    "bytes_on_disk": 21072,
-    "sha256": "4cf04e4fdeee49d48899af1ee365d1848291ce69c6a9fa28175eb6f00dff0a3e",
+    "bytes_on_disk": 22678,
+    "sha256": "35bd5ba15126857717945ffe08caf1358cf1cb7e706ba2b4af291ebdeaddd18d",
     "status": "COMPLETE"
    },
    {
@@ -3043,9 +3043,9 @@
   ]
  },
  "inventory": {
-  "n_items": 263,
-  "total_bytes": 346991797,
-  "total_MB": 346.992
+  "n_items": 265,
+  "total_bytes": 347018386,
+  "total_MB": 347.018
  },
  "functional_connectomics_release": {
   "evidence": "measured(列举 200：KeyCount=4)",

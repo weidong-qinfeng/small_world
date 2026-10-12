@@ -38,9 +38,14 @@ PROJ = os.path.dirname(ROOT)
 DATA = os.path.join(ROOT, "data")
 VC2P = os.path.join(DATA, "m11_raw", "allen", "vc2p")
 TOOLS = os.path.join(ROOT, "tools")
-OUT_CSV = os.path.join(DATA, "m11_dwell_reference.csv")
-OUT_JSON = os.path.join(DATA, "m11_dwell_reference.json")
-OUT_PNG = os.path.join(ROOT, "reports", "neuro", "m11_dwell_reference.png")
+# ★ 路径冲突修复（2026-10-12 事故：本工具与同源 MICRONS 工具曾共用 `m11_dwell_reference.{csv,json}`，
+#   本工具后跑 ⇒ **覆盖了 S 门主带（R-32）**）。现默认写入 `_allen2p` 侧，与"跨制备参照"的既有命名一致；
+#   并用 MICRONS_PRIMARY_* 做**防覆盖守卫**（除非 --force-primary）。
+OUT_CSV = os.path.join(DATA, "m11_dwell_reference_allen2p.csv")
+OUT_JSON = os.path.join(DATA, "m11_dwell_reference_allen2p.json")
+OUT_PNG = os.path.join(ROOT, "reports", "neuro", "m11_dwell_reference_allen2p.png")
+MICRONS_PRIMARY_CSV = os.path.join(DATA, "m11_dwell_reference.csv")
+MICRONS_PRIMARY_JSON = os.path.join(DATA, "m11_dwell_reference.json")
 
 FRAME_RATE_PRIMARY = 30.9      # Allen BO 2p 常见采集率（**待 NWB 读回核实** ⇒ NEEDS_VERIFY）
 FRAME_RATE_ALT = 11.0          # 备选（多平面 session）
@@ -195,7 +200,21 @@ def summarize(rows):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--plot", action="store_true")
+    ap.add_argument("--out-prefix", default=None,
+                    help="输出前缀（默认 m11_dwell_reference_allen2p，写在 data/ 下）")
+    ap.add_argument("--force-primary", action="store_true",
+                    help="显式允许写同源主带路径（默认拒绝：防覆盖 R-32/S 门主带）")
     args = ap.parse_args()
+    global OUT_CSV, OUT_JSON, OUT_PNG
+    if args.out_prefix:
+        OUT_CSV = os.path.join(DATA, args.out_prefix + ".csv")
+        OUT_JSON = os.path.join(DATA, args.out_prefix + ".json")
+        OUT_PNG = os.path.join(ROOT, "reports", "neuro", args.out_prefix + ".png")
+    if os.path.abspath(OUT_JSON) in (os.path.abspath(MICRONS_PRIMARY_JSON),
+                                     os.path.abspath(MICRONS_PRIMARY_CSV)) and not args.force_primary:
+        print("REFUSED: 输出路径与**同源 MICRONS 主带**冲突（%s）⇒ 拒绝覆盖 R-32/S 门主带；"
+              "如确需覆盖请显式加 --force-primary" % OUT_JSON)
+        return 3
     mod = load_frozen()
     rows = build_band(None, mod)
     band = summarize(rows)
@@ -250,4 +269,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    import sys as _sys
+    _sys.exit(main())

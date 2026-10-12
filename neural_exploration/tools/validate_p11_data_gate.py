@@ -44,6 +44,7 @@ from datetime import datetime, timezone
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJ = os.path.dirname(ROOT)
+TOOLS_DIR = "neural_exploration/tools"
 DATA = os.path.join(ROOT, "data")
 REPORTS = os.path.join(ROOT, "reports", "neuro")
 DOCS = os.path.join(ROOT, "docs")
@@ -857,6 +858,77 @@ def main():
                      and "validate_m11_calcium_silent.py" in
                      open(os.path.join(DOCS, "m11_b1_notes.md"), encoding="utf-8").read(),
                      "docs/m11_b1_notes.md 在位（N5 复算命令表）"))
+
+    # ---------------- P1.26 R38 ③ 回执 + J2-a/J3 ----------------
+    rep2 = open(os.path.join(DOCS, "m11_data_gate_report.md"), encoding="utf-8").read()
+    A.append(assert_("P1.26a 报告 §6n 已落「两侧分开」表述（结构侧同源 / 活动侧跨源代理 + 体素级=decoded pass）",
+                     "§6n" in rep2 and "不得再写" in rep2 and "decoded(big-endian int16)" in rep2
+                     and "活动侧：跨源代理" in rep2,
+                     "§6n 在位，含两侧分开表述"))
+    A.append(assert_("P1.26b §6n 已如实提请复议『保留句已过期』（不得写假陈述）",
+                     "该半句在当时成立、现在已不成立" in rep2 or "该半句在当时成立" in rep2,
+                     "复议记录在位（与 R52/R57 的同源带冲突）"))
+    A.append(assert_("P1.26c R-43（J3 路径实证 + 预算阻塞）与 R-44（16 cells 自证）为新增行",
+                     (rmap2.get("R-43") or {}).get("status") == "unverified"
+                     and (rmap2.get("R-44") or {}).get("status") == "asserted"
+                     and "50 MB" in ((rmap2.get("R-43") or {}).get("note") or ""),
+                     "R-43=%s | R-44=%s（总 %d 行）"
+                     % ((rmap2.get("R-43") or {}).get("status"), (rmap2.get("R-44") or {}).get("status"),
+                        len(rmap2))))
+    j2a = os.path.join(DATA, "m11_raw", "allen", "vc2p", "638871662_events.npz")
+    npz_ok = False
+    detail = "文件缺失"
+    if os.path.exists(j2a):
+        try:
+            import numpy as _np
+            _z = _np.load(j2a, allow_pickle=True)
+            _a = _z["ev"]
+            _b = os.path.getsize(j2a)
+            _est = _b / (8.0 * _a.shape[1])
+            npz_ok = abs(_est - _a.shape[0]) < 0.05
+            detail = "bytes=%d shape=%s est_cells=%.4f" % (_b, str(_a.shape), _est)
+        except Exception as exc:
+            detail = "读取失败 %s" % type(exc).__name__
+    A.append(assert_("P1.26d J2-a 16-cell 件在盘且 `npz=store` 判据自证（bytes/(8×frames) == cells）",
+                     npz_ok, detail))
+    A.append(assert_("P1.26e v1（1–4 cells）带已 add-only 快照保留（重建不覆盖既有结论）",
+                     os.path.exists(os.path.join(DATA, "m11_dwell_reference_allen2p_v1_thin.json"))
+                     and os.path.exists(os.path.join(DATA, "m11_dwell_reference_allen2p_v1_thin.csv")),
+                     "m11_dwell_reference_allen2p_v1_thin.{json,csv} 在位"))
+    A.append(assert_("P1.26f J2-a/J3/J7 已登记（含吞吐实测与预算阻塞理由）",
+                     any((j.get("j3_result") or {}).get("path_located") for j in
+                         ((load(os.path.join(DATA, "m11_b1_managed_jobs.json")) or {}).get("jobs") or []))
+                     and any(j.get("id") == "J7" for j in
+                             ((load(os.path.join(DATA, "m11_b1_managed_jobs.json")) or {}).get("jobs") or [])),
+                     "J2/J3 结果块 + J7 作业在位"))
+
+    # ---------------- P1.27 路径冲突事故与防护 ----------------
+    src_allen = open(os.path.join(TOOLS_DIR, "build_m11_dwell_band.py"), encoding="utf-8").read() \
+        if os.path.exists(os.path.join(TOOLS_DIR, "build_m11_dwell_band.py")) else ""
+    A.append(assert_("P1.27a Allen 工具默认输出已不指向**同源主带**路径（根因已修）",
+                     'OUT_CSV = os.path.join(DATA, "m11_dwell_reference_allen2p.csv")' in src_allen,
+                     "默认输出 = m11_dwell_reference_allen2p.csv"))
+    A.append(assert_("P1.27b 防覆盖守卫在位（拒绝写主带，除非 --force-primary）",
+                     "REFUSED" in src_allen and "--force-primary" in src_allen,
+                     "守卫逻辑在位（返回码 3）"))
+    dj = load(os.path.join(DATA, "m11_dwell_reference.json")) or {}
+    A.append(assert_("P1.27c 同源主带**内容自证**：`generated_by=…microns` ∧ `band.source=MICrONS` ∧ 有 cross_field",
+                     "microns" in (dj.get("generated_by") or "")
+                     and "MICrONS" in str((dj.get("band") or {}).get("source") or "")
+                     and "cross_field" in (dj.get("band") or {}),
+                     "%s | %s" % (dj.get("generated_by"),
+                                  str((dj.get("band") or {}).get("source"))[:60])))
+    aj2 = load(os.path.join(DATA, "m11_dwell_reference_allen2p.json")) or {}
+    ab = aj2.get("band") or {}
+    A.append(assert_("P1.27d Allen 跨制备参照已含 J2-a 的 **16-cell** 实验（3 实验）",
+                     ab.get("n_experiments") == 3 and "638871662_events.npz" in str(ab.get("experiments")),
+                     "n_experiments=%s" % ab.get("n_experiments")))
+    A.append(assert_("P1.27e 事故已留档（env notes L39）+ 抢救件与 v1 快照均在盘",
+                     "两工具共用同一输出路径" in open(os.path.join(DOCS, "m11_env_notes.md"),
+                                                  encoding="utf-8").read()
+                     and os.path.exists(os.path.join(DATA, "m11_dwell_reference_allen2p_v2_3exps.json"))
+                     and os.path.exists(os.path.join(DATA, "m11_dwell_reference_allen2p_v1_thin.json")),
+                     "L39 在位；v1_thin + v2_3exps 均在盘"))
 
     # ---------------- 判定 ----------------
     for a in A:

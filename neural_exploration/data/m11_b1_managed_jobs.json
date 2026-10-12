@@ -21,7 +21,7 @@
    "id": "J2",
    "kind": "request_hosted",
    "title": "取更大群体规模的 2p events 件（提升目标带的群体统计量）",
-   "status": "REQUESTED（未自启：网络实测 1.6–32 KB/s，16.4 MB 件预计 >30 min）",
+   "status": "J2-a **DONE**（2026-10-12 07:3x）/ J2-b 仍待裁",
    "objects": [
     {
      "url": "https://allen-brain-observatory.s3.amazonaws.com/visual-coding-2p/ophys_experiment_events/638871662_events.npz",
@@ -35,16 +35,37 @@
     }
    ],
    "derivation": "events.npz **不压缩**（npz=store）⇒ n_cells = bytes / (8 × n_frames)，n_frames≈113,835 实测",
-   "after_download": "重跑 tools/build_m11_dwell_band.py（自动纳入新件；完整性门会自动排除不完整文件）"
+   "after_download": "重跑 tools/build_m11_dwell_band.py（自动纳入新件；完整性门会自动排除不完整文件）",
+   "j2a_result": {
+    "fetched_bytes": 16358638,
+    "http": "200",
+    "speed_B_per_s": 3288907,
+    "shape": "16 cells × 127,800 frames",
+    "npz_store_selfcheck": "16,358,638/(8×127,800)=16.0002 ⇒ 实测 16 cells（你记的\"18-cell\"为估计值）",
+    "note": "目标带群体规模 1–4 → 16（缓解 thin）；band 重建见 J7"
+   }
   },
   {
    "id": "J3",
    "kind": "request_hosted",
    "title": "读回 2p NWB 的采样率与轨迹结构（`imaging_rate`）",
-   "status": "REQUESTED（6 MB Range 前缀已取 5.1 MB 后超时；/general★/processing 落在前缀之外）",
+   "status": "**进行中→受预算阻塞**（unavailable（待预算裁决））",
    "command": "curl -sS -L -r 0-6291455 -o <prefix> https://allen-brain-observatory.s3.amazonaws.com/visual-coding-2p/ophys_experiment_data/497256116.nwb",
    "or_full": "全量 176,019,299 B（约 1.5–30 h，视吞吐）",
-   "why": "当前帧率 30.9 Hz 为 NEEDS_VERIFY（由帧数与 session 时长合理性推断）"
+   "why": "当前帧率 30.9 Hz 为 NEEDS_VERIFY（由帧数与 session 时长合理性推断）",
+   "j3_result": {
+    "zero_download_attempt": "6 MB 前缀 + 稀疏文件法（表观 176,019,299 / 真实前缀 / 洞三处标注）",
+    "bounded_fetch": "head 25 MB + tail 20 MB = 45.1 MB 真实（<50 MB 阈值）",
+    "path_located": "/general/optophysiology/imaging_plane_1/imaging_rate（dtype |S4、storage 4 B、addr 176,018,211）",
+    "value_readable": false,
+    "blocker": "标量字符串堆数据落在中间 130.9 MB 洞内 ⇒ 需全件 176,019,299 B（>50 MB）⇒ 按纪律须主 agent 批准",
+    "throughput_measured_B_per_s": [
+     1116049,
+     5624077
+    ],
+    "eta_if_approved": "秒级（5.6 MB/s ⇒ 全件 ≈31 s）",
+    "also_found": "/general/optophysiology/imaging_plane_1/{imaging depth=275 microns(可读), pixel_size(|S9), fov(|S34)}"
+   }
   },
   {
    "id": "J4",
@@ -97,6 +118,25 @@
     "P14 隔离：BO1.1 3.390 Hz vs FC 2.941 Hz（1.15×）⇒ 口径可比",
     "退化登记 5.84%（近静默单元指标退化）⇒ 从带中剔除"
    ]
+  },
+  {
+   "id": "J7",
+   "kind": "background_self_run",
+   "title": "以 J2-a 的 16-cell 件重建 Allen 2p 目标带（B4 冻结管线，多帧率假设）",
+   "status": "RUNNING（2026-10-12 07:3x 起）",
+   "command": "PYTHONHASHSEED=0 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 ./.venv-m11/bin/python neural_exploration/tools/build_m11_dwell_band.py --plot",
+   "log": "neural_exploration/data/m11_raw/allen/vc2p/dwell_band_j2a.log",
+   "outputs": [
+    "neural_exploration/data/m11_dwell_reference_allen2p.csv",
+    "neural_exploration/data/m11_dwell_reference_allen2p.json"
+   ],
+   "add_only_snapshot": [
+    "neural_exploration/data/m11_dwell_reference_allen2p_v1_thin.csv",
+    "neural_exploration/data/m11_dwell_reference_allen2p_v1_thin.json"
+   ],
+   "why_slow": "HMM K=2 + Q 法逐时间步（B4 冻结实现）；每件 events.npz × 每套帧率假设",
+   "completion_marker": "日志末尾 ALL_DONE / 产物 mtime",
+   "resource": "1 thread, no GPU"
   }
  ]
 }
