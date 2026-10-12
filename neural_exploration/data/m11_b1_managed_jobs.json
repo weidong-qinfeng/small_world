@@ -49,7 +49,7 @@
    "id": "J3",
    "kind": "request_hosted",
    "title": "读回 2p NWB 的采样率与轨迹结构（`imaging_rate`）",
-   "status": "**进行中→受预算阻塞**（unavailable（待预算裁决））",
+   "status": "**COMPLETED**（2026-10-12 07:55）",
    "command": "curl -sS -L -r 0-6291455 -o <prefix> https://allen-brain-observatory.s3.amazonaws.com/visual-coding-2p/ophys_experiment_data/497256116.nwb",
    "or_full": "全量 176,019,299 B（约 1.5–30 h，视吞吐）",
    "why": "当前帧率 30.9 Hz 为 NEEDS_VERIFY（由帧数与 session 时长合理性推断）",
@@ -57,14 +57,25 @@
     "zero_download_attempt": "6 MB 前缀 + 稀疏文件法（表观 176,019,299 / 真实前缀 / 洞三处标注）",
     "bounded_fetch": "head 25 MB + tail 20 MB = 45.1 MB 真实（<50 MB 阈值）",
     "path_located": "/general/optophysiology/imaging_plane_1/imaging_rate（dtype |S4、storage 4 B、addr 176,018,211）",
-    "value_readable": false,
-    "blocker": "标量字符串堆数据落在中间 130.9 MB 洞内 ⇒ 需全件 176,019,299 B（>50 MB）⇒ 按纪律须主 agent 批准",
+    "value_readable": true,
+    "blocker": null,
     "throughput_measured_B_per_s": [
      1116049,
      5624077
     ],
     "eta_if_approved": "秒级（5.6 MB/s ⇒ 全件 ≈31 s）",
-    "also_found": "/general/optophysiology/imaging_plane_1/{imaging depth=275 microns(可读), pixel_size(|S9), fov(|S34)}"
+    "also_found": "/general/optophysiology/imaging_plane_1/{imaging depth=275 microns(可读), pixel_size(|S9), fov(|S34)}",
+    "imaging_rate": "31Hz",
+    "imaging_rate_hz": 31.0,
+    "full_nwb_bytes": 176019299,
+    "cross_checks": [
+     "512px×0.78µm=399.4µm ⇔ fov 400µm",
+     "VISpm ⇔ posteromedial visual area",
+     "three_session_B ⇔ stimulus_name",
+     "275µm ⇔ imaging_depth"
+    ],
+    "dimension_consequence": "113,835/31=61.2 min（30.9 Hz 假设 61.4 min，差 0.32%）⇒ 30.9 被证实、11 Hz 被否证",
+    "incident": "首轮 curl --max-time 600 超时（exit 28）停在 170,235,948/176,019,299 B = 96.7% ⇒ 判 INCOMPLETE；curl -C - 续传 5,783,351 B / 2.13 s 补齐到逐字节一致"
    }
   },
   {
