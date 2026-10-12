@@ -184,6 +184,26 @@
    "acceptance": "两 field 各自建带并给离散度；差异 >5% 须定位到具体口径维度（箱宽/平滑/代理定义/阈值/帧率换算）——沿用 R10 §3e 的要求",
    "note": "**本节点不自行启动**（>10 min 托管纪律）；且 `--series` 参数是否存在需 B1 确认 ⇒ 我把它列为**待裁决 + 依赖 B1**",
    "interpreter": "data_side ⇒ ./.venv-m11/bin/python（curl 取数 + h5py/numpy；**不涉 torch**）"
+  },
+  {
+   "job_id": "J7",
+   "title": "**复刻轴修正验证探针（2 臂）** —— 交主agent 托管（B3 自跑被 QoS 饥饿回收）",
+   "why": "G1 矩阵的 seed 轴失效（seed∈{0,1,2} 产出逐位相同的 pop_trace/counts，15/15 组）；生产者以 net_seed 建网络、event_seed 建事件表，计划只改了 seed ⇒ 有效重复数=1。本探针验证『改 net_seed 是否真的改变实现』。",
+   "blocked_by": "无（无需 G0）",
+   "est_wall": "纯计算 ≈4.6 min（2×137 s）；B3 实测在后台被 QoS 饥饿至 5.7% 占空比（33 min 仅 1m53s CPU）⇒ 必须由主agent 以托管作业启动",
+   "commands": [
+    "cd /Users/weidong/ai/small_world && export PYTHONPATH=/Users/weidong/ai/small_world OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONHASHSEED=0",
+    "for ns in 1 2; do ./.venv-m9/bin/python neural_exploration/tools/run_m11_p5_arms.py \\",
+    "  --n 8192 --T-ms 10000 --settle-ms 500 --dose 0 --seed 0 --event-seed 11 --net-seed $ns \\",
+    "  --role zero_drive --mechanism none --config-id SEED_AXIS --delivery chunk --stage seedaxis \\",
+    "  --run-id seedaxis_8192_T10000ms_d0.0_netseed${ns} --out-dir neural_exploration/data/m11_p5_probe_seedaxis; done"
+   ],
+   "artifacts": [
+    "neural_exploration/data/m11_p5_probe_seedaxis/seedaxis_8192_T10000ms_d0.0_netseed{1,2}_poptrace.npy",
+    "同目录 .json（含 net_seed/ms_per_step/wall_s/interpreter 版本）"
+   ],
+   "acceptance": "两臂 pop_trace **不同**（≠ 逐位相同）⇒ 复刻轴修正有效；若仍逐位相同 ⇒ net_seed 未接入 ⇒ 交 B2 查 `build_laminar_probe_column` 的 seed 用法",
+   "progress_by_mtime": "ls -t neural_exploration/data/m11_p5_probe_seedaxis/*.done | head -1"
   }
  ],
  "not_requested": [

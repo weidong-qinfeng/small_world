@@ -91,6 +91,7 @@ from __future__ import annotations
 import argparse
 import csv
 import datetime as _dt
+import hashlib
 import json
 import math
 import os
@@ -528,6 +529,7 @@ class Evaluator:
         self.tension: Dict[str, Any] = {}
         self.invariants: Dict[str, Any] = {}
         self.gate_composition: Dict[str, Any] = {}
+        self.seed_effectiveness_check: str = "not_run"
 
     # ---------------- 协议前缀（口径字段，逐行携带） ----------------
     def _proto_fields(self, arm: Optional[Arm], T_ms: Optional[float] = None) -> Dict[str, Any]:
@@ -751,6 +753,46 @@ class Evaluator:
         ok = (lo <= value <= hi)
         return ("pass" if ok else "fail"), (f"band=[{lo},{hi}] " + (extra or ""))
 
+    def _effective_seed_check(self, arms: List[Arm], role: str) -> List[str]:
+        """（硬门①实质化）检查**声明 seed 是否真的产生不同实现**。
+
+        判据（本工具内的最小充分判据）：同一单元内、`seed` 取值互不相同的臂，若其
+        **群体轨迹**（优先）或**逐神经元计数**逐位相同 ⇒ 该 seed 维度**未生效**。
+        返回人类可读的发现列表（空 = 生效或无法判定）。
+        注：只作"是否相同"判定，**不做统计推断**；跨解释器/跨 numpy 版本的同性比较在此**不涉及**
+        （同一运行内加载，天然同解释器）。
+        """
+        by_seed: Dict[Any, List[Arm]] = {}
+        for a in arms:
+            by_seed.setdefault(a.seed, []).append(a)
+        seeds = [s for s in by_seed if s is not None]
+        if len(seeds) < 2:
+            return []
+        def fp(a: Arm) -> Optional[str]:
+            for arr in (a.trace, a.counts):
+                if arr is not None and arr.size:
+                    return hashlib.sha256(np.ascontiguousarray(arr).tobytes()).hexdigest()[:16]
+            # **不**用聚合标量（sum）当指纹：两个独立实现的脉冲总数**可以偶然相同**
+            # （M10 gate1 的 zero 臂 275/275/275 即此类）⇒ 只用"强指纹"（完整轨迹/逐神经元计数数组），
+            # 否则返回 None ⇒ 该臂对"seed 是否生效"**不可判定**（记 insufficient_data，不产生发现）。
+            return None
+        fps = {s: fp(by_seed[s][0]) for s in seeds}
+        known = {s: v for s, v in fps.items() if v is not None}
+        if len(known) < 2:
+            self.seed_effectiveness_check = "insufficient_data（无完整轨迹/计数数组 ⇒ 无法判定 seed 是否生效）"
+            return []
+        uniq = set(known.values())
+        if len(uniq) == 1:
+            return [f"{role}: 声明 seed {sorted(seeds)} 的臂产出**逐位相同**（fingerprint={list(uniq)[0]}）"]
+        # 部分坍缩（例如 s1 与 s2 相同、s0 不同）
+        inv: Dict[str, List[Any]] = {}
+        for s, v in known.items():
+            inv.setdefault(v, []).append(s)
+        collapse = [sorted(v) for v in inv.values() if len(v) > 1]
+        if collapse:
+            return [f"{role}: 部分 seed 坍缩（{collapse} 产出逐位相同）⇒ 有效重复数 < 声明数"]
+        return []
+
     def _eval_selfsustain(self, cfg: str, T_ms: float, mech: str, zero_arms: List[Arm],
                           base_arms: List[Arm], n_neuron: Optional[int]) -> None:
         lim = self.tt.num("selfsustain_ratio_max")
@@ -770,6 +812,10 @@ class Evaluator:
         B = [float(x) for x in B if x is not None]
         nz = len({a.seed for a in zero_arms if a.seed is not None})
         nb = len({a.seed for a in base_arms if a.seed is not None})
+        # ★ 硬门①**实质化**（"字段存在 ≠ 生效"家族的第 5 次实例，M10 D1/L21/L51）：
+        #   声明了 3 个不同 seed **不等于** 3 个独立实现。若不同 seed 的臂产出**逐位相同**的
+        #   轨迹/计数 ⇒ seed 维度未生效 ⇒ 有效重复数 = 1 ⇒ RF-M11-3 的 ≥3 seed 门**实质上未满足**。
+        seed_inert = self._effective_seed_check(zero_arms, "zero_drive") + self._effective_seed_check(base_arms, "baseline")
         ci = selfsustain_ci(Z, B, n_boot=int(self.args.n_boot)) if (Z and B) else {}
         R = ci.get("ratio_pooled")
         r = (f"点估计 R={R:.6g}（上限 {lim}）；CI95(log)={ci.get('ci95_lognormal')}；"
@@ -789,7 +835,13 @@ class Evaluator:
                              f"（相对不确定度 ≈{100.0/math.sqrt(max(float(zs or 0), 1.0)):.1f}%）")
         # ---- 硬门② 两 CI 法一致性 ----
         ci_disagree = (ci.get("ci_upper_rel_diff") is not None and ci["ci_upper_rel_diff"] > tol_ci)
-        if gate_fail:
+        if seed_inert:
+            # seed 维度未生效 ⇒ **不得**判 pass/fail（四态之 invalid：编码路径/维度未生效）
+            status = "invalid"
+            reason = ("seed_dimension_inert: " + "; ".join(seed_inert) +
+                      f" ⇒ **有效重复数 = 1**（声明 seed 数 零={nz}/基准={nb}）；RF-M11-3 的 ≥3 seed 门"
+                      f"**实质上未满足** ⇒ 该子判据**不得判 pass/fail**，点估计/CI 仅作描述性（{r}）")
+        elif gate_fail:
             status = "unavailable"
             reason = "sample_size_gate_unmet: " + "; ".join(gate_fail) + f"；点估计仅作描述性（{r}）"
         elif ci.get("ci95_lognormal") is None:
@@ -1018,8 +1070,12 @@ class Evaluator:
                     "statuses": {k: d[k]["status"] for k in xs},
                 }
             complete = len(present) == len(need) and len(need) >= 3
-            # ★ 截断构造守卫：跨度阶梯必须来自**逐档独立重跑**；若短轨迹是长轨迹的逐位前缀
-            #   ⇒ 该阶梯是「同一次运行的截断」，测的是窗口长度而非协议时长 ⇒ invalid
+            # ★ 截断守卫（**R-G1 降级版**）：短轨迹是长轨迹的逐位前缀 **不构成**截断证据 ——
+            #   当「同一网络 + 同一 net_seed/事件表 + 逐档独立重跑」时，短档轨迹**必然**是长档轨迹的前缀
+            #   （实测：p5_C 的 T=10/20/40 s 三个独立进程，pid/finished_at 不同，轨迹逐位前缀）。
+            #   ⇒ 该发现只作 **informational**（`prefix_identity_observed`），**不改变阶梯状态**。
+            #   **真正的截断证据**是「轨迹长度 ≠ round(T_ms/dt_ms)」（在 arm_metrics 里已是硬失败
+            #   `trajectory_len_mismatch`），或同一 run_id 复用。旧实现在此处判 invalid ⇒ **假阳性**（已修）。
             trunc = []
             for t1 in Ts:
                 for t2 in Ts:
@@ -1033,12 +1089,7 @@ class Evaluator:
                             if y.trace.size >= n and n > 0 and np.array_equal(x.trace, y.trace[:n]):
                                 trunc.append({"short": x.arm_id, "long": y.arm_id,
                                               "T_short_ms": t1, "T_long_ms": t2})
-            if trunc:
-                status = "invalid"
-                reason = ("ladder_arms_look_truncated: 短时长臂的轨迹是长时长臂的**逐位前缀** %s ⇒ "
-                          "阶梯由同一次运行的截断构造，测的是窗口长度而非协议时长（settle/初值/RNG 语义不满足）"
-                          "⇒ 硬门④ 无效；必须逐档独立重跑" % trunc)
-            elif complete:
+            if complete:
                 status, reason = "pass", ""
             else:
                 status, reason = "unavailable", (
@@ -1047,7 +1098,11 @@ class Evaluator:
             self.duration_ladder[cfg] = {
                 "T_levels_present_ms": Ts, "ladder_required_ms": need, "ladder_present_ms": present,
                 "ladder_complete": bool(complete), "per_criterion": per, "drift": drift,
-                "truncation_suspicion": trunc, "status": status, "reason": reason,
+                "prefix_identity_observed": trunc,
+                "prefix_identity_note": ("短档轨迹是长档轨迹的逐位前缀：在**确定性同 seed/同事件表**的独立重跑下"
+                                          "这是**预期**现象（不是截断证据）；截断只在"
+                                          "`trajectory_len_mismatch`（长度≠round(T_ms/dt_ms)）时才可证"),
+                "status": status, "reason": reason,
             }
 
 
@@ -1186,6 +1241,19 @@ class Evaluator:
                 crit_status[c] = "fail"
             else:
                 crit_status[c] = "unavailable"
+        # 【规则声明（R-G1 补写，读者常困惑之处）】每条**子判据**会有**多行**（每评估单元一行：
+        #   config × T × mechanism）。**门条件用的是"判据级聚合状态"**，而其聚合规则是**最坏优先**：
+        #      任意一行 invalid ⇒ invalid；否则任意一行 fail ⇒ fail；否则全部 pass ⇒ pass；否则 unavailable。
+        #   ⇒ **同一判据"行状态"与"门条件"可以不同**：例如 6 个 single-seed 配置的行是 `unavailable`
+        #     （样本量门未过），而 p5_C 的 3 行是 `fail` ⇒ **判据级 = fail**（门读它）。
+        #   这是**跨行聚合**，不是"同一行换规则"—— 特此写入工具以免误读。
+        crit_rows: Dict[str, Dict[str, int]] = {}
+        for c, rs in by_crit.items():
+            prim = [r for r in rs if r["is_primary_estimator"] == 1] or rs
+            h: Dict[str, int] = {}
+            for r in prim:
+                h[r["status"]] = h.get(r["status"], 0) + 1
+            crit_rows[c] = h
         gate = {}
         for c in GATE_CRITERIA:
             gate[c] = crit_status.get(c, "unavailable")
@@ -1196,11 +1264,14 @@ class Evaluator:
                                                   "per_neuron" if r["estimator"].startswith("per_neuron") else "population_trace")["available"]
                           for r in self.rows if r["criterion"] in (CRIT["a"], CRIT["b"]))
         # 总态
+        # R-G1：阶梯的 prefix 同一性**不再**单独触发 invalid（见 _duration_ladder 的降级说明）；
+        # 阶梯仍可在别处为 invalid（例如跨 T 判定翻转 ⇒ _apply_duration_flip）
         ladder_bad = [cfg for cfg, blk in self.duration_ladder.items() if blk["status"] == "invalid"]
         invalid = bool(self.hard_failures) or "invalid" in gate.values() or bool(ladder_bad)
         if invalid:
-            g1, why = "invalid", ("存在硬失败/口径缺陷（见 hard_failures、duration_flip 与 ladder_arms_look_truncated）"
-                                  "⇒ 该轮结论无效")
+            g1, why = "invalid", ("存在硬失败/口径缺陷（见 hard_failures / duration_flip / 判据级 invalid）⇒ 该轮结论无效；"
+                                  "硬失败清单：" + (json.dumps(self.hard_failures, ensure_ascii=False) if self.hard_failures else "[]")
+                                  + "；判据级 invalid：" + json.dumps([k for k, v in gate.items() if v == "invalid"], ensure_ascii=False))
             if ladder_bad:
                 self.hard_failures.append(f"duration_ladder_invalid: {ladder_bad}")
         elif all(v == "pass" for v in gate.values()):
@@ -1218,6 +1289,9 @@ class Evaluator:
         counts = {s: sum(1 for r in self.rows if r["status"] == s) for s in STATES}
         return {"verdict_G1": g1, "verdict_reason": why, "gate_conditions": gate,
                 "criterion_status": crit_status, "state_counts": counts,
+                "criterion_row_status_histogram": crit_rows,
+                "aggregation_rule": ("判据级状态 = 该判据**所有行**的最坏优先聚合（invalid > fail > pass > unavailable）；"
+                                     "门条件读判据级状态 ⇒ 行状态与门条件可以不同（见 verdict_G1 处的规则声明）"),
                 "hard_failures": self.hard_failures,
                 "estimator_gate_unmet": self.estimator_gate_unmet,
                 "non_discriminative_criteria": non_disc,
@@ -1474,6 +1548,7 @@ def main(argv=None) -> int:
         "arm_metrics": ev.arm_metrics,
         "output_invariants": ev.invariants,
         "gate_composition": ev.gate_composition,
+        "seed_effectiveness_check": ev.seed_effectiveness_check,
         "rows": ev.rows,
         "elapsed_s": None,
     })

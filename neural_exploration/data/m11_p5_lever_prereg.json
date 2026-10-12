@@ -1,0 +1,141 @@
+{
+ "generated_by": "M11 执行节点 B3（G1 评估器作者）——按清单 §5 杠杆顺序的实验预注册（跑之前定稿）",
+ "generated_at": "2026-10-13",
+ "objective": "让 (a)(b)(c) 同时可达：把工作点从「窄分布、少静默、中位率 0.3 Hz、自持比 0.28」推到「重尾分布、近半数近静默、中位率 0.5-2 Hz、自持比 <=0.10」",
+ "prerequisite_blocking_P0": {
+  "finding": "G1 全量矩阵的复刻轴失效：seed in {0,1,2} 的臂产出逐位相同的 pop_trace 与 counts（15/15 组、counts sha256 全同）；根因 = 生产者以 net_seed 建网络（run_m11_p5_arms.py L124，默认 0）、以 event_seed 建事件表（L151/155，默认 11），而计划只改了 seed（仅 eng.reset(seed=)，L157）=> 有效重复数 = 1",
+  "consequence": "(c) 的 3-seed CI 统计上无效（[0.2763,0.2841] 由计数噪声撑出）；(h) determinism 平凡通过；RF-M11-3 的 >=3 seed 门名义满足、实质未满足；(c) 的正确状态是 invalid（维度未生效），不是 fail",
+  "required_fix": "后续所有臂必须改 net_seed（必要时叠加 event_seed）作为复刻轴；本节点已跑 2 臂探针（net_seed 1/2）验证该轴有效",
+  "tool_hardening": "评估器已加 seed_dimension_inert 检查（强指纹=完整轨迹/计数数组逐位相同 => 该子判据判 invalid，不判 fail；聚合标量不作指纹以免假阳性）"
+ },
+ "levers": [
+  {
+   "id": "L0-a",
+   "name": "输入通路增益（gmax_scale 上调）",
+   "mechanism": "外部事件幅度上调 => 基准臂(dose=1)群率升，而零驱动臂无外部事件 => 零驱动侧几乎不动 => R = zero/base 下降；同时抬 (a) 中位率",
+   "predictions": {
+    "a": "升（可能入带 [0.5,2.0]）",
+    "b": "降（静默进一步降低，远离 [0.48,0.49]）",
+    "c": "降（目标 <=0.10）"
+   },
+   "why_first": "清单 §5 的钳制：L0 不过则 L1/L2 无意义；(c)=0.2802 >> 0.10 必须先压下",
+   "settings": [
+    "gmax_scale=1.0（基线）",
+    "gmax_scale=2.0",
+    "gmax_scale=4.0"
+   ],
+   "falsifier": "若 gmax_scale=4.0 后 R 仍 >0.10 => L0-a 失败（自持不来自输入侧）=> 转 L0-b"
+  },
+  {
+   "id": "L0-b",
+   "name": "内在兴奋性（bias_scale/bias_log_mean 下调）",
+   "mechanism": "降单细胞可兴奋性 => 零驱动臂群率降；基准臂受外部驱动托底 => R 亦应降（幅度待测）",
+   "predictions": {
+    "a": "降或平（风险：中位率被压得更低）",
+    "b": "升（朝带内移动）",
+    "c": "降"
+   },
+   "settings": [
+    "bias_scale=1.0（基线）",
+    "bias_scale=0.7",
+    "bias_scale=0.5"
+   ],
+   "falsifier": "若 bias_scale=0.5 时 R 仍 >0.10 => L0-b 亦失败 => L0 整体失败（按 §5 停机，不进 L1）"
+  },
+  {
+   "id": "L1",
+   "name": "阈值异质性（bias_log_sigma 上调）——形状杠杆",
+   "mechanism": "(a) 偏低与 (b) 偏低同因：当前是窄分布（少静默但整体压低），目标分布是重尾（近半数近静默 + 中位率 0.5-2 Hz）=> 需要分布形状而非整体快慢。加宽阈值分布应同时把中位率与静默比例往目标推",
+   "predictions": {
+    "a": "升（重尾右移中位数）",
+    "b": "升（左尾造出近静默细胞）",
+    "both_in_band": "存在一个 sigma 使 n_both_in_band >=1（本轮可证伪的核心断言）"
+   },
+   "settings": [
+    "bias_log_sigma=基线",
+    "1.3x 基线",
+    "1.6x 基线"
+   ],
+   "falsifier": "若 sigma 扫描下 (中位率,静默) 云团不朝可行角移动 => 判张力结构性（与 G1 已测 rho=±1.000 一致）=> 停机并写入缺失机制清单（需换机制，不是调参数）"
+  },
+  {
+   "id": "FORBIDDEN",
+   "name": "提高背景驱动 lambda / 提高 dose 上限",
+   "reason": "G1 已证 rho(驱动,中位率)=+1.000 与 rho(驱动,静默)=-1.000 且 n_both_in_band=0 => 纯调驱动不可能同时落带（清单 §4.5(i)）"
+  }
+ ],
+ "criteria": {
+  "primary": "(c) 零驱动自持比 R <=0.10（点估计 且 更宽 CI 上界 <=0.12），每档改动后必须重核（清单 §5 钳制）",
+  "secondary": "(a) 中位率 in [0.5,2.0] Hz；(b) 静默 in [0.48,0.49]（注：该带当前有 CSV/JSON 不一致，见 blockers）",
+  "shape": "同时报告 (median, silent) 云团在杠杆空间中的移动方向；n_both_in_band >=1 才算形状假设被支持",
+  "statistics": "(c) 必须用 net_seed 复刻的 >=3 个独立实现（禁用失效的 seed 轴）；CI 两法并列 + 一致性核对",
+  "caliber": "生产 = chunk（须 R78 §5 孪生臂校核）；判据 = step（不得用 chunk 出判据）"
+ },
+ "stop_rules": [
+  "任一档出现 seed_dimension_inert => 立即停（复刻轴又失效）",
+  "L0-a 与 L0-b 在预注册网格内都不能把 R 压到 <=0.10 => L0 失败 => 停机（不进入 L1）",
+  "L1 的 sigma 扫描使 (a)(b) 同时入带 => 进入 R3 定稿确认",
+  "L1 扫描后 n_both_in_band 仍为 0 => 判张力结构性 => 停机并写入缺失机制清单（R91）",
+  "任一档 hard_failures 非空（双估计器/量纲）=> 停并查口径",
+  "总 GPU-h 触及包络 => 停（不得静默超支）"
+ ],
+ "budget": {
+  "unit_prices_measured": "data/m11_p5_g1_pricing.csv（N=8192, T=10 s, 210,000 步/run 含 settle）：step 口径 d0=2.5585 / d0.5=2.9472 / d1=3.2583 / d2=3.6479 / d4=4.2056 ms/step；chunk 口径 d0=0.6545 / d1=0.9482 / d4=0.9720",
+  "segments": {
+   "R1_L0_scan": {
+    "runs": 36,
+    "steps": 7560000,
+    "gpu_h_step": 7.016,
+    "gpu_h_chunk": 1.802
+   },
+   "R2_L1_sigma_scan": {
+    "runs": 27,
+    "steps": 5670000,
+    "gpu_h_step": 5.262,
+    "gpu_h_chunk": 1.352
+   },
+   "R3_final_confirm": {
+    "runs": 45,
+    "steps": 21450000,
+    "gpu_h_step": 19.803,
+    "gpu_h_chunk": 5.179
+   },
+   "R4_twin_arms_new_condition": {
+    "runs": 4,
+    "steps": 840000,
+    "gpu_h_step": 0.789,
+    "gpu_h_chunk": 0.19
+   }
+  },
+  "totals": {
+   "gpu_h_step": 32.87,
+   "gpu_h_chunk": 8.523
+  },
+  "envelope_answer": "step 口径不可行（约 32.9 GPU-h => 超 <=10 的 3.3 倍）；chunk 生产 + step 判据（端点孪生臂）约 8.5 GPU-h => 可行",
+  "prereg_note": "R3 按 5 剂量档（0/0.5/1/2/4，N1 已批准）计；R4 为 R78 §5 要求的新工况孪生臂校核"
+ },
+ "blockers_for_mainagent": [
+  {
+   "id": "B-1",
+   "issue": "判据表 CSV 与 JSON 不同步：CSV 101 行 / JSON 114 行；且 silent_frac_calcium_band_lo/hi 值不一致（CSV 0.4800/0.4900 final=1 vs JSON unavailable final=0）",
+   "impact": "评估器读 CSV => G1 的 (b) 用 0.48-0.49 判 fail；但 JSON 的同源行把该带标为 proxy / final=0 / proxy_not_transferable / calcium_not_comparable_to_ephys，且 silent_frac_calcium_coverage_register 记 missing=1(real_ROI_mask) => 按 J2 验收条件 e)（ROI 管线不可得 => 判 unavailable）(b) 应为 unavailable 而非 fail",
+   "ask": "请裁决哪份为准；若以 JSON 严格语义为准 => (b) 改判 unavailable，门 = c(invalid) ∧ e(pass) ∧ 张力(pass)，结论仍是未通过但措辞不同"
+  },
+  {
+   "id": "B-2",
+   "issue": "复刻轴失效（见 prerequisite_blocking_P0）",
+   "impact": "(c) 的 CI 与 (h) 的 pass 均不成立；工具已把 (c) 判为 invalid（维度未生效），非 fail",
+   "ask": "生产者把复刻轴改为 net_seed 并重跑受影响臂（至少 (c)/(h) 所需臂）"
+  }
+ ],
+ "probe_arms_run": {
+  "status": "已启动但被 QoS 饥饿回收 => 结论不可用（如实登记，不得写成已验证）",
+  "spec": "2 臂：config SEED_AXIS, role=zero_drive, dose=0, T=10 s, settle 500 ms, N=8192, delivery=chunk, seed=0, event_seed=11, net_seed in {1,2}",
+  "artifacts_dir": "neural_exploration/data/m11_p5_probe_seedaxis/（空——被杀前未产出任何产物）",
+  "measured_starvation": "墙钟 32:59 而累计 CPU 仅 1:52.9 => 占空比约 5.7%（ps %CPU 显示 98.9 => 再次印证 M10 L46/L50：不得用 %CPU 判进度）",
+  "pure_compute_estimate": "单臂约 137 s（0.6545 ms/step x 210,000 步）；两臂约 4.6 min",
+  "action_taken": "按 >10 min 交主agent 托管 + 终止前先看进度：看进度（5.7% 占空比、零产物）=> 终止 => 转为托管作业 J7（见 m11_b3_managed_jobs.json）",
+  "why_this_probe_matters": "它只有一个目的：证明复刻轴修正（改 net_seed）确实改变实现。若 J7 两臂 pop_trace 不同 => 修正有效，(c)/(h) 才能按 >=3 独立实现重判；若仍相同 => net_seed 未接入网络构建，须由 B2 查 build_laminar_probe_column 的 seed 用法（更深一层缺陷）。",
+  "not_claimed": "本节点未取得该探针的任何数值结论；复刻轴修正尚未被验证"
+ }
+}

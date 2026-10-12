@@ -456,3 +456,60 @@ B2 生产者实测单 run **210,000 步 = 10,000 settle + 200,000 测量** ⇒ *
 18. **"ms/step" 不是单一量**：它随**投递口径（step/chunk）× 事件率 × 档位 N** 变化 ⇒ 每次引用必须写全三元组；本工作包连续两次（R34 解释器、R43 口径）都在"未写全口径的单一数字"上出错。
 19. **步数口径要把 settle 算进去**：`steps = settle/dt + T/dt`（本次漏 5%；T 越长占比越小，故**短 T 的定价误差最大**）。
 20. **档因子与口径因子不得相乘外推**：8k 的 step 值需**独立实测**（两个候选因子差 2.20× ⇒ 任何默认比例外推都可能把预算差 2 倍）。
+
+## L28 — G1 终判后的两项口径核查（任务 A）+ 工具修复 + 任务 B 预注册
+
+### L28.1 任务 A 结论（(c) 的措辞问题）——**行状态与门条件并非同一行，且 p5_C 不是那条消息的来源**
+- **引用的"1 seed"消息来自 single-seed 配置**（`p5_B1/B2/B3/B4/P1/P2`，各 5–9 臂、只有 seed 0），**不是 p5_C**。
+  证据：`m11_p5_resting_eval_g1_v2.json` 的 11 条 `p5_c_selfsustain` 行里，6 条来自上述配置（`n_seeds=1`、`unavailable`），
+  **p5_C 的 3 条（T=10/20/40 s）是 `n_seeds=3`、`zero_spike=25773/52506/110334`**（3 seed 池化）**且状态 = `fail`**（R=0.2802/0.2857/0.2998；CI 上界 0.2841/0.2885/0.3018 > 0.12）。
+- **代码定位**：
+  - `units = sorted({(a.config_id, a.T_ms, a.mechanism) ...})`（**L610**）⇒ 评估单元 = config × **精确 T_ms** × mechanism；
+  - `_unit_arms(cfg, T_ms, mech, role)`（**L638–641**）⇒ 按 `config_id` + `abs(T_ms-unit_T)<1e-9` + `mechanism` + `role` 过滤；
+  - `nz = len({a.seed for a in zero_arms if a.seed is not None})`（**L771**）、`nb`（**L772**）⇒ **`n_seed_zero` = 该单元内 `role=="zero_drive"` 臂的"声明 seed"去重个数**；
+  - 样本量门（**L781–790**）⇒ 不满足 ⇒ `status="unavailable"`；`_verdict` 的判据级聚合（**L1178–1186**）：任意行 `invalid` ⇒ invalid，否则任意行 `fail` ⇒ **fail** ⇒ 门读判据级。
+- ⇒ **"行状态 vs 门条件不同"是跨行聚合，不是同一行换规则**：p5_C 三行 = `fail`，B/P 配置六行 = `unavailable` ⇒ 判据级 = `fail`。**该规则已写入工具**（`_verdict` 注释 + 输出新增 `criterion_row_status_histogram` 与 `aggregation_rule`）。
+- **(3) 修正后 (c) 的正确状态 = `invalid`（不是 fail）** —— 见 L28.2 的复刻轴发现：`R=0.2802` 远超上限**但 3 个 seed 是同一实现** ⇒ RF-M11-3 的"≥3 独立 seed"**实质上未满足** ⇒ 按四态语义（维度/编码路径未生效）判 **`invalid`**，点估计/CI 仅作描述性。**若主agent 选择按"声明 seed"读协议，则为 `fail`，但措辞必须带"3 seed 名义、有效 1"。**
+
+### L28.2 🔴 复刻轴失效（矩阵级，第 5 次"字段存在 ≠ 生效"）
+- **实测**：同一 `(config,N,T,dose)` 下 `seed∈{0,1,2}` 的臂 **`pop_trace` 逐位相同（15/15 组）且 `counts.csv` sha256 全同（15/15）**；抽样：`c_8192_T10000ms_d0.0` 三个 seed 的 sum 均为 **8591**，T=20 s 均为 **17502**，T=40 s 均为 **36778**。
+- **根因（生产者码级）**：`run_m11_p5_arms.py` **L124** `build_laminar_probe_column(n, seed=int(spec["net_seed"]), ...)`（默认 0）、**L151/155** `event_seed`（默认 11）、**L157** `eng.reset(seed=spec["seed"])` ⇒ **计划只改了 `seed`，而 `net_seed`/`event_seed` 全程常量 0/11** ⇒ 网络与事件表完全相同 ⇒ 有效重复数 = 1。
+- **后果**：(c) 的 CI（[0.2763,0.2841]，宽 ±1.4%）由**计数噪声**撑出、统计上无效；(h) determinism **平凡通过**；≥3 seed 门名义满足。**这条同时解释了为什么 T 越大 R 越大（0.2802→0.2857→0.2998）却每个 seed 都一样。**
+- **工具加固（已实现）**：新增 `_effective_seed_check()` —— 同一单元内**声明 seed 不同**的臂若**强指纹**（完整轨迹/逐神经元计数数组）**逐位相同** ⇒ 记 `seed_dimension_inert` ⇒ 该子判据判 **`invalid`**（不判 fail）。**聚合标量（sum）不作指纹**（两个独立实现的脉冲总数可偶然相同；冒烟 S2 的 275/275/275 即此类）⇒ 证据不足时记 `insufficient_data` 而不误报。
+
+### L28.3 工具修复第二项：截断守卫**降级**（假阳性，曾把整轮判成 invalid）
+- **旧行为**：短档轨迹是长档轨迹的逐位前缀 ⇒ 阶梯 `invalid` ⇒ 整轮 `invalid`。
+- **实测为什么错**：p5_C 的 T=10/20/40 s 是三组**独立进程**（pid 55458 vs 55710、finished_at 不同），但**在确定性同 seed/同事件表下，短档轨迹必然**是长档轨迹的前缀（且因 L28.2 的复刻轴失效，连不同 seed 也互为前缀）⇒ 27 对"前缀"**全部是预期现象**。
+- **新行为**：前缀同一性只记 `prefix_identity_observed`（informational，附说明），**不改变阶梯状态**；**截断只在"轨迹长度 ≠ round(T_ms/dt_ms)"时才可证**（该检查已是 `trajectory_len_mismatch` 硬失败）。⇒ 修复后 p5_C 阶梯 = **`pass`**，`hard_failures=[]`，整轮 `invalid` 的**唯一原因**变成"判据级 invalid = p5_C_selfsustain"（理由准确）。
+- **回归**：S1 `unavailable`/3 · **S2 `fail`/1（恢复）** · S3 `unavailable`/3 · S4 `invalid`/2（硬失败 1 条：×1.15 双估计器）· S5 `unavailable`/3（不再是 invalid，语义变更已登记）· S6 `unavailable`/3；全部 `criteria_per_unit=[10]`。
+- **sha256（冻结纪律）**：修复前 `7b3ed467aaea56cc2f8d2760285fa8a600efdd761baadf8082ff30784504757a`（89,482 B / 1,495 行）
+  ⇒ 修复后 **`5eb76edf58e3c0ec`…（完整 sha256 见下）**（95,375 B / 1,570 行）；备份 `/tmp/validate_p11_resting_pre_R_fix.py`。
+  中间态（加了两项修复但未含最后两处微调）`be7eaf0e8f6d78d8dcd6b57a6e44dc99ab8c9fea3f18518b03b442bea7e87f4e`（94,950 B / 1,568 行）。
+  **未改写任何已判定产物**：全量复评输出到新文件 `m11_p5_resting_eval_g1_v3.{csv,json}`（v2 原样保留）。
+
+### L28.4 🔴 判据表 CSV 与 JSON **不同步**（非本节点改动；`--check-targets` 已捕获）
+CSV 101 行（mtime 10-13 04:41）/ JSON 114 行（mtime 10-12 07:21）；**值不一致 2 行**：
+`silent_frac_calcium_band_lo/hi` = CSV `0.4800/0.4900`（**final=1**）vs JSON `unavailable`（**final=0**）。
+JSON 另含 13 行把同一件事标得更严：`silent_frac_calcium_zero_count_proxy_field4_measured=0.4900`、
+`silent_frac_calcium_fullfov_frame_unit_field4_measured=0.8915`、`rate_median_hz_measured_calcium_band_status=per_neuron_unavailable(proxy_not_transferable)`、
+`silent_frac_calcium_two_caliber_scope_note=calcium_not_comparable_to_ephys`、`silent_frac_calcium_coverage_register=covered=7; missing=1(real_ROI_mask)`。
+**影响**：评估器读 **CSV** ⇒ G1 的 (b) 用 0.48–0.49 判 `fail`；但按 JSON 的严格语义（proxy、不可迁移、**缺真实 ROI 掩膜**）**不满足本工作包 J2 预留行的验收条件 e)**（"ROI 管线不可得 ⇒ 判 unavailable 并写明已覆盖维度"）⇒ **(b) 应为 `unavailable`，不是 `fail`**。⇒ 请主agent 裁决以哪份为准。
+
+### L28.5 任务 B：预注册已落盘 `data/m11_p5_lever_prereg.json`
+- **前置阻塞项**：复刻轴修正（L28.2）——**不修则一切杠杆实验的 CI 与 (c)/(h) 都无效**。
+- **杠杆顺序（按 §5 钳制）**：**L0-a 输入通路增益 `gmax_scale`↑**（零驱动臂无外部事件 ⇒ 只抬分母 ⇒ R↓）→ **L0-b 内在兴奋性 `bias_scale`↓** → **L1 阈值异质性 `bias_log_sigma`↑（形状杠杆：同时抬中位率与静默 ⇒ n_both_in_band≥1 是本轮可证伪断言）**；**禁**提高 λ/dose 上限（G1 已测 ρ=±1.000、n_both_in_band=0）。
+- **判据**：(c) 每档改动后必须重核（R≤0.10 ∧ 更宽 CI 上界 ≤0.12）；(a) ∈[0.5,2.0]；(b) 见 L28.4 的裁决；统计必须用 **net_seed 复刻**的 ≥3 独立实现；生产 chunk / 判据 step。
+- **停机规则 6 条**（含 L0 全失败即停机、L1 后仍 n_both_in_band=0 ⇒ 判张力结构性并入缺失机制清单）。
+- **GPU-h 预估（用实测单价，见 `m11_p5_g1_pricing.csv`）**：R1 L0 扫描 36 run = **7.016（step）/ 1.802（chunk）**；R2 L1 扫描 27 run = **5.262 / 1.352**；R3 定稿确认 45 run = **19.803 / 5.179**；R4 新工况孪生臂 4 run = **0.789 / 0.190** ⇒ **合计 32.87（step）/ 8.52（chunk）** ⇒ **step 口径超 ≤10 包络 3.3×；chunk 生产 + step 判据（端点孪生臂）8.52 ⇒ 可行（包络内）**。
+- **探针（诚实登记）**：B3 自跑的 2 臂探针（net_seed 1/2）**被 QoS 饥饿回收**（墙钟 32:59、累计 CPU 1:52.9 ⇒ **占空比 5.7%**，零产物）⇒ 已终止并转为托管作业 **J7**；**复刻轴修正尚未被验证**（不得写成已验证）。
+
+### L28.6 教训
+21. **"声明了 N 个 seed" ≠ "有 N 个实现"**：工具的样本量门必须做**实质检查**（本次加"强指纹逐位相同 ⇒ 维度未生效 ⇒ invalid"），否则失效维度会以**过窄 CI**的形式伪装成"统计可判"——这比"样本量不足"更危险。
+22. **前缀同一性不是截断证据**：确定性同 seed 重跑下**必然**出现前缀；只有"长度 ≠ 声明窗"才可证。**凡"结构性异常检测"都必须先排除"确定性重跑"这一平凡解释**（否则假阳性会掩盖真结论——本次它把 fail 伪装成了 invalid）。
+23. **自跑的探针必须先验占空比**：本次 33 min 墙钟仅 1m53s CPU（5.7%）⇒ 若按 `%CPU` 判断会误以为"在正常跑"；**任何自跑作业超过 10 min 一律终止并转托管**。
+
+### L28.7 工具最终 sha256（供主agent 冻结核对）
+`neural_exploration/tools/validate_p11_resting.py` = **`5eb76edf58e3c0ec65b3369e426e1c326479ce9205ebd30ce666478eb28581de`**（95,375 B / 1,570 行；现场 sha256sum 重算）。
+> **勘误（同会话内自纠）**：本节初稿曾把 16 位前缀**人为补全**成一个完整 sha256（凭印象，违反「不得凭印象」纪律）⇒ 已用现场真值替换。**纪律（教训 24）**：哈希只能现场重算后整值誊写，**绝不可**由前缀补全。
+> 冻结前值 = `7b3ed467aaea56cc2f8d2760285fa8a600efdd761baadf8082ff30784504757a`（89,482 B / 1,495 行，= HEAD `119477d` 的版本）。
+24. **哈希不得由前缀补全**：本次我登记「最终 sha256」时把 16 位前缀补成了 64 位（凭印象）⇒ 发现后立即用现场 sha256sum 替换并自纠。哈希是取证物，只能整值现场重算（与「不得凭印象写文献值」同级）。
