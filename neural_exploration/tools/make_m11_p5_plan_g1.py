@@ -96,6 +96,10 @@ def build_plan() -> dict:
     assert len(ids) == len(set(ids)), "run_id 必须唯一"
     plan = dict(
         plan_id="g1_star_n8192", structure="★（P1+P2+B4+C+D，R45/R63/R74/R78）",
+        units={"T_ms": "millisecond", "settle_ms": "millisecond", "dt_ms": "millisecond",
+               "wall_s": "second", "ms_per_step": "millisecond per step",
+               "drive_rate_hz": "Hz per neuron",
+               "note": "R80 §⑥：跨接口传递的量必须在接口定义处写明单位；接收方写产物前必须做量纲自检"},
         n_neuron=N, settle_ms=SETTLE_MS, dt_ms=0.05, drive_rate_hz=DRIVE_RATE_HZ,
         device="mps", bin_ms=100.0, smooth_frames=5, estimator="per_neuron",
         indegree=20, gmax_scale=1.0, bias_scale=1.0, net_seed=0, delay_bins=[40, 60, 80],
@@ -116,6 +120,43 @@ def sha256_of(p: str) -> str:
             return hashlib.sha256(f.read()).hexdigest()
     except Exception:  # noqa: BLE001
         return "unavailable"
+
+
+EXPECTED_STEPS = {10000.0: 210000, 20000.0: 410000, 40000.0: 810000}   # (settle 500 ms)/dt 0.05 ms
+ALLOWED_T_MS = (10000.0, 20000.0, 40000.0)
+MIN_STEPS = 200000          # 经验下限：否则 (a)(b)(c) 的样本量门必不过
+
+
+def assert_plan_dimensions(plan: dict) -> dict:
+    """**量纲自检断言（R80 §⑤2，非可选）**：任一失败 ⇒ 非零退出 + 打印逐臂 steps 与目标。
+
+    断言：① `steps == int((settle_ms + T_ms)/dt_ms)`；② `steps == 期望值`（按 T 查表）；
+    ③ `steps >= 200000`；④ `T_ms ∈ {10000, 20000, 40000}`。
+    """
+    dt, settle = float(plan["dt_ms"]), float(plan["settle_ms"])
+    fails, per_seg = [], {}
+    print("  %-34s %-8s %10s %10s %s" % ("run_id", "T_ms", "steps", "期望", "OK"))
+    for a in plan["arms"]:
+        T = float(a["T_ms"])
+        steps = int(round((settle + T) / dt))
+        exp = EXPECTED_STEPS.get(T)
+        ok = (steps == int((settle + T) / dt) and (exp is None or steps == exp)
+              and steps >= MIN_STEPS and T in ALLOWED_T_MS)
+        print("  %-34s %-8s %10d %10s %s" % (a["run_id"], T, steps, exp, "✓" if ok else "✗"))
+        v = per_seg.setdefault(a["stage"], set())
+        v.add(steps)
+        if not ok:
+            fails.append("%s: T_ms=%s steps=%d 期望=%s（或 < %d）" % (a["run_id"], T, steps, exp, MIN_STEPS))
+    for seg, st in sorted(per_seg.items()):
+        print("  [段 %s] steps 取值 = %s" % (seg, sorted(st)))
+    if fails:
+        print("**量纲自检失败（%d 臂）**：" % len(fails))
+        for x in fails[:12]:
+            print("   -", x)
+        raise SystemExit(2)          # **非零退出**
+    print("量纲自检通过：%d 臂全部满足 ①steps 恒等式 ②期望步数 ③≥%d ④T_ms∈%s"
+          % (len(plan["arms"]), MIN_STEPS, list(ALLOWED_T_MS)))
+    return dict(n_arms=len(plan["arms"]), per_segment_steps={k: sorted(v) for k, v in per_seg.items()})
 
 
 def stats(plan: dict) -> dict:
@@ -143,8 +184,29 @@ def stats(plan: dict) -> dict:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out-json", default=os.path.join(DATA_DIR, "m11_p5_plan_g1.json"))
+    ap.add_argument("--check", default=None,
+                    help="**只读**校验既有计划文件的量纲（不改文件；用于对正在跑的作业做断言）")
+    ap.add_argument("--self-test-negative", action="store_true",
+                    help="反例自检：故意造 T_ms=10（秒被当毫秒）⇒ 断言必须触发且非零退出")
     args = ap.parse_args(argv)
+    if args.check:
+        with open(args.check) as f:
+            plan = json.load(f)
+        print("== 只读量纲校验：%s（sha256 %s）==" % (args.check,
+                                                 sha256_of(args.check)[:32]))
+        assert_plan_dimensions(plan)
+        return 0
+    if args.self_test_negative:
+        plan = build_plan()
+        plan["arms"][0]["T_ms"] = 10.0                     # 复刻 R80 的单位 bug
+        plan["arms"][0]["run_id"] = "NEG_CTRL_8192_T10ms_d0.0_s0"
+        print("== 反例自检（期望：断言触发 + 非零退出）==")
+        assert_plan_dimensions(plan)                       # 内部 SystemExit(2)
+        print("**反例自检失败：断言未触发（不可证伪）**")
+        return 3
     plan = build_plan()
+    print("== 量纲自检（写出前）==")
+    assert_plan_dimensions(plan)
     with open(args.out_json, "w") as f:
         json.dump(plan, f, indent=1, ensure_ascii=False)
     st = stats(plan)

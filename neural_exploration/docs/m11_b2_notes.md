@@ -967,3 +967,41 @@ step ≈ **5.7 h**、chunk ≈ **2.2 h** ⇒ 口径选择对预算影响 **≈2.
 - 实测：**`ms_per_step_steady = 0.9482`、`wall_s = 85.71`、`RSS = 1,810 MB`、`spk_total = 6000`、`ei_ratio = 1.8496`**；
 - 三元组留痕：`python 3.9.6 / numpy 1.26.4 / torch 2.8.0`，`device=mps`，`sha256_of_trace = 3a7b42bc…`；
 - **结论：计划可执行、产物齐备、`.done` 落地 ⇒ 具备交主agent 全量托管的条件**（全量 ≥6 h，超出本节点窗口）。
+
+---
+
+## B2-L25 — R80 落实：`units` 节 + **量纲自检断言**（非可选）+ 对**正在跑的**计划做只读校验
+
+### B2-L25.1 时间线澄清（R80 抓到的 T 单位 bug **在您的本次作业里已不存在**）
+| 时刻 | 事件 |
+|---|---|
+| 我在上一条回报前 | 干跑（`p1_8192_T10ms_d1.0_s0`，T=10 **ms**）**自己抓到** `T_MIN=10.0`（秒被当毫秒）⇒ **修正为 `10_000.0` ms**、清理误产物、重出计划（mtime **12:46:18**，sha256 `6a220aeb…`）|
+| 12:38 → 12:42 | 主agent 从**修正前**的副本启动全量并拦停（R80）——该副本确为每秒版 |
+| **12:48 起（当前）** | 主agent 重启的作业（PID 53137）用的是**修正后**的计划：其产物为 `p1_8192_T10000ms_d0.0_s0.{done,json,counts.csv,poptrace.npy}`（**T=10000 ms** ✓），`m11_p5_g1_runs/` 内无任何 `T10ms` 残留 |
+
+### B2-L25.2 只读量纲校验（**对正在跑的那份计划**，不改文件）
+`./.venv-m9/bin/python -m neural_exploration.tools.make_m11_p5_plan_g1 --check neural_exploration/data/m11_p5_plan_g1.json`
+⇒ **85 臂全部通过** 四条断言（`sha256 6a220aebed4a6a3cf6e197acda264c51`）：
+| 段 | steps 取值 |
+|---|---|
+| p1 | **210,000** |
+| p2 | **210,000 / 410,000 / 810,000** |
+| b_r1…b_r4 | **210,000**（各）|
+| c（判据单元）| **210,000 / 410,000 / 810,000** |
+| d（重复臂）| **210,000 / 410,000 / 810,000** |
+
+### B2-L25.3 生成器的量纲自检断言（R80 §⑤2，**非可选**；失败即 `SystemExit(2)`）
+`assert_plan_dimensions(plan)` 断言四项并逐臂打印 `steps` 与期望值：
+① `steps == int((settle_ms + T_ms)/dt_ms)`；② `steps == 期望值`（`{10000:210000, 20000:410000, 40000:810000}`）；
+③ `steps >= 200000`；④ `T_ms ∈ {10000, 20000, 40000}`。**断言在写文件之前执行** ⇒ 不会产出"结构合格但数据不足"的假通过计划。
+**反例自检（可证伪性证据）**：`--self-test-negative` 故意把一臂 `T_ms` 设为 `10.0` ⇒
+打印 `NEG_CTRL_8192_T10ms_d0.0_s0: T_ms=10.0 steps=10200 期望=None（或 < 200000）`、
+`p1` 段 steps 出现 `10200`、**退出码 = 2** ✓。
+
+### B2-L25.4 `units` 节（R80 §⑤1）与**冻结纪律**
+- `units = {"T_ms":"millisecond","settle_ms":"millisecond","dt_ms":"millisecond","wall_s":"second",
+  "ms_per_step":"millisecond per step","drive_rate_hz":"Hz per neuron","note":"R80 §⑥…"}`；
+- 带 `units` 的版本已生成到 **`/tmp/g1_plan_units.json`**（sha256 `3f690d4d329796422f719f49e63a8c64`），
+  **臂序列与正在跑的计划逐字段一致（唯一差别 = 新增 `units`）**；
+- ⚠️ **未覆盖 `data/m11_p5_plan_g1.json`**：该文件正被运行中的作业使用（且主agent 已按 R48 记录其 sha256）
+  ⇒ 覆盖会使"运行中的作业 ↔ 计划文件"的审计链断裂。**待主agent 指示**（跑完再落 / 现在落但重新记录 sha）。
