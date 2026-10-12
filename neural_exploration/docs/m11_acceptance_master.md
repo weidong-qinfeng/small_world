@@ -2286,3 +2286,38 @@ B2 建议"正式跑前补测 dose=0.5/2 的 chunk 锚（各 ~40–90 s）以消�
 
 **④ 本会话新增纪律 47 条**（全部入 `docs/SESSION_CONTEXT.md` §0 与本文件）；**主agent 公开自我更正 19 处**（含第 40 条**元纪律**：同一失效模式在"已有纪律"下复发 ≥2 次 ⇒ **必须换成机制**）。
 **⑤ 工作树干净**（`git status` 0 未提交件）；会话累计提交 269 次。
+
+## 3cf. R89：🎯 **G1 全量矩阵完成（85/85，0 失败）** ⇒ 判定 **(a) fail · (c) fail · (b) unavailable · 张力 unavailable ⇒ 门未通过**；并查出**两处口径断裂**（含我的一处指令缺陷）
+
+**① 矩阵完成**：**85/85，0 失败**，`ALL_DONE 04:23:19`；评估器自动执行（`EVAL_EXIT=2`）⇒ `data/m11_p5_resting_eval_g1.{csv,json}` ✓
+**规模校验**：C 段 T=40 s/dose=4 三 seed 的 `spk` 均为 **278,384**、`ei_ratio` 均 **1.1467**（强驱动下外部事件表主导，seed 差异不显）；**RSS 达 6,186 MB**（与 R55"整机独占"纪律相关）。
+
+**② G1 判定（四态，含门条件）**：
+| 门条件 | 状态 |
+|---|---|
+| `p5_c_selfsustain` | **`fail`** |
+| `p5_e_ei_balance` | `pass` |
+| `p5_g1_tension_quantified` | **`unavailable`** |
+⇒ **门 = (c) ∧ (e) ∧ 张力 = fail ∧ pass ∧ unavailable ⇒ `G1 未通过`**（工具正确地未判 pass）
+**判据级**：`p5_a_rate_median = fail`｜`p5_b_silent_frac = unavailable`｜`p5_c_selfsustain = fail`｜`p5_d_drive_elasticity = pass`｜张力 = unavailable
+**四态计数**：`pass 44 / fail 25 / invalid 0 / unavailable 63`；`baseline_arm_registered = True`、`estimator_gate_unmet = []`（**双估计器门未触发** ⇒ 三个估计器一致 ✓）
+
+**③ 🔴 发现（一）：评估器与判据带**键名**不一致 —— **这是我 R21/R59 指令的缺陷****
+评估器 (b) 的调用是 `self.tt.band("silent_frac_lo", "silent_frac_hi")`、`band_keys="silent_frac_lo|silent_frac_hi"`（`validate_p11_resting.py:712/720`）——
+即 **(b) 读的是**旧保留行****，而旧行在 `m11_p5_targets.csv` 里**仍是 `unavailable` / `final=0`**。
+**而我在 R21/R59 要求"命名对称化"⇒ 新增 `silent_frac_calcium_band_lo/hi` 并保留旧行** ⇒ **我改了名字，却没有同步评估器的 `band_keys`** ⇒ **定稿的带与判据被断开**（(b) 因此 `unavailable`）。
+**⇒ 主agent 第二十次公开自我更正**：**"改接口名"必须同时改所有**读取方**；否则是把"带"与"判据"之间的连线剪断。**
+（**这正是 R81 那条"接口纪律要落在会被伤害的那一侧"的又一实例** —— 我作为**发出方**改了名，而**接收方（评估器）的键没改**。）
+
+**④ 🔴 发现（二）：定稿值写进了非权威表**
+`silent_frac_calcium_band_*` 在 **`m11_p5_targets.json` 出现 38 次**，但在 **`m11_p5_targets.csv` 里仍是 `value=unavailable / final=0`**；
+而评估器的 docstring 明写**"带值全部读自 `data/m11_p5_targets.csv`（唯一定稿表，只允许新增行）"**（`DEFAULT_TARGETS` 也指向该 CSV）。
+⇒ **B1 把定稿行写进了 JSON（它以为那里是"判据表"），而评估器读的是 CSV** ⇒ **两文件/一权威表的混淆**。
+**⇒ 纪律（第四十一条）**：**"权威表"必须唯一且被所有读写方指向同一路径**；**若存在同名 `.csv`/`.json` 双份，必须显式指定哪一份是权威、另一份只作导出**，并在**写入方**的断言里校验"我写的是权威表"。
+
+**⑤ 修复路径（**不需重跑矩阵**，因为两者都只涉及离线评估侧）**：
+1. 向**权威 CSV** 补入定稿行（`silent_frac_calcium_band_lo=0.4800` / `_hi=0.4900`，`final=1`，带 provenance 与 R57 的四条限制）；
+2. **同步评估器的 `band_keys`** 指向定稿键（**工具哈希将变更 ⇒ 须记录并只重跑离线评估**）；
+3. 重跑 `validate_p11_resting` ⇒ 看 **(b) 是否可判**、**张力是否可定量** ⇒ **G1 终判**。
+**⚠️ 但须预先声明**：**(a) `fail` 与 (c) `fail` 是**真实科学结果**，不是口径问题** —— 修复 (b) 与张力后，**门仍可能在 (c) 上不过**；
+那将是**本里程碑的科学产出（反证）**，须如实输出"缺失机制清单"，**不得为过门而调带**。
