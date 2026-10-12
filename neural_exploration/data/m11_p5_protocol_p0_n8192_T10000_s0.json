@@ -1,0 +1,232 @@
+{
+ "protocol_id": "m11_p5_p0_n8192_T10000_s0",
+ "fixture_kind": "M11 引擎侧生产者产物（tools/run_m11_p5_arms.py）",
+ "plan_id": "p0_n8192_T10000_s0",
+ "dt_ms": 0.05,
+ "settle_ms": 500.0,
+ "bin_ms": 100.0,
+ "smooth_frames": 5,
+ "estimator": "per_neuron",
+ "n_neuron": 8192,
+ "drive_rate_hz": 8.0,
+ "engine_interpreters": {
+  "engine": {
+   "executable": "/Users/weidong/ai/small_world/.venv-m9/bin/python",
+   "python": "3.9.6",
+   "numpy": "1.26.4",
+   "torch": "2.8.0"
+  },
+  "evaluator": {
+   "executable": "./.venv-m11/bin/python",
+   "role": "只评估、不仿真"
+  },
+  "numpy_skew_discipline": "numpy 偏斜（.venv-m9 = 1.26.4 vs .venv-m11 = 2.0.2）⇒ **评估器侧数值不得用于支持或推翻任何「逐位/BIT」结论**；逐位类断言只在「同解释器 + 同 numpy」内可比（R34 §12.3）"
+ },
+ "engine": {
+  "python": "/Users/weidong/ai/small_world/.venv-m9/bin/python",
+  "engine_version": "m11e-1.0-4slot+laminar-delay-pack+slowvar",
+  "torch": "2.8.0",
+  "numpy": "1.26.4",
+  "device": "mps"
+ },
+ "arms": [
+  {
+   "arm_id": "p0_8192_T10000ms_d0.0_s0",
+   "config_id": "p5_p0",
+   "T_ms": 10000.0,
+   "settle_ms": 500.0,
+   "role": "zero_drive",
+   "mechanism": "none",
+   "drive_mult": 0.0,
+   "seed": 0,
+   "replica_of": null,
+   "n_neuron": 8192,
+   "pop_trace": "neural_exploration/data/m11_p5_runs/p0_8192_T10000ms_d0.0_s0_poptrace.npy",
+   "counts": "neural_exploration/data/m11_p5_runs/p0_8192_T10000ms_d0.0_s0_counts.csv",
+   "agg": {
+    "spk_total": 8591
+   },
+   "ei": {
+    "i_exc_integral": 156634.07758751512,
+    "i_inh_integral": 990436.0784991384,
+    "ei_ratio": 6.323247748854387,
+    "by_class": null,
+    "sign_convention": "|I_inh|/|I_exc|（抑制电流为负 ⇒ 报绝对值；带 [0.5,3.0] 为量值比）",
+    "i_inh_integral_signed_raw": -990436.0784991384
+   },
+   "wall_s": 541.907613542,
+   "ms_per_step": 2.5547389214600003,
+   "device": "mps",
+   "host": "wangxianshengs-MacBook-Pro.local",
+   "python": "3.9.6",
+   "numpy": "1.26.4",
+   "torch": "2.8.0",
+   "ms_per_step_steady": 2.5547389214600003,
+   "event_seed": 11,
+   "spikes_total": 8591,
+   "sha256_of_trace": "c3b0d166b46db3100cbc41820acaa64254d3c5c2ba144fafa905314bc132f649",
+   "n_steps_meas": 200000,
+   "n_steps_settle": 10000,
+   "delivery": "step",
+   "engine_version": "m11e-1.0-4slot+laminar-delay-pack+slowvar",
+   "n_ch": 4,
+   "interpreter": {
+    "executable": "/Users/weidong/ai/small_world/.venv-m9/bin/python",
+    "python": "3.9.6",
+    "role": "engine",
+    "numpy": "1.26.4",
+    "torch": "2.8.0"
+   },
+   "drive_rate_hz": 8.0,
+   "drive_rate_hz_eff": 0.0,
+   "n_events": 0,
+   "rss_mb": 1675.2,
+   "pid": 52131,
+   "finished_at": "2026-10-12T11:11:42",
+   "net": {
+    "indegree": 20,
+    "delay_bins": [
+     40,
+     60,
+     80
+    ],
+    "gmax_scale": 1.0,
+    "bias_scale": 1.0,
+    "net_seed": 0,
+    "n_edge": 159745
+   }
+  },
+  {
+   "arm_id": "p0_8192_T10000ms_d1.0_s0",
+   "config_id": "p5_p0",
+   "T_ms": 10000.0,
+   "settle_ms": 500.0,
+   "role": "dose",
+   "mechanism": "none",
+   "drive_mult": 1.0,
+   "seed": 0,
+   "replica_of": null,
+   "n_neuron": 8192,
+   "pop_trace": "neural_exploration/data/m11_p5_runs/p0_8192_T10000ms_d1.0_s0_poptrace.npy",
+   "counts": "neural_exploration/data/m11_p5_runs/p0_8192_T10000ms_d1.0_s0_counts.csv",
+   "agg": {
+    "spk_total": 30662
+   },
+   "ei": {
+    "i_exc_integral": 1843900.2095422745,
+    "i_inh_integral": 3436146.8941237926,
+    "ei_ratio": 1.863521071444953,
+    "by_class": null,
+    "sign_convention": "|I_inh|/|I_exc|（抑制电流为负 ⇒ 报绝对值；带 [0.5,3.0] 为量值比）",
+    "i_inh_integral_signed_raw": -3436146.8941237926
+   },
+   "wall_s": 687.8870790420001,
+   "ms_per_step": 3.2582763054199995,
+   "device": "mps",
+   "host": "wangxianshengs-MacBook-Pro.local",
+   "python": "3.9.6",
+   "numpy": "1.26.4",
+   "torch": "2.8.0",
+   "ms_per_step_steady": 3.2582763054199995,
+   "event_seed": 11,
+   "spikes_total": 30662,
+   "sha256_of_trace": "0096eefa8d19f67f2d99fa9f2c7cf3bb537a88820d3eaf391eb47753250c3601",
+   "n_steps_meas": 200000,
+   "n_steps_settle": 10000,
+   "delivery": "step",
+   "engine_version": "m11e-1.0-4slot+laminar-delay-pack+slowvar",
+   "n_ch": 4,
+   "interpreter": {
+    "executable": "/Users/weidong/ai/small_world/.venv-m9/bin/python",
+    "python": "3.9.6",
+    "role": "engine",
+    "numpy": "1.26.4",
+    "torch": "2.8.0"
+   },
+   "drive_rate_hz": 8.0,
+   "drive_rate_hz_eff": 8.0,
+   "n_events": 688128,
+   "rss_mb": 2042.8,
+   "pid": 52291,
+   "finished_at": "2026-10-12T11:23:12",
+   "net": {
+    "indegree": 20,
+    "delay_bins": [
+     40,
+     60,
+     80
+    ],
+    "gmax_scale": 1.0,
+    "bias_scale": 1.0,
+    "net_seed": 0,
+    "n_edge": 159745
+   }
+  },
+  {
+   "arm_id": "p0_8192_T10000ms_d4.0_s0",
+   "config_id": "p5_p0",
+   "T_ms": 10000.0,
+   "settle_ms": 500.0,
+   "role": "dose",
+   "mechanism": "none",
+   "drive_mult": 4.0,
+   "seed": 0,
+   "replica_of": null,
+   "n_neuron": 8192,
+   "pop_trace": "neural_exploration/data/m11_p5_runs/p0_8192_T10000ms_d4.0_s0_poptrace.npy",
+   "counts": "neural_exploration/data/m11_p5_runs/p0_8192_T10000ms_d4.0_s0_counts.csv",
+   "agg": {
+    "spk_total": 70060
+   },
+   "ei": {
+    "i_exc_integral": 6585402.179264069,
+    "i_inh_integral": 7592884.057456017,
+    "ei_ratio": 1.1529871450166367,
+    "by_class": null,
+    "sign_convention": "|I_inh|/|I_exc|（抑制电流为负 ⇒ 报绝对值；带 [0.5,3.0] 为量值比）",
+    "i_inh_integral_signed_raw": -7592884.057456017
+   },
+   "wall_s": 857.439726167,
+   "ms_per_step": 4.0376359725,
+   "device": "mps",
+   "host": "wangxianshengs-MacBook-Pro.local",
+   "python": "3.9.6",
+   "numpy": "1.26.4",
+   "torch": "2.8.0",
+   "ms_per_step_steady": 4.0376359725,
+   "event_seed": 11,
+   "spikes_total": 70060,
+   "sha256_of_trace": "fc94b46edaaa50930622cf367a9bd88af4608ba56f4c2250c9bef7ba323cd1ce",
+   "n_steps_meas": 200000,
+   "n_steps_settle": 10000,
+   "delivery": "step",
+   "engine_version": "m11e-1.0-4slot+laminar-delay-pack+slowvar",
+   "n_ch": 4,
+   "interpreter": {
+    "executable": "/Users/weidong/ai/small_world/.venv-m9/bin/python",
+    "python": "3.9.6",
+    "role": "engine",
+    "numpy": "1.26.4",
+    "torch": "2.8.0"
+   },
+   "drive_rate_hz": 8.0,
+   "drive_rate_hz_eff": 32.0,
+   "n_events": 2752512,
+   "rss_mb": 2543.5,
+   "pid": 52399,
+   "finished_at": "2026-10-12T11:37:32",
+   "net": {
+    "indegree": 20,
+    "delay_bins": [
+     40,
+     60,
+     80
+    ],
+    "gmax_scale": 1.0,
+    "bias_scale": 1.0,
+    "net_seed": 0,
+    "n_edge": 159745
+   }
+  }
+ ]
+}
