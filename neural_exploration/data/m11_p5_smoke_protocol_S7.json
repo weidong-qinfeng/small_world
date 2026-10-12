@@ -1,0 +1,43 @@
+{
+ "_comment": "S7 反例：复刻臂与源臂 (net_seed,event_seed,seed)=(0,11,0) **完全相同** ⇒ (h) 不得判 pass（纪律45）。期望 verdict=invalid / exit=2 / (h)=invalid",
+ "protocol_id": "m11_b3_smoke_S7_h_guard_negative",
+ "fixture_kind": "smoke_only（(h) 守卫的反例自证；非仿真）",
+ "dt_ms": 0.05,
+ "settle_ms": 500.0,
+ "bin_ms": 100.0,
+ "n_neuron": 250,
+ "estimator": "per_neuron",
+ "arms": [
+  {
+   "config_id": "HGUARD",
+   "T_ms": 120000.0,
+   "settle_ms": 500.0,
+   "role": "baseline",
+   "mechanism": "none",
+   "drive_mult": 1.0,
+   "seed": 0,
+   "event_seed": 11,
+   "net_seed": 0,
+   "pop_trace": "neural_exploration/data/m10_p6_poptraces/poptrace_M0_lamx1.0_n250.npy",
+   "counts": "neural_exploration/data/m11_p5_smoke_counts_M0_lamx1.0_base.csv",
+   "n_neuron": 250,
+   "arm_id": "src_h"
+  },
+  {
+   "config_id": "HGUARD",
+   "T_ms": 120000.0,
+   "settle_ms": 500.0,
+   "role": "replica",
+   "mechanism": "none",
+   "drive_mult": 1.0,
+   "seed": 0,
+   "event_seed": 11,
+   "net_seed": 0,
+   "pop_trace": "neural_exploration/data/m10_p6_poptraces/poptrace_M0_lamx1.0_n250.npy",
+   "counts": "neural_exploration/data/m11_p5_smoke_counts_M0_lamx1.0_base.csv",
+   "n_neuron": 250,
+   "arm_id": "rep_same_triple",
+   "replica_of": "src_h"
+  }
+ ]
+}

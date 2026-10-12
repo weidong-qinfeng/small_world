@@ -209,7 +209,8 @@ class TargetsTable:
 class Arm:
     __slots__ = ("arm_id", "config_id", "T_ms", "settle_ms", "role", "mechanism", "drive_mult",
                  "seed", "replica_of", "n_neuron", "pop_trace_path", "counts_path", "agg", "ei",
-                 "wall_s", "ms_per_step", "device", "raw", "trace", "counts", "cell_type")
+                 "wall_s", "ms_per_step", "device", "raw", "trace", "counts", "cell_type",
+                 "net_seed", "event_seed", "reset_seed", "delivery", "sha256_of_trace", "net_meta")
 
     def __init__(self, d: Dict[str, Any], base_dir: str, default_n: Optional[int]):
         self.raw = d
@@ -231,6 +232,14 @@ class Arm:
         self.counts_path = _resolve(d.get("counts"), base_dir)
         self.agg = d.get("agg") or {}
         self.ei = d.get("ei") or {}
+        # 【(h) 守卫所需】复刻三元组 = (net_seed, event_seed, reset_seed)：
+        #   net_seed 优先取臂顶层字段，其次取臂内 `net` 元数据（生产者 run_m11_p5_arms.py 落在 `net`)
+        self.net_meta = d.get("net") or {}
+        self.net_seed = d.get("net_seed", self.net_meta.get("net_seed", None))
+        self.event_seed = d.get("event_seed", None)
+        self.reset_seed = d.get("seed", None)
+        self.delivery = d.get("delivery", None)
+        self.sha256_of_trace = d.get("sha256_of_trace", None)
         self.wall_s = d.get("wall_s", None)
         self.ms_per_step = d.get("ms_per_step", None)
         self.device = d.get("device", None)
@@ -530,6 +539,7 @@ class Evaluator:
         self.invariants: Dict[str, Any] = {}
         self.gate_composition: Dict[str, Any] = {}
         self.seed_effectiveness_check: str = "not_run"
+        self.guard_failures: List[str] = []
 
     # ---------------- 协议前缀（口径字段，逐行携带） ----------------
     def _proto_fields(self, arm: Optional[Arm], T_ms: Optional[float] = None) -> Dict[str, Any]:
@@ -990,8 +1000,16 @@ class Evaluator:
                    arm=(arms[0] if arms else None))
 
         # (h) 确定性
+        #
+        # 【(h) 守卫 —— 纪律第四十五条：**「通过」必须能回答「它本来可能失败吗」**】
+        #   复刻臂与其源臂若共享 **(net_seed, event_seed, reset_seed) 三元组**，则两者在确定性引擎下
+        #   **必然**给出相同轨迹 ⇒ 该判据在此配置下**不可能失败** ⇒ 它的 `pass` **不构成证据**
+        #   （与 R93 的 `_effective_seed_check` 同源；先例对照：R78 的孪生臂"逐位相同"有效，是因为
+        #    step/chunk **两个口径都可能不同**；而此处"逐位相同"是必然发生的 ⇒ 无效）。
+        #   ⇒ 三元组相同 **或 无法判定（字段缺失 ⇒ 不能证明二者不同）** ⇒ 判 **invalid**（insufficient 语义）。
         reps = [a for a in self.arms if a.replica_of]
         detail = []
+        guard_hits = []
         for a in reps:
             tgt = next((x for x in self.arms if x.arm_id == a.replica_of), None)
             if tgt is None:
@@ -999,10 +1017,30 @@ class Evaluator:
                 continue
             sa = self.arm_metrics[a.arm_id].get("counts_sum", self.arm_metrics[a.arm_id].get("trace_sum"))
             sb = self.arm_metrics[tgt.arm_id].get("counts_sum", self.arm_metrics[tgt.arm_id].get("trace_sum"))
+            tr_a = {"net_seed": a.net_seed, "event_seed": a.event_seed, "reset_seed": a.reset_seed}
+            tr_b = {"net_seed": tgt.net_seed, "event_seed": tgt.event_seed, "reset_seed": tgt.reset_seed}
+            complete = all(v is not None for v in list(tr_a.values()) + list(tr_b.values()))
+            same = complete and (tr_a == tr_b)
             detail.append({"arm": a.arm_id, "vs": tgt.arm_id, "spk_a": sa, "spk_b": sb,
-                           "identical": bool(sa == sb) if (sa is not None and sb is not None) else None})
+                           "identical": bool(sa == sb) if (sa is not None and sb is not None) else None,
+                           "triple_replica": tr_a, "triple_source": tr_b,
+                           "triple_complete": bool(complete), "triple_identical": bool(same),
+                           "sha256_of_trace_replica": a.sha256_of_trace,
+                           "sha256_of_trace_source": tgt.sha256_of_trace,
+                           "delivery_replica": a.delivery, "delivery_source": tgt.delivery})
+            if same:
+                guard_hits.append("%s vs %s：三元组相同 %s ⇒ 不可能失败" % (a.arm_id, tgt.arm_id, tr_a))
+            elif not complete:
+                guard_hits.append("%s vs %s：三元组**不完整**（%s / %s）⇒ 无法证明二者不同"
+                                  % (a.arm_id, tgt.arm_id, tr_a, tr_b))
         if not reps:
             st, rs = "unavailable", "no_replica_arm（(h) 要求同参数重复臂；本工具只比较，不生成）"
+        elif guard_hits:
+            st = "invalid"
+            rs = ("h_determinism_not_evidence（纪律第四十五条）：" + "；".join(guard_hits) +
+                  " ⇒ 该判据在本配置下**不可能失败**（确定性引擎 + 同一三元组）⇒ 其 `pass` 不构成证据"
+                  "；复刻轴须改为**可变的** net_seed/event_seed（R93）后重跑")
+            self.guard_failures.append(f"{cfg}/{CRIT['h']}@T={T_ms:g}ms: h_determinism_guard（三元组相同或不可判定）")
         elif any(d.get("identical") is False for d in detail):
             st = "fail"
             rs = f"同参数重跑脉冲数不一致：{['%s(%s vs %s)' % (d['arm'], d.get('spk_a'), d.get('spk_b')) for d in detail if d.get('identical') is False]}"
@@ -1267,11 +1305,14 @@ class Evaluator:
         # R-G1：阶梯的 prefix 同一性**不再**单独触发 invalid（见 _duration_ladder 的降级说明）；
         # 阶梯仍可在别处为 invalid（例如跨 T 判定翻转 ⇒ _apply_duration_flip）
         ladder_bad = [cfg for cfg, blk in self.duration_ladder.items() if blk["status"] == "invalid"]
-        invalid = bool(self.hard_failures) or "invalid" in gate.values() or bool(ladder_bad)
+        # 纪律第四十五条：**不可能失败的判据**（守卫命中）⇒ 该轮不得判 pass（guard_failures 非空 ⇒ invalid）
+        invalid = (bool(self.hard_failures) or "invalid" in gate.values() or bool(ladder_bad)
+                   or bool(self.guard_failures))
         if invalid:
-            g1, why = "invalid", ("存在硬失败/口径缺陷（见 hard_failures / duration_flip / 判据级 invalid）⇒ 该轮结论无效；"
+            g1, why = "invalid", ("存在硬失败/口径缺陷/不可能失败的判据（见 hard_failures / guard_failures / duration_flip / 判据级 invalid）⇒ 该轮结论无效；"
                                   "硬失败清单：" + (json.dumps(self.hard_failures, ensure_ascii=False) if self.hard_failures else "[]")
-                                  + "；判据级 invalid：" + json.dumps([k for k, v in gate.items() if v == "invalid"], ensure_ascii=False))
+                                  + "；判据级 invalid：" + json.dumps([k for k, v in gate.items() if v == "invalid"], ensure_ascii=False)
+                                  + ("；守卫命中：" + json.dumps(self.guard_failures, ensure_ascii=False) if self.guard_failures else ""))
             if ladder_bad:
                 self.hard_failures.append(f"duration_ladder_invalid: {ladder_bad}")
         elif all(v == "pass" for v in gate.values()):
@@ -1293,6 +1334,10 @@ class Evaluator:
                 "aggregation_rule": ("判据级状态 = 该判据**所有行**的最坏优先聚合（invalid > fail > pass > unavailable）；"
                                      "门条件读判据级状态 ⇒ 行状态与门条件可以不同（见 verdict_G1 处的规则声明）"),
                 "hard_failures": self.hard_failures,
+                "guard_failures": self.guard_failures,
+                "discipline_45_rule": ("「通过」必须能回答「它本来可能失败吗」：若某判据在该配置下**不可能失败**"
+                                       "（例：(h) 的复刻臂与源臂共享 (net_seed,event_seed,reset_seed) 三元组），"
+                                       "其 pass **不构成证据** ⇒ 判 invalid（insufficient 语义）。"),
                 "estimator_gate_unmet": self.estimator_gate_unmet,
                 "non_discriminative_criteria": non_disc,
                 "baseline_arm_registered": bool(baseline_ok),

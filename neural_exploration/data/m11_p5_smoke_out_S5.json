@@ -1,6 +1,6 @@
 {
- "verdict_G1": "invalid",
- "verdict_reason": "存在硬失败/口径缺陷（见 hard_failures、duration_flip 与 ladder_arms_look_truncated）⇒ 该轮结论无效",
+ "verdict_G1": "unavailable",
+ "verdict_reason": "G1 门条件中存在未测项：['p5_c_selfsustain=unavailable', 'p5_e_ei_balance=unavailable', 'p5_g1_tension_quantified=unavailable'] ⇒ 不得判 pass（未测 ≠ 未命中）",
  "gate_conditions": {
   "p5_c_selfsustain": "unavailable",
   "p5_e_ei_balance": "unavailable",
@@ -24,9 +24,42 @@
   "invalid": 0,
   "unavailable": 33
  },
- "hard_failures": [
-  "duration_ladder_invalid: ['LADDER_M0']"
- ],
+ "criterion_row_status_histogram": {
+  "p5_a_rate_median": {
+   "unavailable": 3
+  },
+  "p5_b_silent_frac": {
+   "unavailable": 3
+  },
+  "p5_c_selfsustain": {
+   "unavailable": 3
+  },
+  "p5_d_drive_elasticity": {
+   "unavailable": 3
+  },
+  "p5_e_ei_balance": {
+   "unavailable": 3
+  },
+  "p5_f_bounded": {
+   "unavailable": 3
+  },
+  "p5_g_wallclock": {
+   "unavailable": 3
+  },
+  "p5_h_determinism": {
+   "unavailable": 3
+  },
+  "p5_i_tradeoff": {
+   "unavailable": 3
+  },
+  "p5_g1_tension_quantified": {
+   "unavailable": 3
+  }
+ },
+ "aggregation_rule": "判据级状态 = 该判据**所有行**的最坏优先聚合（invalid > fail > pass > unavailable）；门条件读判据级状态 ⇒ 行状态与门条件可以不同（见 verdict_G1 处的规则声明）",
+ "hard_failures": [],
+ "guard_failures": [],
+ "discipline_45_rule": "「通过」必须能回答「它本来可能失败吗」：若某判据在该配置下**不可能失败**（例：(h) 的复刻臂与源臂共享 (net_seed,event_seed,reset_seed) 三元组），其 pass **不构成证据** ⇒ 判 invalid（insufficient 语义）。",
  "estimator_gate_unmet": [
   "L_T2s_zero: 仅有 1 个独立估计器（pop_trace_sum）⇒ 硬门③不可校验",
   "L_T2s_base: 仅有 1 个独立估计器（pop_trace_sum）⇒ 硬门③不可校验",
@@ -249,7 +282,7 @@
      }
     }
    },
-   "truncation_suspicion": [
+   "prefix_identity_observed": [
     {
      "short": "L_T2s_zero",
      "long": "L_T60s_zero",
@@ -287,8 +320,9 @@
      "T_long_ms": 120000.0
     }
    ],
-   "status": "invalid",
-   "reason": "ladder_arms_look_truncated: 短时长臂的轨迹是长时长臂的**逐位前缀** [{'short': 'L_T2s_zero', 'long': 'L_T60s_zero', 'T_short_ms': 2000.0, 'T_long_ms': 60000.0}, {'short': 'L_T2s_base', 'long': 'L_T60s_base', 'T_short_ms': 2000.0, 'T_long_ms': 60000.0}, {'short': 'L_T2s_zero', 'long': 'L_T120s_zero', 'T_short_ms': 2000.0, 'T_long_ms': 120000.0}, {'short': 'L_T2s_base', 'long': 'L_T120s_base', 'T_short_ms': 2000.0, 'T_long_ms': 120000.0}, {'short': 'L_T60s_zero', 'long': 'L_T120s_zero', 'T_short_ms': 60000.0, 'T_long_ms': 120000.0}, {'short': 'L_T60s_base', 'long': 'L_T120s_base', 'T_short_ms': 60000.0, 'T_long_ms': 120000.0}] ⇒ 阶梯由同一次运行的截断构造，测的是窗口长度而非协议时长（settle/初值/RNG 语义不满足）⇒ 硬门④ 无效；必须逐档独立重跑"
+   "prefix_identity_note": "短档轨迹是长档轨迹的逐位前缀：在**确定性同 seed/同事件表**的独立重跑下这是**预期**现象（不是截断证据）；截断只在`trajectory_len_mismatch`（长度≠round(T_ms/dt_ms)）时才可证",
+   "status": "unavailable",
+   "reason": "硬门④：需至少 [1.0, 2.0, 4.0]×T_min=[2000.0, 4000.0, 8000.0] 三档同一配置的臂；实有 T=[2000.0, 60000.0, 120000.0] ⇒ 时长依赖性**未测**（判据不得就此定稿）"
   }
  },
  "tension": {
@@ -305,9 +339,9 @@
    "reason": "需 ≥3 个剂量点（含 zero_drive）才能识别张力；现 0 点（另需逐神经元 counts 才有中位率/静默）"
   }
  },
- "exit_code": 2,
+ "exit_code": 3,
  "generated_by": "tools/validate_p11_resting.py",
- "generated_at": "2026-10-11T22:34:39",
+ "generated_at": "2026-10-13T06:20:20",
  "role": "M11 P5/G1 离线评估（只做分析，不做仿真；不写判据带）",
  "protocol_path": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_smoke_protocol_S5.json",
  "protocol": {
@@ -592,6 +626,7 @@
   ],
   "note": "(d) 降为 sanity（M10 基线臂 +579.6% 即过 ⇒ 无判别性）"
  },
+ "seed_effectiveness_check": "not_run",
  "rows": [
   {
    "config_id": "LADDER_M0",
@@ -635,11 +670,11 @@
    "unit": "",
    "band_lo": null,
    "band_hi": null,
-   "band_keys": "silent_frac_lo|silent_frac_hi",
+   "band_keys": "silent_frac_calcium_band_lo|silent_frac_calcium_band_hi",
    "ci_lo": null,
    "ci_hi": null,
    "status": "unavailable",
-   "reason": "band_not_finalized: band_unavailable(evidence_level=unavailable): silent_frac_lo; band_unavailable(evidence_level=unavailable): silent_frac_hi",
+   "reason": "band_not_finalized: band_not_final(final=0): silent_frac_calcium_band_lo; band_not_final(final=0): silent_frac_calcium_band_hi",
    "evidence_class": "working_point_precondition",
    "discriminative": null,
    "baseline_value": null,
@@ -699,11 +734,11 @@
    "unit": "",
    "band_lo": null,
    "band_hi": null,
-   "band_keys": "silent_frac_lo|silent_frac_hi",
+   "band_keys": "silent_frac_calcium_band_lo|silent_frac_calcium_band_hi",
    "ci_lo": null,
    "ci_hi": null,
    "status": "unavailable",
-   "reason": "band_not_finalized: band_unavailable(evidence_level=unavailable): silent_frac_lo; band_unavailable(evidence_level=unavailable): silent_frac_hi",
+   "reason": "band_not_finalized: band_not_final(final=0): silent_frac_calcium_band_lo; band_not_final(final=0): silent_frac_calcium_band_hi",
    "evidence_class": "working_point_precondition",
    "discriminative": true,
    "baseline_value": 0.0,
@@ -735,7 +770,7 @@
    "ci_lo": 0.10431367742472604,
    "ci_hi": 0.27588615117474774,
    "status": "unavailable",
-   "reason": "sample_size_gate_unmet: 零驱动臂 seed 数 1 < 3; 基准臂 seed 数 1 < 3; 零驱动臂总脉冲 19.0 < 300.0（相对不确定度 ≈22.9%）；点估计仅作描述性（点估计 R=0.169643（上限 0.1）；CI95(log)=[0.10431367742472604, 0.27588615117474774]；CI95(boot)=[0.09565057544757034, 0.26168780596350677]；零驱动脉冲 19.0；seed 数 零=1/基准=1；逐 seed 比值=[0.16964285714285715]）",
+   "reason": "sample_size_gate_unmet: 零驱动臂 seed 数 1 < 3; 基准臂 seed 数 1 < 3; 零驱动臂总脉冲 19.0 < 300.0（相对不确定度 ≈22.9%）；点估计仅作描述性（点估计 R=0.169643（上限 0.1）；CI95(log)=[0.10431367742472604, 0.27588615117474774]；CI95(boot)=[0.09481538711776187, 0.25743339797897313]；零驱动脉冲 19.0；seed 数 零=1/基准=1；逐 seed 比值=[0.16964285714285715]）",
    "evidence_class": "working_point_precondition",
    "discriminative": null,
    "baseline_value": null,
@@ -752,8 +787,8 @@
    "protocol_dt_ms": 0.05,
    "protocol_bin_ms": 100.0,
    "protocol_smooth_frames": 5,
-   "ci_lo_bootstrap": 0.09565057544757034,
-   "ci_hi_bootstrap": 0.26168780596350677,
+   "ci_lo_bootstrap": 0.09481538711776187,
+   "ci_hi_bootstrap": 0.25743339797897313,
    "per_seed_ratio": [
     0.16964285714285715
    ],
@@ -768,12 +803,12 @@
      0.10431367742472604,
      0.27588615117474774
     ],
-    "n_boot_effective": 8000,
+    "n_boot_effective": 2000,
     "ci95_bootstrap": [
-     0.09565057544757034,
-     0.26168780596350677
+     0.09481538711776187,
+     0.25743339797897313
     ],
-    "ci_upper_rel_diff": 0.0514645086416377,
+    "ci_upper_rel_diff": 0.06688539137322097,
     "ci_upper_conservative": 0.27588615117474774
    }
   },
@@ -1011,11 +1046,11 @@
    "unit": "",
    "band_lo": null,
    "band_hi": null,
-   "band_keys": "silent_frac_lo|silent_frac_hi",
+   "band_keys": "silent_frac_calcium_band_lo|silent_frac_calcium_band_hi",
    "ci_lo": null,
    "ci_hi": null,
    "status": "unavailable",
-   "reason": "band_not_finalized: band_unavailable(evidence_level=unavailable): silent_frac_lo; band_unavailable(evidence_level=unavailable): silent_frac_hi",
+   "reason": "band_not_finalized: band_not_final(final=0): silent_frac_calcium_band_lo; band_not_final(final=0): silent_frac_calcium_band_hi",
    "evidence_class": "working_point_precondition",
    "discriminative": null,
    "baseline_value": null,
@@ -1075,11 +1110,11 @@
    "unit": "",
    "band_lo": null,
    "band_hi": null,
-   "band_keys": "silent_frac_lo|silent_frac_hi",
+   "band_keys": "silent_frac_calcium_band_lo|silent_frac_calcium_band_hi",
    "ci_lo": null,
    "ci_hi": null,
    "status": "unavailable",
-   "reason": "band_not_finalized: band_unavailable(evidence_level=unavailable): silent_frac_lo; band_unavailable(evidence_level=unavailable): silent_frac_hi",
+   "reason": "band_not_finalized: band_not_final(final=0): silent_frac_calcium_band_lo; band_not_final(final=0): silent_frac_calcium_band_hi",
    "evidence_class": "working_point_precondition",
    "discriminative": true,
    "baseline_value": 0.0,
@@ -1111,7 +1146,7 @@
    "ci_lo": 0.1574421303850687,
    "ci_hi": 0.18786488874080476,
    "status": "unavailable",
-   "reason": "sample_size_gate_unmet: 零驱动臂 seed 数 1 < 3; 基准臂 seed 数 1 < 3；点估计仅作描述性（点估计 R=0.171982（上限 0.1）；CI95(log)=[0.1574421303850687, 0.18786488874080476]；CI95(boot)=[0.15690905340646188, 0.18691085901961219]；零驱动脉冲 577.0；seed 数 零=1/基准=1；逐 seed 比值=[0.17198211624441131]）",
+   "reason": "sample_size_gate_unmet: 零驱动臂 seed 数 1 < 3; 基准臂 seed 数 1 < 3；点估计仅作描述性（点估计 R=0.171982（上限 0.1）；CI95(log)=[0.1574421303850687, 0.18786488874080476]；CI95(boot)=[0.15695855231445704, 0.18608238806160238]；零驱动脉冲 577.0；seed 数 零=1/基准=1；逐 seed 比值=[0.17198211624441131]）",
    "evidence_class": "working_point_precondition",
    "discriminative": null,
    "baseline_value": null,
@@ -1128,8 +1163,8 @@
    "protocol_dt_ms": 0.05,
    "protocol_bin_ms": 100.0,
    "protocol_smooth_frames": 5,
-   "ci_lo_bootstrap": 0.15690905340646188,
-   "ci_hi_bootstrap": 0.18691085901961219,
+   "ci_lo_bootstrap": 0.15695855231445704,
+   "ci_hi_bootstrap": 0.18608238806160238,
    "per_seed_ratio": [
     0.17198211624441131
    ],
@@ -1144,12 +1179,12 @@
      0.1574421303850687,
      0.18786488874080476
     ],
-    "n_boot_effective": 8000,
+    "n_boot_effective": 2000,
     "ci95_bootstrap": [
-     0.15690905340646188,
-     0.18691085901961219
+     0.15695855231445704,
+     0.18608238806160238
     ],
-    "ci_upper_rel_diff": 0.005078275816131017,
+    "ci_upper_rel_diff": 0.00948820554575091,
     "ci_upper_conservative": 0.18786488874080476
    }
   },
@@ -1387,11 +1422,11 @@
    "unit": "",
    "band_lo": null,
    "band_hi": null,
-   "band_keys": "silent_frac_lo|silent_frac_hi",
+   "band_keys": "silent_frac_calcium_band_lo|silent_frac_calcium_band_hi",
    "ci_lo": null,
    "ci_hi": null,
    "status": "unavailable",
-   "reason": "band_not_finalized: band_unavailable(evidence_level=unavailable): silent_frac_lo; band_unavailable(evidence_level=unavailable): silent_frac_hi",
+   "reason": "band_not_finalized: band_not_final(final=0): silent_frac_calcium_band_lo; band_not_final(final=0): silent_frac_calcium_band_hi",
    "evidence_class": "working_point_precondition",
    "discriminative": null,
    "baseline_value": null,
@@ -1451,11 +1486,11 @@
    "unit": "",
    "band_lo": null,
    "band_hi": null,
-   "band_keys": "silent_frac_lo|silent_frac_hi",
+   "band_keys": "silent_frac_calcium_band_lo|silent_frac_calcium_band_hi",
    "ci_lo": null,
    "ci_hi": null,
    "status": "unavailable",
-   "reason": "band_not_finalized: band_unavailable(evidence_level=unavailable): silent_frac_lo; band_unavailable(evidence_level=unavailable): silent_frac_hi",
+   "reason": "band_not_finalized: band_not_final(final=0): silent_frac_calcium_band_lo; band_not_final(final=0): silent_frac_calcium_band_hi",
    "evidence_class": "working_point_precondition",
    "discriminative": true,
    "baseline_value": 0.0,
@@ -1487,7 +1522,7 @@
    "ci_lo": 0.1615686232354158,
    "ci_hi": 0.1830667843521164,
    "status": "unavailable",
-   "reason": "sample_size_gate_unmet: 零驱动臂 seed 数 1 < 3; 基准臂 seed 数 1 < 3；点估计仅作描述性（点估计 R=0.171982（上限 0.1）；CI95(log)=[0.1615686232354158, 0.1830667843521164]；CI95(boot)=[0.16156886976853702, 0.18284263300327855]；零驱动脉冲 1154.0；seed 数 零=1/基准=1；逐 seed 比值=[0.17198211624441131]）",
+   "reason": "sample_size_gate_unmet: 零驱动臂 seed 数 1 < 3; 基准臂 seed 数 1 < 3；点估计仅作描述性（点估计 R=0.171982（上限 0.1）；CI95(log)=[0.1615686232354158, 0.1830667843521164]；CI95(boot)=[0.16135175180116276, 0.1823575431499782]；零驱动脉冲 1154.0；seed 数 零=1/基准=1；逐 seed 比值=[0.17198211624441131]）",
    "evidence_class": "working_point_precondition",
    "discriminative": null,
    "baseline_value": null,
@@ -1504,8 +1539,8 @@
    "protocol_dt_ms": 0.05,
    "protocol_bin_ms": 100.0,
    "protocol_smooth_frames": 5,
-   "ci_lo_bootstrap": 0.16156886976853702,
-   "ci_hi_bootstrap": 0.18284263300327855,
+   "ci_lo_bootstrap": 0.16135175180116276,
+   "ci_hi_bootstrap": 0.1823575431499782,
    "per_seed_ratio": [
     0.17198211624441131
    ],
@@ -1520,12 +1555,12 @@
      0.1615686232354158,
      0.1830667843521164
     ],
-    "n_boot_effective": 8000,
+    "n_boot_effective": 2000,
     "ci95_bootstrap": [
-     0.16156886976853702,
-     0.18284263300327855
+     0.16135175180116276,
+     0.1823575431499782
     ],
-    "ci_upper_rel_diff": 0.0012244239151910459,
+    "ci_upper_rel_diff": 0.003874221119075417,
     "ci_upper_conservative": 0.1830667843521164
    }
   },

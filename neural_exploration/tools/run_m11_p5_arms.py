@@ -56,6 +56,12 @@ DATA_DIR = os.path.join(PROJECT_ROOT, "neural_exploration", "data")
 DEFAULT_OUT_DIR = os.path.join(DATA_DIR, "m11_p5_runs")
 PY_ENGINE = os.path.join(PROJECT_ROOT, ".venv-m9", "bin", "python")   # 引擎侧（R34 §12.2，唯一有 torch）
 DT_MS = 0.05
+# **R93 第 43 条（复刻轴）**：`seed` 只驱动初态 ⇒ 必须显式声明三源。
+# 派生策略（未显式给 net_seed/event_seed 时）：
+#   net_seed   = seed            （网络拓扑/权重/偏置）
+#   event_seed = EVENT_SEED_BASE + seed   （外部事件表；BASE=11 ⇒ **seed=0 臂与既有产物逐位一致**）
+#   reset_seed = seed            （初态）
+EVENT_SEED_BASE = 11
 
 # ---- P5 基准网络（**我的引擎配置**；B3 的 L0–L3 杠杆通过参数暴露，不改代码）----
 NET_DEFAULTS = dict(indegree=20, gmax_scale=1.0, bias_scale=1.0, delay_bins=(40, 60, 80),
@@ -138,6 +144,25 @@ def make_events(n: int, T_table_steps: int, rate_hz: float, seed: int):
             rng.uniform(17.0, 23.0, n_ev).astype(np.float32))
 
 
+
+def effective_seeds(spec: dict) -> dict:
+    """**复刻轴三源解析**（R93 第 43 条）：显式优先，否则由 `seed` 派生；并给三元组供断言。
+
+    ⚠️ 历史缺陷（B3 实测 + 本次修复）：初版只有 `reset(seed=spec["seed"])` 吃调用方的 `seed`，
+    而 `net_seed`（默认 0）与 `event_seed`（默认 11）**全程常量** ⇒ 同一 (config,T,dose) 下
+    三个 seed 的 `pop_trace` 逐位相同（15/15 组）⇒ **复刻轴失效**（(c) 的 CI 由计数噪声撑出）。
+    """
+    seed = int(spec.get("seed", 0))
+    ns = spec.get("net_seed", None)
+    es = spec.get("event_seed", None)
+    net_seed = seed if ns is None else int(ns)
+    event_seed = (EVENT_SEED_BASE + seed) if es is None else int(es)
+    return dict(reset_seed=seed, net_seed=net_seed, event_seed=event_seed,
+                derived_net_seed=(ns is None), derived_event_seed=(es is None),
+                policy=("derive(net_seed=seed, event_seed=%d+seed)" % EVENT_SEED_BASE
+                        if (ns is None and es is None) else "explicit/partial"),
+                triple="net%d|ev%d|reset%d" % (net_seed, event_seed, seed))
+
 def run_one(spec: dict, out_dir: str) -> dict:
     """**单臂**：settle（丢弃）→ reset_counts → 测量窗（pop_trace + counts + E/I 积分）。"""
     n = int(spec["n_neuron"])
@@ -148,13 +173,15 @@ def run_one(spec: dict, out_dir: str) -> dict:
     T_table = n_settle + n_meas
     dose = float(spec.get("drive_mult", 1.0))
     rate0 = float(spec.get("drive_rate_hz", 8.0))
-    event_seed = int(spec.get("event_seed", 11))
+    _seeds = effective_seeds(spec)
+    event_seed = _seeds["event_seed"]
     device = str(spec.get("device", "mps"))
 
+    spec = dict(spec, net_seed=_seeds["net_seed"])      # ← 派生后的网络种子显式传下去
     eng, net, torch = build_engine(n, spec, device=device)
     st, ne, gg = make_events(n, T_table, rate0 * dose, event_seed)
     eng.set_external_events(st, ne, gg, n_steps=T_table)
-    eng.reset(seed=int(spec.get("seed", 0)))
+    eng.reset(seed=_seeds["reset_seed"])
     t0 = time.perf_counter()
     if n_settle > 0:
         eng.run(n_settle, delivery="step", record="counts")          # settle：丢弃
@@ -205,6 +232,7 @@ def run_one(spec: dict, out_dir: str) -> dict:
         numpy=_ver(np), torch=_ver(torch),
         ms_per_step_steady=float(res["ms_per_step"]),
         event_seed=event_seed, spikes_total=spk_total,
+        seeds=_seeds,                 # **复刻轴三元组（R93）**：net/event/reset 三源分别留痕
         sha256_of_trace=sha, n_steps_meas=n_meas, n_steps_settle=n_settle,
         delivery=delivery,
         engine_version=str(eng.version), n_ch=int(eng.n_ch),
@@ -216,7 +244,7 @@ def run_one(spec: dict, out_dir: str) -> dict:
                  delay_bins=list(spec.get("delay_bins") or NET_DEFAULTS["delay_bins"]),
                  gmax_scale=float(spec.get("gmax_scale", 1.0)),
                  bias_scale=float(spec.get("bias_scale", 1.0)),
-                 net_seed=int(spec.get("net_seed", 0)), n_edge=int(net["meta"]["n_edge"])),
+                 net_seed=int(_seeds["net_seed"]), n_edge=int(net["meta"]["n_edge"])),
     )
     jpath = os.path.join(out_dir, f"{run_id}.json")
     with open(jpath, "w") as f:
@@ -269,6 +297,67 @@ def run_arm_main(args) -> int:
     return 0
 
 
+def assert_plan_replication(plan: dict) -> dict:
+    """**复刻轴有效性预检**（R93）：不同 `seed` 必须给出不同的 (net_seed,event_seed,reset_seed)。
+
+    规则：按 `(config_id, T_ms, drive_mult, mechanism)` 分组；
+      ① 组内 `seed` 不同 ⇒ **三元组必须互不相同**（否则"复刻"退化为"重复"）；
+      ② `role="replica"` 臂 ⇒ 三元组必须与 `replica_of` 指向的臂**相同**（(h) 要的是同参数重复）。
+    失败 ⇒ `SystemExit(3)` 并打印三元组表。
+    """
+    by = {}
+    for a in plan["arms"]:
+        sp = dict(a)
+        for k in ("settle_ms", "drive_rate_hz", "device", "net_seed", "event_seed"):
+            if k not in sp and k in plan:
+                sp[k] = plan[k]
+        if sp.get("net_seed", None) is None:
+            sp.pop("net_seed", None)
+        if sp.get("event_seed", None) is None:
+            sp.pop("event_seed", None)
+        sp["seed"] = int(a.get("seed", 0))
+        e = effective_seeds(sp)
+        by.setdefault((a["config_id"], float(a["T_ms"]), float(a["drive_mult"]),
+                       a.get("mechanism", "none")), []).append((a, e))
+    fails, rows = [], []
+    for key, lst in sorted(by.items()):
+        # ⚠️ **关键：判据必须"非构造性"**。若只比 (net,event,reset) **三元组**，因 `reset_seed ≡ seed`
+        # 恒不同 ⇒ 该判据**永远通过**（构造性恒真，M10 D2/L23 同族失效）。本节点实测确认：
+        # 计划级恒定 net_seed=0/event_seed=11 的"坏计划"用三元组判**照样通过**。
+        # ⇒ 主判据改为 **(net_seed, event_seed) 对**在组内必须随 seed 变化（且与 seed 数一一对应）。
+        pairs, tris = {}, {}
+        seed_set = set()
+        for a, e in lst:
+            rows.append((key[0], key[1], key[2], a["seed"], e["triple"], a["role"]))
+            if a["role"] == "replica":
+                continue
+            seed_set.add(int(a["seed"]))
+            pairs.setdefault((e["net_seed"], e["event_seed"]), []).append(a["seed"])
+            tris.setdefault(e["triple"], []).append(a["seed"])
+        if len(seed_set) > 1:
+            n_pair = len(pairs)
+            n_seed = len(seed_set)
+            if n_pair < n_seed:
+                fails.append("**复刻轴失效** %s T=%s dose=%s: %d 个 seed 只对应 %d 组 (net_seed,event_seed)"
+                             " %r ⇒ '复刻'退化为'重复'（(c) 的 CI 由计数噪声撑出）"
+                             % (key[0], key[1], key[2], n_seed, n_pair,
+                                {k: v for k, v in pairs.items()}))
+            # 附带的构造性检查：reset_seed 必须 == 该臂声明的 seed（防止 reset 也被常量固定）
+            for a, e in lst:
+                if a["role"] != "replica" and e["reset_seed"] != int(a["seed"]):
+                    fails.append("%s 的 reset_seed(%s) != seed(%s)" % (a["run_id"],
+                                                                      e["reset_seed"], a["seed"]))
+    for r in rows:
+        print("  [复刻轴] %-8s T=%-8.0f dose=%-4s seed=%d  %-22s role=%s" % r)
+    if fails:
+        print("**复刻轴预检失败（不同 seed 实为同一次实现）**：")
+        for x in fails:
+            print("   -", x)
+        raise SystemExit(3)
+    print("复刻轴预检通过：%d 组 (config,T,dose) 内不同 seed 的三元组互不相同" % len(by))
+    return dict(n_groups=len(by), n_arms=len(plan["arms"]))
+
+
 def write_protocol(plan: dict, arms: list, out_dir: str, plan_id: str) -> str:
     proto = dict(
         protocol_id="m11_p5_%s" % plan_id,
@@ -308,6 +397,9 @@ def run_plan_main(args) -> int:
     env = dict(os.environ)
     env.update(PYTHONHASHSEED="0", OMP_NUM_THREADS="1", MKL_NUM_THREADS="1",
                PYTHONPATH=PROJECT_ROOT)
+    # ---- **复刻轴预检（R93；非可选）**：同一 (config,T,dose,mechanism) 下，
+    #      seed 不同的臂其三源三元组必须互不相同；replica 臂必须与其目标**三元组相同**。----
+    assert_plan_replication(plan)
     arms, n_fail = [], 0
     for spec in plan["arms"]:
         rid = str(spec["run_id"])
@@ -349,6 +441,31 @@ def run_plan_main(args) -> int:
         write_protocol(plan, arms, out_dir, plan_id)
     print("完成：%d 臂（失败 %d）｜out_dir=%s" % (len(arms), n_fail, out_dir), flush=True)
     return 0 if not n_fail else 1
+
+
+def replication_micro_test(args) -> int:
+    """**复刻轴有效性微测试（R93；非可选）**：N=1000 / T=100 ms / 同 dose / seed∈{0,1,2}
+    ⇒ 断言三臂 `sha256_of_trace` **互不相同**；相同 ⇒ 非零退出并打印三元组。"""
+    import tempfile
+    tmp = tempfile.mkdtemp(prefix="m11_repl_")
+    three, shas = [], []
+    for sd in (0, 1, 2):
+        sp = dict(run_id="repl_1000_T100ms_d1.0_s%d" % sd, n_neuron=1000, T_ms=100.0,
+                  settle_ms=0.0, drive_mult=1.0, drive_rate_hz=8.0, seed=sd, device="cpu",
+                  config_id="repl_test", role="dose", mechanism="none", delivery="chunk",
+                  indegree=20, gmax_scale=1.0, bias_scale=1.0, delay_bins=(40, 60, 80),
+                  subtypes=True, slow=True)
+        a = run_one(sp, tmp)
+        three.append(a["seeds"])
+        shas.append(a["sha256_of_trace"])
+        print("  [微测试] seed=%d 三元组 %s  sha256=%s" % (sd, a["seeds"]["triple"],
+                                                       a["sha256_of_trace"][:24]))
+    ok = len(set(shas)) == 3 and len({t["triple"] for t in three}) == 3
+    print("复刻轴微测试：三臂 sha256 互不相同 = %s（唯一数 %d/3）" % (ok, len(set(shas))))
+    if not ok:
+        print("**复刻轴微测试失败（复刻轴失效 ⇒ 计划不可用）**")
+        return 4
+    return 0
 
 
 def make_plan(args) -> int:
@@ -407,7 +524,8 @@ def main(argv=None) -> int:
     ap.add_argument("--dose", type=float, default=1.0)
     ap.add_argument("--drive-rate-hz", type=float, default=8.0, help="dose=1 时的事件率（Hz/神经元）")
     ap.add_argument("--seed", type=int, default=0)
-    ap.add_argument("--event-seed", type=int, default=11)
+    ap.add_argument("--event-seed", type=int, default=None,
+                    help="不显式给 ⇒ 由 seed 派生（=11+seed）；R93 复刻轴纪律")
     ap.add_argument("--config-id", default="p5")
     ap.add_argument("--role", default="dose",
                     choices=("zero_drive", "baseline", "dose", "replica"))
@@ -418,12 +536,17 @@ def main(argv=None) -> int:
     ap.add_argument("--indegree", type=int, default=NET_DEFAULTS["indegree"])
     ap.add_argument("--gmax-scale", type=float, default=1.0)
     ap.add_argument("--bias-scale", type=float, default=1.0)
-    ap.add_argument("--net-seed", type=int, default=0)
+    ap.add_argument("--net-seed", type=int, default=None,
+                    help="不显式给 ⇒ 由 seed 派生（=seed）；R93 复刻轴纪律")
     ap.add_argument("--delay-bins", default="40,60,80")
     ap.add_argument("--no-subtypes", action="store_true")
     ap.add_argument("--no-slow", action="store_true")
     ap.add_argument("--force", action="store_true", help="plan 模式：忽略已有 .done 重跑")
+    ap.add_argument("--self-test-replication", action="store_true",
+                    help="复刻轴微测试（R93）：N=1000/T=100ms/seed∈{0,1,2} ⇒ 三 sha256 必须互不相同")
     args = ap.parse_args(argv)
+    if args.self_test_replication:
+        return replication_micro_test(args)
     if args.make_plan:
         return make_plan(args)
     if args.plan:

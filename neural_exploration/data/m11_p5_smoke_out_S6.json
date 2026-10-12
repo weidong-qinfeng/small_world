@@ -8,22 +8,55 @@
  },
  "criterion_status": {
   "p5_a_rate_median": "fail",
-  "p5_b_silent_frac": "unavailable",
+  "p5_b_silent_frac": "fail",
   "p5_c_selfsustain": "unavailable",
   "p5_d_drive_elasticity": "unavailable",
   "p5_e_ei_balance": "unavailable",
   "p5_f_bounded": "pass",
   "p5_g_wallclock": "unavailable",
   "p5_h_determinism": "unavailable",
-  "p5_i_tradeoff": "unavailable",
+  "p5_i_tradeoff": "fail",
   "p5_g1_tension_quantified": "unavailable"
  },
  "state_counts": {
   "pass": 1,
-  "fail": 2,
+  "fail": 5,
   "invalid": 0,
-  "unavailable": 9
+  "unavailable": 6
  },
+ "criterion_row_status_histogram": {
+  "p5_a_rate_median": {
+   "fail": 1
+  },
+  "p5_b_silent_frac": {
+   "fail": 1
+  },
+  "p5_c_selfsustain": {
+   "unavailable": 1
+  },
+  "p5_d_drive_elasticity": {
+   "unavailable": 1
+  },
+  "p5_e_ei_balance": {
+   "unavailable": 1
+  },
+  "p5_f_bounded": {
+   "pass": 1
+  },
+  "p5_g_wallclock": {
+   "unavailable": 1
+  },
+  "p5_h_determinism": {
+   "unavailable": 1
+  },
+  "p5_i_tradeoff": {
+   "fail": 1
+  },
+  "p5_g1_tension_quantified": {
+   "unavailable": 1
+  }
+ },
+ "aggregation_rule": "判据级状态 = 该判据**所有行**的最坏优先聚合（invalid > fail > pass > unavailable）；门条件读判据级状态 ⇒ 行状态与门条件可以不同（见 verdict_G1 处的规则声明）",
  "hard_failures": [],
  "estimator_gate_unmet": [],
  "non_discriminative_criteria": [
@@ -54,7 +87,7 @@
     "p5_b_silent_frac": {
      "T=120000ms": {
       "value": 0.124,
-      "status": "unavailable"
+      "status": "fail"
      }
     },
     "p5_c_selfsustain": {
@@ -72,12 +105,13 @@
     "p5_i_tradeoff": {
      "T=120000ms": {
       "value": null,
-      "status": "unavailable"
+      "status": "fail"
      }
     }
    },
    "drift": {},
-   "truncation_suspicion": [],
+   "prefix_identity_observed": [],
+   "prefix_identity_note": "短档轨迹是长档轨迹的逐位前缀：在**确定性同 seed/同事件表**的独立重跑下这是**预期**现象（不是截断证据）；截断只在`trajectory_len_mismatch`（长度≠round(T_ms/dt_ms)）时才可证",
    "status": "unavailable",
    "reason": "硬门④：需至少 [1.0, 2.0, 4.0]×T_min=[120000.0, 240000.0, 480000.0] 三档同一配置的臂；实有 T=[120000.0] ⇒ 时长依赖性**未测**（判据不得就此定稿）"
   }
@@ -90,7 +124,7 @@
  },
  "exit_code": 3,
  "generated_by": "tools/validate_p11_resting.py",
- "generated_at": "2026-10-11T22:34:39",
+ "generated_at": "2026-10-13T05:14:07",
  "role": "M11 P5/G1 离线评估（只做分析，不做仿真；不写判据带）",
  "protocol_path": "/Users/weidong/ai/small_world/_cli_protocol.json",
  "protocol": {
@@ -209,6 +243,7 @@
   ],
   "note": "(d) 降为 sanity（M10 基线臂 +579.6% 即过 ⇒ 无判别性）"
  },
+ "seed_effectiveness_check": "not_run",
  "rows": [
   {
    "config_id": "CLI_M0",
@@ -250,13 +285,13 @@
    "estimator": "per_neuron(zero_count)",
    "value": 0.124,
    "unit": "",
-   "band_lo": null,
-   "band_hi": null,
-   "band_keys": "silent_frac_lo|silent_frac_hi",
+   "band_lo": 0.48,
+   "band_hi": 0.49,
+   "band_keys": "silent_frac_calcium_band_lo|silent_frac_calcium_band_hi",
    "ci_lo": null,
    "ci_hi": null,
-   "status": "unavailable",
-   "reason": "band_not_finalized: band_unavailable(evidence_level=unavailable): silent_frac_lo; band_unavailable(evidence_level=unavailable): silent_frac_hi",
+   "status": "fail",
+   "reason": "band=[0.48,0.49] 口径=zero_count(主)/<0.5 Hz(M10 兼容)",
    "evidence_class": "working_point_precondition",
    "discriminative": true,
    "baseline_value": 0.124,
@@ -314,13 +349,13 @@
    "estimator": "population_trace(silent_bin)",
    "value": 0.0,
    "unit": "",
-   "band_lo": null,
-   "band_hi": null,
-   "band_keys": "silent_frac_lo|silent_frac_hi",
+   "band_lo": 0.48,
+   "band_hi": 0.49,
+   "band_keys": "silent_frac_calcium_band_lo|silent_frac_calcium_band_hi",
    "ci_lo": null,
    "ci_hi": null,
-   "status": "unavailable",
-   "reason": "band_not_finalized: band_unavailable(evidence_level=unavailable): silent_frac_lo; band_unavailable(evidence_level=unavailable): silent_frac_hi",
+   "status": "fail",
+   "reason": "band=[0.48,0.49] 口径=零脉冲箱比例（群体轨迹）",
    "evidence_class": "working_point_precondition",
    "discriminative": true,
    "baseline_value": 0.0,
@@ -547,8 +582,8 @@
    "band_keys": "calibration_tradeoff_requires_a_and_b|tension_detect_required",
    "ci_lo": null,
    "ci_hi": null,
-   "status": "unavailable",
-   "reason": "(a)=fail、(b)=unavailable；带未定稿或量缺失 ⇒ 标定权衡不可判（不得静默放宽，清单 §4.5(i)）",
+   "status": "fail",
+   "reason": "(a)=fail、(b)=fail ⇒ **标定权衡**：登记为 P6 的输入约束（不得静默放宽带）",
    "evidence_class": "precondition_conjunction",
    "discriminative": null,
    "baseline_value": null,
@@ -557,7 +592,7 @@
    "n_seeds": null,
    "zero_drive_spikes": null,
    "n_neuron": 250,
-   "note": "子判据状态：(a)=fail、(b)=unavailable",
+   "note": "子判据状态：(a)=fail、(b)=fail",
    "protocol_id": "cli_single_arm",
    "protocol_T_ms": 120000.0,
    "protocol_settle_ms": 500.0,

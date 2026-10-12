@@ -24,7 +24,42 @@
   "invalid": 0,
   "unavailable": 11
  },
+ "criterion_row_status_histogram": {
+  "p5_a_rate_median": {
+   "unavailable": 1
+  },
+  "p5_b_silent_frac": {
+   "unavailable": 1
+  },
+  "p5_c_selfsustain": {
+   "fail": 1
+  },
+  "p5_d_drive_elasticity": {
+   "unavailable": 1
+  },
+  "p5_e_ei_balance": {
+   "unavailable": 1
+  },
+  "p5_f_bounded": {
+   "unavailable": 1
+  },
+  "p5_g_wallclock": {
+   "unavailable": 1
+  },
+  "p5_h_determinism": {
+   "unavailable": 1
+  },
+  "p5_i_tradeoff": {
+   "unavailable": 1
+  },
+  "p5_g1_tension_quantified": {
+   "unavailable": 1
+  }
+ },
+ "aggregation_rule": "判据级状态 = 该判据**所有行**的最坏优先聚合（invalid > fail > pass > unavailable）；门条件读判据级状态 ⇒ 行状态与门条件可以不同（见 verdict_G1 处的规则声明）",
  "hard_failures": [],
+ "guard_failures": [],
+ "discipline_45_rule": "「通过」必须能回答「它本来可能失败吗」：若某判据在该配置下**不可能失败**（例：(h) 的复刻臂与源臂共享 (net_seed,event_seed,reset_seed) 三元组），其 pass **不构成证据** ⇒ 判 invalid（insufficient 语义）。",
  "estimator_gate_unmet": [
   "gate1_zero_seed0: 仅有 1 个独立估计器（agg_spk_total）⇒ 硬门③不可校验",
   "gate1_zero_seed1: 仅有 1 个独立估计器（agg_spk_total）⇒ 硬门③不可校验",
@@ -84,7 +119,8 @@
     }
    },
    "drift": {},
-   "truncation_suspicion": [],
+   "prefix_identity_observed": [],
+   "prefix_identity_note": "短档轨迹是长档轨迹的逐位前缀：在**确定性同 seed/同事件表**的独立重跑下这是**预期**现象（不是截断证据）；截断只在`trajectory_len_mismatch`（长度≠round(T_ms/dt_ms)）时才可证",
    "status": "unavailable",
    "reason": "硬门④：需至少 [1.0, 2.0, 4.0]×T_min=[10000.0, 20000.0, 40000.0] 三档同一配置的臂；实有 T=[10000.0] ⇒ 时长依赖性**未测**（判据不得就此定稿）"
   }
@@ -97,7 +133,7 @@
  },
  "exit_code": 1,
  "generated_by": "tools/validate_p11_resting.py",
- "generated_at": "2026-10-11T22:34:38",
+ "generated_at": "2026-10-13T06:20:19",
  "role": "M11 P5/G1 离线评估（只做分析，不做仿真；不写判据带）",
  "protocol_path": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_smoke_protocol_S2.json",
  "protocol": {
@@ -320,6 +356,7 @@
   ],
   "note": "(d) 降为 sanity（M10 基线臂 +579.6% 即过 ⇒ 无判别性）"
  },
+ "seed_effectiveness_check": "insufficient_data（无完整轨迹/计数数组 ⇒ 无法判定 seed 是否生效）",
  "rows": [
   {
    "config_id": "M10_gate1_T10s",
@@ -363,11 +400,11 @@
    "unit": "",
    "band_lo": null,
    "band_hi": null,
-   "band_keys": "silent_frac_lo|silent_frac_hi",
+   "band_keys": "silent_frac_calcium_band_lo|silent_frac_calcium_band_hi",
    "ci_lo": null,
    "ci_hi": null,
    "status": "unavailable",
-   "reason": "band_not_finalized: band_unavailable(evidence_level=unavailable): silent_frac_lo; band_unavailable(evidence_level=unavailable): silent_frac_hi",
+   "reason": "band_not_finalized: band_not_final(final=0): silent_frac_calcium_band_lo; band_not_final(final=0): silent_frac_calcium_band_hi",
    "evidence_class": "working_point_precondition",
    "discriminative": null,
    "baseline_value": null,
@@ -427,11 +464,11 @@
    "unit": "",
    "band_lo": null,
    "band_hi": null,
-   "band_keys": "silent_frac_lo|silent_frac_hi",
+   "band_keys": "silent_frac_calcium_band_lo|silent_frac_calcium_band_hi",
    "ci_lo": null,
    "ci_hi": null,
    "status": "unavailable",
-   "reason": "band_not_finalized: band_unavailable(evidence_level=unavailable): silent_frac_lo; band_unavailable(evidence_level=unavailable): silent_frac_hi",
+   "reason": "band_not_finalized: band_not_final(final=0): silent_frac_calcium_band_lo; band_not_final(final=0): silent_frac_calcium_band_hi",
    "evidence_class": "working_point_precondition",
    "discriminative": null,
    "baseline_value": null,
@@ -463,7 +500,7 @@
    "ci_lo": 0.09452079493069346,
    "ci_hi": 0.10907715259015112,
    "status": "fail",
-   "reason": "点估计 R=0.101538（上限 0.1）；CI95(log)=[0.09452079493069346, 0.10907715259015112]；CI95(boot)=[0.09361217325944667, 0.1096459274645611]；零驱动脉冲 825.0；seed 数 零=3/基准=3；逐 seed 比值=[0.0987078248384781, 0.10560675883256529, 0.10054844606946983]；判定未过（点估计≤上限=False、CI 上界≤0.12=True）统计未分辨（点估计未过，但 CI 上界未跨越 ×1.2 带）",
+   "reason": "点估计 R=0.101538（上限 0.1）；CI95(log)=[0.09452079493069346, 0.10907715259015112]；CI95(boot)=[0.09356155792187638, 0.10951121518833433]；零驱动脉冲 825.0；seed 数 零=3/基准=3；逐 seed 比值=[0.0987078248384781, 0.10560675883256529, 0.10054844606946983]；判定未过（点估计≤上限=False、CI 上界≤0.12=True）统计未分辨（点估计未过，但 CI 上界未跨越 ×1.2 带）",
    "evidence_class": "working_point_precondition",
    "discriminative": null,
    "baseline_value": null,
@@ -480,8 +517,8 @@
    "protocol_dt_ms": 0.05,
    "protocol_bin_ms": 100.0,
    "protocol_smooth_frames": 5.0,
-   "ci_lo_bootstrap": 0.09361217325944667,
-   "ci_hi_bootstrap": 0.1096459274645611,
+   "ci_lo_bootstrap": 0.09356155792187638,
+   "ci_hi_bootstrap": 0.10951121518833433,
    "per_seed_ratio": [
     0.0987078248384781,
     0.10560675883256529,
@@ -498,13 +535,13 @@
      0.09452079493069346,
      0.10907715259015112
     ],
-    "n_boot_effective": 8000,
+    "n_boot_effective": 2000,
     "ci95_bootstrap": [
-     0.09361217325944667,
-     0.1096459274645611
+     0.09356155792187638,
+     0.10951121518833433
     ],
-    "ci_upper_rel_diff": 0.005214427227919215,
-    "ci_upper_conservative": 0.1096459274645611
+    "ci_upper_rel_diff": 0.0039794089584843356,
+    "ci_upper_conservative": 0.10951121518833433
    }
   },
   {

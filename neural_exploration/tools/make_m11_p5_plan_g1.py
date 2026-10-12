@@ -94,6 +94,22 @@ def build_plan() -> dict:
             arms.append(a)
     ids = [a["run_id"] for a in arms]
     assert len(ids) == len(set(ids)), "run_id 必须唯一"
+    # ---- **复刻轴断言（R93；非可选）**：同 (config,T,dose) 下不同 seed ⇒ 三源三元组必须互不相同 ----
+    by = {}
+    for a in arms:
+        if a["role"] == "replica":
+            continue
+        tri = "net%d|ev%d|reset%d" % (a["seed"], 11 + a["seed"], a["seed"])
+        by.setdefault((a["config_id"], a["T_ms"], a["drive_mult"], a["mechanism"]), {}) \
+            .setdefault(tri, []).append(a["seed"])
+    # 正确判据：**同一个三元组下不得出现两个不同 seed**（不是"三元组数量 > 1"）
+    bad = {k: {t: s for t, s in v.items() if len(set(s)) > 1} for k, v in by.items()}
+    bad = {k: v for k, v in bad.items() if v}
+    if bad:
+        print("**复刻轴断言失败（不同 seed 共享三元组）**：%r" % bad)
+        raise SystemExit(3)
+    print("复刻轴断言通过：%d 组 (config,T,dose) 内 seed→三元组 一一对应；"
+          "共 %d 个不同三元组" % (len(by), len({t for v in by.values() for t in v})))
     plan = dict(
         plan_id="g1_star_n8192", structure="★（P1+P2+B4+C+D，R45/R63/R74/R78）",
         units={"T_ms": "millisecond", "settle_ms": "millisecond", "dt_ms": "millisecond",
@@ -102,7 +118,12 @@ def build_plan() -> dict:
                "note": "R80 §⑥：跨接口传递的量必须在接口定义处写明单位；接收方写产物前必须做量纲自检"},
         n_neuron=N, settle_ms=SETTLE_MS, dt_ms=0.05, drive_rate_hz=DRIVE_RATE_HZ,
         device="mps", bin_ms=100.0, smooth_frames=5, estimator="per_neuron",
-        indegree=20, gmax_scale=1.0, bias_scale=1.0, net_seed=0, delay_bins=[40, 60, 80],
+        indegree=20, gmax_scale=1.0, bias_scale=1.0, delay_bins=[40, 60, 80],
+        # ⚠️ **不再设计划级 net_seed**（R93）：否则它会恒定注入、使 seed 无法驱动网络。
+        seed_policy={"net_seed": "derive(=seed)", "event_seed": "derive(=11+seed)",
+                     "reset_seed": "=seed",
+                     "rationale": "R93 第 43 条：复刻轴三源必须分别声明；seed=0 时派生值 "
+                                  "(net0/ev11/reset0) 与历史常量一致 ⇒ seed=0 产物逐位不变"},
         subtypes=True, slow=True,
         production_delivery=DELIVERY, criterion_delivery="step",
         launch_prefix="caffeinate -i",

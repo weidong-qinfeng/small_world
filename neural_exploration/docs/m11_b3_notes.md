@@ -513,3 +513,48 @@ JSON 另含 13 行把同一件事标得更严：`silent_frac_calcium_zero_count_
 > **勘误（同会话内自纠）**：本节初稿曾把 16 位前缀**人为补全**成一个完整 sha256（凭印象，违反「不得凭印象」纪律）⇒ 已用现场真值替换。**纪律（教训 24）**：哈希只能现场重算后整值誊写，**绝不可**由前缀补全。
 > 冻结前值 = `7b3ed467aaea56cc2f8d2760285fa8a600efdd761baadf8082ff30784504757a`（89,482 B / 1,495 行，= HEAD `119477d` 的版本）。
 24. **哈希不得由前缀补全**：本次我登记「最终 sha256」时把 16 位前缀补成了 64 位（凭印象）⇒ 发现后立即用现场 sha256sum 替换并自纠。哈希是取证物，只能整值现场重算（与「不得凭印象写文献值」同级）。
+
+## L29 — (h) 确定性守卫（纪律第四十五条：「通过」必须能回答「它本来可能失败吗」）
+
+### L29.1 问题
+R93 给 (c) 加了 `_effective_seed_check()`，但 **(h) `p5_h_determinism` 仍是 `pass` —— 且是平凡通过**：
+复刻臂与其源臂的 **(net_seed, event_seed, reset_seed) = (0, 11, 0) 完全相同** ⇒ 在确定性引擎下**必然**同轨迹
+⇒ 该判据在此配置下**不可能失败** ⇒ `pass` **不构成证据**。与 R93 同源、同型遗漏。
+
+**先例对照（要点）**：R78 的孪生臂"逐位相同"**有效**，是因为 **step/chunk 两个口径都可能不同**；
+而 (h) 的"逐位相同"是**必然发生**的 ⇒ **无效**。
+
+### L29.2 实现（最小侵入）
+- `Arm` 增加 `net_seed / event_seed / reset_seed / delivery / sha256_of_trace / net_meta`（`net_seed` 优先取臂顶层，其次取臂内 `net.net_seed`——生产者把它落在 `net`）。
+- `_eval_engineering` 的 (h) 分支新增**守卫**：对每个 `replica_of` 配对计算三元组；**三元组相同**或**无法判定（字段缺失 ⇒ 不能证明二者不同）** ⇒
+  该行判 **`invalid`**（`insufficient` 语义）并写入 `self.guard_failures`；detail 里逐条记录两侧三元组、`triple_complete`、`sha256_of_trace`、`delivery`。
+- `_verdict` 的 invalid 条件加入 `guard_failures` ⇒ **非零退出（exit 2）**；输出新增 `guard_failures` 与
+  **`discipline_45_rule`**（与 `aggregation_rule` / `criterion_row_status_histogram` 同处声明）。
+- **未改动**其余已冻结判据逻辑（样本量门 / CI / 双估计器 / 时长阶梯 / 张力 / 带纪律）。
+
+### L29.3 反例自证（R84 第 37 条：未证伪过的断言不构成证据）——**三连**
+| 夹具 | 三元组 | 数值 | 期望 | **实测** |
+|---|---|---|---|---|
+| **S7（反例/负对照）** | 相同 `(net_seed=0,event_seed=11,seed=0)` | 相同 | (h) 不得判 pass | **`invalid`**、`guard_failures` 1 条、**exit=2** ✅ |
+| **S7b（正对照1）** | **不同**（复刻臂 `net_seed=1`） | 相同 | 守卫**不**命中 ⇒ 可判 pass | **`pass`**、guards=0 ✅（证明守卫**有判别力**，不是一刀切禁止） |
+| **S7c（正对照2）** | 不同（`net_seed=2`） | **不同** | (h) 应判 fail | **`fail`**（"同参数重跑脉冲数不一致：7716 vs 6710"）✅（证明该判据**能**失败） |
+夹具：`data/m11_p5_smoke_protocol_S7{,b,c}.json`（+ 输出 `m11_p5_smoke_out_S7{,b,c}.*`）。S7c 同时复现了硬门③（×1.15 双估计器 ⇒ hard_fail）。
+
+### L29.4 修正后 v4 系列的 (h) 状态（**输出到新文件 v5，未覆盖 `g1_v4.*`**）
+`m11_p5_resting_eval_g1_v5.{csv,json}`：
+- **`(h) = invalid`**（全部 11 个评估单元；`guard_failures` 11 条：`d_8192_*_rep1 vs c_8192_*` 三元组相同）
+- `(c) = invalid`（R93 守卫）｜`(b) = unavailable`（R93 §③ 的带裁定已生效）｜`张力 = unavailable`（(b) 不可判 ⇒ 随之）
+- `gate = {c: invalid, e: pass, tension: unavailable}` ⇒ **verdict = `invalid`、exit=2**（未通过，但措辞为"口径缺陷"而非反证）
+- `hard_failures = []`（阶梯已恢复 pass）；**回归 S1–S5 与修复前一致**（无 replica 的用例 (h)=`unavailable`、guards=0）⇒ 守卫无副作用。
+
+### L29.5 哈希（现场重算；纪律：不得由前缀补全）
+| 时点 | sha256 | 大小 |
+|---|---|---|
+| 本次修改前（= R93 后） | `5eb76edf58e3c0ec65b3369e426e1c326479ce9205ebd30ce666478eb28581de` | 95,375 B / 1,570 行 |
+| **本次修改后** | `f99d5c6cc71beddd3ec7a74d988ceb2d8863a017399feb0a7e4ff5e94c2cf7ae` | 99,312 B / 1,615 行 |
+
+### L29.6 教训
+25. **"必然发生"的现象不能当证据**：与"可复现 ≠ 正确"（L34/M10）并列——**"必然复现"更不是证据**。
+   判据设计时应对每条断言追问：**在这个配置下，它本来可能失败吗？** 不能 ⇒ 该判据只能标 `invalid/insufficient`。
+26. **同型遗漏要成对扫描**：我为 (c) 加了复刻轴守卫后，(h) **同源同型**却被漏掉 ⇒
+   以后加一条"不可能失败"类守卫时，**必须把同一根因的所有判据一并扫一遍**（(c)/(h)/孪生臂/determinism 家族）。
