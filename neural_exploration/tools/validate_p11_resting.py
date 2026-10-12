@@ -709,7 +709,7 @@ class Evaluator:
                 svals = [self.arm_metrics[a.arm_id].get("silent_bin_frac") for a in base_arms]
                 svals = [v for v in svals if v is not None]
                 sstat, sunit = (float(np.median(svals)) if svals else None), ""
-            slo, shi, sbstat, sbreasons = self.tt.band("silent_frac_lo", "silent_frac_hi")
+            slo, shi, sbstat, sbreasons = self.tt.band("silent_frac_calcium_band_lo", "silent_frac_calcium_band_hi")
             sbl = self._baseline_arm_value(cfg, T_ms, CRIT["b"], s_est)
             st2, rs2 = self._judge(sstat, slo, shi, sbstat, sbreasons, arm_present=bool(base_arms),
                                   extra=(f"口径={self.tt.raw('silent_def_primary')}(主)/<{self.silent_thr_hz} Hz(M10 兼容)"
@@ -717,7 +717,7 @@ class Evaluator:
             self._emit(config_id=cfg, T_ms=T_ms, mechanism=mech, criterion=CRIT["b"],
                        estimator=("per_neuron(zero_count)" if est == "per_neuron" else "population_trace(silent_bin)"),
                        value=sstat, unit=sunit, status=st2, reason=rs2, band_lo=slo, band_hi=shi,
-                       band_keys="silent_frac_lo|silent_frac_hi", is_primary=primary,
+                       band_keys="silent_frac_calcium_band_lo|silent_frac_calcium_band_hi", is_primary=primary,
                        discriminative=(None if not sbl["available"] else (not _meets(sbl["value"], slo, shi))),
                        baseline_value=sbl.get("value"), baseline_meets=(None if not sbl["available"] else _meets(sbl["value"], slo, shi)),
                        n_seeds=len({a.seed for a in base_arms if a.seed is not None}) or None,
@@ -1092,7 +1092,7 @@ class Evaluator:
                                                        f"现 {len(pts)} 点（另需逐神经元 counts 才有中位率/静默）"}
                         continue
                     lo_a, hi_a, sa_, _ = self.tt.band("rate_median_hz_lo", "rate_median_hz_hi")
-                    lo_b, hi_b, sb_, _ = self.tt.band("silent_frac_lo", "silent_frac_hi")
+                    lo_b, hi_b, sb_, _ = self.tt.band("silent_frac_calcium_band_lo", "silent_frac_calcium_band_hi")
                     n_both = sum(1 for p in pts if (lo_a is not None and lo_a <= p["rate_median_hz"] <= hi_a)
                                  and (lo_b is not None and lo_b <= p["silent_frac"] <= hi_b))
                     rho = _spearman([p["drive_mult"] for p in pts], [p["rate_median_hz"] for p in pts])
