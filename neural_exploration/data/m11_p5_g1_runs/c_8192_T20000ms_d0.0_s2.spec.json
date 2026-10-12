@@ -1,0 +1,26 @@
+{
+ "run_id": "c_8192_T20000ms_d0.0_s2",
+ "stage": "c",
+ "config_id": "p5_C",
+ "T_ms": 20000.0,
+ "drive_mult": 0.0,
+ "seed": 2,
+ "role": "zero_drive",
+ "mechanism": "none",
+ "delivery": "chunk",
+ "settle_ms": 500.0,
+ "drive_rate_hz": 8.0,
+ "device": "mps",
+ "indegree": 20,
+ "gmax_scale": 1.0,
+ "bias_scale": 1.0,
+ "net_seed": 0,
+ "delay_bins": [
+  40,
+  60,
+  80
+ ],
+ "subtypes": true,
+ "slow": true,
+ "n_neuron": 8192
+}
