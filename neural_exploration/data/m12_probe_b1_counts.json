@@ -1,10 +1,10 @@
 {
  "generated_by": "tools/build_m12_inventory.py",
- "generated_at": "2026-10-12T03:03:21Z",
+ "generated_at": "2026-10-12T08:45:32Z",
  "units": "bytes; 台账口径=real_bytes(st_blocks*512)；计数与四态均来自本轮实测",
  "assertions": {
-  "n": 16,
-  "n_passed": 16,
+  "n": 21,
+  "n_passed": 21,
   "n_failed": 0,
   "items": [
    {
@@ -83,6 +83,31 @@
     "passed": true
    },
    {
+    "id": "A17",
+    "assertion": "S5FULL trials.pqt 完整性门三级齐（size==Content-Length ∧ 多段 ETag 复算 ∧ parquet 解析）",
+    "passed": true
+   },
+   {
+    "id": "A18",
+    "assertion": "S5FULL 语义锚：Σ(逐 session 试次数) == 表行数 且 session 数 > 40（解白名单缺口）",
+    "passed": true
+   },
+   {
+    "id": "A19",
+    "assertion": "§2.5 可达性表：唯一 source_id >= 40 且有 >= 40 个 REACHABLE 行",
+    "passed": true
+   },
+   {
+    "id": "A20",
+    "assertion": "可达性表每行必填字段（utc/provenance/source_url/retrieved_at/evidence_level/sha_basis/wrong_usage_consequence/missing_dimension）**无空值**",
+    "passed": true
+   },
+   {
+    "id": "A21",
+    "assertion": "判据表每行 provenance/evidence_level/source_url/retrieved_at/wrong_usage_consequence 无空值",
+    "passed": true
+   },
+   {
     "id": "A16",
     "assertion": "吞吐 CSV 每行都带 utc 且 bytes_per_s 与 bytes/seconds 自洽（<=1% 相对差）",
     "passed": true
@@ -90,31 +115,31 @@
   ]
  },
  "five_metadata": {
-  "n_assertions": "16（其中通过 16 / 失败 0；逐条见 assertions.items）",
-  "n_inventory_rows": 70,
-  "n_artifacts_distinct": 70,
+  "n_assertions": "21（其中通过 21 / 失败 0；逐条见 assertions.items）",
+  "n_inventory_rows": 77,
+  "n_artifacts_distinct": 77,
   "n_source_rows_probed": 43,
-  "n_integrity_rows": 43,
-  "n_throughput_rows": 52,
-  "n_reference_rows": 34,
-  "n_notes_lines": 420,
-  "n_notes_sections": 18,
-  "total_bytes_real": 9846784,
-  "total_bytes_apparent": 9538069,
-  "total_MB_real": 9.847,
-  "total_MB_apparent": 9.538,
-  "apparent_vs_real_ratio": "0.968648",
+  "n_integrity_rows": 45,
+  "n_throughput_rows": 56,
+  "n_reference_rows": 43,
+  "n_notes_lines": 593,
+  "n_notes_sections": 26,
+  "total_bytes_real": 34025472,
+  "total_bytes_apparent": 33850648,
+  "total_MB_real": 34.025,
+  "total_MB_apparent": 33.851,
+  "apparent_vs_real_ratio": "0.994862",
   "n_sparse_apparent_gt_real": 0,
-  "n_block_rounding_real_gt_apparent": 69,
+  "n_block_rounding_real_gt_apparent": 76,
   "note": "**表观 vs 真实**：ratio>1 ⇒ 稀疏/草稿虚增（M11-R63）；ratio<1 ⇒ 块取整开销（小文件多，属正常）。两者都必须登记，不得只报一个方向"
  },
  "inventory_recursion": {
   "rule": "**只用 os.walk**；`os.listdir + isfile` 会静默跳过子目录（M11 实测漏账 111 MB）",
-  "n_dirs_walked": 7,
+  "n_dirs_walked": 8,
   "per_tree": {
    "neural_exploration/data/m12_raw": {
     "n_files": 0,
-    "n_subdirs": 5,
+    "n_subdirs": 6,
     "apparent_bytes": 0,
     "real_bytes": 0
    },
@@ -125,10 +150,10 @@
     "real_bytes": 106496
    },
    "neural_exploration/data/m12_raw/probe": {
-    "n_files": 8,
+    "n_files": 11,
     "n_subdirs": 1,
-    "apparent_bytes": 49746,
-    "real_bytes": 73728
+    "apparent_bytes": 72119,
+    "real_bytes": 110592
    },
    "neural_exploration/data/m12_raw/probe/run1": {
     "n_files": 5,
@@ -140,13 +165,19 @@
     "n_files": 6,
     "n_subdirs": 0,
     "apparent_bytes": 7362408,
-    "real_bytes": 7540736
+    "real_bytes": 7376896
    },
    "neural_exploration/data/m12_raw/s5": {
     "n_files": 40,
     "n_subdirs": 0,
     "apparent_bytes": 1797898,
     "real_bytes": 1888256
+   },
+   "neural_exploration/data/m12_raw/s5_aggregate": {
+    "n_files": 1,
+    "n_subdirs": 0,
+    "apparent_bytes": 24212510,
+    "real_bytes": 24215552
    },
    "neural_exploration/data/m12_raw/s7": {
     "n_files": 2,
@@ -155,432 +186,41 @@
     "real_bytes": 36864
    }
   },
-  "landed_data_bytes_real": 9723904,
-  "landed_data_bytes_apparent": 9424466
+  "landed_data_bytes_real": 9596928,
+  "landed_data_bytes_apparent": 9446839
  },
- "s2": {
-  "source": "S2",
-  "verdict": "REACHABLE",
-  "probe_1mib_Bps": 0.0,
-  "probe_main_Bps": 0.0,
-  "probe_note": "**0 字节**：TTFB=30.0 s >= 探针窗 30s => **探针窗短于服务端生成时延**；`B/s=0` **不是**链路吞吐（**不得据此判 TOO_SLOW**）；转'整件取数即测量'路径",
-  "t1_total_rows": 13709,
-  "graph_counts": {
-   "1": 1327,
-   "2": 40,
-   "17": 2692
-  },
-  "bytes_per_row": 534.54,
-  "est_total_bytes": 7328008,
-  "eta_est_s": null,
-  "eta_actual_s": 35.265386,
-  "full_url": "https://api.brain-map.org/api/v2/data/query.json?criteria=model::Structure,rma::options[num_rows$eqall]",
-  "integrity": {
-   "verdict": "COMPLETE",
-   "size": 7238867,
-   "sha256": "230a1b936202f657534e90c14e4496c70db608baf52dfe073b3bc69757d3ea67",
-   "etag_ok": true,
-   "part_size": null,
-   "reasons": [
-    "服务端未给 Content-Length（chunked）⇒ 门 ① 不适用，改以语义锚 + 两次独立取数 sha256 一致性替代",
-    "单段 ETag = 全对象 md5",
-    "msg 行数=13709；必需字段齐（id/acronym/name/parent_structure_id/depth/graph_id/structure_id_path）",
-    "行数自洽：parsed=13709 == expected=13709"
-   ],
-   "rows_parsed": 13709,
-   "repeat_sha256_match": "NOT_NEEDED(服务端 ETag=全对象 md5 复算通过 => 逐字节等同服务器对象)"
-  },
-  "missing_dimension": ""
- },
- "s7": {
-  "source": "S7",
-  "items": [
-   {
-    "name": "sessions.csv",
-    "url": "https://allen-brain-observatory.s3.amazonaws.com/visual-coding-neuropixels/ecephys-cache/sessions.csv",
-    "verdict": "REACHABLE",
-    "bytes": 7849,
-    "sha256": "cdd12b8becac84d284f222718a2a94f4155893fb9f26f1a9c725f541acc738f8",
-    "m11_sha256_match": true,
-    "rows": 58,
-    "etag_ok": true,
-    "probe_main_Bps": 608381.5381044936,
-    "probe_1mib_Bps": 12418.969742902484
-   },
-   {
-    "name": "probes.csv",
-    "url": "https://allen-brain-observatory.s3.amazonaws.com/visual-coding-neuropixels/ecephys-cache/probes.csv",
-    "verdict": "REACHABLE",
-    "bytes": 26954,
-    "sha256": "f555ce63317d5b6a83bfafd9f7e6a7b7393c0d7416952bafae0fe67412bfb6bf",
-    "m11_sha256_match": true,
-    "rows": 332,
-    "etag_ok": true,
-    "probe_main_Bps": 697655.8201302862,
-    "probe_1mib_Bps": 32146.30300818506
-   }
-  ]
- },
- "s5": {
-  "source": "S5",
-  "verdict": "REACHABLE",
-  "n_complete": 40,
-  "n_total": 40,
-  "total_bytes_complete": 1797898,
-  "skipped": [
-   "angelakilab/CSP001/2019-08-07/001: alf 内无 `_ibl_trials.table.*.pqt`（5 个对象）",
-   "cortexlab/KS002/2019-03-14/001: alf 内无 `_ibl_trials.table.*.pqt`（0 个对象）",
-   "danlab/DY_001/2019-03-04/001: alf 内无 `_ibl_trials.table.*.pqt`（0 个对象）",
-   "hoferlab/SWC_001/2019-05-13/001: alf 内无 `_ibl_trials.table.*.pqt`（0 个对象）",
-   "mrsicflogellab/IBL_001/2019-04-08/008: alf 内无 `_ibl_trials.table.*.pqt`（0 个对象）",
-   "angelakilab/CSP003/2019-08-07/001: alf 内无 `_ibl_trials.table.*.pqt`（5 个对象）",
-   "cortexlab/KS003/2019-03-14/001: alf 内无 `_ibl_trials.table.*.pqt`（0 个对象）",
-   "danlab/DY_002/2019-03-06/001: alf 内无 `_ibl_trials.table.*.pqt`（0 个对象）",
-   "mainenlab/ZFM-01577/2020-10-27/001: alf 内无 `_ibl_trials.table.*.pqt`（2 个对象）",
-   "mrsicflogellab/IBL_002/2019-04-08/002: alf 内无 `_ibl_trials.table.*.pqt`（0 个对象）",
-   "angelakilab/CSP004/2019-09-16/002: alf 内无 `_ibl_trials.table.*.pqt`（4 个对象）",
-   "cortexlab/KS004/2019-03-15/001: alf 内无 `_ibl_trials.table.*.pqt`（0 个对象）",
-   "danlab/DY_003/2019-03-13/001: alf 内无 `_ibl_trials.table.*.pqt`（0 个对象）",
-   "angelakilab/CSP005/2019-09-17/001: alf 内无 `_ibl_trials.table.*.pqt`（5 个对象）",
-   "cortexlab/KS005/2019-03-15/002: alf 内无 `_ibl_trials.table.*.pqt`（0 个对象）",
-   "danlab/DY_005/2019-05-07/001: alf 内无 `_ibl_trials.table.*.pqt`（0 个对象）",
-   "angelakilab/CSP006/2019-09-16/001: alf 内无 `_ibl_trials.table.*.pqt`（5 个对象）",
-   "danlab/DY_006/2019-05-29/001: alf 内无 `_ibl_trials.table.*.pqt`（0 个对象）",
-   "hoferlab/SWC_007/2019-06-19/001: alf 内无 `_ibl_trials.table.*.pqt`（15 个对象）",
-   "mrsicflogellab/SWC_005/2019-05-31/001: alf 内无 `_ibl_trials.table.*.pqt`（0 个对象）",
-   "steinmetzlab/NR_0023/2022-09-20/001: alf 内无 `_ibl_trials.table.*.pqt`（4 个对象）",
-   "angelakilab/CSP009/2020-03-10/001: alf 内无 `_ibl_trials.table.*.pqt`（5 个对象）"
-  ],
-  "labs": [
-   "angelakilab",
-   "churchlandlab",
-   "churchlandlab_ucla",
-   "cortexlab",
-   "danlab",
-   "hausserlab",
-   "hoferlab",
-   "mainenlab",
-   "mrsicflogellab",
-   "registration",
-   "steinmetzlab",
-   "wittenlab",
-   "zadorlab"
-  ],
-  "trials_bytes": 24212510,
-  "eta_trials": 73.1457826756382,
-  "probe_trials_note": "1 MiB 探针 331017.2 B/s（3.168 s）→ 主档 probe_1MiB 331017.2 B/s",
-  "probe_whitelist_note": "目标对象 48629 B <1 MiB ⇒ `probe_whole_object` 42863.7 B/s（**单件端到端，含握手，不得当链路吞吐**）；同通道大对象 `probe_ref_1MiB` 322393.3 B/s ⇒ **主档取后者**",
-  "probe_repr_Bps": 322393.25436782755,
-  "probe_repr_1MiB_Bps": 42863.66553136877,
-  "public_tree_bytes": 1024
- },
- "s5_items_tail": [
-  {
-   "eid": "churchlandlab/CSHL024/2020-09-12/001",
-   "partition": "A",
-   "bytes": 48629,
-   "verdict": "COMPLETE",
-   "rows": 580
-  },
-  {
-   "eid": "churchlandlab_ucla/FD_14/2023-05-24/001",
-   "partition": "A",
-   "bytes": 39349,
-   "verdict": "COMPLETE",
-   "rows": 446
-  },
-  {
-   "eid": "hausserlab/PL015/2022-02-20/001",
-   "partition": "A",
-   "bytes": 63731,
-   "verdict": "COMPLETE",
-   "rows": 817
-  },
-  {
-   "eid": "mainenlab/ZFM-01576/2020-12-01/001",
-   "partition": "A",
-   "bytes": 66197,
-   "verdict": "COMPLETE",
-   "rows": 848
-  },
-  {
-   "eid": "steinmetzlab/NR_0017/2022-03-22/001",
-   "partition": "A",
-   "bytes": 70412,
-   "verdict": "COMPLETE",
-   "rows": 911
-  },
-  {
-   "eid": "wittenlab/dop_47/2022-06-05/001",
-   "partition": "A",
-   "bytes": 58240,
-   "verdict": "COMPLETE",
-   "rows": 740
-  },
-  {
-   "eid": "zadorlab/CSH_ZAD_001/2019-08-09/001",
-   "partition": "A",
-   "bytes": 16473,
-   "verdict": "COMPLETE",
-   "rows": 117
-  },
-  {
-   "eid": "churchlandlab/CSHL025/2020-10-08/001",
-   "partition": "A",
-   "bytes": 59067,
-   "verdict": "COMPLETE",
-   "rows": 740
-  },
-  {
-   "eid": "churchlandlab_ucla/FD_21/2023-04-25/002",
-   "partition": "A",
-   "bytes": 46755,
-   "verdict": "COMPLETE",
-   "rows": 553
-  },
-  {
-   "eid": "hausserlab/PL016/2022-01-17/001",
-   "partition": "A",
-   "bytes": 37594,
-   "verdict": "COMPLETE",
-   "rows": 426
-  },
-  {
-   "eid": "hoferlab/SWC_002/2019-06-11/001",
-   "partition": "A",
-   "bytes": 38200,
-   "verdict": "COMPLETE",
-   "rows": 429
-  },
-  {
-   "eid": "steinmetzlab/NR_0019/2022-04-29/001",
-   "partition": "A",
-   "bytes": 48663,
-   "verdict": "COMPLETE",
-   "rows": 581
-  },
-  {
-   "eid": "wittenlab/dop_48/2022-06-19/002",
-   "partition": "A",
-   "bytes": 46535,
-   "verdict": "COMPLETE",
-   "rows": 559
-  },
-  {
-   "eid": "zadorlab/CSH_ZAD_002/2019-08-09/001",
-   "partition": "B",
-   "bytes": 25690,
-   "verdict": "COMPLETE",
-   "rows": 281
-  },
-  {
-   "eid": "churchlandlab/CSHL029/2020-07-27/001",
-   "partition": "B",
-   "bytes": 52827,
-   "verdict": "COMPLETE",
-   "rows": 645
-  },
-  {
-   "eid": "churchlandlab_ucla/FD_24/2023-06-06/001",
-   "partition": "B",
-   "bytes": 64932,
-   "verdict": "COMPLETE",
-   "rows": 851
-  },
-  {
-   "eid": "hausserlab/PL017/2021-11-07/001",
-   "partition": "B",
-   "bytes": 45861,
-   "verdict": "COMPLETE",
-   "rows": 546
-  },
-  {
-   "eid": "hoferlab/SWC_003/2019-06-11/001",
-   "partition": "B",
-   "bytes": 37066,
-   "verdict": "COMPLETE",
-   "rows": 411
-  },
-  {
-   "eid": "mainenlab/ZFM-01592/2020-10-20/001",
-   "partition": "B",
-   "bytes": 53827,
-   "verdict": "COMPLETE",
-   "rows": 660
-  },
-  {
-   "eid": "mrsicflogellab/IBL_005/2019-07-23/002",
-   "partition": "B",
-   "bytes": 41282,
-   "verdict": "COMPLETE",
-   "rows": 476
-  },
-  {
-   "eid": "steinmetzlab/NR_0020/2022-05-08/001",
-   "partition": "B",
-   "bytes": 44930,
-   "verdict": "COMPLETE",
-   "rows": 525
-  },
-  {
-   "eid": "wittenlab/dop_49/2022-06-14/001",
-   "partition": "B",
-   "bytes": 47016,
-   "verdict": "COMPLETE",
-   "rows": 566
-  },
-  {
-   "eid": "zadorlab/CSH_ZAD_003/2019-08-09/001",
-   "partition": "B",
-   "bytes": 24831,
-   "verdict": "COMPLETE",
-   "rows": 268
-  },
-  {
-   "eid": "churchlandlab/CSHL034/2019-10-01/001",
-   "partition": "B",
-   "bytes": 18680,
-   "verdict": "COMPLETE",
-   "rows": 135
-  },
-  {
-   "eid": "churchlandlab_ucla/FD_28/2023-11-14/001",
-   "partition": "B",
-   "bytes": 70549,
-   "verdict": "COMPLETE",
-   "rows": 913
-  },
-  {
-   "eid": "hausserlab/PL024/2021-12-04/001",
-   "partition": "B",
-   "bytes": 36994,
-   "verdict": "COMPLETE",
-   "rows": 416
-  },
-  {
-   "eid": "hoferlab/SWC_006/2019-06-17/001",
-   "partition": "C",
-   "bytes": 64865,
-   "verdict": "COMPLETE",
-   "rows": 828
-  },
-  {
-   "eid": "mainenlab/ZFM-01935/2021-02-03/001",
-   "partition": "C",
-   "bytes": 59297,
-   "verdict": "COMPLETE",
-   "rows": 743
-  },
-  {
-   "eid": "mrsicflogellab/SWC_004/2019-06-11/001",
-   "partition": "C",
-   "bytes": 21009,
-   "verdict": "COMPLETE",
-   "rows": 169
-  },
-  {
-   "eid": "steinmetzlab/NR_0021/2022-06-23/003",
-   "partition": "C",
-   "bytes": 52860,
-   "verdict": "COMPLETE",
-   "rows": 645
-  },
-  {
-   "eid": "wittenlab/dop_50/2022-09-12/001",
-   "partition": "C",
-   "bytes": 56134,
-   "verdict": "COMPLETE",
-   "rows": 706
-  },
-  {
-   "eid": "zadorlab/CSH_ZAD_004/2019-08-09/001",
-   "partition": "C",
-   "bytes": 23014,
-   "verdict": "COMPLETE",
-   "rows": 232
-  },
-  {
-   "eid": "churchlandlab/CSHL045/2019-11-04/001",
-   "partition": "C",
-   "bytes": 28553,
-   "verdict": "COMPLETE",
-   "rows": 282
-  },
-  {
-   "eid": "churchlandlab_ucla/FD_36/2023-11-14/001",
-   "partition": "C",
-   "bytes": 65774,
-   "verdict": "COMPLETE",
-   "rows": 841
-  },
-  {
-   "eid": "cortexlab/KS014/2019-08-06/001",
-   "partition": "C",
-   "bytes": 44069,
-   "verdict": "COMPLETE",
-   "rows": 513
-  },
-  {
-   "eid": "hausserlab/PL030/2022-09-12/001",
-   "partition": "C",
-   "bytes": 40758,
-   "verdict": "COMPLETE",
-   "rows": 487
-  },
-  {
-   "eid": "mainenlab/ZFM-01936/2021-01-19/001",
-   "partition": "C",
-   "bytes": 47184,
-   "verdict": "COMPLETE",
-   "rows": 560
-  },
-  {
-   "eid": "wittenlab/dop_53/2022-10-02/001",
-   "partition": "C",
-   "bytes": 37185,
-   "verdict": "COMPLETE",
-   "rows": 430
-  },
-  {
-   "eid": "zadorlab/CSH_ZAD_005/2019-08-09/001",
-   "partition": "C",
-   "bytes": 19192,
-   "verdict": "COMPLETE",
-   "rows": 163
-  },
-  {
-   "eid": "churchlandlab/CSHL046/2019-11-04/001",
-   "partition": "D",
-   "bytes": 33674,
-   "verdict": "COMPLETE",
-   "rows": 359
-  }
- ],
+ "s2": {},
+ "s7": {},
+ "s5": {},
+ "s5_items_tail": [],
  "throughput": {
-  "n_rows": 52,
+  "n_rows": 56,
   "by_probe_type": {
    "probe_1MiB_RANGE_UNSUPPORTED": 1,
    "probe_window_too_short(ttfb=30.0s)": 1,
    "fetch": 43,
    "probe_whole_object": 3,
    "probe_ref_1MiB": 3,
-   "probe_1MiB": 1
+   "probe_1MiB": 3,
+   "fetch(resume)": 2
   },
   "csv": "data/m12_throughput_measured.csv",
   "rule": "**吞吐不可外推**（M11-R56：实测同对象可在数小时内摆动 3,600×）"
  },
  "integrity": {
-  "n_rows": 43,
+  "n_rows": 45,
   "by_verdict": {
-   "COMPLETE": 43
+   "COMPLETE": 44,
+   "INCOMPLETE": 1
   },
-  "complete_bytes": 9071568,
+  "complete_bytes": 33284078,
   "rule": "verdict=COMPLETE 才允许进统计；INCOMPLETE 必须重取（M11-R63）"
  },
  "reachability": {
-  "n_rows": 5,
+  "n_rows": 7,
   "by_verdict": {
-   "REACHABLE": 5
+   "REACHABLE": 6,
+   "REACHABLE_NO_DATA": 1
   },
   "scope": "**本表只是 3 源前缀**；§2.5 要求的 ≥40 源 `m12_source_reachability.csv` 未由本节点交付"
  },
@@ -595,7 +235,7 @@
   "preregistered": "True（枚举规则 + A/B/C/D 归属在执行前定死，见 CSV note 列）"
  },
  "reference_rows": {
-  "n": 34,
+  "n": 43,
   "csv": "data/m12_reference.csv",
   "append_only": "True（旧行逐字保留）"
  }

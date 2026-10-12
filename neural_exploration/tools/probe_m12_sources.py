@@ -71,6 +71,7 @@ CSV_THROUGHPUT = os.path.join(DATA, "m12_throughput_measured.csv")
 CSV_INTEGRITY = os.path.join(DATA, "m12_probe_b1_integrity.csv")
 CSV_REACH = os.path.join(DATA, "m12_probe_b1_reachability.csv")
 CSV_IBL = os.path.join(DATA, "m12_ibl_sessions.csv")
+CSV_REACH2 = os.path.join(DATA, "m12_source_reachability.csv")
 JSON_SUMMARY = os.path.join(DATA, "m12_probe_b1_summary.json")
 
 THROUGHPUT_HEADER = "utc,source,http_code,bytes,seconds,bytes_per_s,probe_or_fetch"
@@ -83,6 +84,11 @@ REACH_HEADER = (
     "utc,source_id,source,category,kind,url,http_code,http_code_pass2,bytes,content_type,etag,"
     "accept_ranges,time_total_s,speed_Bps,probe_1MiB_Bps,probe_30s_Bps,eta_s,verdict,"
     "verdict_scope,missing_dimension,note"
+)
+REACH2_HEADER = (
+    "utc,source_id,source,category,kind,url,http_code,http_code_pass2,bytes,content_type,speed_Bps,"
+    "verdict,verdict_scope,curl_exit,evidence_level,sha_basis,sha256_prefix,provenance,source_url,"
+    "retrieved_at,wrong_usage_consequence,missing_dimension,note"
 )
 IBL_HEADER = (
     "rank,lab,subject,date,session_no,eid_key,alf_prefix,trials_table_key,trials_table_bytes,"
@@ -122,7 +128,12 @@ def ibl_url(key):
     ⇒ 必须把 `#` 编码为 `%23`（`quote(key, safe="/")`）。
     """
     return "%s/%s" % (IBL_BUCKET, quote(key, safe="/"))
-IBL_AGG_TRIALS = IBL_BUCKET + "/aggregates/2026_Q2_IBL_et_al_BWM/trials.pqt"  # 无 `#`，无需编码  # 24,212,510 B（本轮实测）
+IBL_AGG_TRIALS = IBL_BUCKET + "/aggregates/2026_Q2_IBL_et_al_BWM/trials.pqt"  # 无 `#`，无需编码
+S5FULL_DIR = os.path.join(RAW, "s5_aggregate")          # **独立子目录**（派发要求 ⑤）
+CSV_AGG_SESSIONS = os.path.join(DATA, "m12_ibl_trials_aggregate.csv")
+AGG_SESS_HEADER = "rank,session,n_trials,share_of_total"
+# R72 批准的取数上限（**>50 MB 才须先问；本件 24,212,510 B**）
+S5FULL_EXPECT_BYTES = 24212510  # 24,212,510 B（本轮实测）
 IBL_PUBLIC_TREE = IBL_BUCKET + "/data/public_tree.txt"
 
 # 探针口径（预注册，**事中不得择口径**）
@@ -138,6 +149,14 @@ CANDIDATE_PART_SIZES = [
 _THROUGHPUT_ROWS: list[str] = []
 _INTEGRITY_ROWS: list[str] = []
 _REACH_ROWS: list[str] = []
+_REACH2_ROWS: list[str] = []
+
+
+def load_json_safe(path):
+    try:
+        return json.load(open(path, encoding="utf-8"))
+    except Exception:
+        return None
 
 
 def utc_now() -> str:
@@ -204,6 +223,21 @@ def flush_integrity():
     _INTEGRITY_ROWS.clear()
 
 
+def flush_reach2():
+    if not _REACH2_ROWS:
+        return
+    ensure_header(
+        CSV_REACH2, REACH2_HEADER,
+        "M12 数据门 §2 数据源可达性实测（generated_by=tools/probe_m12_sources.py --only REACH；"
+        "**清单 §2 的 S1–S12 全部源 + 子端点**；每行必带 utc/provenance/source_url/retrieved_at/"
+        "evidence_level/sha_basis/wrong_usage_consequence，**空值为 0**；"
+        "verdict 词表=REACHABLE/REACHABLE_NO_DATA/NEEDS_TOKEN/NEEDS_VERIFY/BLOCKED/BLOCKED_DNS/"
+        "NOT_EXIST/TOO_SLOW/UNLOADABLE/NOT_APPLICABLE）")
+    with open(CSV_REACH2, "a", encoding="utf-8") as f:
+        f.write("\n".join(_REACH2_ROWS) + "\n")
+    _REACH2_ROWS.clear()
+
+
 def flush_reach():
     if not _REACH_ROWS:
         return
@@ -230,11 +264,17 @@ def _hdr_dict(hdr_text: str) -> dict:
 
 
 def run_curl(url, timeout=30, byte_range=None, out_path=None, hdr_path=None,
-             extra=None, max_filesize=None, resume=False):
+             extra=None, max_filesize=None, resume=False, fail_on_error=True):
     """单次 curl。返回 dict(code, nbytes, seconds, speed, exit, err, headers, out_path)。"""
-    cmd = ["curl", "-sS", "-g", "-L", "--fail", "--connect-timeout", "8", "--max-time", str(timeout),
+    cmd = ["curl", "-sS", "-g", "-L", "--connect-timeout", "8", "--max-time", str(timeout),
            "-w", "%{http_code}|%{size_download}|%{content_type}|%{time_total}|%{speed_download}|"
                  "%{num_redirects}|%{time_starttransfer}|%{time_connect}"]
+    # ★ `--fail` 只用于**会落盘成对象**的取数（防错误页被当对象；M12-M-04）。
+    #   **探针**必须允许错误体进来，否则无法区分 NEEDS_TOKEN / AccessDenied / 普通 403
+    #   （本轮实测：OpenAlyx 的 403 正文含 "Authentication credentials were not provided."，
+    #    被 --fail 吞掉后会误判为 BLOCKED）。
+    if fail_on_error:
+        cmd += ["--fail"]
     if resume:
         cmd += ["-C", "-"]
     if out_path:
@@ -542,25 +582,44 @@ def integrity_gate(t, source, url, path, clen, etag, curl_exit, parse_fn=None,
                 part_size=part_size, reasons=[r for r in reasons if r], rows_parsed=rows_parsed)
 
 
-def fetch_full(url, path, expect_bytes=None, source="", label="", max_time=600, attempts=2):
-    """T5 取数（带 `-C -` 续传）。返回 (rec, integrity_dict_or_None, resume_used)。"""
+def fetch_full(url, path, expect_bytes=None, source="", label="", max_time=600, attempts=2,
+               initial_resume=False):
+    """T5 取数（**带 `--max-time` + `curl -C -` 续传**）。返回 (rec, clen, bps, resume_used)。
+
+    `initial_resume=True`：目标文件已存在且是不完整的部分件时，**首轮就用 `-C -`**，
+    避免把已有进度覆盖掉（派发硬要求②；M11-R63「大件必须带 --max-time + curl -C - 续传」）。
+    """
     os.makedirs(os.path.dirname(path), exist_ok=True)
     hr = os.path.join(LOG_DIR, "_hdr_fetch.txt")
     resume_used = False
-    rec = run_curl(url, timeout=max_time, out_path=path, hdr_path=hr)
-    http_ok = rec["code"] in ("200", "206")
-    partial = (os.path.exists(path) and 0 < os.path.getsize(path)
-               and expect_bytes and os.path.getsize(path) < expect_bytes)
-    # 续传**只在** HTTP 成功且确为"部分"时进行（404/403 的错误页**不得**覆盖对象 —— 本轮实测踩到）
-    if http_ok and (partial or rec["exit"] != 0):
+    if initial_resume:
         resume_used = True
-        log("FETCH  %s 首轮未完成（http=%s exit=%d, %d/%s B）⇒ `curl -C -` 续传"
-            % (label, rec["code"], rec["exit"], os.path.getsize(path) if os.path.exists(path) else 0,
-               expect_bytes))
+        log("FETCH  %s 已有部分件 %d B ⇒ **首轮即 `curl -C -` 续传**（不覆盖已有进度）"
+            % (label, os.path.getsize(path) if os.path.exists(path) else 0))
         rec = run_curl(url, timeout=max_time, out_path=path, hdr_path=hr, resume=True)
-    elif not http_ok:
+    else:
+        rec = run_curl(url, timeout=max_time, out_path=path, hdr_path=hr)
+    http_ok = rec["code"] in ("200", "206")
+    if not http_ok:
         log("FETCH  %s **HTTP %s**（exit=%d）⇒ 该对象**未取到**（判 INCOMPLETE/NOT_EXIST，不进统计；"
             "不尝试 --fail 下的错误页续传）" % (label, rec["code"], rec["exit"]))
+    # **有界重试环**：每次 `--max-time` 到点（exit=28）后 `curl -C -` 续传，直到完成或次数用尽。
+    # ★ 实测必要性（本轮）：本机出现 **15–36 min 的整机冻结**，socket 仍"活着"但**零字节增长**
+    #   （M11-R39：进程存在 ≠ 在跑）；此时**唯一能自救的动作**就是 `--max-time` 主动中断 + `-C -` 续传
+    #   —— 冻结的既存连接**不会自己恢复**（实测 13:55→14:32 冻结 36 min 后由续传恢复）。
+    for k in range(1, max(1, attempts)):
+        size_now = os.path.getsize(path) if os.path.exists(path) else 0
+        if expect_bytes and size_now >= expect_bytes:
+            break
+        if not (rec["code"] in ("200", "206")):
+            break
+        resume_used = True
+        log("FETCH  %s 第 %d 轮未完成（http=%s exit=%s, %d/%s B）⇒ `curl -C -` 续传"
+            % (label, k, rec["code"], rec["exit"], size_now, expect_bytes))
+        rec = run_curl(url, timeout=max_time, out_path=path, hdr_path=hr, resume=True)
+        if rec["code"] not in ("200", "206"):
+            log("FETCH  %s 续传遇 HTTP %s ⇒ 停止重试（不覆盖对象）" % (label, rec["code"]))
+            break
     size = os.path.getsize(path) if os.path.exists(path) else 0
     bps = record_throughput(source + " " + label + " [fetch]", rec["code"] or "rc=%d" % rec["exit"],
                             size, max(rec["seconds"], 1e-6),
@@ -923,6 +982,178 @@ def build_ibl_whitelist(max_sessions=40):
     return out_rows, skipped, labs
 
 
+def verify_trials_aggregate(path):
+    """T5 内容级：pyarrow 解析 `trials.pqt`，验证它**真是"逐 trial 合并表"而非别的东西**。
+
+    检查项：
+      ① 行数 / 列数 / 列名（与 P8/P9 所需列对照）；
+      ② **会话列存在**且 **逐 session 计数之和 == 表行数**（内部自洽锚）；
+      ③ 报每 session 行数分布（n_sessions / min / p10 / median / p90 / max / 总和）。
+    返回 (ok, n_rows, note)。**副作用**：写 `data/m12_ibl_trials_aggregate.csv` 与 `.json`。
+    """
+    try:
+        import pyarrow.parquet as pq
+    except Exception as e:
+        return False, None, "pyarrow 不可用（应用 ./.venv-m10/bin/python 运行）：%s" % str(e)[:120]
+    try:
+        pf = pq.ParquetFile(path)
+        n_rows = pf.metadata.num_rows
+        cols = list(pf.schema_arrow.names)
+    except Exception as e:
+        return False, None, "parquet 头解析失败：%s" % str(e)[:160]
+
+    sess_col = None
+    for c in cols:
+        if c.lower() in ("session", "eid", "session_id", "session_uuid", "sessions"):
+            sess_col = c
+            break
+    want = [c for c in ("choice", "feedback", "response_times", "contrastLeft", "contrastRight",
+                        "probabilityLeft", "rewardVolume", "firstMovement_times", "stimOn_times",
+                        "goCue_times", "feedback_times", "intervals") if c in cols]
+    if sess_col is None:
+        return False, n_rows, ("**无会话列**（列名=%s）⇒ 无法按 session 归属 ⇒ 不得当逐 trial 合并表使用"
+                               % cols[:12])
+
+    from collections import Counter
+    col = pq.read_table(path, columns=[sess_col]).column(sess_col).to_pylist()
+    cnt = Counter(col)
+    total = sum(cnt.values())
+    vals = sorted(cnt.values())
+    dist = dict(
+        n_sessions=len(cnt), total_trials=total, sum_equals_num_rows=(total == n_rows),
+        min=vals[0] if vals else 0,
+        p10=vals[int(0.10 * (len(vals) - 1))] if vals else 0,
+        median=(vals[len(vals) // 2] if len(vals) % 2 else
+                0.5 * (vals[len(vals) // 2 - 1] + vals[len(vals) // 2])) if vals else 0,
+        p90=vals[int(0.90 * (len(vals) - 1))] if vals else 0,
+        max=vals[-1] if vals else 0,
+    )
+    ensure_header(CSV_AGG_SESSIONS, AGG_SESS_HEADER,
+                  "M12 S5 全量聚合行为表 trials.pqt 的**逐 session 试次数**"
+                  "（generated_by=tools/probe_m12_sources.py --only S5FULL；"
+                  "**行数之和 == 表行数** 为内部自洽锚；只增不改）")
+    with open(CSV_AGG_SESSIONS, "w", encoding="utf-8") as f:
+        f.write("# M12 S5 全量聚合行为表 trials.pqt 的**逐 session 试次数**"
+                "（generated_by=tools/probe_m12_sources.py --only S5FULL；sum == num_rows 为自洽锚）\n")
+        f.write(AGG_SESS_HEADER + "\n")
+        for i, (k, v) in enumerate(sorted(cnt.items(), key=lambda x: (-x[1], str(x[0]))), 1):
+            f.write("%d,%s,%d,%.8f\n" % (i, k, v, (v / total if total else 0.0)))
+    agg = dict(generated_by="tools/probe_m12_sources.py --only S5FULL", generated_at=utc_now(),
+               path=os.path.relpath(path, os.path.dirname(ROOT)), n_rows=n_rows,
+               n_cols=len(cols), columns=cols, session_column=sess_col,
+               behavior_columns_hit=want, distribution=dist)
+    with open(os.path.join(DATA, "m12_ibl_trials_aggregate.json"), "w", encoding="utf-8") as f:
+        json.dump(agg, f, ensure_ascii=False, indent=1)
+
+    ok = (n_rows > 0) and dist["sum_equals_num_rows"] and len(cnt) > 1
+    note = ("parquet 行数=%d 列数=%d 会话列=%s；**逐 session 计数之和=%d == 行数 ⇒ %s**；"
+            "n_sessions=%d（min %d / p10 %d / median %s / p90 %d / max %d）；"
+            "P8/P9 行为列命中=%s"
+            % (n_rows, len(cols), sess_col, total, dist["sum_equals_num_rows"], dist["n_sessions"],
+               dist["min"], dist["p10"], dist["median"], dist["p90"], dist["max"], want))
+    return ok, n_rows, note
+
+
+def run_s5full(args):
+    """R72 批准的 S5 全量聚合行为表取数（24,212,510 B）——**先测吞吐、再取数、再三级完整性门**。"""
+    log("=== S5FULL · IBL 全量聚合行为表 trials.pqt（R72 批准）===")
+    os.makedirs(S5FULL_DIR, exist_ok=True)
+    hr = os.path.join(LOG_DIR, "_hdr_s5full.txt")
+
+    # ---- T2 对象级取证（HEAD 拿 content-length / ETag / accept-ranges）----
+    head = run_curl(IBL_AGG_TRIALS, timeout=30, byte_range=(0, 1023), hdr_path=hr)
+    hh = head.get("headers", {})
+    clen_hdr = int(hh["content-length"]) if (hh.get("content-length") or "").isdigit() else None
+    log("S5FULL T2 Range code=%s content-range=%s clen=%s etag=%s accept-ranges=%s"
+        % (head["code"], hh.get("content-range"), clen_hdr, hh.get("etag"), hh.get("accept-ranges")))
+    obj_bytes = None
+    mcr = re.search(r"/(\d+)\s*$", hh.get("content-range", ""))
+    if mcr:
+        obj_bytes = int(mcr.group(1))
+    # 无 Range 时（本桶支持 Range，应不会走到）用 S3 列举的声明字节
+    if obj_bytes is None:
+        agg = _list_prefix("aggregates/2026_Q2_IBL_et_al_BWM/", delimiter="")
+        for k, sz in zip(agg["keys"], agg["sizes"]):
+            if k.endswith("/trials.pqt"):
+                obj_bytes = sz
+    log("S5FULL 对象总长 = %s B（S3 声明）" % obj_bytes)
+
+    # ---- T3 **当场 30 s 吞吐探针**（以最近一次为准，R56/R63/R72）----
+    bps_1m, bps_main, probe_note, win_short = probe_throughput(
+        "S5FULL:ibl-public aggregates/2026_Q2_IBL_et_al_BWM/trials.pqt", IBL_AGG_TRIALS,
+        label="(24.2 MB 全量聚合行为表)")
+    if win_short:
+        log("S5FULL ⚠ 探针窗过短（TTFB ≥ 窗）⇒ 按 M12-M-01 转整件取数即测量，**不得判 TOO_SLOW**")
+
+    # ---- T4 ETA 裁决 ----
+    eta = (obj_bytes / bps_main) if (obj_bytes and bps_main) else None
+    eta_ok = win_short or (eta is not None and eta <= 1800.0)
+    log("S5FULL T4 当场 ETA = %s s @ %.1f B/s（门 1800 s/对象）⇒ %s"
+        % (("%.1f" % eta) if eta else "NA", bps_main, "PASS" if eta_ok else "TOO_SLOW"))
+
+    path = os.path.join(S5FULL_DIR, "trials.pqt")
+    integ = None
+    verdict, missing = None, ""
+    if not eta_ok:
+        verdict = "TOO_SLOW"
+        missing = ("吞吐维度：当场实测 ETA=%.1f s > 1800 s 门；**须以当场探针复核（≤24 h）**；"
+                   "判决时刻与当时吞吐见 throughput CSV" % eta)
+    else:
+        # ---- T5 取数（`--max-time` + `curl -C -` 续传）----
+        pre = os.path.getsize(path) if os.path.exists(path) else 0
+        partial = bool(obj_bytes and 0 < pre < obj_bytes)
+        if pre == obj_bytes:
+            log("S5FULL 已有**完整**件 %d B ⇒ 跳过传输，直接过完整性门" % pre)
+        if partial:
+            log("S5FULL 检测到部分件 %d / %s B（%.2f%%）⇒ 续传"
+                % (pre, obj_bytes, 100.0 * pre / obj_bytes))
+        rec, clen, bps_f, resumed = fetch_full(
+            IBL_AGG_TRIALS, path, expect_bytes=obj_bytes,
+            source="S5FULL:ibl-public aggregates trials.pqt", label="(24.2 MB)",
+            max_time=args.max_time, initial_resume=partial, attempts=args.attempts)
+        size = os.path.getsize(path) if os.path.exists(path) else 0
+        log("S5FULL 取数完成：%d B（期望 %s）resume_used=%s http=%s exit=%s"
+            % (size, obj_bytes, resumed, rec["code"], rec["exit"]))
+        # ★ **门① 的基准 = 对象总长**（S3 声明 / HEAD 的 Content-Length）。
+        # 206 续传响应的 `Content-Length` 是**剩余段长度**，不是对象长度 ⇒ 若拿它当基准，
+        # 会得到 **假的 size_match=False**（本轮实测踩到：clen=11439993 而对象应为 24212510）。
+        gate_clen = obj_bytes or clen_hdr or clen
+        log("门① 基准 = 对象总长 %s B（**不用** 206 续传响应的 Content-Length=%s，那是剩余段长度）"
+            % (gate_clen, clen))
+        integ = integrity_gate("S5FULL", "S5FULL:aggregates/2026_Q2_IBL_et_al_BWM/trials.pqt",
+                               IBL_AGG_TRIALS, path, gate_clen,
+                               rec.get("headers", {}).get("etag", hh.get("etag")), rec["exit"],
+                               parse_fn=verify_trials_aggregate, rows_expected=None,
+                               http_code=rec["code"])
+        if integ["verdict"] == "COMPLETE":
+            verdict = "REACHABLE"
+        else:
+            verdict = "REACHABLE_NO_DATA"
+            missing = "; ".join(integ["reasons"])[:320]
+
+    aggjson = load_json_safe(os.path.join(DATA, "m12_ibl_trials_aggregate.json"))
+    dist = (aggjson or {}).get("distribution", {})
+    note = ("%s；对象总长 %s B；当场 ETA=%s s；%s；逐 session：n=%s, min=%s, median=%s, max=%s, "
+            "sum==num_rows=%s"
+            % (probe_note, obj_bytes, ("%.1f" % eta) if eta else "NA",
+               (integ["reasons"][0] if integ and integ.get("reasons") else ""),
+               dist.get("n_sessions"), dist.get("min"), dist.get("median"), dist.get("max"),
+               dist.get("sum_equals_num_rows")))
+    _REACH_ROWS.append(",".join(csv_escape(x) for x in [
+        utc_now(), "S5FULL", "IBL 全量聚合行为表 trials.pqt（R72 批准，解 22-session 未命中缺口）",
+        "ibl_behavior", "s3_object", IBL_AGG_TRIALS, head["code"], rec["code"] if integ else "",
+        (integ["size"] if integ else ""), "application/octet-stream",
+        (hh.get("etag") or ""), (hh.get("accept-ranges") or ""),
+        ("%.3f" % head["seconds"]), "%.1f" % bps_main, "%.1f" % bps_1m, "%.1f" % bps_main,
+        ("%.1f" % eta if eta else ""), verdict,
+        "对象级 200/206 + 完整性门三级（size==Content-Length ∧ **ETag 多段复算** ∧ sha256 三基准）+ "
+        "pyarrow 语义锚（逐 session 计数之和 == 表行数）", missing, note[:1200]]))
+    return dict(source="S5FULL", verdict=verdict, object_bytes=obj_bytes, eta_s=eta,
+                probe_1mib_Bps=bps_1m, probe_main_Bps=bps_main, probe_note=probe_note,
+                window_too_short=win_short, integrity=(integ or {}),
+                aggregate_json=(aggjson or {}), missing_dimension=missing)
+
+
 def run_s5(args):
     log("=== S5 IBL 行为（白名单 ≤%d session）===" % args.max_sessions)
     hr = os.path.join(LOG_DIR, "_hdr_s5.txt")
@@ -1023,6 +1254,10 @@ def main():
     ap.add_argument("--only", default="all", help="S2 / S7 / S5 / all")
     ap.add_argument("--probe-only", action="store_true", help="只跑吞吐探针，不取数")
     ap.add_argument("--max-sessions", type=int, default=40, help="S5 白名单规模（预注册，默认 40）")
+    ap.add_argument("--max-time", type=int, default=300, help="单次传输上限（S5FULL 用；父进程硬回收 +10 s）")
+    ap.add_argument("--timeout", type=int, default=15, help="REACH 模式单次探测硬超时（默认 15 s）")
+    ap.add_argument("--sids", default="", help="REACH 定向复核：只跑指定 sid（逗号分隔）")
+    ap.add_argument("--attempts", type=int, default=8, help="取数最大轮数（每轮 --max-time 到点后 curl -C - 续传）")
     args = ap.parse_args()
 
     os.makedirs(LOG_DIR, exist_ok=True)
@@ -1046,12 +1281,281 @@ def main():
     if "S5" in which:
         summary["sources"]["S5"] = run_s5(args)
         flush_throughput(); flush_integrity(); flush_reach()
+    if "S5FULL" in which:
+        summary["sources"]["S5FULL"] = run_s5full(args)
+        flush_throughput(); flush_integrity(); flush_reach()
+    if "REACH" in which:
+        summary["sources"]["REACH"] = run_reach_all(args)
+        flush_reach2()
 
     with open(JSON_SUMMARY, "w", encoding="utf-8") as f:
         json.dump(summary, f, ensure_ascii=False, indent=1)
     log("summary → %s" % JSON_SUMMARY)
     log("ALL_DONE")
     return 0
+
+
+
+
+# ---------------------------------------------------------------------------
+# §2.5 要求的 **≥40 源** 可达性表（清单 §2 的 S1–S12 全部源 + 子端点）
+# ---------------------------------------------------------------------------
+def _spec_probe_once(sp, hr, probe_timeout=15):
+    """单次探测一个规格。返回 dict。**父进程硬回收**由 run_curl 保证。"""
+    mode, url = sp["mode"], sp["url"]
+    o = dict(http="", nbytes=0, ct="", etag="", ar="", sec=0.0, speed=0.0, exit=0,
+             sha="", text="", body_path=None)
+    if mode == "derived":
+        o.update(http="NA(no-network)", ct="not_applicable", sha="not_applicable")
+        return o
+    if mode == "local":
+        rel_p = url.split("（")[0].split("(")[0].strip()
+        full = os.path.join(os.path.dirname(ROOT), rel_p)
+        if os.path.exists(full):
+            o.update(http="LOCAL", nbytes=os.path.getsize(full), ct="not_applicable",
+                     sha=sha256_file(full)[:16])
+        else:
+            o.update(http="LOCAL_MISSING", ct="not_applicable", sha="not_applicable")
+        return o
+
+    body = os.path.join(LOG_DIR, "_reach_body.bin")
+    if os.path.exists(body):
+        os.remove(body)
+    if mode == "head":
+        cmd = ["curl", "-sS", "-g", "-L", "-I", "--connect-timeout", "8",
+               "--max-time", str(probe_timeout), "-o", os.devnull, "-D", hr,
+               "-w", "%{http_code}|%{size_download}|%{content_type}|%{time_total}|%{speed_download}|"
+                     "%{num_redirects}|%{time_starttransfer}"]
+        cmd.append(url)
+        t0 = time.time()
+        try:
+            proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            try:
+                so, se = proc.communicate(timeout=probe_timeout + 10)
+            except subprocess.TimeoutExpired:
+                proc.kill()
+                so, se = proc.communicate(timeout=10)
+                o.update(exit=124, sec=time.time() - t0)
+                if os.path.exists(hr):
+                    o["hdr"] = _hdr_dict(open(hr, encoding="utf-8", errors="replace").read())
+                return o
+        except Exception as e:
+            o.update(exit=125, text="spawn failed: %s" % str(e)[:100])
+            return o
+        o["exit"] = proc.returncode
+        p = (so or b"").decode("utf-8", "replace").strip().split("|")
+        if len(p) >= 5:
+            o["http"] = p[0]
+            try:
+                o["sec"] = float(p[3])
+                o["speed"] = float(p[4])
+            except ValueError:
+                pass
+        if os.path.exists(hr):
+            h = _hdr_dict(open(hr, encoding="utf-8", errors="replace").read())
+            o["hdr"] = h
+            o["ct"] = h.get("content-type", "")
+            o["etag"] = h.get("etag", "")
+            o["ar"] = h.get("accept-ranges", "")
+            cl = h.get("content-length")
+            o["nbytes"] = int(cl) if (cl or "").isdigit() else 0
+        o["sha"] = "head_only(无响应体)"
+        return o
+
+    br = (0, 1048575) if mode == "range" else None
+    extra = ["--max-filesize", "5000000"] if mode == "fetch" else None
+    rec = run_curl(url, timeout=probe_timeout, out_path=body, hdr_path=hr,
+                   byte_range=br, extra=extra, fail_on_error=False)
+    o["exit"] = rec["exit"]
+    o["http"] = rec["code"] or ""
+    o["sec"] = rec["seconds"]
+    o["speed"] = rec["speed"]
+    o["nbytes"] = os.path.getsize(body) if os.path.exists(body) else rec["nbytes"]
+    o["ct"] = rec.get("headers", {}).get("content-type", "")
+    o["etag"] = rec.get("headers", {}).get("etag", "")
+    o["ar"] = rec.get("headers", {}).get("accept-ranges", "")
+    o["hdr"] = rec.get("headers", {})
+    if os.path.exists(body) and o["nbytes"]:
+        o["body_path"] = body
+        raw = open(body, "rb").read()
+        o["text"] = raw[:400000].decode("utf-8", "replace")
+        if o["http"] in ("200", "206"):
+            o["sha"] = hashlib.sha256(raw).hexdigest()[:16]
+        else:
+            o["sha"] = "NA(http=%s)" % o["http"]
+    else:
+        o["sha"] = "NA(no-body)"
+    return o
+
+
+def _spec_parse(sp, o1, o2):
+    """由探测结果给出 (verdict, note, extra_bits)。**不猜**：只依据 http/内容。"""
+    mode = sp["mode"]
+    code = o1.get("http", "")
+    bits = []
+    # ---- 两次探测码 ----
+    if o2.get("http") and o2["http"] != code:
+        bits.append("**两次探测码不一致**（pass1=%s / pass2=%s）⇒ 按多数裁决需第三次；本条如实登记不稳定"
+                    % (code, o2["http"]))
+    # ---- 模式专属解析 ----
+    if mode == "derived":
+        return "NOT_APPLICABLE", "（无网络探测；纯派生/抽象登记）", bits
+    if mode == "local":
+        if code == "LOCAL":
+            return "REACHABLE", "本机件存在（%d B，sha256 前缀 %s）⇒ **只读核对，未改动**" % (o1["nbytes"], o1["sha"]), bits
+        return "NOT_EXIST", "本机件不存在（**这是本机落盘状态，不代表上游不存在**）", bits
+    if code in ("", "000") or o1.get("exit") == 124:
+        return "BLOCKED", "超时/无响应（父进程硬回收；curl exit=%s）——**未测 ≠ 未命中**，" % o1.get("exit", "?"), bits
+    if code == "403":
+        t = o1.get("text", "")[:300]
+        if "Authentication credentials were not provided" in t or "NEEDS_TOKEN" in t:
+            return "NEEDS_TOKEN", "403 且响应明示需要凭据 ⇒ `NEEDS_TOKEN`（**不得写成数据不存在**）", bits
+        if "AccessDenied" in t:
+            return "NEEDS_VERIFY", "403 AccessDenied（对象级不可读；**桶/端点是否存在未证实**）⇒ `NEEDS_VERIFY`", bits
+        return "BLOCKED", "403（无凭据语义的普通拒绝）", bits
+    if code == "404":
+        return "NOT_EXIST", "404（该路径/对象不存在；**换变体前不得当数据可得**）", bits
+    if code == "401":
+        return "NEEDS_TOKEN", "401 需凭据", bits
+    if code.startswith("5"):
+        return "BLOCKED", "5xx 服务端错误（可重试；**不是不可用**）", bits
+    if code not in ("200", "206"):
+        return "BLOCKED", "非 2xx（http=%s，curl exit=%s）" % (code, o1.get("exit")), bits
+
+    # ---- 2xx：按模式解析内容 ----
+    t = o1.get("text", "")
+    if mode == "count":
+        try:
+            j = json.loads(t)
+            tr = j.get("total_rows")
+            if tr is None:
+                return "REACHABLE_NO_DATA", "JSON 可解析但**无 total_rows 字段**（keys=%s）" % list(j)[:6], bits
+            bits.append("T1 count$eqtrue total_rows = **%s**" % tr)
+            return "REACHABLE", "计数查询成功（成本极小）", bits
+        except Exception as e:
+            return "REACHABLE_NO_DATA", "响应非可解析 JSON（%s）" % str(e)[:80], bits
+    if mode == "page":
+        try:
+            j = json.loads(t)
+            msgs = j.get("msg") or []
+            if not msgs:
+                return "REACHABLE_NO_DATA", "msg 为空（**0 行 ⇒ 该过滤条件下无数据**，不是端点不可用）", bits
+            bits.append("字段（%d 个）= %s" % (len(msgs[0]), sorted(msgs[0].keys())))
+            return "REACHABLE", "小页返回 %d 行，字段清单已读回" % len(msgs), bits
+        except Exception as e:
+            return "REACHABLE_NO_DATA", "响应非可解析 JSON（%s）" % str(e)[:80], bits
+    if mode == "list":
+        kc = re.search(r"<KeyCount>(\d+)</KeyCount>", t)
+        tr = re.search(r"<IsTruncated>(\w+)</IsTruncated>", t)
+        pref = re.findall(r"<Prefix>([^<]+)</Prefix>", t)[1:]
+        keys = re.findall(r"<Key>([^<]+)</Key>", t)
+        sizes = [int(x) for x in re.findall(r"<Size>(\d+)</Size>", t)]
+        bits.append("KeyCount=%s IsTruncated=%s 子前缀=%d 对象=%d；对象字节合计=%d"
+                    % (kc.group(1) if kc else "?", tr.group(1) if tr else "?", len(pref), len(keys),
+                       sum(sizes)))
+        if pref:
+            bits.append("子前缀（前 8）= %s" % pref[:8])
+        big = sorted(zip(sizes, keys), reverse=True)[:3]
+        if big:
+            bits.append("最大 3 件 = %s" % [(k.rsplit("/", 1)[-1], s) for s, k in big])
+        if (kc and kc.group(1) == "0") and not pref:
+            return "REACHABLE_NO_DATA", "列举成功但 **KeyCount=0**（L9.2 #4 陷阱：**不是**数据可得）", bits
+        return "REACHABLE", "列举成功", bits
+    if mode == "range":
+        if o1["nbytes"] <= 0:
+            return "BLOCKED", "1 MiB Range 零字节（Range 可能不被支持）", bits
+        bits.append("1 MiB Range 当场吞吐 = **%.1f B/s**（%.3f s）" % (o1["speed"], o1["sec"]))
+        return "REACHABLE", "对象级 206 + 吞吐实测", bits
+    if mode == "fetch":
+        if o1["nbytes"] <= 0:
+            return "REACHABLE_NO_DATA", "2xx 但 0 字节（REACHABLE_NO_DATA 陷阱）", bits
+        bits.append("实收 %d B；sha256(prefix)=%s" % (o1["nbytes"], o1["sha"]))
+        return "REACHABLE", "全量取回（限 5 MB；小件）", bits
+    if mode == "epmc":
+        try:
+            j = json.loads(t)
+            hc = (j.get("hitCount") if isinstance(j, dict) else None)
+            if hc is None:
+                return "REACHABLE_NO_DATA", "无法解析 hitCount", bits
+            bits.append("**hitCount = %s**" % hc)
+            if str(hc) == "0":
+                return "REACHABLE_NO_DATA", "题录**未命中**（hitCount=0）——「未命中 ≠ 不存在」，须保留查询式", bits
+            return "REACHABLE", "题录命中", bits
+        except Exception as e:
+            return "REACHABLE_NO_DATA", "响应非 JSON（%s）" % str(e)[:80], bits
+    if mode in ("head", "http_dir", "supplement", "publisher"):
+        bits.append("http=%s ct=%s clen=%s etag=%s accept-ranges=%s"
+                    % (code, o1.get("ct"), o1.get("nbytes"), o1.get("etag") or "NA", o1.get("ar") or "NA"))
+        return "REACHABLE", "对象级取证成功（HEAD/GET）", bits
+    return "NEEDS_VERIFY", "模式 %s 无专属判定 ⇒ 保守记 NEEDS_VERIFY（**不得当 pass**）" % mode, bits
+
+
+def run_reach_all(args):
+    """清单 §2 的 S1–S12 全部源 + 子端点（≥40 行）逐条实测 → `data/m12_source_reachability.csv`。"""
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import _m12_reach_specs as specs_mod
+    specs = specs_mod.SPECS
+    if args.sids:
+        want = {x.strip() for x in args.sids.split(",") if x.strip()}
+        specs = [x for x in specs if x["sid"] in want]
+        log("REACH 定向复核：只跑 %d 条（%s）⇒ 结果作为 **append-only 更正行** 追加"
+            % (len(specs), sorted(want)))
+    log("=== REACH：清单 §2 的 S1–S12 全源可达性（%d 条规格）===" % len(specs))
+    hr = os.path.join(LOG_DIR, "_hdr_reach.txt")
+    t0 = time.time()
+    counts = {}
+    for i, sp in enumerate(specs, 1):
+        # **spec 级 timeout 覆盖**（预注册）：对实测已知"服务端生成慢"的端点给更长窗口，
+        # 否则会得到"探针窗短于 TTFB"造成的**假 BLOCKED**（判据行 M12-M-01 的同类）
+        tmo = int(sp.get("timeout") or args.timeout)
+        o1 = _spec_probe_once(sp, hr, tmo)
+        need2 = sp["mode"] in ("count", "page", "list", "range", "fetch", "epmc", "head")
+        o2 = _spec_probe_once(sp, hr, tmo) if need2 else dict(http=o1.get("http", ""))
+        verdict, note, bits = _spec_parse(sp, o1, o2)
+        counts[verdict] = counts.get(verdict, 0) + 1
+        scope = {"REACHABLE": "对象级/内容级实测通过；**本条的作用域仅限本行列出的这一维**",
+                 "REACHABLE_NO_DATA": "端点可达但**对象级未证实**或**该口径下 0 命中**",
+                 "NEEDS_TOKEN": "需凭据 ⇒ **不是**数据不存在",
+                 "NEEDS_VERIFY": "可达性未证实 ⇒ 保守判定，**不得当 pass**",
+                 "BLOCKED": "网络/权限受阻 ⇒ **未测 ≠ 未命中**，须当场复核",
+                 "NOT_EXIST": "该路径/对象不存在（本机件则为落盘状态）",
+                 "NOT_APPLICABLE": "无网络语义（派生/抽象登记）"}.get(verdict, "")
+        missing = ("无（本行所声明的作用域内证据完整：对象级/内容级均已实测）"
+                   if verdict == "REACHABLE" else
+                   ("不适用（无网络语义；本条为派生/抽象登记，不是数据源）"
+                    if verdict == "NOT_APPLICABLE" else ""))
+        if verdict in ("REACHABLE_NO_DATA", "NEEDS_TOKEN", "NEEDS_VERIFY", "BLOCKED", "NOT_EXIST"):
+            tm = ("；★ **本行是超时/零字节**（curl exit=%s）：按 M12-M-01，其根因**可能是探针窗短于"
+                  "服务端生成时延（TTFB）**而非不可达 ⇒ **须以更长窗当场复核后方可判 unavailable**"
+                  % o1.get("exit")) if (o1.get("nbytes") in (0, None) and o1.get("exit") in (28, 124)) else ""
+            missing = ("缺的维度：**该行的对象级内容未取得**（http=%s）；已覆盖维度=端点可达性/响应码%s%s。"
+                       "⇒ 降级路径见该源在清单 §2.2 的「降级路径」条目"
+                       % (o1.get("http") or "NA",
+                          ("/字节数" if o1.get("nbytes") else ""), tm))
+        prov = ("本轮当场探测（父进程硬回收，两次口径）｜模式=%s｜依据 HTTP %s + 内容解析：%s"
+                % (sp["mode"], o1.get("http") or "NA", "; ".join(bits) or note))
+        _REACH2_ROWS.append(",".join(csv_escape(x) for x in [
+            utc_now(), sp["sid"], sp["source"], sp["category"], sp["kind"], sp["url"],
+            o1.get("http") or "NA(no-network)" if sp["mode"] != "derived" else "NA(no-network)",
+            (o2.get("http") if o2.get("http") else "NA(仅一次探测)"),
+            (o1.get("nbytes") if o1.get("nbytes") else ("0" if sp["mode"] != "derived" else "NA")),
+            o1.get("ct") or "NA", ("%.1f" % o1["speed"]) if (o1.get("speed") or 0) > 0 else "NA",
+            verdict, scope, str(o1.get("exit", "NA")),
+            sp["evidence_level"], specs_mod.__dict__.get("SHA_BASIS_HINT", "payload")
+            if False else ("file_bytes" if sp["mode"] == "local" else
+                           ("head_only" if sp["mode"] == "head" else
+                            ("not_applicable" if sp["mode"] == "derived" else "payload"))),
+            o1.get("sha") or "NA", prov, sp["url"], utc_now(), sp["wrong"], missing,
+            ("%s｜%s" % (sp["note"], note))[:1200]]))
+        log("REACH [%02d/%d] %-7s %-6s %s  %s" % (i, len(specs), sp["sid"], verdict,
+                                                  (o1.get("http") or "-"), sp["source"][:52]))
+        if i % 10 == 0:
+            flush_reach2()
+            log("REACH 进度：%d/%d，已用 %.1f s" % (i, len(specs), time.time() - t0))
+    flush_reach2()
+    log("REACH 完成：%d 行，用时 %.1f s；四态分布=%s" % (len(specs), time.time() - t0, counts))
+    return dict(n_specs=len(specs), by_verdict=counts, seconds=round(time.time() - t0, 1),
+                csv=os.path.relpath(CSV_REACH2, os.path.dirname(ROOT)))
 
 
 if __name__ == "__main__":

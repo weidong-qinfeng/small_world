@@ -161,6 +161,10 @@ def main():
         ("m12_ibl_sessions.csv", "S5 预注册 session 白名单 + A/B/C/D 归属"),
         ("m12_probe_b1_summary.json", "探针汇总（断言/计数元数据）"),
         ("m12_reference.csv", "参考锚/判据行（**append-only**，带 provenance/evidence_level/wrong_usage_consequence）"),
+        ("m12_source_reachability.csv", "★ §2.5 要求的 **S1–S12 全源可达性表**（≥40 行；每行带 provenance/"
+                                        "source_url/retrieved_at/evidence_level/sha_basis/wrong_usage_consequence）"),
+        ("m12_ibl_trials_aggregate.csv", "S5 全量聚合行为表的**逐 session 试次数**（459 行；Σ == 表行数）"),
+        ("m12_ibl_trials_aggregate.json", "S5 全量聚合行为表解析汇总（rows/cols/schema/分布）"),
         ("m12_probe_b1_counts.json", "本计数锚（本工具产出）"),
     ]
     for fn, nt in gate_files:
@@ -193,6 +197,10 @@ def main():
     integ = rows(os.path.join(DATA, "m12_probe_b1_integrity.csv"))
     ibl = rows(os.path.join(DATA, "m12_ibl_sessions.csv"))
     ref = rows(os.path.join(DATA, "m12_reference.csv"))
+    reach2 = rows(os.path.join(DATA, "m12_source_reachability.csv"))
+    aggsess = rows(os.path.join(DATA, "m12_ibl_trials_aggregate.csv"))
+    aggjson = json.load(open(os.path.join(DATA, "m12_ibl_trials_aggregate.json"), encoding="utf-8")) \
+        if os.path.exists(os.path.join(DATA, "m12_ibl_trials_aggregate.json")) else {}
     summ = {}
     if os.path.exists(os.path.join(DATA, "m12_probe_b1_summary.json")):
         summ = json.load(open(os.path.join(DATA, "m12_probe_b1_summary.json"), encoding="utf-8"))
@@ -257,6 +265,28 @@ def main():
     asrt("A14", "无稀疏虚增（apparent > real 的件数 == 0）",
          all(r["apparent_bytes"] <= r["real_bytes"] for r in inv))
     asrt("A15", "判据表 append-only：既有 ref_id 全部保留（本工具不重写既有行）", True)
+    sfull = [r for r in integ if r["source"].startswith("S5FULL")]
+    sfull_ok = [r for r in sfull if r["verdict"] == "COMPLETE"]
+    asrt("A17", "S5FULL trials.pqt 完整性门三级齐（size==Content-Length ∧ 多段 ETag 复算 ∧ parquet 解析）",
+         bool(sfull_ok) and sfull_ok[-1]["size_match"] == "True"
+         and sfull_ok[-1]["etag_match"] == "True" and sfull_ok[-1]["parse_ok"] == "True")
+    asrt("A18", "S5FULL 语义锚：Σ(逐 session 试次数) == 表行数 且 session 数 > 40（解白名单缺口）",
+         bool(aggjson) and aggjson.get("distribution", {}).get("sum_equals_num_rows") is True
+         and int(aggjson.get("distribution", {}).get("n_sessions", 0)) > 40
+         and len(aggsess) == int(aggjson.get("distribution", {}).get("n_sessions", -1)))
+    asrt("A19", "§2.5 可达性表：唯一 source_id >= 40 且有 >= 40 个 REACHABLE 行",
+         len(set(r["source_id"] for r in reach2)) >= 40
+         and sum(1 for r in reach2 if r["verdict"] == "REACHABLE") >= 40)
+    asrt("A20", "可达性表每行必填字段（utc/provenance/source_url/retrieved_at/evidence_level/"
+                "sha_basis/wrong_usage_consequence/missing_dimension）**无空值**",
+         bool(reach2) and all(str(r.get(k, "")).strip() for r in reach2 for k in
+                              ("utc", "source_id", "source", "url", "verdict", "evidence_level",
+                               "sha_basis", "provenance", "source_url", "retrieved_at",
+                               "wrong_usage_consequence", "missing_dimension", "note", "verdict_scope")))
+    asrt("A21", "判据表每行 provenance/evidence_level/source_url/retrieved_at/wrong_usage_consequence 无空值",
+         bool(ref) and all(str(r.get(k, "")).strip() for r in ref for k in
+                           ("provenance", "evidence_level", "source_url", "retrieved_at",
+                            "wrong_usage_consequence")))
     asrt("A16", "吞吐 CSV 每行都带 utc 且 bytes_per_s 与 bytes/seconds 自洽（<=1% 相对差）",
          all(abs(float(r["bytes_per_s"]) - (int(r["bytes"]) / float(r["seconds"]))) <=
              max(1.0, 0.01 * float(r["bytes_per_s"])) for r in thr if float(r["seconds"]) > 0))

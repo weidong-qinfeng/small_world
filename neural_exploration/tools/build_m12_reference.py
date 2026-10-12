@@ -390,6 +390,84 @@ def main():
         "**假件进台账 = 台账总量虚增 + 下游可能把错误页当数据解析**（静默失效家族第 5 例）",
         "pass", "修法：curl 加 --fail；续传**仅**在 http 取值于 {200,206} 且确为部分时执行")
 
+    # ================= 门标准操作化（§1.2；**运行前冻结**，见 docs/m12_b1_gate_closure.md §2） =================
+    from math import ceil, sqrt
+    z1a, z1b = 1.6449, 1.2816                      # z_{0.95}（TOST 每侧 alpha=0.05）/ z_{0.90}（power=0.80）
+    K_power = 2.0 * (z1a + z1b) ** 2               # = 17.134 ：n_min^power = K_power * sigma^2 / delta^2
+    K_ci = 2.0 * (z1a / 0.20) ** 2                 # = 135.3 ：CI 宽度门（单组）
+    K_tot = 4.0 * (z1a + z1b) ** 2                 # = 34.268：劈半自检 ⇒ n_total = 2 * 2 * K/2 ... 见 note
+    docs_note = "推导与算式全文见 docs/m12_b1_gate_closure.md §2"
+    add("M12-G-01", "gate.p_gt_0.05_branch_form", "TOST_or_equivalence_CI", "-",
+        "门标准中的 p>0.05 支路**只能**以实现为等价检验：max(p_low,p_high) < 0.05 或 "
+        "90% CI 完全落在 (-delta,+delta) 内；**raw 双侧 p>0.05 一律不得作 pass**",
+        "derived", "清单 §1.2 F1 行 + 附加条款 6 的机械改写（本节点执行化）；" + docs_note,
+        "docs/生物仿真M12实施清单.md", now,
+        "**把 raw p>0.05 当通过**⇒ 样本量不足时自然满足（平凡通过），是 §1.2 明文要堵的第一类假通过；"
+        "反向错误（把等价检验的 p 值取成 2*min(p_low,p_high)）⇒ 把等价变成差异的假阳性",
+        "pass", "等价检验 p 值 = max(p_low, p_high)；报告须含 delta / Delta_hat / CI90 / p_low / p_high / "
+                "n_sim / n_data 七项")
+    add("M12-G-02", "gate.margin.delta_rel", "0.20", "相对",
+        "delta = 0.20 x |ref|（优先相对 margin）；跨零量改用标准化 margin delta_std",
+        "derived", "清单 §1.2 F1 行的预注册 margin 形式；" + docs_note, "docs/生物仿真M12实施清单.md", now,
+        "**在同一批判据里混用相对与标准化 margin**⇒ 不同判据的等价区间不可比（§0.8 EQ-1 的口径一致要求）",
+        "pass", "delta 必须与 ref 的来源同时写出（ref 为 unverified 时该判据不得作带，§1.2 附加条款 5）")
+    add("M12-G-03", "gate.n_min_formula", "ceil(428.3*CV^2)", "每组",
+        "n_min^power = 2*sigma^2*(z0.95+z0.90)^2/delta^2 = 17.134*sigma^2/delta^2；"
+        "代入 delta=0.20*|ref| 与 sigma=CV*|ref| ⇒ n_min^power = ceil(428.3 x CV^2)（**每组**）",
+        "derived", "TOST 两组等样本量的标准样本量公式（本节点执行化）；" + docs_note,
+        "docs/生物仿真M12实施清单.md", now,
+        "**不给 n_min 就做等价检验**⇒ 等价与否由样本量而非数据决定（§0.8 第 4 条：n_valid < n_min ⇒ "
+        "判 invalid，**不是** pass 也**不是** fail）",
+        "pass", "示例：CV=0.20 ⇒ 18；CV=0.30 ⇒ 39；CV=0.50 ⇒ 108；CV=1.00 ⇒ 429（每组）")
+    add("M12-G-04", "gate.n_total_min_formula_split_half", "ceil(856.6*CV^2)", "合计",
+        "★ 边界可达性自检（§1.2 附加条款 4）要求把目标数据按区组劈两半、同 margin 判等价并**必须通过** "
+        "⇒ 每半都要满足 n_min ⇒ n_total >= 2 x n_min^power = ceil(856.6 x CV^2)",
+        "derived", "清单 §1.2 附加条款 4 + 本节点的样本量推导；" + docs_note,
+        "docs/生物仿真M12实施清单.md", now,
+        "**忽略劈半自检**⇒ margin 或指标口径直到跑完模型才暴露不可达（M10 L20.3 / M11 §0.7 #4 的同型事故），"
+        "届时只能重定稿，整轮作废",
+        "pass", "示例：CV=0.20 ⇒ 35；CV=0.30 ⇒ 78；CV=0.50 ⇒ 215（合计，两组）")
+    add("M12-G-05", "gate.mde_formula", "sqrt(17.134/n)*sigma", "—",
+        "MDE @ n_min 必须随判据一起报：delta_detectable(n) = sqrt(17.134/n) * sigma（单组 n）",
+        "derived", "同上（本节点执行化）；" + docs_note, "docs/生物仿真M12实施清单.md", now,
+        "**只报 n 不报 MDE**⇒ 读者无法判断该 n 下能检出多大差异（§1.2 附加条款 2 明文要求）",
+        "pass", "")
+    add("M12-G-06", "gate.multiple_comparison", "Holm-Bonferroni", "-",
+        "family 内用 Holm–Bonferroni（FWER 控制）；**同时报 raw p 与 adjusted p**；family 必须在运行前定义",
+        "derived", "清单 §1.2 附加条款 3；本节点给出 4 个预注册 family 建议（P8-behavior 5 / "
+                   "P10-activity 3 / P11-perturbation N_anchor / P7-region 6）；" + docs_note,
+        "docs/生物仿真M12实施清单.md", now,
+        "**不定义 family 就报 p 值**⇒ 等价于「20 个指标挑 1 个通过」（§1.2 明文禁止）；"
+        "只报 adjusted 不报 raw ⇒ 无法复核校正过程",
+        "pass", "等价检验的 p 值用 max(p_low,p_high) 参与校正（见 M12-G-01）")
+    add("M12-G-07", "gate.F4_denominator_rule", "exclude_unavailable_and_ineffective", "-",
+        "F4 命中率分母**预注册**；unavailable / injection_ineffective / no-experiment **不入分母**",
+        "derived", "清单 §1.2 F4 行 + §2.4 采集参数读不回条款；" + docs_note,
+        "docs/生物仿真M12实施清单.md", now,
+        "**把 unavailable 计入分母**⇒ 该判定直接作废（§1.2 F4 明文；未测 ≠ 未命中）——"
+        "这是 M11 已付过学费的形态（MQ/负结果被算成失败）",
+        "pass", "与判据行 M12-S5-07（22 个 session 未命中）同族：未命中须单列，不得并入分母")
+    add("M12-G-08", "gate.IBL_behavior_schema_13cols", "13", "列",
+        "IBL 行为表真实 schema = 13 列：goCue_times / response_times / choice / stimOn_times / "
+        "contrastLeft / contrastRight / probabilityLeft / feedback_times / feedbackType / rewardVolume / "
+        "firstMovement_times / intervals_0 / intervals_1",
+        "measured", "本节点用 pyarrow 读回 40/40 落盘行为表的 schema（data/m12_probe_b1_integrity.csv "
+                    "逐件留痕）；**常识写法 feedback 与 intervals 均不存在**（真名 feedbackType / intervals_0,1）",
+        IBL_URL, now,
+        "**凭常识写列名**（feedback / intervals）⇒ 装配脚本 KeyError，或更糟：静默取到 None 并继续"
+        "⇒ 反馈相关判据在空列上计算（静默失效家族形态）",
+        "pass", "RT 口径必须预注册起点（response_times - goCue_times 还是 - stimOn_times）："
+                "两者都在表里，混用会造成纯口径的假差异")
+    add("M12-G-09", "gate.fit_set_size_vs_n_min", "A=13 < 35", "session",
+        "白名单 A 分区 13 session，而 CV=0.20（乐观）下 n_total_min = 35（见 M12-G-04）"
+        "⇒ **A 单独作拟合集不满足样本量门**",
+        "derived", "本节点实测白名单规模（A=13/B=13/C=13/D=1，data/m12_ibl_sessions.csv）+ M12-G-04 的算式",
+        IBL_URL, now,
+        "**拿 A=13 直接跑 TOST**⇒ n_valid < n_min ⇒ 判 invalid（不是 pass）；若忽略 n_min 强判，"
+        "会得到样本量决定而非数据决定的等价结论",
+        "pass", "可选处置：① A 扩到 >=18（再取 5 个 session，成本约 5 x 50 KB）"
+                "② 用全白名单 40 作拟合集、B 分区扩到同量级 ③ 显式登记 CV 的实测值以重算 n_min")
+
     ids, nlines = existing_ids()
     new = [r for r in R if r["ref_id"] not in ids]
     print("既有行数=%d，既有 ref_id=%d 个；拟新增 %d 行（跳过重复 %d）"
