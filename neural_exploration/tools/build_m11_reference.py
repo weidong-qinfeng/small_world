@@ -433,6 +433,63 @@ def main():
         "★ 你记的「18-cell」为**估计值**，**实测 16**（判据 `bytes/(8×n_frames)` 自证）。"
         "带重建（J7，B4 冻结管线 × 多帧率假设）在后台运行；**v1（1–4 cells）带已按 add-only 快照保留**于 "
         "`m11_dwell_reference_allen2p_v1_thin.{csv,json}`")
+    # ---- R-45：J3 **实测帧率 = 31 Hz**（新增行；彻底解决 ×2.8 量纲因子）----
+    add("R-45", "allen2p_imaging_rate_measured",
+        "31", "Hz",
+        "源侧字段读回 `imaging_rate = b'31Hz'` + 四项独立交叉校验",
+        "asserted", "measured（源侧字段 + 交叉校验）",
+        "data/m11_raw/allen/vc2p/497256116.nwb", "2026-10-12T07:55:00Z",
+        "**★ J3 解决（×2.8 量纲因子定案）**：完整 NWB（**176,019,299 B 逐字节到位**）读回 "
+        "`/general/optophysiology/imaging_plane_1/imaging_rate = b'31Hz'` ⇒ **31 Hz**。"
+        "**四项独立交叉校验全过**：① **空间自洽** 512 px × 0.78 µm = **399.4 µm** ⇔ 同文件 `fov` 声明 **400 µm** ✓；"
+        "② 区名 `VISpm` ⇔ `ophys_experiments.json` 的 `targeted_structure = posteromedial visual area` ✓；"
+        "③ `session_type = three_session_B` ⇔ JSON `stimulus_name` ✓；④ `imaging depth = 275 microns` ⇔ JSON `imaging_depth = 275` ✓。"
+        "**量纲后果**：113,835 帧 ÷ 31 Hz = **61.2 min**（÷ 主 agent 的 30.9 Hz 假设 = 61.4 min，**仅差 0.32%**）⇒ "
+        "**30.9 Hz primary 被证实（误差 0.3%）**；**11 Hz 假设（2.87 h）被否证**。"
+        "⇒ R-6/Allen 2p 带的**秒数无需重算**（0.32% ≪ 一切已报离散度，如跨实验 10.0×）；"
+        "若要求严格一致，可按 31 Hz 重跑（同工具一遍即可）。同文件另读出 `pixel_size = 0.78 (um)`、"
+        "`indicator = GCaMP6f`、`excitation_lambda = 910 nanometers`、`nwb_version = NWB-1.0.5`")
+    # ---- R-46/R-47：R42 ② dwell/转换率四态 + ⑤ 样本量门按**箱**计（新增行）----
+    add("R-46", "dwell_and_transition_rate_verdict",
+        "unavailable（样本不足，估计不稳）", "-",
+        "两独立实现的差异（dwell 1.93–4.06× / 转换率 2.35×）与该数据**自身**的时间半劈离散（3.23×）同阶",
+        "asserted", "unavailable（**判不准**，非未测、非未命中）",
+        "data/m11_dwell_reference.json", "2026-10-12T08:05:00Z",
+        "**主 agent R42 ② 裁决，本节点采信并制度化**：dwell 中位与转换率**判 `unavailable（样本不足，估计不稳）`**——"
+        "**不得记 `pass`，也不得记 `fail`**。理由：我的带 dwell 中位 **12.86 s** / 转换率 **0.046 Hz** vs 主 agent 独立建带 "
+        "**3.17–6.67 s** / **≈0.0196 Hz** ⇒ **1.93–4.06× / 2.35×**（超 ±1.7×）；而同一数据**时间半劈**离散已达 **3.23×**"
+        "（13.7 vs 44.3 s）⇒ 二者**同阶** ⇒ 结论是「**该量在此窗长下不可判定**」，**不是**「某个实现错了」。"
+        "窗长 317.46 s ÷ 12.86 s ≈ **25 个低态周期**（样本不足的量化）。"
+        "**三态区分（新纪律）**：**未测 ≠ 未命中 ≠ 测不准**——本行属第三类。"
+        "▶ **同时记（与 R40『禁止连带降级』同向）**：**(τ, 占用) 的互证是成功的**"
+        "（τ 平滑 **32.549 s** vs **29.6–32.6 s** ⇒ **0.998–1.10×** 落在带内；占用 **0.631/0.369** vs **0.613–0.642** 在带内；"
+        "p90/中位 **5.78** 与 ~5–10 同阶）⇒ **两实现的口径在『可判定的量』上是对齐的** ⇒ "
+        "**局部的不可判定不得推广为整体的不可信**")
+    add("R-47", "sample_size_gate_in_bins",
+        "65/130/500", "bins",
+        "样本量门**一律按箱（bin）计**；本轮 333 箱 ⇒ BIC `unavailable`",
+        "asserted", "measured",
+        "data/m11_dwell_reference.json", "2026-10-12T08:05:00Z",
+        "**主 agent R42 ⑤ 量纲更正的落地**：S-7 原写「BIC 选 K ≥500」**未标量纲**，而本轮实测 "
+        "**2,000 帧 ÷ 6 帧/箱 = 333 箱** ⇒ 「≥500 **帧**」与「≥500 **箱**」**不是同一量纲**。"
+        "**更正后口径（本行即新标准）**：`n_bins < 65 ⇒ invalid`；**形状类 ≥130 箱**；**BIC 选 K ≥500 箱** ⇒ "
+        "本轮 **333 箱 ⇒ BIC `unavailable`** ✓（本节点原判法正确）。"
+        "★ 注：本节点 `m11_s_gate_criteria_prereg.csv` 的 **S-7 原行沿用 B4 命名写作 `n_frames`**（同一措辞问题），"
+        "按只增不改**保留原行**，另加 **S-13** 行以箱口径重写（见该表）")
+    # ---- R-48：J2-b（132-cell 件）交付 + 口径转移检查（新增行；主 agent R63 批准）----
+    add("R-48", "allen2p_events_group_size_132cells_j2b",
+        "132 cells × 105,943 frames", "cells",
+        "size == Content-Length（111,876,046）∧ **ETag 多段复算通过**（part=16 MiB × 7 段）⇒ 逐字节等同服务器对象 ∧ npz=store 判据自证",
+        "asserted", "measured",
+        "data/m11_raw/allen/vc2p/j2b/497060401_events.npz", "2026-10-12T08:25:00Z",
+        "**J2-b 交付（主 agent R63 批准）**：`497060401_events.npz` = **111,876,046 B**（30 s 探针 **1.72 MB/s** ⇒ 门通过；"
+        "一次性取全 95.4 s / 1.17 MB/s）。**完整性门（纪律③）**：size == Content-Length ✓ ＋ **ETag 复算通过**"
+        "（`27284d01…-7`，part=16 MiB × 7 段）⇒ 逐字节等同服务器对象；sha256 `ba1987cf…`。"
+        "★ **实测 132 cells**（npz=store 判据：111,876,046/(8×105,943) = **132.0003**）——主 agent 记的 「123-cell」 为估计值**"
+        "（其按 n_frames≈113,835 推得；本件实际 **105,943 帧**）⇒ **样本 132 > 123，thin 限制进一步缓解**。"
+        "落 **独立子目录** `vc2p/j2b/`（纪律④，未覆盖既有件）。**⑤ 口径转移检查（R59-20）**："
+        "本件 `ev` 每行 = **1 个 cell**（逐细胞迹）⇒ **比例类 ✓ 可转移**（占用/静默/p90-中位/转换率比值/τ 比值）；"
+        "**绝对率类 ✗ 不可**（且**不得**与 MICrONS 钙域**代理分箱**率互换填表：一个是 neuron、一个是 ≈multi-neuron 分箱）")
     with open(OUT, "w", newline="", encoding="utf-8") as f:
         f.write("# M11 参考锚（generated_by=tools/build_m11_reference.py；**只允许新增行**；"
                 "status ∈ {asserted, NEEDS_VERIFY, unverified}；**unverified 行不得作为判据带**）\n")

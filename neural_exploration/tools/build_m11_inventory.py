@@ -192,12 +192,43 @@ def main():
         utcnow(), "measured(HTTP 200, 完整性门 COMPLETE)",
         "**区/深度登记 + 连接链键**：123,224 通道；`ecephys_structure_acronym`（区级）+ CCF 前后/背腹/左右；"
         "units→channels→probes→sessions 连接率 100%")
+    # ---- Allen 2p（vc2p）**整目录入账**（纪律：盘上每件都必须在台账内，含大件）----
+    _vc2p = os.path.join(RAW, "allen", "vc2p")
+    if os.path.isdir(_vc2p):
+        # ★ **递归**（含子目录）：J2-b 落在 `vc2p/j2b/`，首版用 os.listdir + isfile ⇒ **子目录被静默跳过**、
+        #   111 MB 漏账（与 176 MB NWB 漏账同族）⇒ 改为 os.walk，盘上每件都必须在台账内。
+        _vc2p_files = []
+        for _root, _dirs, _fs in os.walk(_vc2p):
+            for _f in sorted(_fs):
+                _vc2p_files.append(os.path.join(_root, _f))
+        for _p in _vc2p_files:
+            _f = os.path.basename(_p)
+            _n = os.path.getsize(_p)
+            _ev = "measured(HTTP 200/206, 完整性门 COMPLETE)"
+            _nt = ""
+            if _f.endswith("497256116.nwb"):
+                _ev = ("measured(HTTP 206 全量 %d B + 逐字节一致)" % _n)
+                _nt = ("**J3 实测帧率来源**：`/general/optophysiology/imaging_plane_1/imaging_rate = b'31Hz'` ⇒ **31 Hz**；"
+                       "同文件 `fov=400x400 microns (512x512 px)`、`pixel_size=0.78 (um)`、`indicator=GCaMP6f`、"
+                       "`nwb_version=NWB-1.0.5`。★ 首轮 `--max-time 600` 超时（exit 28）停在 170,235,948/176,019,299 B = 96.7% ⇒ "
+                       "判 INCOMPLETE 未入统计；`curl -C -` 续传 5,783,351 B 补齐 ⇒ 逐字节一致")
+            elif _f.endswith("_events.npz"):
+                _nt = ("`npz=store` 自描述：bytes/(8×frames) = cells；**J2-a 的 16-cell 件已并入**"
+                       "（群体规模 1–4 → 16，缓解 thin）")
+            elif _f.endswith("ophys_experiments.json"):
+                _nt = ("**全量 1,518 记录 × 14 字段穷举**：**无 rate/frame/duration/sampling 字段**"
+                       "（把 G4 的『64 KB 采样无该字段』升级为**全文件穷举**证据）")
+            elif _f.endswith(".bin"):
+                _nt = "有界 Range 前缀（稀疏文件法自证解码路径用）"
+            add("allen_2p_vc2p", _p,
+                "https://allen-brain-observatory.s3.amazonaws.com/visual-coding-2p/", utcnow(), _ev, _nt)
     add("allen_bo_ecephys", os.path.join(RAW, "allen", "bo_ecephys", "sessions.csv"),
         "https://allen-brain-observatory.s3.amazonaws.com/visual-coding-neuropixels/ecephys-cache/sessions.csv",
         utcnow(), "measured(HTTP 200, 完整)", "58 session 的 session_type/genotype/age（P14 隔离材料）")
     for extra in ("m11_calcium_silence_reference.csv", "m11_calcium_silence_reference.json",
                   "m11_j2_acceptance.json",
                   "m11_calcium_reference_quantities.json", "m11_calcium_rate_band.csv", "m11_calcium_population_corr.csv", "m11_calcium_silent.json", "m11_p5_targets.json", "m11_dwell_reference_allen2p_v2_3exps.json", "m11_dwell_reference_allen2p_v1_thin.json",
+                  "ophys_experiments.json",
                   "m11_allen_units_reference.json", "m11_allen_units_by_session.csv",
                   "m11_allen_units_by_structure.csv", "m11_allen_rate_band_by_area_group.csv",
                   "m11_same_source_crosscheck.csv", "m11_same_source_crosscheck.json",

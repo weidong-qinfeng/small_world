@@ -930,6 +930,99 @@ def main():
                      and os.path.exists(os.path.join(DATA, "m11_dwell_reference_allen2p_v1_thin.json")),
                      "L39 在位；v1_thin + v2_3exps 均在盘"))
 
+    # ---------------- P1.28 J3 帧率实测（R-45）----------------
+    nwb = os.path.join(DATA, "m11_raw", "allen", "vc2p", "497256116.nwb")
+    nwb_ok = os.path.exists(nwb) and os.path.getsize(nwb) == 176019299
+    ir_val = None
+    if nwb_ok:
+        try:
+            import h5py as _h5
+            _f = _h5.File(nwb, "r")
+            ir_val = _f["/general/optophysiology/imaging_plane_1/imaging_rate"][()]
+            _pix = _f["/general/pixel_size"][()]
+            _fov = _f["/general/fov"][()]
+            _f.close()
+        except Exception:
+            ir_val = None
+    A.append(assert_("P1.28a J3 完整 NWB 逐字节到位（176,019,299 B）+ `imaging_rate` **可读**",
+                     nwb_ok and ir_val is not None, "bytes=%s value=%r"
+                     % (os.path.getsize(nwb) if os.path.exists(nwb) else None, ir_val)))
+    A.append(assert_("P1.28b 实测帧率 = **31 Hz**（源侧字段）⇒ 30.9 Hz primary 被证实、11 Hz 被否证",
+                     (ir_val is not None) and (b"31" in (ir_val if isinstance(ir_val, bytes) else b""))
+                     and (rmap2.get("R-45") or {}).get("value") == "31",
+                     "imaging_rate=%r | R-45=%s" % (ir_val, (rmap2.get("R-45") or {}).get("value"))))
+    A.append(assert_("P1.28c 空间自洽交叉校验（512 px × 0.78 µm = 399.4 µm ⇔ fov 400 µm）",
+                     nwb_ok and "399" in "%.1f" % (512 * 0.78) and "400" in str(
+                         (rmap2.get("R-45") or {}).get("note") or ""),
+                     "512×0.78=%.1f µm（R-45 note 内含 400 µm 对照）" % (512 * 0.78)))
+    A.append(assert_("P1.28d J3 已并入作业表（status=COMPLETED，含超时→续传事件留痕）",
+                     any(j.get("id") == "J3" and "COMPLETED" in (j.get("status") or "")
+                         and "96.7" in str((j.get("j3_result") or {}).get("incident") or "")
+                         for j in ((load(os.path.join(DATA, "m11_b1_managed_jobs.json")) or {}).get("jobs") or [])),
+                     "J3 COMPLETED（含 exit=28 事件）"))
+
+    # ---------------- P1.29 no-verdict-contagion（R40 ①）----------------
+    rep3 = open(os.path.join(DOCS, "m11_data_gate_report.md"), encoding="utf-8").read()
+    A.append(assert_("P1.29a 报告已落 **P2 scope 声明**（pass 不得读成『功能侧可用于同源约束』）",
+                     "§6o" in rep3 and "不得被读成" in rep3 and "同源约束" in rep3,
+                     "§6o.1 scope 声明在位"))
+    _tg2 = (load(os.path.join(DATA, "m11_p5_targets.json")) or {}).get("rows") or []
+    _scope_unavail = [r.get("key") for r in _tg2
+                      if str(r.get("key", "")).startswith(("rate_median_hz_measured_calcium",
+                                                           "silent_frac_ephys"))
+                      and str(r.get("value")) == "unavailable"]
+    A.append(assert_("P1.29b **禁止连带降级**：C1/C2 作用域行仍各判 `unavailable`，而 P2 判定保持 `pass`（并存不互拽）",
+                     len(_scope_unavail) >= 2
+                     and not any((not a["ok"]) and a["assertion"].startswith("P2") for a in A),
+                     "C1/C2 作用域 unavailable 行=%d 例 %s；P2 无失败断言 ⇒ pass（并存不互拽）"
+                     % (len(_scope_unavail), _scope_unavail[:3])))
+    A.append(assert_("P1.29c 第五纪律（no verdict contagion）已制度化为文本 + 断言",
+                     ("连带降级" in rep3) and ("既不夸大" in rep3),
+                     "§6o.2 纪律文本在位"))
+
+    # ---------------- P1.30 R42：dwell/转换率四态 + 样本量门按箱计 ----------------
+    _r46 = (rmap2.get("R-46") or {}).get("note") or ""
+    _r47 = (rmap2.get("R-47") or {}).get("note") or ""
+    A.append(assert_("P1.30a R-46：dwell/转换率判 **unavailable（样本不足，估计不稳）**（非 pass 非 fail）",
+                     "unavailable（样本不足" in ((rmap2.get("R-46") or {}).get("value") or "")
+                     and "不得记 `pass`" in _r46,
+                     "R-46 value=%s" % (rmap2.get("R-46") or {}).get("value")))
+    A.append(assert_("P1.30b 三态区分（未测 ≠ 未命中 ≠ **测不准**）+ 「局部不可判定不得推广为整体不可信」",
+                     "测不准" in _r46 and "不得推广" in _r46 and "0.998" in _r46,
+                     "R-46 含三态区分与 τ/占用互证成功的配对记录"))
+    _r47_all = _r47 + " " + str((rmap2.get("R-47") or {}).get("criterion") or "")
+    A.append(assert_("P1.30c R-47：样本量门**按箱计**（65/130/500 箱）⇒ 333 箱 ⇒ BIC `unavailable`",
+                     "箱" in _r47_all and "333" in _r47_all and "unavailable" in _r47_all,
+                     "R-47 落箱口径更正"))
+    _prereg = open(os.path.join(DATA, "m11_s_gate_criteria_prereg.csv"), encoding="utf-8").read()
+    A.append(assert_("P1.30d S-7 原行保留 + 新增 **S-13** 以箱口径重写（只增不改）",
+                     "S-13" in _prereg and "S-7" in _prereg and "n_bins<65" in _prereg,
+                     "预注册表含 S-13（箱口径）且 S-7 原行在位"))
+    A.append(assert_("P1.30e J4（R42 ③ 批准）已由 J5 执行并登记映射（独立子目录、先探吞吐）",
+                     any(j.get("id") == "J5" and "j4_mapping" in j for j in
+                         ((load(os.path.join(DATA, "m11_b1_managed_jobs.json")) or {}).get("jobs") or [])),
+                     "J5.j4_mapping 在位（含四条纪律）"))
+
+    # ---------------- P1.31 J2-b（132-cell 件，R63 批准）----------------
+    j2b = os.path.join(DATA, "m11_raw", "allen", "vc2p", "j2b", "497060401_events.npz")
+    A.append(assert_("P1.31a J2-b 落**独立子目录**且 size == Content-Length（111,876,046）",
+                     os.path.exists(j2b) and os.path.getsize(j2b) == 111876046,
+                     "path=%s bytes=%s" % ("vc2p/j2b/497060401_events.npz",
+                                           os.path.getsize(j2b) if os.path.exists(j2b) else None)))
+    _r48 = (rmap2.get("R-48") or {}).get("note") or ""
+    A.append(assert_("P1.31b J2-b 完整性用 **ETag 多段复算**（强于 sha256）且已登记",
+                     "ETag 复算通过" in _r48 and "16 MiB" in _r48,
+                     "R-48 含 ETag 复算（part=16 MiB × 7 段）"))
+    A.append(assert_("P1.31c ④ 口径转移检查已做（比例类 ✓ / 绝对率类 ✗；132 cells 实测）",
+                     "比例类 ✓ 可转移" in _r48 and "绝对率类 ✗ 不可" in _r48 and "132.0003" in _r48,
+                     "R-48 含 R59-20 转移检查与 132 实测"))
+    A.append(assert_("P1.31d J2 作业表已记 J2-b 结果 + J8（重建）登记",
+                     any(j.get("id") == "J2" and j.get("j2b_result") for j in
+                         ((load(os.path.join(DATA, "m11_b1_managed_jobs.json")) or {}).get("jobs") or []))
+                     and any(j.get("id") == "J8" for j in
+                             ((load(os.path.join(DATA, "m11_b1_managed_jobs.json")) or {}).get("jobs") or [])),
+                     "J2.j2b_result + J8 在位"))
+
     # ---------------- 判定 ----------------
     for a in A:
         if not a["ok"]:

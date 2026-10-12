@@ -1,12 +1,12 @@
 {
  "generated_by": "tools/validate_p11_data_gate.py",
- "generated_at": "2026-10-11T17:31:49Z",
+ "generated_at": "2026-10-12T00:59:49Z",
  "gate": "G2 (P1/P2 数据门)",
  "assertions": [
   {
    "assertion": "P1.1a 清单 51 源逐号在位",
    "ok": true,
-   "detail": "缺失=[]；n_rows=73（含补测源）"
+   "detail": "缺失=[]；n_rows=76（含补测源）"
   },
   {
    "assertion": "P1.1b verdict 词表合法",
@@ -116,7 +116,7 @@
   {
    "assertion": "P1.6 M11 产出路径全部落在 m11 命名空间（冻结件零修改）",
    "ok": true,
-   "detail": "越界=[] (n_items=240)"
+   "detail": "越界=[] (n_items=283)"
   },
   {
    "assertion": "P2.7a functional_series 采集参数读回（帧率/时长/平面/体素/FOV）",
@@ -156,7 +156,7 @@
   {
    "assertion": "P2.10 未取项显式登记 unavailable + 原因（未测 ≠ 未命中）",
    "ok": true,
-   "detail": "n_unavailable=7"
+   "detail": "n_unavailable=9"
   },
   {
    "assertion": "P1.7a 逐对象完整性门（http→大小→SHA→解压→尺寸自洽）全部 COMPLETE",
@@ -295,8 +295,8 @@
   },
   {
    "assertion": "P1.12a visual-coding-2p 探针行已追加（G1..G8，含 manifest/stimulus/npz/nwb/h5）",
-   "ok": false,
-   "detail": "G 行=['G1', 'G2', 'G3', 'G4', 'G5']"
+   "ok": true,
+   "detail": "G 行=['G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'G7', 'G8']"
   },
   {
    "assertion": "P1.12b 2p 刺激条件表已落盘（stimulus_mappings.json）",
@@ -304,54 +304,467 @@
    "detail": "bytes=17907"
   },
   {
-   "assertion": "P1.13a 自建 dwell/τ 目标带已产出（≥2 个独立实验，B4 冻结管线）",
+   "assertion": "P1.13a **同源** dwell/τ 主带在位（MICrONS 体素序列；≥300 帧门）",
    "ok": true,
-   "detail": "n_experiments=2 experiments=['577885923_events.npz', '593887846_events.npz']"
+   "detail": "source=MICrONS functional_series/session4_scan7 n_bins=333（≥65 valid 门；≥300 帧=50 箱）"
   },
   {
-   "assertion": "P1.13b 目标带含样本量门与两个独立口径（H 法/Q 法；φ 平滑/未平滑并列）",
+   "assertion": "P1.13b 两种时间基 + H/Q 并列 + φ 平滑/未平滑并列",
    "ok": true,
-   "detail": "dwell_med=2.74s τ_med=6.46s φ_sm=0.867 φ_un=0.153 bins=4070.5"
+   "detail": "dwell_phys=12.86s dwell_module=12.34s φ_sm=0.971 φ_un=0.888 H/Q=1.69"
   },
   {
-   "assertion": "P1.13c 形状判据（重尾 ∧ 拒绝指数）在可评实验上成立；不可评者标 unavailable（非 fail）",
+   "assertion": "P1.13c S 门判据体检**如实四态**（S-1 pass；S-2 unavailable；S-3 重尾但 KS 未拒）",
    "ok": true,
-   "detail": "n_evaluable=2 heavy_tail=True ks_reject=True per_exp={\"577885923_events.npz\": {\"p90_over_median\": 2.25, \"ks_p\": 1.58329737699236e-97}, \"593887846_events.npz\": {\"p90_over_median\": 4.200000000000003, \"ks_p\": 1.11712"
+   "detail": "S2=unavailable（每态完整段 <10）；S3=fail/thin（重尾✓ 但 KS 未拒指数；且完整段仅 6<30）"
   },
   {
-   "assertion": "P1.13d 容差来源预注册（B4 三项 + 本轮跨实验/跨口径实测）",
+   "assertion": "P1.13d 容差来源齐全（H/Q、掩膜开关、时间半劈、空间半劈、B4 三项锚）",
    "ok": true,
-   "detail": "{\"method_ratio\": 3.87, \"cross_condition\": 6.9, \"tau_cross_condition\": 3.94, \"source\": \"B4 实测（口径差 3.87× / 跨条件 dwell 6.9× / τ 跨条件 3.94×）\", \"self_cross_experiment\": 2.0, \"self_method_H_vs_Q\": 1.0, \"note\""
+   "detail": "{\"method_H_vs_Q\": 1.6875, \"time_half_spread\": 3.233, \"spatial_half_spread\": 1.292, \"phi_smoothed_vs_unsmoothed_gap\": 0.08365574753252736, \"B4_anchors\": {\"method_ratio\": 3.87, \"cross_condition\": 6.9, \"tau_cross_condition\""
   },
   {
-   "assertion": "P1.13e **未**沿用 ZAPBench 数值（26.5 s / 37.18 s 不得出现在带中）",
+   "assertion": "P1.13e **未**沿用 ZAPBench 26.5 s / 37.18 s",
    "ok": true,
-   "detail": "dwell_med=2.741 τ_med=6.456（ZAPBench 26.5/37.18 已被排除）"
+   "detail": "同源带 dwell=12.86s τ=32.55s（对照 ZAPBench 26.5/37.18）"
   },
   {
-   "assertion": "P1.13f 帧率标注 NEEDS_VERIFY（NWB 读回受阻）+ 11 Hz 敏感性并列",
+   "assertion": "P1.13f 缺失/极值登记（低于基线保留 + 哨兵仅指 32767=0）+ BIC 门如实 unavailable",
    "ok": true,
-   "detail": "**NEEDS_VERIFY**（NWB `imaging_rate` 因网络未读回；文件帧数÷30.9 Hz = 61.4 min 属合理 session 长度，÷11 Hz ="
+   "detail": "低于基线=10383/80000000 (0.01298%)；饱和32767=0；bic_ok=False"
+  },
+  {
+   "assertion": "P1.13g Allen 2p 带已转为**跨制备参照**且原证据保留",
+   "ok": true,
+   "detail": "{\"source\": \"Allen BO 2p（跨制备参照，非 S 门主目标）\", \"dwell_median_s\": 3.655304761034451, \"tau_s\": 7.123439821772231, \"n_bins\": 4076.0, \"ratio_dwell_vs_same_source\": 3.517, \"ratio_tau_vs_same_source\": 4.569}"
+  },
+  {
+   "assertion": "P1.18 RF-M11-D 纪律入档（报告含 R2 反转与同源表述；env notes 含'不可解码'举证标准）",
+   "ok": true,
+   "detail": "报告/env notes 命中"
   },
   {
    "assertion": "P1.14 S 门判据预注册 CSV（形状/存在性/相对尺度 + 样本量门 + 双估计器断言）",
    "ok": true,
-   "detail": "n_rows=12"
+   "detail": "n_rows=13"
   },
   {
    "assertion": "P1.15 长作业登记表（命令行+日志+产物+完成标记）在位",
    "ok": true,
-   "detail": "jobs=[('J1', 'background_self_run'), ('J2', 'request_hosted'), ('J3', 'request_hosted')]"
+   "detail": "jobs=[('J1', 'background_self_run'), ('J2', 'request_hosted'), ('J3', 'request_hosted'), ('J4', 'request_hosted'), ('J5', 'request_hosted'), ('J6', 'resume_then_parse（主 agent 托管作业 DQ-6 的接管）'), ('J7', 'background_self_run'), ('J8', 'background_self_run')]"
   },
   {
-   "assertion": "DET 复跑 verdict 一致（确定性）",
+   "assertion": "P1.16a 报告含 R8 三级同源表述（结构同源 + 属性级同源 + 时间序列级跨源代理）",
    "ok": true,
-   "detail": "[{\"source_id\": \"2\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"3\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F7\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F8\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}, {\"source_id\": \"F9\", \"first\": \"REACHABLE\", \"rerun\": \"REACHABLE\", \"same\": true}]"
+   "detail": "命中三级表述"
+  },
+  {
+   "assertion": "P1.16b 禁用表述**未在正面断言中出现**（仅在'不得/取代'等否定语境中允许）",
+   "ok": true,
+   "detail": "越界示例=[]"
+  },
+  {
+   "assertion": "P1.16c DQ-4 解析器就绪且状态写实（未完整 ⇒ not_run，不得伪造行数）",
+   "ok": true,
+   "detail": "parse_status=not_run（文件未完整）；node=INCOMPLETE edge=INCOMPLETE"
+  },
+  {
+   "assertion": "P1.16d readme schema 已解析（node/edge 列数 ≠ 0）",
+   "ok": true,
+   "detail": "node=26 列 edge=19 列"
+  },
+  {
+   "assertion": "P1.16e 清单已按 DQ-3 补入新源行（只新增：§1.6b/§1.6c + G1..G9）",
+   "ok": true,
+   "detail": "命中 §1.6b/§1.6c 与 G1..G9"
+  },
+  {
+   "assertion": "P1.17a 四类参考量四态收敛已落盘（C1/C2/C3/C4 逐项给状态）",
+   "ok": true,
+   "detail": "{\"C1-tuning\": \"unavailable\", \"C2-rate\": \"thin（样本量远不足）\", \"C2-paircorr\": \"thin（仅 6 对）\", \"C3-dwell\": \"measured\", \"C4-behavior\": \"unavailable（NEEDS_TOKEN）\"}"
+  },
+  {
+   "assertion": "P1.17b C3 dwell 为 measured；C1/C4 为 unavailable；thin 不得冒充 measured",
+   "ok": true,
+   "detail": "C2-rate=thin（样本量远不足） C2-paircorr=thin（仅 6 对）"
+  },
+  {
+   "assertion": "P1.17c 实测吞吐表在位（取数决策必须有实测吞吐支撑）",
+   "ok": true,
+   "detail": "n_rows=19"
+  },
+  {
+   "assertion": "P1.17d DQ-4 等待器**已停**且不轮询（记录停止原因）",
+   "ok": true,
+   "detail": "waiter.log 含停止记录"
+  },
+  {
+   "assertion": "P1.17e 报告含 DQ-4 = unavailable（吞吐限制）与 G-7（应做而未做）",
+   "ok": true,
+   "detail": "命中 DQ-4 口径与 G-7"
+  },
+  {
+   "assertion": "P1.19a 同源带**交叉核对**已落盘（逐格 φ/τ 与主 agent 独立实现比对）",
+   "ok": true,
+   "detail": "网格=8 格；τ 差<5% 的格=5；>5% 的格=3"
+  },
+  {
+   "assertion": "P1.19b 差异>5% 的格已**定位到口径维度**（对数放大/平滑边界/箱宽）",
+   "ok": true,
+   "detail": "{\"binwidth_native_vs_bin_unsmoothed\": {\"tau_native\": 9.0153, \"tau_bin\": 7.6575}, \"smoothing_none_vs_smooth5_native\": {\"tau_none\": 9.0153, \"tau_smooth\": 26.0795}, \"proxy_mean_vs_frac_bin_smoothed\": {\"t"
+  },
+  {
+   "assertion": "P1.19c 掩膜定稿已落实（主口径**无掩膜** + 低于基线保留登记 + 哨兵仅指 32767=0）",
+   "ok": true,
+   "detail": "n_below_baseline=10383 n_saturated=0"
+  },
+  {
+   "assertion": "P1.19d DQ-5 已写入清单（读取约定/解析门标准动作 + 6.30 Hz 读回断言）",
+   "ok": true,
+   "detail": "命中 §1.1.3 与 6.300006"
+  },
+  {
+   "assertion": "P1.19e P2 判定独立建议文本已落盘（待审，未越权定稿）",
+   "ok": true,
+   "detail": "docs/m11_p2_verdict_recommendation.md"
+  },
+  {
+   "assertion": "P1.19f 长作业登记表含 J1–J5（含第二 field 的 J5 与同源窗延长 J4）",
+   "ok": true,
+   "detail": "jobs=['J1', 'J2', 'J3', 'J4', 'J5', 'J6', 'J7', 'J8']"
+  },
+  {
+   "assertion": "P1.20a J2 钙域静默三口径 × 两单元口径已落盘（evidence=measured）",
+   "ok": true,
+   "detail": "zero=0.4900 below=0.0000 fullFOV_no_event=0.8915 units=100"
+  },
+  {
+   "assertion": "P1.20b J2 必附限制（钙事件≠spike rate 8.7–34.8× / ROI 代理 / 退化口径已修正）",
+   "ok": true,
+   "detail": "单元 = **空间分箱代理（proxy，非真实 ROI）**（无真实 ROI 掩膜：`field_seg_masks` 的 `compressed_segmentation` 本节点未自证解码）；**钙事件口径 ≠ spike rate**"
+  },
+  {
+   "assertion": "P1.20c R-21 原行保留（unverified）且 R-32/R-33 为**新增行**",
+   "ok": true,
+   "detail": "R-21=unverified R-32=asserted R-33=asserted（总 48 行）"
+  },
+  {
+   "assertion": "P1.20d 清单逐行标注 sha 基准（file_bytes；跨节点核对用 hash_report.py 三基准）",
+   "ok": true,
+   "detail": "n=283；sha_basis 取值=['file_bytes']"
+  },
+  {
+   "assertion": "P1.20e 同阶窗来源含同 field 内口径离散（代理/Q-H/时间半劈/空间半劈/箱宽/平滑）",
+   "ok": true,
+   "detail": "{\"method_H_vs_Q\": 1.6875, \"time_half_spread\": 3.233, \"spatial_half_spread\": 1.292, \"phi_smoothed_vs_unsmoothed_gap\": 0.08365574753252736, \"B4_anchors\": {\"method_ratio\": 3.87, \"cross_condition\": 6.9, \""
+  },
+  {
+   "assertion": "P1.21a Allen units.csv 完整性门 COMPLETE（size==Content-Length ∧ 多段 ETag 复算 ∧ 末尾换行）",
+   "ok": true,
+   "detail": "size=51439189 etag_ok=True parts=7 status=COMPLETE"
+  },
+  {
+   "assertion": "P1.21b units→channels→probes→sessions 连接链 100%（未解析 = 0）",
+   "ok": true,
+   "detail": "joined=135275/135275 unres=(0,0,0) sessions=58"
+  },
+  {
+   "assertion": "P1.21c **口径强制**：epoch 全为 complete_session ⇒ 声明『非自发率、仅作上界候选』",
+   "ok": true,
+   "detail": "values={\"complete_session\": 135275}"
+  },
+  {
+   "assertion": "P1.21d 退化指标单独登记并从带中剔除（isolation_distance/isi_violations 退化）",
+   "ok": true,
+   "detail": "退化解=7894/135275 (0.0584%) 近静默=4343"
+  },
+  {
+   "assertion": "P1.21e R-34…R-39 为**新增行**且 R-25 原行保留（只增不改）",
+   "ok": true,
+   "detail": "R-25=27 列；新增=['R-34', 'R-35', 'R-36', 'R-37', 'R-38', 'R-39']；总 48 行"
+  },
+  {
+   "assertion": "P1.21f 皮层限定带齐备（VISp = MICrONS 同名区；VIS*）且注明聚合带被非皮层结构抬高",
+   "ok": true,
+   "detail": "VISp n=10750 median=2.485 | VIS* n=49995 median=2.656"
+  },
+  {
+   "assertion": "P1.21g 跨口径量化已落盘（中位/Nyquist 与 >Nyquist 比例）且与钙域分列",
+   "ok": true,
+   "detail": "VISp 中位/Nyq=0.794, >Nyq=0.4129"
+  },
+  {
+   "assertion": "P1.21h 层/区登记：区级 measured ∧ 层 derived（acronym 无层号）",
+   "ok": true,
+   "detail": "area=measured（ecephys_structure_acronym 为区级，58 个） lamina=derived（acronym 不含层号；须由 CCF 深度 + 皮层表面/厚度模型派生） ccf_n=135275"
+  },
+  {
+   "assertion": "P1.21i units.csv / channels.csv 已入落盘清单且 sha 基准=file_bytes",
+   "ok": true,
+   "detail": "清单含 units=True channels=True"
+  },
+  {
+   "assertion": "P1.21j **不得**把 complete_session 率登记为 (a) 自发率带（四态纪律：仍 unavailable）",
+   "ok": true,
+   "detail": "R-35 evidence=measured（**complete_session 口径，含刺激 ⇒ 非自发率**）；register 含自发率缺口=True"
+  },
+  {
+   "assertion": "P1.22a J2 五条验收条件全部 pass（口径/跨 field/电生理并列/哨兵/已覆盖维度）",
+   "ok": true,
+   "detail": "conditions={\"1\": \"pass\", \"2\": \"pass\", \"3\": \"pass\", \"4\": \"pass\", \"5\": \"pass\"}"
+  },
+  {
+   "assertion": "P1.22b G1 (b) 静默带建议口径可复现（per-ROI 代理 ≤1.2×）且标出不可复现口径",
+   "ok": true,
+   "detail": "band=[0.48, 0.49] 宽=1.0208×；full-FOV=6.0853×"
+  },
+  {
+   "assertion": "P1.22c 已覆盖/未覆盖维度均登记（R9 纪律：未覆盖 ≠ 不可用 ⇒ 判 partial 非 unavailable）",
+   "ok": true,
+   "detail": "covered=7 not_covered=5"
+  },
+  {
+   "assertion": "P1.22d R-40 为新增行且带『代理/样本量/量纲/观测窗』四条限制",
+   "ok": true,
+   "detail": "R-40=band=[0.4800, 0.4900]（宽 1.0208×）；跨 field 1.0208× vs full-FOV 6.0853×（总 48 行）"
+  },
+  {
+   "assertion": "P1.22e J2 产物**既有测量键未被改动**（只增不改：仍为两 field 行 + 4 band_rows）",
+   "ok": true,
+   "detail": "rows=2 band_rows=4 acceptance_completion 已追加"
+  },
+  {
+   "assertion": "P1.23a 钙域四类参考量与 J2 **同管线**（数值一致 ≤1e-9，非声称）",
+   "ok": true,
+   "detail": "[{\"field\": \"field4\", \"recomputed_zero_activity\": 0.49, \"j2_stored_zero_activity\": 0.49, \"abs_diff\": 0.0, \"consistent_le_1e-9\": true, \"n_files\": 200, \"n_negative"
+  },
+  {
+   "assertion": "P1.23b 双估计器（事件计数 + 平均成对相关）rel_diff ≤1e-9",
+   "ok": true,
+   "detail": "event=[0.0, 0.0] r=[0.0, 0.0]"
+  },
+  {
+   "assertion": "P1.23c 样本量门（≥300 帧；箱数<500 ⇒ BIC 结论 unavailable 须写明）",
+   "ok": true,
+   "detail": "箱数 333 < 500 ⇒ BIC/K 选择结论 unavailable（四态纪律）"
+  },
+  {
+   "assertion": "P1.23d 内部一致性 |dwell−1/(2λ)|/dwell ≤ 1",
+   "ok": true,
+   "detail": "rel_diff=0.1547079563706378"
+  },
+  {
+   "assertion": "P1.23e 逐 ROI 与全视野两口径并列（全视野群体相关=口径不适用，非不可用）",
+   "ok": true,
+   "detail": "全视野口径为**单条**聚合序列 ⇒ **群体相关在全视野口径下无定义**（n=1），该维登记为『口径不适用』而非『不可用』"
+  },
+  {
+   "assertion": "P1.23f cross-field 为 **measured**（两 field 均在盘；推翻『一律 unavailable』的过期前提）",
+   "ok": true,
+   "detail": "dwell=1.125 τ=1.01"
+  },
+  {
+   "assertion": "P1.23g 相位随机化代理零分布已建，且已做**退化体检**（单一共同模式警告）",
+   "ok": true,
+   "detail": "excess=[0.794962, 0.963026]"
+  },
+  {
+   "assertion": "P1.23h R-41/R-42 为**新增行**，且 R-42 明写『禁止把 0.79/0.96 当群体结构』",
+   "ok": true,
+   "detail": "R-41=proxy 中位=0.0032 Hz（两 field 同）; 全视野聚合=3.2445/7.7711 Hz | R-42 含禁令=True"
+  },
+  {
+   "assertion": "P1.24a 报告含 §6m 的 **G-1′** 更正表述（同源在时间序列级成立）",
+   "ok": true,
+   "detail": "报告已含 G-1′ 段"
+  },
+  {
+   "assertion": "P1.24b 报告已把两个 field 与『cross-field 已测』写清（不得写成 unavailable）",
+   "ok": true,
+   "detail": "含两 field 更正与『未测≠未命中』的反向错误说明"
+  },
+  {
+   "assertion": "P1.24c 旧执行条款（format_unverified）已标失效并保留原文",
+   "ok": true,
+   "detail": "报告 L266 更正行在位"
+  },
+  {
+   "assertion": "P1.24d 清单回退行已更正（不再写『体素 format_unverified / 活动通道改由 Allen 承担』为现行）",
+   "ok": true,
+   "detail": "清单已加更正行（只增不改）"
+  },
+  {
+   "assertion": "P1.25a 解码**自证**通过（F 序 lat_x 命中定案 0.777 ∧ C 序判别性负对照）",
+   "ok": true,
+   "detail": "自证通过（F 序 lat_x=0.7769 / lat_y=0.7620，命中定案 0.777；帧轴轮廓 [0.7738, 0.7676, 0.7598, 0.7527, 0.7456, 0.7395]；C 序负对照 lat_x=0.3787 ⇒ 判别性低 0.3983）⇒ 序选择被自证"
+  },
+  {
+   "assertion": "P1.25b 两口径**并列**且不相同（主 zero_count vs M10 兼容 rate<0.5 Hz）",
+   "ok": true,
+   "detail": "core zero=0.4900 | M10=1.0000 | fullFOV(帧)=0.8915"
+  },
+  {
+   "assertion": "P1.25c 主口径与 J2 定稿值一致（≤1e-6）且带 = [0.4800, 0.4900]",
+   "ok": true,
+   "detail": "field4=0.4900 field2=0.4800 band=[0.48, 0.49]"
+  },
+  {
+   "assertion": "P1.25d **M10 兼容口径退化已登记**（field4 饱和 1.0，不得作带）",
+   "ok": true,
+   "detail": "M10 兼容 field4=1.0000 / field2=0.8800（跨 field 差 12.0 pp）"
+  },
+  {
+   "assertion": "P1.25e rate 侧预留 key **保持 unavailable**（率不可从代理口径转移）已登记",
+   "ok": true,
+   "detail": "新增行 rate_median_hz_measured_calcium_band_status 在位"
+  },
+  {
+   "assertion": "P1.25f 判据表 **append-only**：新增行 ≥12 且 6 个旧预留行 value 仍为 `unavailable`",
+   "ok": true,
+   "detail": "新增 13 行；旧预留行 value={\"silent_frac_lo\": \"unavailable\", \"silent_frac_hi\": \"unavailable\", \"rate_median_hz_measured_calcium_band_lo\": \"unavailab"
+  },
+  {
+   "assertion": "P1.25g B1 节点记录 `docs/m11_b1_notes.md` 存在且含**逐项复算命令**",
+   "ok": true,
+   "detail": "docs/m11_b1_notes.md 在位（N5 复算命令表）"
+  },
+  {
+   "assertion": "P1.26a 报告 §6n 已落「两侧分开」表述（结构侧同源 / 活动侧跨源代理 + 体素级=decoded pass）",
+   "ok": true,
+   "detail": "§6n 在位，含两侧分开表述"
+  },
+  {
+   "assertion": "P1.26b §6n 已如实提请复议『保留句已过期』（不得写假陈述）",
+   "ok": true,
+   "detail": "复议记录在位（与 R52/R57 的同源带冲突）"
+  },
+  {
+   "assertion": "P1.26c R-43（J3 路径实证 + 预算阻塞）与 R-44（16 cells 自证）为新增行",
+   "ok": true,
+   "detail": "R-43=unverified | R-44=asserted（总 48 行）"
+  },
+  {
+   "assertion": "P1.26d J2-a 16-cell 件在盘且 `npz=store` 判据自证（bytes/(8×frames) == cells）",
+   "ok": true,
+   "detail": "bytes=16358638 shape=(16, 127800) est_cells=16.0002"
+  },
+  {
+   "assertion": "P1.26e v1（1–4 cells）带已 add-only 快照保留（重建不覆盖既有结论）",
+   "ok": true,
+   "detail": "m11_dwell_reference_allen2p_v1_thin.{json,csv} 在位"
+  },
+  {
+   "assertion": "P1.26f J2-a/J3/J7 已登记（含吞吐实测与预算阻塞理由）",
+   "ok": true,
+   "detail": "J2/J3 结果块 + J7 作业在位"
+  },
+  {
+   "assertion": "P1.27a Allen 工具默认输出已不指向**同源主带**路径（根因已修）",
+   "ok": true,
+   "detail": "默认输出 = m11_dwell_reference_allen2p.csv"
+  },
+  {
+   "assertion": "P1.27b 防覆盖守卫在位（拒绝写主带，除非 --force-primary）",
+   "ok": true,
+   "detail": "守卫逻辑在位（返回码 3）"
+  },
+  {
+   "assertion": "P1.27c 同源主带**内容自证**：`generated_by=…microns` ∧ `band.source=MICrONS` ∧ 有 cross_field",
+   "ok": true,
+   "detail": "tools/build_m11_dwell_band_microns.py | MICrONS functional_series/session4_scan7_field4（**同源**：与 EM/"
+  },
+  {
+   "assertion": "P1.27d Allen 跨制备参照已含 J2-a 的 **16-cell** 实验（3 实验）",
+   "ok": true,
+   "detail": "n_experiments=3"
+  },
+  {
+   "assertion": "P1.27e 事故已留档（env notes L39）+ 抢救件与 v1 快照均在盘",
+   "ok": true,
+   "detail": "L39 在位；v1_thin + v2_3exps 均在盘"
+  },
+  {
+   "assertion": "P1.28a J3 完整 NWB 逐字节到位（176,019,299 B）+ `imaging_rate` **可读**",
+   "ok": true,
+   "detail": "bytes=176019299 value=np.bytes_(b'31Hz')"
+  },
+  {
+   "assertion": "P1.28b 实测帧率 = **31 Hz**（源侧字段）⇒ 30.9 Hz primary 被证实、11 Hz 被否证",
+   "ok": true,
+   "detail": "imaging_rate=np.bytes_(b'31Hz') | R-45=31"
+  },
+  {
+   "assertion": "P1.28c 空间自洽交叉校验（512 px × 0.78 µm = 399.4 µm ⇔ fov 400 µm）",
+   "ok": true,
+   "detail": "512×0.78=399.4 µm（R-45 note 内含 400 µm 对照）"
+  },
+  {
+   "assertion": "P1.28d J3 已并入作业表（status=COMPLETED，含超时→续传事件留痕）",
+   "ok": true,
+   "detail": "J3 COMPLETED（含 exit=28 事件）"
+  },
+  {
+   "assertion": "P1.29a 报告已落 **P2 scope 声明**（pass 不得读成『功能侧可用于同源约束』）",
+   "ok": true,
+   "detail": "§6o.1 scope 声明在位"
+  },
+  {
+   "assertion": "P1.29b **禁止连带降级**：C1/C2 作用域行仍各判 `unavailable`，而 P2 判定保持 `pass`（并存不互拽）",
+   "ok": true,
+   "detail": "C1/C2 作用域 unavailable 行=4 例 ['silent_frac_ephys_lo', 'silent_frac_ephys_hi', 'rate_median_hz_measured_calcium_band_lo']；P2 无失败断言 ⇒ pass（并存不互拽）"
+  },
+  {
+   "assertion": "P1.29c 第五纪律（no verdict contagion）已制度化为文本 + 断言",
+   "ok": true,
+   "detail": "§6o.2 纪律文本在位"
+  },
+  {
+   "assertion": "P1.30a R-46：dwell/转换率判 **unavailable（样本不足，估计不稳）**（非 pass 非 fail）",
+   "ok": true,
+   "detail": "R-46 value=unavailable（样本不足，估计不稳）"
+  },
+  {
+   "assertion": "P1.30b 三态区分（未测 ≠ 未命中 ≠ **测不准**）+ 「局部不可判定不得推广为整体不可信」",
+   "ok": true,
+   "detail": "R-46 含三态区分与 τ/占用互证成功的配对记录"
+  },
+  {
+   "assertion": "P1.30c R-47：样本量门**按箱计**（65/130/500 箱）⇒ 333 箱 ⇒ BIC `unavailable`",
+   "ok": true,
+   "detail": "R-47 落箱口径更正"
+  },
+  {
+   "assertion": "P1.30d S-7 原行保留 + 新增 **S-13** 以箱口径重写（只增不改）",
+   "ok": true,
+   "detail": "预注册表含 S-13（箱口径）且 S-7 原行在位"
+  },
+  {
+   "assertion": "P1.30e J4（R42 ③ 批准）已由 J5 执行并登记映射（独立子目录、先探吞吐）",
+   "ok": true,
+   "detail": "J5.j4_mapping 在位（含四条纪律）"
+  },
+  {
+   "assertion": "P1.31a J2-b 落**独立子目录**且 size == Content-Length（111,876,046）",
+   "ok": true,
+   "detail": "path=vc2p/j2b/497060401_events.npz bytes=111876046"
+  },
+  {
+   "assertion": "P1.31b J2-b 完整性用 **ETag 多段复算**（强于 sha256）且已登记",
+   "ok": true,
+   "detail": "R-48 含 ETag 复算（part=16 MiB × 7 段）"
+  },
+  {
+   "assertion": "P1.31c ④ 口径转移检查已做（比例类 ✓ / 绝对率类 ✗；132 cells 实测）",
+   "ok": true,
+   "detail": "R-48 含 R59-20 转移检查与 132 实测"
+  },
+  {
+   "assertion": "P1.31d J2 作业表已记 J2-b 结果 + J8（重建）登记",
+   "ok": true,
+   "detail": "J2.j2b_result + J8 在位"
   }
  ],
- "failures": [
-  "P1.12a visual-coding-2p 探针行已追加（G1..G8，含 manifest/stimulus/npz/nwb/h5）"
- ],
+ "failures": [],
  "unavailable": [
   "**细胞数 / 突触数（MICrONS）= 未测**（`unavailable`，**不得写 0、不得算负结果**）：权威逐细胞表 `node_data_v1.pkl`（294.6 MB）与逐对突触表 `edge_data_v1.pkl`（201.5 MB）本轮未取（DQ-4）；论文档锚（literature）= '>200,000 cells / 0.5 billion synapses'（Nature 2025）；Allen 侧可得锚 = Cell Types 1,920 标本（measured）",
   "MICrONS 逐细胞 ΔF/F 与 ROI 轨迹：仅存在于 v8 DataJoint MySQL 数据库（103.8 GB docker tar 或 116.2 GB SQL dump）→ 本轮未取（超预算）⇒ unavailable（非 0、非未命中）",
@@ -359,53 +772,19 @@
   "Allen synphys 桶对象级读取：403 AccessDenied（桶存在、不可 list）→ NEEDS_VERIFY",
   "IBL OpenAlyx 数据集表：403 需凭据 → NEEDS_TOKEN（P12 走公开桶 + 论文档回退）",
   "**四类参考量（率分布 / 群体相关 / 状态结构 / dwell）= 当前不可执行**（`blocked`，非未测、非未命中）：① R2 禁用 MICrONS 体素序列（否则 2 个 field 的钙域参考量本可算）；② R3 的本地 Allen NWB 中 `/units`、`/acquisition`、`/general` 落在稀疏洞内不可读，且下载被禁/网络 1.6–16 KB/s（DANDI 7.2 KB/s）；③ 逐细胞 ΔF/F 仅在 v8 DB（R1 不下载）；④ 唯一剩余实测路径 = 全量 `units.csv`（51,439,189 B，逐 unit firing_rate/质量）⇒ **DQ-6 待批**；⇒ 请裁决：批 DQ-6 / 续传 NWB / 或改判 R2 以启用 2 field 钙域参考量",
-  "MICrONS minnie CAVE 表 API（info/materialize）：404 / 503 → REACHABLE_NO_DATA / BLOCKED"
+  "MICrONS minnie CAVE 表 API（info/materialize）：404 / 503 → REACHABLE_NO_DATA / BLOCKED",
+  "**【已解除·留痕】上文『② R3 NWB 稀疏洞 / ④ 唯一剩余实测路径 = units.csv ⇒ DQ-6 待批』两条已于 2026-10-12 处置**：主 agent 批准 DQ-6；本节点以 `curl -C -` 续传完成全量 `units.csv`（51,439,189 B，**size==Content-Length ∧ S3 多段 ETag 可复算 ⇒ 逐字节等同服务器对象**），解析 135,275 单元 / 58 session，连接链 100%。**上文四条按『只增不改』保留原文**（审计链：当时确实 `blocked`，且其判断依据 R2 禁用/R3 稀疏洞当时成立）",
+  "**【新增·口径缺口】(a) 带（**自发率**分布）仍 `unavailable`**：`units.csv::firing_rate` 的 `epoch_name_quality_metrics='complete_session'`（全量 135,275 行一致）⇒ **含视觉刺激呈现**，**不是自发率**，只能作**上界候选**（VISp good 中位 2.485 Hz = 0.794×钙 Nyquist）。自发率需 NWB 的 `spontaneous` epoch（Allen BO 2p/NP 的 NWB 逐 session 件 >2 GB 单件上限或落在稀疏洞内）⇒ **本轮 `unavailable（口径不含）`，非未命中、非 0**；若后续批取，须按 session 逐件取并重跑连接链"
  ],
  "P1": {
-  "verdict": "fail",
-  "n_assertions": 48,
-  "n_failed": 1
+  "verdict": "pass",
+  "n_assertions": 132,
+  "n_failed": 0
  },
  "P2": {
   "verdict": "pass",
   "n_assertions": 20,
   "n_failed": 0
  },
- "G2_gate": "fail",
- "determinism_check": {
-  "note": "复跑固定子集（#2/#3/F7/F8/F9），比对 verdict 是否一致",
-  "comparisons": [
-   {
-    "source_id": "2",
-    "first": "REACHABLE",
-    "rerun": "REACHABLE",
-    "same": true
-   },
-   {
-    "source_id": "3",
-    "first": "REACHABLE",
-    "rerun": "REACHABLE",
-    "same": true
-   },
-   {
-    "source_id": "F7",
-    "first": "REACHABLE",
-    "rerun": "REACHABLE",
-    "same": true
-   },
-   {
-    "source_id": "F8",
-    "first": "REACHABLE",
-    "rerun": "REACHABLE",
-    "same": true
-   },
-   {
-    "source_id": "F9",
-    "first": "REACHABLE",
-    "rerun": "REACHABLE",
-    "same": true
-   }
-  ],
-  "all_same": true
- }
+ "G2_gate": "pass"
 }

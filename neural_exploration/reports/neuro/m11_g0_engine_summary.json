@@ -204,7 +204,8 @@
     ],
     "m9_e_m9_3_note": "M9 的 E-M9-3（'判据级对齐必须在目标发放密度下复测'）**的生理侧结论仍待 G1/P5 给出**；本节点只能给'引擎在目标密度下与 M10 的自洽'（= (b)/(g) 的实际内容）"
    },
-   "scope_note": "(b) 是**引擎对齐**判据（M11 vs M10 同配置逐位），**不是**生理标定判据；'网络静默比是否与 MICrONS/Allen 数据一致'属 G1/P5 标定，不在 G0 内。**判据名实对齐声明**：本判据实际检验的是「机制全关 ⇒ 与 M10 逐位一致（关闭态等价）」，**不是**「目标密度下活动统计对齐」——后者按门链分工由 **G1/P5** 承担（B3 的 (a)(b) 判据带 + 六条硬门），S/P14 再做**目标带**对照。M9 E-M9-3（'对齐必须在目标密度下复测'）的**生理侧**结论因此仍待 G1/S 给出，本节点不代填。"
+   "r32_reference_double_qualification": "**R32「参照的双重资格」声明（主agent 2026-10-11）**：本判据的参照（M10 冻结内核）**自身带已登记的上游缺陷**（E-M9-4 形参序、E-M10-1 步模式索引、E-M10-2 多延迟档丢事件）⇒ 本条的 `pass` **仅证明「M11 机制关闭时与冻结件逐位一致（无回归）」**，**不得被引用为「M11 内核正确」或「生理正确」的证据**。（参照须同时 ①可比 ②可信；任一不成立 ⇒ 判 `invalid` 而非 `fail`。）",
+   "scope_note": "**R32「参照的双重资格」声明（主agent 2026-10-11）**：本判据的参照（M10 冻结内核）**自身带已登记的上游缺陷**（E-M9-4 形参序、E-M10-1 步模式索引、E-M10-2 多延迟档丢事件）⇒ 本条的 `pass` **仅证明「M11 机制关闭时与冻结件逐位一致（无回归）」**，**不得被引用为「M11 内核正确」或「生理正确」的证据**。（参照须同时 ①可比 ②可信；任一不成立 ⇒ 判 `invalid` 而非 `fail`。） (b) 是**引擎对齐**判据（M11 vs M10 同配置逐位），**不是**生理标定判据；'网络静默比是否与 MICrONS/Allen 数据一致'属 G1/P5 标定，不在 G0 内。**R32「参照的双重资格」声明（主agent 2026-10-11）**：本判据的参照（M10 冻结内核）**自身带已登记的上游缺陷**（E-M9-4 形参序、E-M10-1 步模式索引、E-M10-2 多延迟档丢事件）⇒ 本条的 `pass` **仅证明「M11 机制关闭时与冻结件逐位一致（无回归）」**，**不得被引用为「M11 内核正确」或「生理正确」的证据**。（参照须同时 ①可比 ②可信；任一不成立 ⇒ 判 `invalid` 而非 `fail`。） **判据名实对齐声明**：本判据实际检验的是「机制全关 ⇒ 与 M10 逐位一致（关闭态等价）」，**不是**「目标密度下活动统计对齐」——后者按门链分工由 **G1/P5** 承担（B3 的 (a)(b) 判据带 + 六条硬门），S/P14 再做**目标带**对照。M9 E-M9-3（'对齐必须在目标密度下复测'）的**生理侧**结论因此仍待 G1/S 给出，本节点不代填。"
   },
   "c_mechanism_metrics": {
    "reference": "逐类电导积分的闭式重算（由 spike 时刻 + 边表 + 逐类 τ 独立算出，含外部事件）",
@@ -1632,6 +1633,8 @@
    "note": "3 档密度（含 Allen 中位带；口径受限）下的 (a)–(c) 类对齐复测；MICrONS 钙域密度锚 = unavailable（B1 L11.3/L11.5 未决）⇒ 如实登记、不计 fail",
    "root_cause": "**(g) 与 (b) 同源（继承）**：(g) 即在 3 档目标密度下复测 (a)–(c)，其参照即 (b) 的参照，故历史失败与 (b) 同因（参照臂 M10@三延迟档丢驱动）。独立于 (b) 的锚点信息（Allen 分位 / MICrONS 钙域 unavailable）不受影响。",
    "fix": "与 (b) 同一操作：参照臂改为单延迟档；判据未改。**由 (b) 继承**已在 `detail.inheritance_note` 显式写出。",
+   "r32_reference_double_qualification": "**R32「参照的双重资格」声明（主agent 2026-10-11）**：本判据的参照（M10 冻结内核）**自身带已登记的上游缺陷**（E-M9-4 形参序、E-M10-1 步模式索引、E-M10-2 多延迟档丢事件）⇒ 本条的 `pass` **仅证明「M11 机制关闭时与冻结件逐位一致（无回归）」**，**不得被引用为「M11 内核正确」或「生理正确」的证据**。（参照须同时 ①可比 ②可信；任一不成立 ⇒ 判 `invalid` 而非 `fail`。）",
+   "scope_note": "**R32「参照的双重资格」声明（主agent 2026-10-11）**：本判据的参照（M10 冻结内核）**自身带已登记的上游缺陷**（E-M9-4 形参序、E-M10-1 步模式索引、E-M10-2 多延迟档丢事件）⇒ 本条的 `pass` **仅证明「M11 机制关闭时与冻结件逐位一致（无回归）」**，**不得被引用为「M11 内核正确」或「生理正确」的证据**。（参照须同时 ①可比 ②可信；任一不成立 ⇒ 判 `invalid` 而非 `fail`。） (g) 由 (b) 继承 ⇒ 同一参照、同一限定：其 `pass` 仅证明「目标密度下引擎自身与冻结件无回归」，**不证明活动统计对生理正确**（后者归 G1/P5 判据带）。",
    "detail": {
     "density_anchored_points": [
      0.5,
@@ -2156,6 +2159,87 @@
     "crit_pass": true,
     "note": "禁以动态规模为缓存键（M9 真 bug）；`_ar_buf` 必须保持**单一**增长缓冲"
    }
+  },
+  "independent_reference_brian2": {
+   "status": "pass",
+   "note": "可选增强：Brian2 跨生态统计级对照（**不作为 G0 判据**）",
+   "not_a_gate_criterion": true,
+   "excluded_from_gate_verdict": true,
+   "reason": "(b) 的参照（M10 冻结内核）自身带已登记缺陷（R32：参照须 ①可比 ②可信）⇒ 本臂提供一个**不带缺陷**的独立实现方向；但跨生态的 v 离散化方案不同 ⇒ **只可作统计级参考**，不得按「逐位」读，也**不得**作为「M11 内核正确」或「生理正确」的证据",
+   "detail": {
+    "source": "m11_brian2_reference.json",
+    "sha256": "a988bbf10b95e0f6c2d366f2fa0044de",
+    "role": "独立参照臂（**not_a_gate_criterion**，不进门判定；主agent R32/④）",
+    "params_summary": {
+     "G_EXT": 22.0,
+     "LAM_HZ": 300.0,
+     "T_STEPS": 8000,
+     "brian2_method": {
+      "v": "euler",
+      "ge": "exponential_euler",
+      "gi": "exponential_euler"
+     }
+    },
+    "fix_arm": {
+     "engine_n_spikes": 17,
+     "brian2_n_spikes": 20,
+     "engine_first_step": 353,
+     "brian2_first_step": 354,
+     "first_step_abs_diff": 1.0,
+     "max_abs_step_diff": 1072.0,
+     "frac_within_1_step": 0.058823529411764705,
+     "isi_engine_steps": 423.0,
+     "isi_brian2_steps": 371.0,
+     "v_trace_max_abs_diff_mV": 9.991231830071747,
+     "v_trace_rms_diff_mV": 4.345792903427757
+    },
+    "frozen_arm": {
+     "engine_n_spikes": 16,
+     "brian2_n_spikes": 20,
+     "engine_first_step": 353,
+     "brian2_first_step": 354,
+     "first_step_abs_diff": 1.0,
+     "max_abs_step_diff": 1529.0,
+     "frac_within_1_step": 0.0625,
+     "isi_engine_steps": 487.0,
+     "isi_brian2_steps": 371.0,
+     "v_trace_max_abs_diff_mV": 9.985011935738171,
+     "v_trace_rms_diff_mV": 4.294012966827053
+    },
+    "subthreshold_arm": {
+     "brian2_exponential_euler": {
+      "engine_spikes": 0,
+      "brian2_spikes": 0,
+      "v_max_abs_diff_mV": 0.1818382171728814,
+      "v_rms_diff_mV": 0.016292816868676025,
+      "v_final_engine_mV": -51.71657180786133,
+      "v_final_brian2_mV": -51.714492008912224
+     },
+     "brian2_euler": {
+      "engine_spikes": 0,
+      "brian2_spikes": 0,
+      "v_max_abs_diff_mV": 0.18738223090810635,
+      "v_rms_diff_mV": 0.02083443250179196,
+      "v_final_engine_mV": -51.71657180786133,
+      "v_final_brian2_mV": -51.718917802356266
+     }
+    },
+    "conclusion": {
+     "fix_vs_brian2_same_order": false,
+     "fix_max_abs_step_diff": 1072.0,
+     "fix_frac_within_1_step": 0.058823529411764705,
+     "frozen_vs_brian2_confirms_defect": true,
+     "defect_not_resolvable_by_this_arm": "⚠️ **本臂不能分辨 E-M9-4**：跨方案的 0.18 mV 量级差在近阈值驱动下引发脉冲时序去相关（混沌），其幅度**远大于** E-M9-4 的 ISI 差（182 vs 144 步）⇒ 冻结/修正两臂相对 Brian2 都「看起来差很多」，无法据此判定缺陷。E-M9-4 的证据仍来自**确定性解析臂**（G0 的 `single_neuron_ISI` 与解析闭式，≤1 步），本臂仅作**生态独立性**参考。",
+     "frozen_isi_engine_steps": 487.0,
+     "frozen_isi_brian2_steps": 371.0,
+     "subthreshold_v_max_abs_diff_mV": {
+      "brian2_exponential_euler": 0.1818382171728814,
+      "brian2_euler": 0.18738223090810635
+     },
+     "verdict": "**差异显著 ⇒ 交主agent 裁决**（可能反噬 M10 的 P5 工作点数值；不在 M11 内改写 M10 结论）",
+     "note": "本臂 **not_a_gate_criterion=true**：不作为 G0 判据、不列入门判定；**不得**据此改写 M10 的任何结论"
+    }
+   }
   }
  },
  "gate_pass_condition": "pass ⟺ 全部判据项 {crit.a..crit.h, ext.off_state_equivalence, ext.slot_encoding_assertions, ext.positive_controls} 均 `pass`（无 `fail`、无 `unavailable`）；存在 `unavailable` ⇒ `incomplete`（**不得**写成 pass 或 partial）；存在 `fail` ⇒ `fail`",
@@ -2477,9 +2561,9 @@
   "n_unavailable": 0
  },
  "evidence": {
-  "alignment_json_sha256": "f0598e847f3a229ced5298d9f21149bd",
-  "engine_src_sha256": "6feb61291ad336e8048b1411c2169252",
-  "tool_sha256": "7583e6c8ae56b4ebf20368aa306b2bd0",
+  "alignment_json_sha256": "20cd0b46d58809236b775f75bdc94e8f",
+  "engine_src_sha256": "90c02b37d922d7ac9aefd78023c7db23",
+  "tool_sha256": "c0dda0ef2d6c58fd7d4f60afe10b5dd4",
   "minrepro": "/Users/weidong/ai/small_world/neural_exploration/data/m11_minrepro_delivery.json",
   "stale_guard": "本 summary 由本轮实跑生成；若与 `criterion_states` 不一致，以本文件为准（旧快照的 (e) step/（f) m11_ok 值见 RF-M11-F 引用，已作废）"
  },
