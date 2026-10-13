@@ -1,0 +1,55 @@
+{
+ "positive": {
+  "slow": true,
+  "inc": 180.0,
+  "tau": 3000.0,
+  "spk": 101.0,
+  "wall_s": 1.71,
+  "ms_per_step": 0.08536328750000001,
+  "slow_trace": {
+   "n": 15,
+   "mean": 22.267459678649903,
+   "std": 6.347412961406939,
+   "min": 6.04195499420166,
+   "max": 29.464054107666016,
+   "dynamic_range": 23.422099113464355,
+   "alive": true
+  }
+ },
+ "default": {
+  "slow": true,
+  "inc": 6.0,
+  "tau": 1000.0,
+  "spk": 127.0,
+  "wall_s": 1.7,
+  "ms_per_step": 0.08483191459999997,
+  "slow_trace": {
+   "n": 15,
+   "mean": 0.5686216980218888,
+   "std": 0.12109750864904946,
+   "min": 0.19633685052394867,
+   "max": 0.6902626156806946,
+   "dynamic_range": 0.4939257651567459,
+   "alive": true
+  }
+ },
+ "negative": {
+  "slow": false,
+  "inc": 0.0,
+  "tau": 1000.0,
+  "spk": 598.0,
+  "wall_s": 1.59,
+  "ms_per_step": 0.07946836664999997,
+  "slow_trace": null
+ },
+ "assert_positive": true,
+ "assert_default": true,
+ "assert_negative": false,
+ "verdict": "positive_control_pass",
+ "device": "cpu",
+ "N": 1000,
+ "steps_meas": 20000,
+ "steps_settle": 10000,
+ "event_window_steps": 30000,
+ "caliber_note": "事件表须覆盖 settle+T（绝对步号语义）；本次首跑因只覆盖 T 而 IndexError ⇒ 已修正并登记"
+}

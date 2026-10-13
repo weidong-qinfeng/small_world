@@ -1,6 +1,6 @@
 {
  "generated_by": "M11 执行节点 B3（G1 评估器作者）——按清单 §5 杠杆顺序的实验预注册（跑之前定稿）",
- "generated_at": "2026-10-13（新增 L1_design 段：L1 形状杠杆设计 + 非构造性复刻轴 + 与当前判据状态自洽的核心断言）",
+ "generated_at": "2026-10-13（新增 L2_design 段：活动历史依赖机制 + 最小阳性对照已完成）",
  "objective": "让 (a)(b)(c) 同时可达：把工作点从「窄分布、少静默、中位率 0.3 Hz、自持比 0.28」推到「重尾分布、近半数近静默、中位率 0.5-2 Hz、自持比 <=0.10」",
  "prerequisite_blocking_P0": {
   "finding": "G1 全量矩阵的复刻轴失效：seed in {0,1,2} 的臂产出逐位相同的 pop_trace 与 counts（15/15 组、counts sha256 全同）；根因 = 生产者以 net_seed 建网络（run_m11_p5_arms.py L124，默认 0）、以 event_seed 建事件表（L151/155，默认 11），而计划只改了 seed（仅 eng.reset(seed=)，L157）=> 有效重复数 = 1",
@@ -275,5 +275,243 @@
    "m11_p5_resting_eval_l1.json（工具评估：主断言 + 描述性 (b) 比值）"
   ],
   "boundaries": "不改 validate_p11_resting.py（0d3c1d99…）、不改判据表 final=1 行、不改写已判定产物、**不启动 MPS 作业**（J5 在跑，MPS 归主agent）"
+ },
+ "L2_design": {
+  "status": "**预注册（跑之前定稿）**；L1 以『阈值离散』形式表达形状杠杆被证伪（σ0→0.45：R 0.0293→0.2437，零驱动 spk ×14.4）⇒ 按停机规则⑧升级到『换机制』；L2 与 J6 收尾**并行设计**（不占 MPS）",
+  "iteration_context": {
+   "R91_original": [
+    "① 速率异质性不足（L1：异质阈值/适应）⇒ **被证伪（以『阈值离散』这一形式）** ⇒ 须改写为：**需要的不是『阈值离散』型异质性，而是不点燃自持的异质性** —— 其特征是**效应依赖活动历史**而非**阈值分布**",
+    "② 自持过强（L0）⇒ 成立且已可解（bias=0.70 ⇒ R=0.0293），**但代价是 (a) 更低**",
+    "③ 结构性对立 ⇒ **在第二个维度被独立确认**（bias↓ 压低活动、σ↑ 点燃自持）"
+   ],
+   "conclusion_sentence": "**(c) 与 (a) 的对立不是某个杠杆没调好，而是在两个独立杠杆方向上都被复现 ⇒ 若要同时满足，必须改变活动的生成机制本身（不能只改参数）。**",
+   "why_activity_history": "σ↑ 的问题在于它是**静态**的：它无条件地把一部分神经元的阈值降低 ⇒ 零驱动下它们自发发放 ⇒ R 被点燃。**活动历史依赖**的机制则**只在单元已经发放时才产生作用**，且方向为**负反馈** ⇒ 静止单元/静止网络**不受影响**。"
+  },
+  "L2_candidates": [
+   {
+    "id": "C1",
+    "name": "**慢适应 / 慢负反馈变量（E2b，引擎已接线）**",
+    "engine_path": "mouse_cortex_engine.MouseCortexEngine.configure_slow(enabled, tau_slow_ms, inc_per_spike, e_slow)（**L334–L353**，含 `inc_per_spike>0` 的构造性守卫与读回断言）；慢变量逐神经元、每次发放 += inc、按 tau_slow 衰减、以 e_slow=-77 mV 注入膜电位；轨迹统计由引擎汇报为 `res[\"slow_trace\"]`（**L858–866**：n/mean/std/min/max/dynamic_range/alive）",
+    "producer_state": "**已接线且默认开启**（`run_m11_p5_arms.py` **L124–126**：`slow=True`、`tau_slow_ms=1000.0`、`slow_inc=6.0`）⇒ **既有 G1/L0/L1 全部结果都是在 slow 默认档下取得的** ⇒ L2 必须**放大**该机制（inc/τ），不是首次启用",
+    "why_not_ignite_self_sustain": "s_i **只在自身发放时增加**、按 tau_slow 衰减、且**以超极化方式注入**（e_slow=-77 mV）⇒ **纯负反馈**。零驱动下若单元本不发放 ⇒ s_i 恒为 0 ⇒ **不产生任何额外活动**（与 σ↑ 的静态低阈值形成本质区别）。**本次实测直接支持**：同配置 slow off 的 spk=598 vs slow on(inc=180) 的 spk=101 ⇒ 机制把活动**压低 83%**，方向为抑制。",
+    "cost_risk": "它同样压低基准臂 ⇒ 必须找到『压自持 ≫ 压基准』的**选择性区间**（这正是可测量的：比较 R 的相对下降与基准臂的相对下降）。",
+    "priority": "**首选**（① 已接线且带读回断言；② **最小阳性对照已通过**，见 minimal_positive_control；③ 纯负反馈/活动历史依赖）"
+   },
+   {
+    "id": "C2",
+    "name": "**STP（Tsodyks–Markram 突触短期可塑性）depress 型**",
+    "engine_path": "larval_zf_engine.MouseCortexEngine? **实为** `larval_zf_engine.py::configure_stp(enabled, u0, tau_fac_ms, tau_rec_ms, mode)`（**L69–L79**，含读回断言）+ 状态张量 `t_u/t_x`（**L132–L134**）+ 投递路径 `mouse_cortex_engine._apply_stp_and_deliver`（**L936–945**，读 `stp[\"u0\"]/tau_*`）",
+    "producer_state": "**🔴 生产者从未调用 `configure_stp`** ⇒ STP 当前 **OFF**（`stp_enabled=False`）。需 B2 加引擎侧配置与 CLI/计划键（建议 `--stp/--u0/--tau-fac-ms/--tau-rec-ms/--stp-mode`，并在 `build_engine`（**L113–128**）内调用 `configure_stp`）",
+    "why_not_ignite_self_sustain": "**depress 型**：资源 `x` 随**该突触的使用**耗竭 ⇒ **使用依赖的负反馈**；无发放时 x→1（满资源）⇒ **不制造活动**。**必须只允许 depress**；**facilitate 型是正反馈**（用得越多传得越多）⇒ 会点燃自持 ⇒ **作为负对照臂**（预期 R 上升）。",
+    "cross_milestone_warning": "M10 已证『STP 抑制型不能产生成像量级慢结构』——**那是 P6（慢结构）的判据**；L2 的目标是**工作点 (a)∧(c)** ⇒ **不得**用 M10 的反证否掉本候选，也不得用本候选的结果反驳 P6。",
+    "priority": "**次选**（机制论证最强，但需 B2 暴露 STP，且须显式禁 facilitate）"
+   },
+   {
+    "id": "C3",
+    "name": "阈值随活动漂移（homeostatic sliding threshold）",
+    "engine_path": "**引擎未直接暴露**（慢变量目前注入膜电位/电导，不注入阈值）⇒ 需引擎改",
+    "why_not_ignite_self_sustain": "与 C1 同族（活动历史依赖的负反馈），但作用点改为阈值 ⇒ **可与 C1 叠加**",
+    "priority": "**低**（需引擎改，且与 C1 同族 ⇒ 在 C1/C2 之后）"
+   }
+  ],
+  "chosen_path": {
+   "primary": "C1（慢适应放大）",
+   "fallback": "C2（STP depress）——**仅在 C1 全档失败且非反向时**启动，并登记为 **L2b**（成本另计）",
+   "rationale": "① C1 已接线且**最小阳性对照已通过**（无需任何改码即可跑正式档）；② C1 是纯负反馈、活动历史依赖，机制论证与实测方向一致；③ C2 需生产者改动，属并行准备的第二路径。"
+  },
+  "baseline": {
+   "base_config": {
+    "N": 8192,
+    "gmax_scale": 1.0,
+    "bias_scale": 0.7,
+    "bias_log_sigma": 0.3,
+    "indegree": 20,
+    "delay_bins": [
+     40,
+     60,
+     80
+    ],
+    "subtypes": true,
+    "slow": true,
+    "delivery_production": "chunk",
+    "judgment_caliber": "step"
+   },
+   "note": "= **L0 最优点**（bias=0.70 ⇒ R=0.0293）**且 σ=0.30**（**不启用 L1**）；slow 机制按档位设置（S0 为默认档）"
+  },
+  "L2_rungs": {
+   "lever": "**慢适应变量放大**：先扫 `slow_inc`（固定 tau_slow=1000 ms），方向正确时再进入 τ 档",
+   "grid": [
+    {
+     "rung": "S0",
+     "slow_inc": 6.0,
+     "tau_slow_ms": 1000,
+     "note": "**对照**（= 既有 G1/L0/L1 的默认档）"
+    },
+    {
+     "rung": "S1",
+     "slow_inc": 18.0,
+     "tau_slow_ms": 1000,
+     "note": "×3"
+    },
+    {
+     "rung": "S2",
+     "slow_inc": 60.0,
+     "tau_slow_ms": 1000,
+     "note": "×10"
+    },
+    {
+     "rung": "S3",
+     "slow_inc": 180.0,
+     "tau_slow_ms": 1000,
+     "note": "×30（**阳性对照已用该值**：slow_trace.mean ×39.2）"
+    },
+    {
+     "rung": "S4",
+     "slow_inc": 180.0,
+     "tau_slow_ms": 3000,
+     "note": "**条件档**：仅当 S1–S3 显示方向正确（R 下降且 (a) 改善）时进入 ⇒ 记忆更长"
+    }
+   ],
+   "per_rung_arms": "`role=zero_drive`（dose=0）与 `role=baseline`（dose=1）**各 3 个真正独立实现**；T=10 s；含 S4 共 5 档 × 2 角色 × 3 实现 = **30 run**",
+   "mechanism_readback_required": "每档必须落 `slow_trace`（n/mean/std/dynamic_range/alive）并断言 `alive=True ∧ mean>0 ∧ std>1e-6`；**否则该档判 `invalid`（机制未实施，M10 D1 家族）**。**🔴 生产者目前不把 `slow_trace` 写进臂 JSON**（只在引擎 `res` 里）⇒ 需 B2 在 out-json 追加该字段（**1 行**）或由评估侧旁路读取；这是本设计的**硬前置**。",
+   "producer_prerequisites": [
+    "① **必须**：把 `slow_trace` 统计写入臂 JSON（当前仅存在于引擎返回值）——否则正式档无法做机制读回断言",
+    "② 建议：CLI 暴露 `--tau-slow-ms` / `--slow-inc`（计划模板键组 L436 已含二者，但 `arm_spec_from_cli`（L226–237）与 CLI 未透传；**臂 spec JSON 路径已可用**：`if spec.get(\"slow\", True): configure_slow(..., tau_slow_ms=spec.get(\"tau_slow_ms\",1000), inc_per_spike=spec.get(\"slow_inc\",6.0))`）",
+    "③ C2 路线另需：`build_engine`（L113–128）内调用 `configure_stp` + CLI/计划键 + **显式禁 facilitate**"
+   ]
+  },
+  "core_falsifiable_assertion": {
+   "statement": "**存在某个档使 `(a) ∈ [0.5, 2.0] Hz` 且 `R ≤ 0.10`（点估计与更宽 CI 上界 ≤0.12）同时成立。**",
+   "why_self_consistent": "(b) 现为 `unavailable`（真实 ROI 掩膜维缺失）⇒ 不进任何门断言；(a)/(c) 均为 `final=1` 的已定稿判定带 ⇒ 双目标**可判且有判别力**（G1 已证各自可判但不可同时满足 ⇒ 断言当前为假）。",
+   "falsifiers": [
+    "① **主证伪式**：整个档位网格双目标零命中，**且** (a) 与 R 在档位参数上**同号单调**（|ρ| ≥ 0.8）⇒ 判 **L2 失败 / 第三维结构性对立** ⇒ 升级『换机制』（R91 第 3 条）",
+    "② **机制专属证伪**：若 R 随 `slow_inc` 上升而**反向升高**（即机制点燃自持）⇒ 判 **该机制方向错误**，立即停（C2 的 facilitate 对照臂预期正属此列）",
+    "③ **机制未实施**：若某档 `slow_trace.alive=False` 或 `std≤1e-6` 或 `inc_per_spike` 读回不一致 ⇒ 该档 `invalid`（**不得**记为『机制无效』）"
+   ],
+   "positive_outcome": "某档双目标命中（含 CI 条件）⇒ 进入定稿确认，并**只**得结论『(a) 与 (c) 可同时满足』"
+  },
+  "b_reporting_form": "**沿用 R101/L1 的 R57 四条**：(b) 一律**描述性并列、不作 gate**（代理口径 zero_count/无真实 ROI 掩膜、样本 thin 单 field×2,000 帧≈317 s、**不引用 0.48–0.49 窄带** ⇒ 以对 0.49 的**比值/上界**报告、不判 pass/fail）。**范围句照抄**：『**L2 即便成功，也只能让 (a) 与 (c) 同时可行；(b) 的判定仍待真实 ROI 掩膜这一维。**』",
+  "replicate_axis_convention_non_constructive": {
+   "axis": "**(net_seed, event_seed) 对**：realization0=(0,11)、realization1=(1,12)、realization2=(2,13)；**要求同档内三者两两互异**（若只变惰性 `seed` 则对不变 ⇒ 断言失败 ⇒ 非构造性）",
+   "per_rung_seed_count": "`zero_drive` **3 独立实现** ∧ `baseline` **3 独立实现**（RF-M11-3 由独立实现满足）",
+   "division_of_labor": "计划级由 B2 断言；工具侧 `h_determinism_not_evidence` 守卫不变（R95 §⑤）"
+  },
+  "stop_rules": [
+   "① 某档使**主断言成立** ⇒ **停扫**，进入定稿确认",
+   "② `slow_inc` ↑ 而 R **反向升高** ⇒ **立即停**（机制点燃自持；机制专属证伪②）",
+   "③ 连续 **2 档**既未使 (a) 向带内靠近、也未使 R 改善 ⇒ **停**报『无改善』",
+   "④ 任一档 `slow_trace.alive=False` / `std≤1e-6` / `inc_per_spike` 读回不一致 ⇒ 该档 **`invalid`**（机制未实施）；若 **≥2 档**如此 ⇒ **停**并查引擎（**不得**记为『机制无效』，M10 D1 家族）",
+   "⑤ 任一档 `(net_seed,event_seed)` 对重复（计划级断言违反）或 `hard_failures` 非空 ⇒ **停并查口径**",
+   "⑥ 触及预算包络 ⇒ **停**（不得静默超支）",
+   "⑦ `bias_scale ≤ 0.50` 与 `slow_inc > 180` 的档**不进 L2**（前者 L0 已证压过头；后者超出预注册范围）",
+   "⑧ S1–S3 全档双不达标**且非反向** ⇒ 报『慢适应亦不足』⇒ 启动 **C2（STP depress）作为 L2b**；若 C2 亦失败 ⇒ 写入缺失机制清单（结构性对立第三维确认）"
+  ],
+  "budget": {
+   "unit_prices": "chunk@8k：bias=0.70 干跑实测 **0.7964** ms/step（上界取 bias=1.00 的 **0.9720**）；正式跑前须按档重探（slow 放大后单价可能变化）",
+   "steps_per_run_incl_settle": "T=10 s → **210,000**；T=20 s → **410,000**；T=40 s → **810,000**（settle 500 ms = 10,000 步）",
+   "segments": {
+    "L2_slow_scan(5 档 × 2 角色 × 3 实现, T=10 s)": {
+     "runs": 30,
+     "steps": 6300000,
+     "gpu_h_mid": 1.394,
+     "gpu_h_upper": 1.701
+    },
+    "L2_final_confirm(最优档：5 剂量 × 3 实现 × T{10,20,40})": {
+     "runs": 45,
+     "steps": 21450000,
+     "gpu_h_mid": 4.745,
+     "gpu_h_upper": 5.791
+    },
+    "L2_twin_arms_new_condition(新工况：slow 档位变 ⇒ R78 §⑤ 重做；剂量两端点 step+chunk)": {
+     "runs": 4,
+     "gpu_h_mid": 0.49
+    }
+   },
+   "total": {
+    "runs": 79,
+    "gpu_h_mid": 6.629,
+    "gpu_h_upper": 7.982,
+    "envelope": "**在 ≤10 包络内**（余量 2.0–3.4 GPU-h）"
+   },
+   "wall_clock": "纯计算 ≈6.6 h（chunk 生产、MPS 串行）＋逐 run 新进程开销（8k 装配 30–60 s × 79 run ≈ 1.0 h）⇒ **≈7.6 h**；**必须托管**（B3 自跑实测占空比仅 5.7%）；进度按**累计 CPU/墙钟比**判",
+   "downgrade_plan_if_over": [
+    "④ **推荐**：定稿确认只跑 3 剂量（d0/d1/d4）⇒ 45→27 run ⇒ 2.847 GPU-h，总 **≈4.73**（代价：(d) 网格不全 ⇒ (d) 为 sanity 非 gate，可接受，须登记）",
+    "① 去掉 S4 条件档 ⇒ **−0.279**（其实 S4 只在方向正确时才跑）",
+    "② 定稿确认 T 档 3→2 ⇒ **违反硬门④**，仅描述性 ⇒ **不推荐**",
+    "③ 定稿确认实现数 3→2 ⇒ **违反 RF-M11-3** ⇒ **不推荐**"
+   ]
+  },
+  "minimal_positive_control": {
+   "requirement": "R84 第 37 条：**未证伪过的断言不构成证据** ⇒ 任何新杠杆启用前必须先做『最小阳性对照』（R101/L1 的 `--self-test-sigma` 同型做法）",
+   "status": "**✅ 已完成（本次，CPU / 极小配置 / 不占 MPS）**",
+   "design": {
+    "config": "N=**1000**、T=**1 s**（20,000 测量步）+ settle 500 ms（10,000 步）、`device=cpu`、`OMP_NUM_THREADS=1`、delivery=chunk、bias_scale=0.70、bias_log_sigma=0.30、dose=1（有活动才有历史）",
+    "event_window_caliber": "**🔴 事件表必须覆盖 settle+T**（绝对步号语义）——首跑只覆盖 T ⇒ `IndexError: index 20040 out of bounds for size 20001` ⇒ 已修正并登记（口径教训）",
+    "arms": [
+     {
+      "arm": "阳性",
+      "slow": true,
+      "slow_inc": 180.0,
+      "tau_slow_ms": 3000
+     },
+     {
+      "arm": "默认",
+      "slow": true,
+      "slow_inc": 6.0,
+      "tau_slow_ms": 1000
+     },
+     {
+      "arm": "反例",
+      "slow": false,
+      "note": "机制关闭 ⇒ 断言必须判『无效应』"
+     }
+    ],
+    "assertion": "`slow_trace.n > 0 ∧ alive == True ∧ mean > 0 ∧ std > 1e-6`（**活动历史相关量**：慢变量轨迹非零、非静态、且随参数变化）"
+   },
+   "results": {
+    "阳性(inc=180,tau=3000)": {
+     "spk": 101.0,
+     "slow_trace": {
+      "n": 15,
+      "mean": 22.267,
+      "std": 6.347,
+      "dynamic_range": 23.422,
+      "alive": true
+     },
+     "wall_s": 1.71,
+     "ms_per_step_cpu": 0.0854
+    },
+    "默认(inc=6,tau=1000)": {
+     "spk": 127.0,
+     "slow_trace": {
+      "n": 15,
+      "mean": 0.5686,
+      "std": 0.1211,
+      "alive": true
+     }
+    },
+    "反例(slow off)": {
+     "spk": 598.0,
+     "slow_trace": null
+    },
+    "assert": {
+     "positive": true,
+     "default": true,
+     "negative": false
+    },
+    "verdict": "**positive_control_pass**（阳性/默认 断言成立 ∧ 反例断言失败 ⇒ **非零退出语义成立**）",
+    "parameter_is_alive": "`slow_inc` 6→180 ⇒ `slow_trace.mean` **0.5686 → 22.2675（×39.2）** ⇒ 参数确实是活的（M10 D1 家族的正面对照）",
+    "mechanism_direction": "slow off spk=**598** → slow on(inc=180) spk=**101** ⇒ 机制把活动**压低 83%**（**负反馈方向被实测确认** —— 这是『不点燃自持』论证的直接支持）"
+   },
+   "artifact": "neural_exploration/data/m11_p5_l2_selftest_slowvar.json",
+   "not_claimed": "该对照只证明『机制接线并生效、方向为抑制』；**不**证明它在 8192 档上能把 (a) 抬进带（那正是 L2 正式档要测的）"
+  },
+  "artifacts_expected": [
+   "neural_exploration/data/m11_p5_lever_prereg.json（本段）",
+   "neural_exploration/data/m11_p5_l2_selftest_slowvar.json（最小阳性对照，已完成）",
+   "m11_p5_plan_l2_slow.json（B2 出计划；每臂含 bias_scale=0.70 / bias_log_sigma=0.30 / slow_inc / tau_slow_ms / (net_seed,event_seed) 对）",
+   "m11_p5_resting_eval_l2.json（工具评估：主断言 + 描述性 (b) 比值 + slow_trace 读回）"
+  ],
+  "boundaries": "不改 `validate_p11_resting.py`（`0d3c1d990dfe7077…`）、不改判据表 `final=1` 行、不改写已判定产物、**不启动 MPS 作业**（J6 在跑，MPS 归主agent）；本次最小阳性对照走 **CPU**（N=1000/T=1 s，1.7 s/臂）"
  }
 }
