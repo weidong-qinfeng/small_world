@@ -1,0 +1,26 @@
+{
+ "run_id": "l0_g1.00_b1.00_8192_T10000ms_d0_s0",
+ "stage": "l0ref",
+ "config_id": "p5_L0_g1.00_b1.00",
+ "T_ms": 10000.0,
+ "drive_mult": 0.0,
+ "seed": 0,
+ "role": "zero_drive",
+ "mechanism": "none",
+ "delivery": "chunk",
+ "gmax_scale": 1.0,
+ "bias_scale": 1.0,
+ "lever": "reference(\u2261G1 p5_C \u5de5\u51b5)",
+ "settle_ms": 500.0,
+ "drive_rate_hz": 8.0,
+ "device": "mps",
+ "indegree": 20,
+ "delay_bins": [
+  40,
+  60,
+  80
+ ],
+ "subtypes": true,
+ "slow": true,
+ "n_neuron": 8192
+}
