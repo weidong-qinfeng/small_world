@@ -1,0 +1,9 @@
+run_id=l3probe_b1.00s0.05_8192_T1000ms_d0_s0
+E/I 积分必须由引擎实测且非零
+Traceback (most recent call last):
+  File "/Users/weidong/ai/small_world/neural_exploration/tools/run_m11_p5_arms.py", line 376, in run_arm_main
+    arm = run_one(spec, out_dir)
+  File "/Users/weidong/ai/small_world/neural_exploration/tools/run_m11_p5_arms.py", line 264, in run_one
+    assert res["ei_integrals"]["i_exc_integral"] > 0, "E/I 积分必须由引擎实测且非零"
+AssertionError: E/I 积分必须由引擎实测且非零
+
