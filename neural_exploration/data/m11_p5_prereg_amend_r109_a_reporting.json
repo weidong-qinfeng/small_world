@@ -1,0 +1,62 @@
+{
+ "amendment_id": "M11-PREREG-AMD-R109-A-REPORTING",
+ "status": "**事前登记**（L2 扫描启动之前）—— 不修改父预注册（父文件保持逐字节不变，本文件引用其哈希）",
+ "parent_prereg": {
+  "file": "data/m11_p5_lever_prereg.json",
+  "sha256": "9c6f7c60073ee07e1f48aee787040f16d24aa0efaf67b4cf65f98d2e263c6644",
+  "note": "父预注册**不可变**：本次为**追加式修订**（E-M11-2 家族纪律），父文件哈希不变以保证既有引用仍有效"
+ },
+ "authority": "R109 ⑥（docs/m11_acceptance_master.md）",
+ "rationale": {
+  "trigger": "R109 ③ 实测：σ 0.30→0.90 使总脉冲 ↑5.4×（8,643→46,584；群体均值率 0.106→0.569 Hz），但**逐神经元中位率仅 0.0→0.1 Hz** ⇒ **半数以上神经元在 10 s 内静默**",
+  "blind_spot": "(a) 的频带 `[0.5,2.0] Hz` **作用在中位数上** ⇒ **只看中位率无法区分「机制无效」与「机制只作用于少数神经元」**",
+  "why_before_data": "这是**口径缺口**，必须在看到 L2 数据之前关闭 ⇒ 属事前登记，不是事后改判据"
+ },
+ "what_changes": "**仅新增描述性报告指标**（不改任何频带、不改任何 pass/fail 规则）",
+ "a_reporting_extension": {
+  "primary_unchanged": {
+   "estimator": "per_neuron（逐神经元计数/T 的中位数）",
+   "band_hz": [
+    0.5,
+    2.0
+   ],
+   "role": "**仍为 (a) 的主判口径**（频带与判定规则逐字不变）"
+  },
+  "additional_descriptive_required": [
+   {
+    "id": "a_median_hz",
+    "definition": "逐神经元计数/T 的中位数（Hz）",
+    "note": "= 现行主口径，须**照旧**报出"
+   },
+   {
+    "id": "a_active_frac",
+    "definition": "在测量窗 T 内 **≥1 个脉冲**的神经元占比（无量纲，0–1）",
+    "note": "**新增**：摊平程度的直接度量"
+   },
+   {
+    "id": "a_pop_mean_hz",
+    "definition": "群体均值率 = 总脉冲/(N·T)（Hz）",
+    "note": "**新增**：总量口径，与现有 `population_trace(bin_median)` 并列"
+   }
+  ],
+  "cross_check_requirement": "每档必须同时给出三者 ⇒ 评估侧须能判「均值↑ 而 active_frac 不升」这一模式（= 机制只作用于少数神经元）",
+  "no_gate_change": true,
+  "ban": "**不得**因新增指标而改变 (a) 的 pass/fail（不得用 `a_active_frac` 代替中位率判 (a)）"
+ },
+ "b_unchanged": "(b) 依旧**描述性并列、不作 gate**（R101/R57）；本修订**不**启用 0.48–0.49 窄带，**不**改 (b) 的 unavailable 状态",
+ "extra_finding_recorded_not_a_rule": {
+  "statement": "(a) 失败的机制**正是 (b) 要测的东西**（静默神经元比例）⇒ (b) 的真实 ROI 掩膜维是 (a) 的**诊断工具**",
+  "scope": "**仅记录**，**不改** M12 数据门判定、**不改** (b) 的四态"
+ },
+ "cross_refs": [
+  "R109 ①–⑥",
+  "R105（缺失机制清单第二次改写）",
+  "R91 ③（结构性对立）",
+  "R80 §⑥（跨接口量带单位）",
+  "R109 ⑤（跨配置量带身份）"
+ ],
+ "l1_plan_sha_for_traceability": {
+  "file": "data/m11_p5_plan_l1.json",
+  "sha256": "8b58577222038ff91d4550a94101b09fcaa4a6d1bdfaac4d9f3451d8b36366cf"
+ }
+}
