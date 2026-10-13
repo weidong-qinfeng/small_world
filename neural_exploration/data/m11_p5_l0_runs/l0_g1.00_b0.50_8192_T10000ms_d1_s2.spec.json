@@ -1,0 +1,26 @@
+{
+ "run_id": "l0_g1.00_b0.50_8192_T10000ms_d1_s2",
+ "stage": "l0b",
+ "config_id": "p5_L0_g1.00_b0.50",
+ "T_ms": 10000.0,
+ "drive_mult": 1.0,
+ "seed": 2,
+ "role": "baseline",
+ "mechanism": "none",
+ "delivery": "chunk",
+ "gmax_scale": 1.0,
+ "bias_scale": 0.5,
+ "lever": "L0-b \u4e3b\u6760\u6746 bias\u2193",
+ "settle_ms": 500.0,
+ "drive_rate_hz": 8.0,
+ "device": "mps",
+ "indegree": 20,
+ "delay_bins": [
+  40,
+  60,
+  80
+ ],
+ "subtypes": true,
+ "slow": true,
+ "n_neuron": 8192
+}
