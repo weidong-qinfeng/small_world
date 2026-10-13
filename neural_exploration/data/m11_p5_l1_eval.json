@@ -1,0 +1,4498 @@
+{
+ "verdict_G1": "invalid",
+ "verdict_reason": "存在硬失败/口径缺陷/不可能失败的判据（见 hard_failures / guard_failures / duration_flip / 判据级 invalid）⇒ 该轮结论无效；硬失败清单：[]；判据级 invalid：[\"p5_c_selfsustain\"]",
+ "gate_conditions": {
+  "p5_c_selfsustain": "invalid",
+  "p5_e_ei_balance": "fail",
+  "p5_g1_tension_quantified": "unavailable"
+ },
+ "criterion_status": {
+  "p5_a_rate_median": "fail",
+  "p5_b_silent_frac": "unavailable",
+  "p5_c_selfsustain": "invalid",
+  "p5_d_drive_elasticity": "unavailable",
+  "p5_e_ei_balance": "fail",
+  "p5_f_bounded": "pass",
+  "p5_g_wallclock": "unavailable",
+  "p5_h_determinism": "unavailable",
+  "p5_i_tradeoff": "unavailable",
+  "p5_g1_tension_quantified": "unavailable"
+ },
+ "state_counts": {
+  "pass": 5,
+  "fail": 14,
+  "invalid": 1,
+  "unavailable": 28
+ },
+ "criterion_row_status_histogram": {
+  "p5_a_rate_median": {
+   "fail": 4
+  },
+  "p5_b_silent_frac": {
+   "unavailable": 4
+  },
+  "p5_c_selfsustain": {
+   "invalid": 1,
+   "fail": 3
+  },
+  "p5_d_drive_elasticity": {
+   "unavailable": 4
+  },
+  "p5_e_ei_balance": {
+   "fail": 4
+  },
+  "p5_f_bounded": {
+   "pass": 4
+  },
+  "p5_g_wallclock": {
+   "unavailable": 4
+  },
+  "p5_h_determinism": {
+   "unavailable": 4
+  },
+  "p5_i_tradeoff": {
+   "unavailable": 4
+  },
+  "p5_g1_tension_quantified": {
+   "unavailable": 4
+  }
+ },
+ "aggregation_rule": "判据级状态 = 该判据**所有行**的最坏优先聚合（invalid > fail > pass > unavailable）；门条件读判据级状态 ⇒ 行状态与门条件可以不同（见 verdict_G1 处的规则声明）",
+ "hard_failures": [],
+ "guard_failures": [],
+ "discipline_45_rule": "「通过」必须能回答「它本来可能失败吗」：若某判据在该配置下**不可能失败**（例：(h) 的复刻臂与源臂共享 (net_seed,event_seed,reset_seed) 三元组），其 pass **不构成证据** ⇒ 判 invalid（insufficient 语义）。",
+ "estimator_gate_unmet": [],
+ "non_discriminative_criteria": [
+  "p5_a_rate_median",
+  "p5_d_drive_elasticity",
+  "p5_e_ei_balance"
+ ],
+ "baseline_arm_registered": true,
+ "duration_ladder": {
+  "p5_L1_b0.70_g1.00_s0.30": {
+   "T_levels_present_ms": [
+    10000.0
+   ],
+   "ladder_required_ms": [
+    10000.0,
+    20000.0,
+    40000.0
+   ],
+   "ladder_present_ms": [
+    10000.0
+   ],
+   "ladder_complete": false,
+   "per_criterion": {
+    "p5_a_rate_median": {
+     "T=10000ms": {
+      "value": 0.0,
+      "status": "fail"
+     }
+    },
+    "p5_b_silent_frac": {
+     "T=10000ms": {
+      "value": 0.55322265625,
+      "status": "unavailable"
+     }
+    },
+    "p5_c_selfsustain": {
+     "T=10000ms": {
+      "value": 0.02927111453914385,
+      "status": "invalid"
+     }
+    },
+    "p5_d_drive_elasticity": {
+     "T=10000ms": {
+      "value": null,
+      "status": "unavailable"
+     }
+    },
+    "p5_i_tradeoff": {
+     "T=10000ms": {
+      "value": null,
+      "status": "unavailable"
+     }
+    }
+   },
+   "drift": {},
+   "prefix_identity_observed": [],
+   "prefix_identity_note": "短档轨迹是长档轨迹的逐位前缀：在**确定性同 seed/同事件表**的独立重跑下这是**预期**现象（不是截断证据）；截断只在`trajectory_len_mismatch`（长度≠round(T_ms/dt_ms)）时才可证",
+   "status": "unavailable",
+   "reason": "硬门④：需至少 [1.0, 2.0, 4.0]×T_min=[10000.0, 20000.0, 40000.0] 三档同一配置的臂；实有 T=[10000.0] ⇒ 时长依赖性**未测**（判据不得就此定稿）"
+  },
+  "p5_L1_b0.70_g1.00_s0.45": {
+   "T_levels_present_ms": [
+    10000.0
+   ],
+   "ladder_required_ms": [
+    10000.0,
+    20000.0,
+    40000.0
+   ],
+   "ladder_present_ms": [
+    10000.0
+   ],
+   "ladder_complete": false,
+   "per_criterion": {
+    "p5_a_rate_median": {
+     "T=10000ms": {
+      "value": 0.0,
+      "status": "fail"
+     }
+    },
+    "p5_b_silent_frac": {
+     "T=10000ms": {
+      "value": 0.526123046875,
+      "status": "unavailable"
+     }
+    },
+    "p5_c_selfsustain": {
+     "T=10000ms": {
+      "value": 0.24642640073835625,
+      "status": "fail"
+     }
+    },
+    "p5_d_drive_elasticity": {
+     "T=10000ms": {
+      "value": null,
+      "status": "unavailable"
+     }
+    },
+    "p5_i_tradeoff": {
+     "T=10000ms": {
+      "value": null,
+      "status": "unavailable"
+     }
+    }
+   },
+   "drift": {},
+   "prefix_identity_observed": [],
+   "prefix_identity_note": "短档轨迹是长档轨迹的逐位前缀：在**确定性同 seed/同事件表**的独立重跑下这是**预期**现象（不是截断证据）；截断只在`trajectory_len_mismatch`（长度≠round(T_ms/dt_ms)）时才可证",
+   "status": "unavailable",
+   "reason": "硬门④：需至少 [1.0, 2.0, 4.0]×T_min=[10000.0, 20000.0, 40000.0] 三档同一配置的臂；实有 T=[10000.0] ⇒ 时长依赖性**未测**（判据不得就此定稿）"
+  },
+  "p5_L1_b0.70_g1.00_s0.60": {
+   "T_levels_present_ms": [
+    10000.0
+   ],
+   "ladder_required_ms": [
+    10000.0,
+    20000.0,
+    40000.0
+   ],
+   "ladder_present_ms": [
+    10000.0
+   ],
+   "ladder_complete": false,
+   "per_criterion": {
+    "p5_a_rate_median": {
+     "T=10000ms": {
+      "value": 0.0,
+      "status": "fail"
+     }
+    },
+    "p5_b_silent_frac": {
+     "T=10000ms": {
+      "value": 0.5106201171875,
+      "status": "unavailable"
+     }
+    },
+    "p5_c_selfsustain": {
+     "T=10000ms": {
+      "value": 0.48986590010360276,
+      "status": "fail"
+     }
+    },
+    "p5_d_drive_elasticity": {
+     "T=10000ms": {
+      "value": null,
+      "status": "unavailable"
+     }
+    },
+    "p5_i_tradeoff": {
+     "T=10000ms": {
+      "value": null,
+      "status": "unavailable"
+     }
+    }
+   },
+   "drift": {},
+   "prefix_identity_observed": [],
+   "prefix_identity_note": "短档轨迹是长档轨迹的逐位前缀：在**确定性同 seed/同事件表**的独立重跑下这是**预期**现象（不是截断证据）；截断只在`trajectory_len_mismatch`（长度≠round(T_ms/dt_ms)）时才可证",
+   "status": "unavailable",
+   "reason": "硬门④：需至少 [1.0, 2.0, 4.0]×T_min=[10000.0, 20000.0, 40000.0] 三档同一配置的臂；实有 T=[10000.0] ⇒ 时长依赖性**未测**（判据不得就此定稿）"
+  },
+  "p5_L1_b0.70_g1.00_s0.90": {
+   "T_levels_present_ms": [
+    10000.0
+   ],
+   "ladder_required_ms": [
+    10000.0,
+    20000.0,
+    40000.0
+   ],
+   "ladder_present_ms": [
+    10000.0
+   ],
+   "ladder_complete": false,
+   "per_criterion": {
+    "p5_a_rate_median": {
+     "T=10000ms": {
+      "value": 0.1,
+      "status": "fail"
+     }
+    },
+    "p5_b_silent_frac": {
+     "T=10000ms": {
+      "value": 0.49853515625,
+      "status": "unavailable"
+     }
+    },
+    "p5_c_selfsustain": {
+     "T=10000ms": {
+      "value": 0.7707152670444788,
+      "status": "fail"
+     }
+    },
+    "p5_d_drive_elasticity": {
+     "T=10000ms": {
+      "value": null,
+      "status": "unavailable"
+     }
+    },
+    "p5_i_tradeoff": {
+     "T=10000ms": {
+      "value": null,
+      "status": "unavailable"
+     }
+    }
+   },
+   "drift": {},
+   "prefix_identity_observed": [],
+   "prefix_identity_note": "短档轨迹是长档轨迹的逐位前缀：在**确定性同 seed/同事件表**的独立重跑下这是**预期**现象（不是截断证据）；截断只在`trajectory_len_mismatch`（长度≠round(T_ms/dt_ms)）时才可证",
+   "status": "unavailable",
+   "reason": "硬门④：需至少 [1.0, 2.0, 4.0]×T_min=[10000.0, 20000.0, 40000.0] 三档同一配置的臂；实有 T=[10000.0] ⇒ 时长依赖性**未测**（判据不得就此定稿）"
+  }
+ },
+ "tension": {
+  "p5_L1_b0.70_g1.00_s0.30@10000ms|mech=none": {
+   "status": "unavailable",
+   "reason": "(a) 或 (b) 的带未定稿 ⇒ 张力只能定性（n_both_in_band 此时恒为 0，不构成张力证据）",
+   "points": [
+    {
+     "drive_mult": 0.0,
+     "rate_median_hz": 0.0,
+     "silent_frac": 0.9910888671875,
+     "arm_id": "l1_b0.70_g1.00_s0.30_8192_T10000ms_d0_s0"
+    },
+    {
+     "drive_mult": 0.0,
+     "rate_median_hz": 0.0,
+     "silent_frac": 0.994384765625,
+     "arm_id": "l1_b0.70_g1.00_s0.30_8192_T10000ms_d0_s1"
+    },
+    {
+     "drive_mult": 0.0,
+     "rate_median_hz": 0.0,
+     "silent_frac": 0.994384765625,
+     "arm_id": "l1_b0.70_g1.00_s0.30_8192_T10000ms_d0_s2"
+    },
+    {
+     "drive_mult": 1.0,
+     "rate_median_hz": 0.0,
+     "silent_frac": 0.552978515625,
+     "arm_id": "l1_b0.70_g1.00_s0.30_8192_T10000ms_d1_s0"
+    },
+    {
+     "drive_mult": 1.0,
+     "rate_median_hz": 0.0,
+     "silent_frac": 0.55322265625,
+     "arm_id": "l1_b0.70_g1.00_s0.30_8192_T10000ms_d1_s1"
+    },
+    {
+     "drive_mult": 1.0,
+     "rate_median_hz": 0.0,
+     "silent_frac": 0.5670166015625,
+     "arm_id": "l1_b0.70_g1.00_s0.30_8192_T10000ms_d1_s2"
+    }
+   ],
+   "n_points": 6,
+   "n_both_in_band": null,
+   "spearman_drive_vs_rate": null,
+   "spearman_drive_vs_silent": -0.8911327886790069,
+   "first_drive_with_median_rate_gt0": null,
+   "qualitative_monotone_opposition": false,
+   "structural_tension": false,
+   "structural_tension_pending_bands": true
+  },
+  "p5_L1_b0.70_g1.00_s0.45@10000ms|mech=none": {
+   "status": "unavailable",
+   "reason": "(a) 或 (b) 的带未定稿 ⇒ 张力只能定性（n_both_in_band 此时恒为 0，不构成张力证据）",
+   "points": [
+    {
+     "drive_mult": 0.0,
+     "rate_median_hz": 0.0,
+     "silent_frac": 0.9281005859375,
+     "arm_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s0"
+    },
+    {
+     "drive_mult": 0.0,
+     "rate_median_hz": 0.0,
+     "silent_frac": 0.92333984375,
+     "arm_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s1"
+    },
+    {
+     "drive_mult": 0.0,
+     "rate_median_hz": 0.0,
+     "silent_frac": 0.9281005859375,
+     "arm_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s2"
+    },
+    {
+     "drive_mult": 1.0,
+     "rate_median_hz": 0.0,
+     "silent_frac": 0.5230712890625,
+     "arm_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d1_s0"
+    },
+    {
+     "drive_mult": 1.0,
+     "rate_median_hz": 0.0,
+     "silent_frac": 0.526123046875,
+     "arm_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d1_s1"
+    },
+    {
+     "drive_mult": 1.0,
+     "rate_median_hz": 0.0,
+     "silent_frac": 0.5333251953125,
+     "arm_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d1_s2"
+    }
+   ],
+   "n_points": 6,
+   "n_both_in_band": null,
+   "spearman_drive_vs_rate": null,
+   "spearman_drive_vs_silent": -0.8911327886790069,
+   "first_drive_with_median_rate_gt0": null,
+   "qualitative_monotone_opposition": false,
+   "structural_tension": false,
+   "structural_tension_pending_bands": true
+  },
+  "p5_L1_b0.70_g1.00_s0.60@10000ms|mech=none": {
+   "status": "unavailable",
+   "reason": "(a) 或 (b) 的带未定稿 ⇒ 张力只能定性（n_both_in_band 此时恒为 0，不构成张力证据）",
+   "points": [
+    {
+     "drive_mult": 0.0,
+     "rate_median_hz": 0.0,
+     "silent_frac": 0.8331298828125,
+     "arm_id": "l1_b0.70_g1.00_s0.60_8192_T10000ms_d0_s0"
+    },
+    {
+     "drive_mult": 0.0,
+     "rate_median_hz": 0.0,
+     "silent_frac": 0.826171875,
+     "arm_id": "l1_b0.70_g1.00_s0.60_8192_T10000ms_d0_s1"
+    },
+    {
+     "drive_mult": 0.0,
+     "rate_median_hz": 0.0,
+     "silent_frac": 0.836181640625,
+     "arm_id": "l1_b0.70_g1.00_s0.60_8192_T10000ms_d0_s2"
+    },
+    {
+     "drive_mult": 1.0,
+     "rate_median_hz": 0.0,
+     "silent_frac": 0.5098876953125,
+     "arm_id": "l1_b0.70_g1.00_s0.60_8192_T10000ms_d1_s0"
+    },
+    {
+     "drive_mult": 1.0,
+     "rate_median_hz": 0.0,
+     "silent_frac": 0.51123046875,
+     "arm_id": "l1_b0.70_g1.00_s0.60_8192_T10000ms_d1_s1"
+    },
+    {
+     "drive_mult": 1.0,
+     "rate_median_hz": 0.0,
+     "silent_frac": 0.5106201171875,
+     "arm_id": "l1_b0.70_g1.00_s0.60_8192_T10000ms_d1_s2"
+    }
+   ],
+   "n_points": 6,
+   "n_both_in_band": null,
+   "spearman_drive_vs_rate": null,
+   "spearman_drive_vs_silent": -0.87831006565368,
+   "first_drive_with_median_rate_gt0": null,
+   "qualitative_monotone_opposition": false,
+   "structural_tension": false,
+   "structural_tension_pending_bands": true
+  },
+  "p5_L1_b0.70_g1.00_s0.90@10000ms|mech=none": {
+   "status": "unavailable",
+   "reason": "(a) 或 (b) 的带未定稿 ⇒ 张力只能定性（n_both_in_band 此时恒为 0，不构成张力证据）",
+   "points": [
+    {
+     "drive_mult": 0.0,
+     "rate_median_hz": 0.0,
+     "silent_frac": 0.708740234375,
+     "arm_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d0_s0"
+    },
+    {
+     "drive_mult": 0.0,
+     "rate_median_hz": 0.0,
+     "silent_frac": 0.7052001953125,
+     "arm_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d0_s1"
+    },
+    {
+     "drive_mult": 0.0,
+     "rate_median_hz": 0.0,
+     "silent_frac": 0.71240234375,
+     "arm_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d0_s2"
+    },
+    {
+     "drive_mult": 1.0,
+     "rate_median_hz": 0.1,
+     "silent_frac": 0.4996337890625,
+     "arm_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d1_s0"
+    },
+    {
+     "drive_mult": 1.0,
+     "rate_median_hz": 0.1,
+     "silent_frac": 0.496826171875,
+     "arm_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d1_s1"
+    },
+    {
+     "drive_mult": 1.0,
+     "rate_median_hz": 0.1,
+     "silent_frac": 0.49853515625,
+     "arm_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d1_s2"
+    }
+   ],
+   "n_points": 6,
+   "n_both_in_band": null,
+   "spearman_drive_vs_rate": 1.0,
+   "spearman_drive_vs_silent": -0.87831006565368,
+   "first_drive_with_median_rate_gt0": {
+    "drive_mult": 1.0,
+    "rate_median_hz": 0.1,
+    "silent_frac": 0.4996337890625,
+    "arm_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d1_s0"
+   },
+   "qualitative_monotone_opposition": true,
+   "structural_tension": false,
+   "structural_tension_pending_bands": true
+  }
+ },
+ "exit_code": 2,
+ "generated_by": "tools/validate_p11_resting.py",
+ "generated_at": "2026-10-14T04:17:15",
+ "role": "M11 P5/G1 离线评估（只做分析，不做仿真；不写判据带）",
+ "protocol_path": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_protocol_l1_sigma_n8192.json",
+ "protocol": {
+  "protocol_id": "m11_p5_l1_sigma_n8192",
+  "fixture_kind": "M11 引擎侧生产者产物（tools/run_m11_p5_arms.py）",
+  "plan_id": "l1_sigma_n8192",
+  "dt_ms": 0.05,
+  "settle_ms": 500.0,
+  "bin_ms": 100.0,
+  "smooth_frames": 5,
+  "estimator": "per_neuron",
+  "n_neuron": 8192,
+  "drive_rate_hz": 8.0,
+  "engine_interpreters": {
+   "engine": {
+    "executable": "/Users/weidong/ai/small_world/.venv-m9/bin/python",
+    "python": "3.9.6",
+    "numpy": "1.26.4",
+    "torch": "2.8.0"
+   },
+   "evaluator": {
+    "executable": "./.venv-m11/bin/python",
+    "role": "只评估、不仿真"
+   },
+   "numpy_skew_discipline": "numpy 偏斜（.venv-m9 = 1.26.4 vs .venv-m11 = 2.0.2）⇒ **评估器侧数值不得用于支持或推翻任何「逐位/BIT」结论**；逐位类断言只在「同解释器 + 同 numpy」内可比（R34 §12.3）"
+  },
+  "engine": {
+   "python": "/Users/weidong/ai/small_world/.venv-m9/bin/python",
+   "engine_version": "m11e-1.0-4slot+laminar-delay-pack+slowvar",
+   "torch": "2.8.0",
+   "numpy": "1.26.4",
+   "device": "mps"
+  }
+ },
+ "targets_csv": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_targets.csv",
+ "n_arms": 24,
+ "hard_gates": {
+  "①_sample_size": "零驱动/基准臂各 ≥3 seed 且零驱动总脉冲 ≥300（否则 unavailable）",
+  "②_selfsustain_ci": "点估计 ≤ 上限 且 CI 上界 ≤ 上限×1.2；两 CI 法并列 + 一致性核对",
+  "③_double_estimator": "counts/pop_trace/agg 三估计器两两相对差 ≤2%，并含轨迹长度⟺(T,dt) 量纲自检",
+  "④_duration_ladder": "同一配置 {T_min,2×T_min,4×T_min} 三档；跨 T 判定翻转 ⇒ invalid",
+  "⑤_discriminativeness": "必须给出无机制基线臂的同一判据值；不得用非判别性判据作机制证据",
+  "⑥_gate_composition": "G1 = (c) ∧ (e) ∧ 张力已定量识别（主agent 2026-10-11 §二.6）；(d) 降为 sanity",
+  "⑥_caliber_annotation": "逐行带 protocol(T/settle/seed/bin/smooth) 与 estimator"
+ },
+ "arms": [
+  {
+   "arm_id": "l1_b0.70_g1.00_s0.30_8192_T10000ms_d0_s0",
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "T_ms": 10000.0,
+   "role": "zero_drive",
+   "mechanism": "none",
+   "drive_mult": 0.0,
+   "seed": 0,
+   "n_neuron": 8192,
+   "pop_trace": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.30_8192_T10000ms_d0_s0_poptrace.npy",
+   "counts": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.30_8192_T10000ms_d0_s0_counts.csv",
+   "n_steps_present": 200000
+  },
+  {
+   "arm_id": "l1_b0.70_g1.00_s0.30_8192_T10000ms_d0_s1",
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "T_ms": 10000.0,
+   "role": "zero_drive",
+   "mechanism": "none",
+   "drive_mult": 0.0,
+   "seed": 1,
+   "n_neuron": 8192,
+   "pop_trace": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.30_8192_T10000ms_d0_s1_poptrace.npy",
+   "counts": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.30_8192_T10000ms_d0_s1_counts.csv",
+   "n_steps_present": 200000
+  },
+  {
+   "arm_id": "l1_b0.70_g1.00_s0.30_8192_T10000ms_d0_s2",
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "T_ms": 10000.0,
+   "role": "zero_drive",
+   "mechanism": "none",
+   "drive_mult": 0.0,
+   "seed": 2,
+   "n_neuron": 8192,
+   "pop_trace": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.30_8192_T10000ms_d0_s2_poptrace.npy",
+   "counts": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.30_8192_T10000ms_d0_s2_counts.csv",
+   "n_steps_present": 200000
+  },
+  {
+   "arm_id": "l1_b0.70_g1.00_s0.30_8192_T10000ms_d1_s0",
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "T_ms": 10000.0,
+   "role": "baseline",
+   "mechanism": "none",
+   "drive_mult": 1.0,
+   "seed": 0,
+   "n_neuron": 8192,
+   "pop_trace": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.30_8192_T10000ms_d1_s0_poptrace.npy",
+   "counts": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.30_8192_T10000ms_d1_s0_counts.csv",
+   "n_steps_present": 200000
+  },
+  {
+   "arm_id": "l1_b0.70_g1.00_s0.30_8192_T10000ms_d1_s1",
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "T_ms": 10000.0,
+   "role": "baseline",
+   "mechanism": "none",
+   "drive_mult": 1.0,
+   "seed": 1,
+   "n_neuron": 8192,
+   "pop_trace": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.30_8192_T10000ms_d1_s1_poptrace.npy",
+   "counts": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.30_8192_T10000ms_d1_s1_counts.csv",
+   "n_steps_present": 200000
+  },
+  {
+   "arm_id": "l1_b0.70_g1.00_s0.30_8192_T10000ms_d1_s2",
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "T_ms": 10000.0,
+   "role": "baseline",
+   "mechanism": "none",
+   "drive_mult": 1.0,
+   "seed": 2,
+   "n_neuron": 8192,
+   "pop_trace": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.30_8192_T10000ms_d1_s2_poptrace.npy",
+   "counts": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.30_8192_T10000ms_d1_s2_counts.csv",
+   "n_steps_present": 200000
+  },
+  {
+   "arm_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s0",
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "T_ms": 10000.0,
+   "role": "zero_drive",
+   "mechanism": "none",
+   "drive_mult": 0.0,
+   "seed": 0,
+   "n_neuron": 8192,
+   "pop_trace": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s0_poptrace.npy",
+   "counts": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s0_counts.csv",
+   "n_steps_present": 200000
+  },
+  {
+   "arm_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s1",
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "T_ms": 10000.0,
+   "role": "zero_drive",
+   "mechanism": "none",
+   "drive_mult": 0.0,
+   "seed": 1,
+   "n_neuron": 8192,
+   "pop_trace": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s1_poptrace.npy",
+   "counts": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s1_counts.csv",
+   "n_steps_present": 200000
+  },
+  {
+   "arm_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s2",
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "T_ms": 10000.0,
+   "role": "zero_drive",
+   "mechanism": "none",
+   "drive_mult": 0.0,
+   "seed": 2,
+   "n_neuron": 8192,
+   "pop_trace": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s2_poptrace.npy",
+   "counts": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s2_counts.csv",
+   "n_steps_present": 200000
+  },
+  {
+   "arm_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d1_s0",
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "T_ms": 10000.0,
+   "role": "baseline",
+   "mechanism": "none",
+   "drive_mult": 1.0,
+   "seed": 0,
+   "n_neuron": 8192,
+   "pop_trace": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.45_8192_T10000ms_d1_s0_poptrace.npy",
+   "counts": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.45_8192_T10000ms_d1_s0_counts.csv",
+   "n_steps_present": 200000
+  },
+  {
+   "arm_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d1_s1",
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "T_ms": 10000.0,
+   "role": "baseline",
+   "mechanism": "none",
+   "drive_mult": 1.0,
+   "seed": 1,
+   "n_neuron": 8192,
+   "pop_trace": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.45_8192_T10000ms_d1_s1_poptrace.npy",
+   "counts": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.45_8192_T10000ms_d1_s1_counts.csv",
+   "n_steps_present": 200000
+  },
+  {
+   "arm_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d1_s2",
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "T_ms": 10000.0,
+   "role": "baseline",
+   "mechanism": "none",
+   "drive_mult": 1.0,
+   "seed": 2,
+   "n_neuron": 8192,
+   "pop_trace": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.45_8192_T10000ms_d1_s2_poptrace.npy",
+   "counts": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.45_8192_T10000ms_d1_s2_counts.csv",
+   "n_steps_present": 200000
+  },
+  {
+   "arm_id": "l1_b0.70_g1.00_s0.60_8192_T10000ms_d0_s0",
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "T_ms": 10000.0,
+   "role": "zero_drive",
+   "mechanism": "none",
+   "drive_mult": 0.0,
+   "seed": 0,
+   "n_neuron": 8192,
+   "pop_trace": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.60_8192_T10000ms_d0_s0_poptrace.npy",
+   "counts": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.60_8192_T10000ms_d0_s0_counts.csv",
+   "n_steps_present": 200000
+  },
+  {
+   "arm_id": "l1_b0.70_g1.00_s0.60_8192_T10000ms_d0_s1",
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "T_ms": 10000.0,
+   "role": "zero_drive",
+   "mechanism": "none",
+   "drive_mult": 0.0,
+   "seed": 1,
+   "n_neuron": 8192,
+   "pop_trace": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.60_8192_T10000ms_d0_s1_poptrace.npy",
+   "counts": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.60_8192_T10000ms_d0_s1_counts.csv",
+   "n_steps_present": 200000
+  },
+  {
+   "arm_id": "l1_b0.70_g1.00_s0.60_8192_T10000ms_d0_s2",
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "T_ms": 10000.0,
+   "role": "zero_drive",
+   "mechanism": "none",
+   "drive_mult": 0.0,
+   "seed": 2,
+   "n_neuron": 8192,
+   "pop_trace": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.60_8192_T10000ms_d0_s2_poptrace.npy",
+   "counts": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.60_8192_T10000ms_d0_s2_counts.csv",
+   "n_steps_present": 200000
+  },
+  {
+   "arm_id": "l1_b0.70_g1.00_s0.60_8192_T10000ms_d1_s0",
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "T_ms": 10000.0,
+   "role": "baseline",
+   "mechanism": "none",
+   "drive_mult": 1.0,
+   "seed": 0,
+   "n_neuron": 8192,
+   "pop_trace": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.60_8192_T10000ms_d1_s0_poptrace.npy",
+   "counts": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.60_8192_T10000ms_d1_s0_counts.csv",
+   "n_steps_present": 200000
+  },
+  {
+   "arm_id": "l1_b0.70_g1.00_s0.60_8192_T10000ms_d1_s1",
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "T_ms": 10000.0,
+   "role": "baseline",
+   "mechanism": "none",
+   "drive_mult": 1.0,
+   "seed": 1,
+   "n_neuron": 8192,
+   "pop_trace": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.60_8192_T10000ms_d1_s1_poptrace.npy",
+   "counts": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.60_8192_T10000ms_d1_s1_counts.csv",
+   "n_steps_present": 200000
+  },
+  {
+   "arm_id": "l1_b0.70_g1.00_s0.60_8192_T10000ms_d1_s2",
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "T_ms": 10000.0,
+   "role": "baseline",
+   "mechanism": "none",
+   "drive_mult": 1.0,
+   "seed": 2,
+   "n_neuron": 8192,
+   "pop_trace": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.60_8192_T10000ms_d1_s2_poptrace.npy",
+   "counts": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.60_8192_T10000ms_d1_s2_counts.csv",
+   "n_steps_present": 200000
+  },
+  {
+   "arm_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d0_s0",
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "T_ms": 10000.0,
+   "role": "zero_drive",
+   "mechanism": "none",
+   "drive_mult": 0.0,
+   "seed": 0,
+   "n_neuron": 8192,
+   "pop_trace": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.90_8192_T10000ms_d0_s0_poptrace.npy",
+   "counts": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.90_8192_T10000ms_d0_s0_counts.csv",
+   "n_steps_present": 200000
+  },
+  {
+   "arm_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d0_s1",
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "T_ms": 10000.0,
+   "role": "zero_drive",
+   "mechanism": "none",
+   "drive_mult": 0.0,
+   "seed": 1,
+   "n_neuron": 8192,
+   "pop_trace": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.90_8192_T10000ms_d0_s1_poptrace.npy",
+   "counts": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.90_8192_T10000ms_d0_s1_counts.csv",
+   "n_steps_present": 200000
+  },
+  {
+   "arm_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d0_s2",
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "T_ms": 10000.0,
+   "role": "zero_drive",
+   "mechanism": "none",
+   "drive_mult": 0.0,
+   "seed": 2,
+   "n_neuron": 8192,
+   "pop_trace": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.90_8192_T10000ms_d0_s2_poptrace.npy",
+   "counts": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.90_8192_T10000ms_d0_s2_counts.csv",
+   "n_steps_present": 200000
+  },
+  {
+   "arm_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d1_s0",
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "T_ms": 10000.0,
+   "role": "baseline",
+   "mechanism": "none",
+   "drive_mult": 1.0,
+   "seed": 0,
+   "n_neuron": 8192,
+   "pop_trace": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.90_8192_T10000ms_d1_s0_poptrace.npy",
+   "counts": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.90_8192_T10000ms_d1_s0_counts.csv",
+   "n_steps_present": 200000
+  },
+  {
+   "arm_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d1_s1",
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "T_ms": 10000.0,
+   "role": "baseline",
+   "mechanism": "none",
+   "drive_mult": 1.0,
+   "seed": 1,
+   "n_neuron": 8192,
+   "pop_trace": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.90_8192_T10000ms_d1_s1_poptrace.npy",
+   "counts": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.90_8192_T10000ms_d1_s1_counts.csv",
+   "n_steps_present": 200000
+  },
+  {
+   "arm_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d1_s2",
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "T_ms": 10000.0,
+   "role": "baseline",
+   "mechanism": "none",
+   "drive_mult": 1.0,
+   "seed": 2,
+   "n_neuron": 8192,
+   "pop_trace": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.90_8192_T10000ms_d1_s2_poptrace.npy",
+   "counts": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.90_8192_T10000ms_d1_s2_counts.csv",
+   "n_steps_present": 200000
+  }
+ ],
+ "arm_metrics": {
+  "l1_b0.70_g1.00_s0.30_8192_T10000ms_d0_s0": {
+   "arm_id": "l1_b0.70_g1.00_s0.30_8192_T10000ms_d0_s0",
+   "checks": [
+    "trace_len == round(T_ms/dt_ms) OK",
+    "counts_len == n_neuron OK"
+   ],
+   "hard_fail": [],
+   "T_s": 10.0,
+   "steps_expected": 200000,
+   "n_neuron": 8192,
+   "seed": 0,
+   "trace_len": 200000,
+   "trace_sum": 378.0,
+   "trace_finite": true,
+   "trace_mean_rate_hz": 0.0046142578125,
+   "bin_rate_hz_median": 0.003662109375,
+   "trace_bin_median_rate_hz": 0.003662109375,
+   "silent_bin_frac": 0.05,
+   "n_bins": 100,
+   "counts_n": 8192,
+   "counts_sum": 378.0,
+   "counts_finite": true,
+   "rate_summary_hz": {
+    "median": 0.0,
+    "mean": 0.0046142578125,
+    "p5": 0.0,
+    "p95": 0.0,
+    "max": 1.7,
+    "min": 0.0
+   },
+   "rate_median_hz": 0.0,
+   "rate_mean_hz": 0.0046142578125,
+   "rate_p95_hz": 0.0,
+   "rate_p5_hz": 0.0,
+   "silent_frac_zero_count": 0.9910888671875,
+   "silent_frac_lt_thr": 0.9957275390625,
+   "n_active_neurons": 73,
+   "by_cell_type": {
+    "E": {
+     "n": 6635,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.9908063300678221
+    },
+    "PV": {
+     "n": 542,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.996309963099631
+    },
+    "SST": {
+     "n": 493,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.9918864097363083
+    },
+    "VIP": {
+     "n": 522,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.9885057471264368
+    }
+   },
+   "agg_spk_total": 378.0,
+   "estimators_available": [
+    "agg_spk_total",
+    "counts_sum",
+    "pop_trace_sum"
+   ],
+   "estimator_rel_diffs": {
+    "agg_spk_total__vs__counts_sum": 0.0,
+    "agg_spk_total__vs__pop_trace_sum": 0.0,
+    "counts_sum__vs__pop_trace_sum": 0.0
+   },
+   "estimator_gate": "checkable",
+   "dim_check_counts": 0.0,
+   "dim_check_trace": 0.0,
+   "wall_pred_s": 109.04884058399999,
+   "wall_s": 129.790447667,
+   "wall_over_pred": 1.1902047465330254,
+   "ei_i_exc_integral": 7169.9190571770205,
+   "ei_i_inh_integral": 41643.57595553507,
+   "ei_ratio": 5.808095687475055
+  },
+  "l1_b0.70_g1.00_s0.30_8192_T10000ms_d0_s1": {
+   "arm_id": "l1_b0.70_g1.00_s0.30_8192_T10000ms_d0_s1",
+   "checks": [
+    "trace_len == round(T_ms/dt_ms) OK",
+    "counts_len == n_neuron OK"
+   ],
+   "hard_fail": [],
+   "T_s": 10.0,
+   "steps_expected": 200000,
+   "n_neuron": 8192,
+   "seed": 1,
+   "trace_len": 200000,
+   "trace_sum": 193.0,
+   "trace_finite": true,
+   "trace_mean_rate_hz": 0.00235595703125,
+   "bin_rate_hz_median": 0.00244140625,
+   "trace_bin_median_rate_hz": 0.00244140625,
+   "silent_bin_frac": 0.15,
+   "n_bins": 100,
+   "counts_n": 8192,
+   "counts_sum": 193.0,
+   "counts_finite": true,
+   "rate_summary_hz": {
+    "median": 0.0,
+    "mean": 0.00235595703125,
+    "p5": 0.0,
+    "p95": 0.0,
+    "max": 1.0,
+    "min": 0.0
+   },
+   "rate_median_hz": 0.0,
+   "rate_mean_hz": 0.00235595703125,
+   "rate_p95_hz": 0.0,
+   "rate_p5_hz": 0.0,
+   "silent_frac_zero_count": 0.994384765625,
+   "silent_frac_lt_thr": 0.9979248046875,
+   "n_active_neurons": 46,
+   "by_cell_type": {
+    "E": {
+     "n": 6635,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.9942727957799548
+    },
+    "PV": {
+     "n": 527,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.9981024667931688
+    },
+    "SST": {
+     "n": 466,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.9935622317596566
+    },
+    "VIP": {
+     "n": 564,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.9929078014184397
+    }
+   },
+   "agg_spk_total": 193.0,
+   "estimators_available": [
+    "agg_spk_total",
+    "counts_sum",
+    "pop_trace_sum"
+   ],
+   "estimator_rel_diffs": {
+    "agg_spk_total__vs__counts_sum": 0.0,
+    "agg_spk_total__vs__pop_trace_sum": 0.0,
+    "counts_sum__vs__pop_trace_sum": 0.0
+   },
+   "estimator_gate": "checkable",
+   "dim_check_counts": 0.0,
+   "dim_check_trace": 0.0,
+   "wall_pred_s": 118.415859083,
+   "wall_s": 139.521512167,
+   "wall_over_pred": 1.1782333316452709,
+   "ei_i_exc_integral": 3548.209046236624,
+   "ei_i_inh_integral": 24095.16290935051,
+   "ei_ratio": 6.7907957494519176
+  },
+  "l1_b0.70_g1.00_s0.30_8192_T10000ms_d0_s2": {
+   "arm_id": "l1_b0.70_g1.00_s0.30_8192_T10000ms_d0_s2",
+   "checks": [
+    "trace_len == round(T_ms/dt_ms) OK",
+    "counts_len == n_neuron OK"
+   ],
+   "hard_fail": [],
+   "T_s": 10.0,
+   "steps_expected": 200000,
+   "n_neuron": 8192,
+   "seed": 2,
+   "trace_len": 200000,
+   "trace_sum": 188.0,
+   "trace_finite": true,
+   "trace_mean_rate_hz": 0.0022949218749999997,
+   "bin_rate_hz_median": 0.00244140625,
+   "trace_bin_median_rate_hz": 0.00244140625,
+   "silent_bin_frac": 0.25,
+   "n_bins": 100,
+   "counts_n": 8192,
+   "counts_sum": 188.0,
+   "counts_finite": true,
+   "rate_summary_hz": {
+    "median": 0.0,
+    "mean": 0.002294921875,
+    "p5": 0.0,
+    "p95": 0.0,
+    "max": 1.3,
+    "min": 0.0
+   },
+   "rate_median_hz": 0.0,
+   "rate_mean_hz": 0.002294921875,
+   "rate_p95_hz": 0.0,
+   "rate_p5_hz": 0.0,
+   "silent_frac_zero_count": 0.994384765625,
+   "silent_frac_lt_thr": 0.998291015625,
+   "n_active_neurons": 46,
+   "by_cell_type": {
+    "E": {
+     "n": 6635,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.9944235116804823
+    },
+    "PV": {
+     "n": 554,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.9963898916967509
+    },
+    "SST": {
+     "n": 446,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.9977578475336323
+    },
+    "VIP": {
+     "n": 557,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.9892280071813285
+    }
+   },
+   "agg_spk_total": 188.0,
+   "estimators_available": [
+    "agg_spk_total",
+    "counts_sum",
+    "pop_trace_sum"
+   ],
+   "estimator_rel_diffs": {
+    "agg_spk_total__vs__counts_sum": 0.0,
+    "agg_spk_total__vs__pop_trace_sum": 0.0,
+    "counts_sum__vs__pop_trace_sum": 0.0
+   },
+   "estimator_gate": "checkable",
+   "dim_check_counts": 0.0,
+   "dim_check_trace": 0.0,
+   "wall_pred_s": 116.08357124999999,
+   "wall_s": 138.50874745800002,
+   "wall_over_pred": 1.1931813086599885,
+   "ei_i_exc_integral": 3024.6679877152233,
+   "ei_i_inh_integral": 22079.260079901447,
+   "ei_ratio": 7.299730142143535
+  },
+  "l1_b0.70_g1.00_s0.30_8192_T10000ms_d1_s0": {
+   "arm_id": "l1_b0.70_g1.00_s0.30_8192_T10000ms_d1_s0",
+   "checks": [
+    "trace_len == round(T_ms/dt_ms) OK",
+    "counts_len == n_neuron OK"
+   ],
+   "hard_fail": [],
+   "T_s": 10.0,
+   "steps_expected": 200000,
+   "n_neuron": 8192,
+   "seed": 0,
+   "trace_len": 200000,
+   "trace_sum": 8794.0,
+   "trace_finite": true,
+   "trace_mean_rate_hz": 0.1073486328125,
+   "bin_rate_hz_median": 0.107421875,
+   "trace_bin_median_rate_hz": 0.107421875,
+   "silent_bin_frac": 0.0,
+   "n_bins": 100,
+   "counts_n": 8192,
+   "counts_sum": 8794.0,
+   "counts_finite": true,
+   "rate_summary_hz": {
+    "median": 0.0,
+    "mean": 0.10734863281250001,
+    "p5": 0.0,
+    "p95": 0.5,
+    "max": 2.0,
+    "min": 0.0
+   },
+   "rate_median_hz": 0.0,
+   "rate_mean_hz": 0.10734863281250001,
+   "rate_p95_hz": 0.5,
+   "rate_p5_hz": 0.0,
+   "silent_frac_zero_count": 0.552978515625,
+   "silent_frac_lt_thr": 0.949462890625,
+   "n_active_neurons": 3662,
+   "by_cell_type": {
+    "E": {
+     "n": 6635,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5511680482290882
+    },
+    "PV": {
+     "n": 542,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.559040590405904
+    },
+    "SST": {
+     "n": 493,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5415821501014199
+    },
+    "VIP": {
+     "n": 522,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5804597701149425
+    }
+   },
+   "agg_spk_total": 8794.0,
+   "estimators_available": [
+    "agg_spk_total",
+    "counts_sum",
+    "pop_trace_sum"
+   ],
+   "estimator_rel_diffs": {
+    "agg_spk_total__vs__counts_sum": 0.0,
+    "agg_spk_total__vs__pop_trace_sum": 0.0,
+    "counts_sum__vs__pop_trace_sum": 0.0
+   },
+   "estimator_gate": "checkable",
+   "dim_check_counts": 0.0,
+   "dim_check_trace": 0.0,
+   "wall_pred_s": 126.79272899999998,
+   "wall_s": 150.468804209,
+   "wall_over_pred": 1.1867305435866125,
+   "ei_i_exc_integral": 1437419.2365694046,
+   "ei_i_inh_integral": 970422.1276896,
+   "ei_ratio": 0.6751141928541624
+  },
+  "l1_b0.70_g1.00_s0.30_8192_T10000ms_d1_s1": {
+   "arm_id": "l1_b0.70_g1.00_s0.30_8192_T10000ms_d1_s1",
+   "checks": [
+    "trace_len == round(T_ms/dt_ms) OK",
+    "counts_len == n_neuron OK"
+   ],
+   "hard_fail": [],
+   "T_s": 10.0,
+   "steps_expected": 200000,
+   "n_neuron": 8192,
+   "seed": 1,
+   "trace_len": 200000,
+   "trace_sum": 8728.0,
+   "trace_finite": true,
+   "trace_mean_rate_hz": 0.10654296875,
+   "bin_rate_hz_median": 0.106201171875,
+   "trace_bin_median_rate_hz": 0.106201171875,
+   "silent_bin_frac": 0.0,
+   "n_bins": 100,
+   "counts_n": 8192,
+   "counts_sum": 8728.0,
+   "counts_finite": true,
+   "rate_summary_hz": {
+    "median": 0.0,
+    "mean": 0.10654296875000001,
+    "p5": 0.0,
+    "p95": 0.5,
+    "max": 1.5,
+    "min": 0.0
+   },
+   "rate_median_hz": 0.0,
+   "rate_mean_hz": 0.10654296875000001,
+   "rate_p95_hz": 0.5,
+   "rate_p5_hz": 0.0,
+   "silent_frac_zero_count": 0.55322265625,
+   "silent_frac_lt_thr": 0.9466552734375,
+   "n_active_neurons": 3660,
+   "by_cell_type": {
+    "E": {
+     "n": 6635,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5461944235116805
+    },
+    "PV": {
+     "n": 527,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5825426944971537
+    },
+    "SST": {
+     "n": 466,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5944206008583691
+    },
+    "VIP": {
+     "n": 564,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.574468085106383
+    }
+   },
+   "agg_spk_total": 8728.0,
+   "estimators_available": [
+    "agg_spk_total",
+    "counts_sum",
+    "pop_trace_sum"
+   ],
+   "estimator_rel_diffs": {
+    "agg_spk_total__vs__counts_sum": 0.0,
+    "agg_spk_total__vs__pop_trace_sum": 0.0,
+    "counts_sum__vs__pop_trace_sum": 0.0
+   },
+   "estimator_gate": "checkable",
+   "dim_check_counts": 0.0,
+   "dim_check_trace": 0.0,
+   "wall_pred_s": 126.67553837499999,
+   "wall_s": 149.97289849999999,
+   "wall_over_pred": 1.1839136460271626,
+   "ei_i_exc_integral": 1434735.1468086243,
+   "ei_i_inh_integral": 968175.5286588669,
+   "ei_ratio": 0.6748113272421348
+  },
+  "l1_b0.70_g1.00_s0.30_8192_T10000ms_d1_s2": {
+   "arm_id": "l1_b0.70_g1.00_s0.30_8192_T10000ms_d1_s2",
+   "checks": [
+    "trace_len == round(T_ms/dt_ms) OK",
+    "counts_len == n_neuron OK"
+   ],
+   "hard_fail": [],
+   "T_s": 10.0,
+   "steps_expected": 200000,
+   "n_neuron": 8192,
+   "seed": 2,
+   "trace_len": 200000,
+   "trace_sum": 8408.0,
+   "trace_finite": true,
+   "trace_mean_rate_hz": 0.10263671875,
+   "bin_rate_hz_median": 0.1025390625,
+   "trace_bin_median_rate_hz": 0.1025390625,
+   "silent_bin_frac": 0.0,
+   "n_bins": 100,
+   "counts_n": 8192,
+   "counts_sum": 8408.0,
+   "counts_finite": true,
+   "rate_summary_hz": {
+    "median": 0.0,
+    "mean": 0.10263671875000001,
+    "p5": 0.0,
+    "p95": 0.4,
+    "max": 1.6,
+    "min": 0.0
+   },
+   "rate_median_hz": 0.0,
+   "rate_mean_hz": 0.10263671875000001,
+   "rate_p95_hz": 0.4,
+   "rate_p5_hz": 0.0,
+   "silent_frac_zero_count": 0.5670166015625,
+   "silent_frac_lt_thr": 0.9510498046875,
+   "n_active_neurons": 3547,
+   "by_cell_type": {
+    "E": {
+     "n": 6635,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5689525244913338
+    },
+    "PV": {
+     "n": 554,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5523465703971119
+    },
+    "SST": {
+     "n": 446,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.57847533632287
+    },
+    "VIP": {
+     "n": 557,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5493716337522442
+    }
+   },
+   "agg_spk_total": 8408.0,
+   "estimators_available": [
+    "agg_spk_total",
+    "counts_sum",
+    "pop_trace_sum"
+   ],
+   "estimator_rel_diffs": {
+    "agg_spk_total__vs__counts_sum": 0.0,
+    "agg_spk_total__vs__pop_trace_sum": 0.0,
+    "counts_sum__vs__pop_trace_sum": 0.0
+   },
+   "estimator_gate": "checkable",
+   "dim_check_counts": 0.0,
+   "dim_check_trace": 0.0,
+   "wall_pred_s": 125.463586459,
+   "wall_s": 149.49777433300002,
+   "wall_over_pred": 1.1915630546864218,
+   "ei_i_exc_integral": 1429840.5772309303,
+   "ei_i_inh_integral": 923059.0004067421,
+   "ei_ratio": 0.6455677752511152
+  },
+  "l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s0": {
+   "arm_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s0",
+   "checks": [
+    "trace_len == round(T_ms/dt_ms) OK",
+    "counts_len == n_neuron OK"
+   ],
+   "hard_fail": [],
+   "T_s": 10.0,
+   "steps_expected": 200000,
+   "n_neuron": 8192,
+   "seed": 0,
+   "trace_len": 200000,
+   "trace_sum": 3888.0,
+   "trace_finite": true,
+   "trace_mean_rate_hz": 0.047460937499999994,
+   "bin_rate_hz_median": 0.047607421875,
+   "trace_bin_median_rate_hz": 0.047607421875,
+   "silent_bin_frac": 0.0,
+   "n_bins": 100,
+   "counts_n": 8192,
+   "counts_sum": 3888.0,
+   "counts_finite": true,
+   "rate_summary_hz": {
+    "median": 0.0,
+    "mean": 0.047460937499999994,
+    "p5": 0.0,
+    "p95": 0.3,
+    "max": 4.6,
+    "min": 0.0
+   },
+   "rate_median_hz": 0.0,
+   "rate_mean_hz": 0.047460937499999994,
+   "rate_p95_hz": 0.3,
+   "rate_p5_hz": 0.0,
+   "silent_frac_zero_count": 0.9281005859375,
+   "silent_frac_lt_thr": 0.960693359375,
+   "n_active_neurons": 589,
+   "by_cell_type": {
+    "E": {
+     "n": 6635,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.9269027882441597
+    },
+    "PV": {
+     "n": 542,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.933579335793358
+    },
+    "SST": {
+     "n": 493,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.9411764705882353
+    },
+    "VIP": {
+     "n": 522,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.9252873563218391
+    }
+   },
+   "agg_spk_total": 3888.0,
+   "estimators_available": [
+    "agg_spk_total",
+    "counts_sum",
+    "pop_trace_sum"
+   ],
+   "estimator_rel_diffs": {
+    "agg_spk_total__vs__counts_sum": 0.0,
+    "agg_spk_total__vs__pop_trace_sum": 0.0,
+    "counts_sum__vs__pop_trace_sum": 0.0
+   },
+   "estimator_gate": "checkable",
+   "dim_check_counts": 0.0,
+   "dim_check_trace": 0.0,
+   "wall_pred_s": 124.26635508300002,
+   "wall_s": 148.155567375,
+   "wall_over_pred": 1.1922419972489247,
+   "ei_i_exc_integral": 72575.39692056179,
+   "ei_i_inh_integral": 428911.26882359385,
+   "ei_ratio": 5.909871485691817
+  },
+  "l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s1": {
+   "arm_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s1",
+   "checks": [
+    "trace_len == round(T_ms/dt_ms) OK",
+    "counts_len == n_neuron OK"
+   ],
+   "hard_fail": [],
+   "T_s": 10.0,
+   "steps_expected": 200000,
+   "n_neuron": 8192,
+   "seed": 1,
+   "trace_len": 200000,
+   "trace_sum": 3578.0,
+   "trace_finite": true,
+   "trace_mean_rate_hz": 0.043676757812499994,
+   "bin_rate_hz_median": 0.04150390625,
+   "trace_bin_median_rate_hz": 0.04150390625,
+   "silent_bin_frac": 0.0,
+   "n_bins": 100,
+   "counts_n": 8192,
+   "counts_sum": 3578.0,
+   "counts_finite": true,
+   "rate_summary_hz": {
+    "median": 0.0,
+    "mean": 0.043676757812499994,
+    "p5": 0.0,
+    "p95": 0.3,
+    "max": 3.0,
+    "min": 0.0
+   },
+   "rate_median_hz": 0.0,
+   "rate_mean_hz": 0.043676757812499994,
+   "rate_p95_hz": 0.3,
+   "rate_p5_hz": 0.0,
+   "silent_frac_zero_count": 0.92333984375,
+   "silent_frac_lt_thr": 0.961181640625,
+   "n_active_neurons": 628,
+   "by_cell_type": {
+    "E": {
+     "n": 6635,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.9228334589299171
+    },
+    "PV": {
+     "n": 527,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.9392789373814042
+    },
+    "SST": {
+     "n": 466,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.9120171673819742
+    },
+    "VIP": {
+     "n": 564,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.9237588652482269
+    }
+   },
+   "agg_spk_total": 3578.0,
+   "estimators_available": [
+    "agg_spk_total",
+    "counts_sum",
+    "pop_trace_sum"
+   ],
+   "estimator_rel_diffs": {
+    "agg_spk_total__vs__counts_sum": 0.0,
+    "agg_spk_total__vs__pop_trace_sum": 0.0,
+    "counts_sum__vs__pop_trace_sum": 0.0
+   },
+   "estimator_gate": "checkable",
+   "dim_check_counts": 0.0,
+   "dim_check_trace": 0.0,
+   "wall_pred_s": 121.46776449999999,
+   "wall_s": 145.297555459,
+   "wall_over_pred": 1.1961820163324073,
+   "ei_i_exc_integral": 64679.09911481291,
+   "ei_i_inh_integral": 398232.3142787814,
+   "ei_ratio": 6.157047944837216
+  },
+  "l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s2": {
+   "arm_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s2",
+   "checks": [
+    "trace_len == round(T_ms/dt_ms) OK",
+    "counts_len == n_neuron OK"
+   ],
+   "hard_fail": [],
+   "T_s": 10.0,
+   "steps_expected": 200000,
+   "n_neuron": 8192,
+   "seed": 2,
+   "trace_len": 200000,
+   "trace_sum": 3481.0,
+   "trace_finite": true,
+   "trace_mean_rate_hz": 0.042492675781249996,
+   "bin_rate_hz_median": 0.040283203125,
+   "trace_bin_median_rate_hz": 0.040283203125,
+   "silent_bin_frac": 0.0,
+   "n_bins": 100,
+   "counts_n": 8192,
+   "counts_sum": 3481.0,
+   "counts_finite": true,
+   "rate_summary_hz": {
+    "median": 0.0,
+    "mean": 0.04249267578125,
+    "p5": 0.0,
+    "p95": 0.3,
+    "max": 3.4,
+    "min": 0.0
+   },
+   "rate_median_hz": 0.0,
+   "rate_mean_hz": 0.04249267578125,
+   "rate_p95_hz": 0.3,
+   "rate_p5_hz": 0.0,
+   "silent_frac_zero_count": 0.9281005859375,
+   "silent_frac_lt_thr": 0.962646484375,
+   "n_active_neurons": 589,
+   "by_cell_type": {
+    "E": {
+     "n": 6635,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.9311228334589299
+    },
+    "PV": {
+     "n": 554,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.9133574007220217
+    },
+    "SST": {
+     "n": 446,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.9170403587443946
+    },
+    "VIP": {
+     "n": 557,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.9156193895870736
+    }
+   },
+   "agg_spk_total": 3481.0,
+   "estimators_available": [
+    "agg_spk_total",
+    "counts_sum",
+    "pop_trace_sum"
+   ],
+   "estimator_rel_diffs": {
+    "agg_spk_total__vs__counts_sum": 0.0,
+    "agg_spk_total__vs__pop_trace_sum": 0.0,
+    "counts_sum__vs__pop_trace_sum": 0.0
+   },
+   "estimator_gate": "checkable",
+   "dim_check_counts": 0.0,
+   "dim_check_trace": 0.0,
+   "wall_pred_s": 124.81485529199998,
+   "wall_s": 148.866520792,
+   "wall_over_pred": 1.1926987412173975,
+   "ei_i_exc_integral": 63983.90114071965,
+   "ei_i_inh_integral": 382814.1198887229,
+   "ei_ratio": 5.982975608923886
+  },
+  "l1_b0.70_g1.00_s0.45_8192_T10000ms_d1_s0": {
+   "arm_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d1_s0",
+   "checks": [
+    "trace_len == round(T_ms/dt_ms) OK",
+    "counts_len == n_neuron OK"
+   ],
+   "hard_fail": [],
+   "T_s": 10.0,
+   "steps_expected": 200000,
+   "n_neuron": 8192,
+   "seed": 0,
+   "trace_len": 200000,
+   "trace_sum": 15045.0,
+   "trace_finite": true,
+   "trace_mean_rate_hz": 0.18365478515625,
+   "bin_rate_hz_median": 0.1849365234375,
+   "trace_bin_median_rate_hz": 0.1849365234375,
+   "silent_bin_frac": 0.0,
+   "n_bins": 100,
+   "counts_n": 8192,
+   "counts_sum": 15045.0,
+   "counts_finite": true,
+   "rate_summary_hz": {
+    "median": 0.0,
+    "mean": 0.18365478515625,
+    "p5": 0.0,
+    "p95": 0.8,
+    "max": 4.8,
+    "min": 0.0
+   },
+   "rate_median_hz": 0.0,
+   "rate_mean_hz": 0.18365478515625,
+   "rate_p95_hz": 0.8,
+   "rate_p5_hz": 0.0,
+   "silent_frac_zero_count": 0.5230712890625,
+   "silent_frac_lt_thr": 0.8636474609375,
+   "n_active_neurons": 3907,
+   "by_cell_type": {
+    "E": {
+     "n": 6635,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5235870384325546
+    },
+    "PV": {
+     "n": 542,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5239852398523985
+    },
+    "SST": {
+     "n": 493,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5091277890466531
+    },
+    "VIP": {
+     "n": 522,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5287356321839081
+    }
+   },
+   "agg_spk_total": 15045.0,
+   "estimators_available": [
+    "agg_spk_total",
+    "counts_sum",
+    "pop_trace_sum"
+   ],
+   "estimator_rel_diffs": {
+    "agg_spk_total__vs__counts_sum": 0.0,
+    "agg_spk_total__vs__pop_trace_sum": 0.0,
+    "counts_sum__vs__pop_trace_sum": 0.0
+   },
+   "estimator_gate": "checkable",
+   "dim_check_counts": 0.0,
+   "dim_check_trace": 0.0,
+   "wall_pred_s": 131.177632458,
+   "wall_s": 159.21766266699998,
+   "wall_over_pred": 1.213756184523133,
+   "ei_i_exc_integral": 1560751.2241697311,
+   "ei_i_inh_integral": 1658319.5394172668,
+   "ei_ratio": 1.0625136881115944
+  },
+  "l1_b0.70_g1.00_s0.45_8192_T10000ms_d1_s1": {
+   "arm_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d1_s1",
+   "checks": [
+    "trace_len == round(T_ms/dt_ms) OK",
+    "counts_len == n_neuron OK"
+   ],
+   "hard_fail": [],
+   "T_s": 10.0,
+   "steps_expected": 200000,
+   "n_neuron": 8192,
+   "seed": 1,
+   "trace_len": 200000,
+   "trace_sum": 14898.0,
+   "trace_finite": true,
+   "trace_mean_rate_hz": 0.1818603515625,
+   "bin_rate_hz_median": 0.1812744140625,
+   "trace_bin_median_rate_hz": 0.1812744140625,
+   "silent_bin_frac": 0.0,
+   "n_bins": 100,
+   "counts_n": 8192,
+   "counts_sum": 14898.0,
+   "counts_finite": true,
+   "rate_summary_hz": {
+    "median": 0.0,
+    "mean": 0.1818603515625,
+    "p5": 0.0,
+    "p95": 0.8,
+    "max": 3.2,
+    "min": 0.0
+   },
+   "rate_median_hz": 0.0,
+   "rate_mean_hz": 0.1818603515625,
+   "rate_p95_hz": 0.8,
+   "rate_p5_hz": 0.0,
+   "silent_frac_zero_count": 0.526123046875,
+   "silent_frac_lt_thr": 0.861083984375,
+   "n_active_neurons": 3882,
+   "by_cell_type": {
+    "E": {
+     "n": 6635,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5208741522230595
+    },
+    "PV": {
+     "n": 527,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5445920303605313
+    },
+    "SST": {
+     "n": 466,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5493562231759657
+    },
+    "VIP": {
+     "n": 564,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5514184397163121
+    }
+   },
+   "agg_spk_total": 14898.0,
+   "estimators_available": [
+    "agg_spk_total",
+    "counts_sum",
+    "pop_trace_sum"
+   ],
+   "estimator_rel_diffs": {
+    "agg_spk_total__vs__counts_sum": 0.0,
+    "agg_spk_total__vs__pop_trace_sum": 0.0,
+    "counts_sum__vs__pop_trace_sum": 0.0
+   },
+   "estimator_gate": "checkable",
+   "dim_check_counts": 0.0,
+   "dim_check_trace": 0.0,
+   "wall_pred_s": 131.706124291,
+   "wall_s": 160.250641542,
+   "wall_over_pred": 1.2167288530025522,
+   "ei_i_exc_integral": 1554055.1581993103,
+   "ei_i_inh_integral": 1638255.817231536,
+   "ei_ratio": 1.0541812551427
+  },
+  "l1_b0.70_g1.00_s0.45_8192_T10000ms_d1_s2": {
+   "arm_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d1_s2",
+   "checks": [
+    "trace_len == round(T_ms/dt_ms) OK",
+    "counts_len == n_neuron OK"
+   ],
+   "hard_fail": [],
+   "T_s": 10.0,
+   "steps_expected": 200000,
+   "n_neuron": 8192,
+   "seed": 2,
+   "trace_len": 200000,
+   "trace_sum": 14480.0,
+   "trace_finite": true,
+   "trace_mean_rate_hz": 0.1767578125,
+   "bin_rate_hz_median": 0.17822265625,
+   "trace_bin_median_rate_hz": 0.17822265625,
+   "silent_bin_frac": 0.0,
+   "n_bins": 100,
+   "counts_n": 8192,
+   "counts_sum": 14480.0,
+   "counts_finite": true,
+   "rate_summary_hz": {
+    "median": 0.0,
+    "mean": 0.1767578125,
+    "p5": 0.0,
+    "p95": 0.8,
+    "max": 3.7,
+    "min": 0.0
+   },
+   "rate_median_hz": 0.0,
+   "rate_mean_hz": 0.1767578125,
+   "rate_p95_hz": 0.8,
+   "rate_p5_hz": 0.0,
+   "silent_frac_zero_count": 0.5333251953125,
+   "silent_frac_lt_thr": 0.8685302734375,
+   "n_active_neurons": 3823,
+   "by_cell_type": {
+    "E": {
+     "n": 6635,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5365486058779201
+    },
+    "PV": {
+     "n": 554,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5180505415162455
+    },
+    "SST": {
+     "n": 446,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5650224215246636
+    },
+    "VIP": {
+     "n": 557,
+     "rate_median_hz": 0.1,
+     "silent_frac_zero_count": 0.48473967684021546
+    }
+   },
+   "agg_spk_total": 14480.0,
+   "estimators_available": [
+    "agg_spk_total",
+    "counts_sum",
+    "pop_trace_sum"
+   ],
+   "estimator_rel_diffs": {
+    "agg_spk_total__vs__counts_sum": 0.0,
+    "agg_spk_total__vs__pop_trace_sum": 0.0,
+    "counts_sum__vs__pop_trace_sum": 0.0
+   },
+   "estimator_gate": "checkable",
+   "dim_check_counts": 0.0,
+   "dim_check_trace": 0.0,
+   "wall_pred_s": 146.390053833,
+   "wall_s": 179.095124709,
+   "wall_over_pred": 1.223410470996271,
+   "ei_i_exc_integral": 1548513.1848740578,
+   "ei_i_inh_integral": 1575405.9993063211,
+   "ei_ratio": 1.0173668617709901
+  },
+  "l1_b0.70_g1.00_s0.60_8192_T10000ms_d0_s0": {
+   "arm_id": "l1_b0.70_g1.00_s0.60_8192_T10000ms_d0_s0",
+   "checks": [
+    "trace_len == round(T_ms/dt_ms) OK",
+    "counts_len == n_neuron OK"
+   ],
+   "hard_fail": [],
+   "T_s": 10.0,
+   "steps_expected": 200000,
+   "n_neuron": 8192,
+   "seed": 0,
+   "trace_len": 200000,
+   "trace_sum": 11603.0,
+   "trace_finite": true,
+   "trace_mean_rate_hz": 0.14163818359375,
+   "bin_rate_hz_median": 0.137939453125,
+   "trace_bin_median_rate_hz": 0.137939453125,
+   "silent_bin_frac": 0.0,
+   "n_bins": 100,
+   "counts_n": 8192,
+   "counts_sum": 11603.0,
+   "counts_finite": true,
+   "rate_summary_hz": {
+    "median": 0.0,
+    "mean": 0.14163818359375,
+    "p5": 0.0,
+    "p95": 1.0,
+    "max": 10.3,
+    "min": 0.0
+   },
+   "rate_median_hz": 0.0,
+   "rate_mean_hz": 0.14163818359375,
+   "rate_p95_hz": 1.0,
+   "rate_p5_hz": 0.0,
+   "silent_frac_zero_count": 0.8331298828125,
+   "silent_frac_lt_thr": 0.897705078125,
+   "n_active_neurons": 1367,
+   "by_cell_type": {
+    "E": {
+     "n": 6635,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.8308967596081387
+    },
+    "PV": {
+     "n": 542,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.8523985239852399
+    },
+    "SST": {
+     "n": 493,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.8417849898580122
+    },
+    "VIP": {
+     "n": 522,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.8333333333333334
+    }
+   },
+   "agg_spk_total": 11603.0,
+   "estimators_available": [
+    "agg_spk_total",
+    "counts_sum",
+    "pop_trace_sum"
+   ],
+   "estimator_rel_diffs": {
+    "agg_spk_total__vs__counts_sum": 0.0,
+    "agg_spk_total__vs__pop_trace_sum": 0.0,
+    "counts_sum__vs__pop_trace_sum": 0.0
+   },
+   "estimator_gate": "checkable",
+   "dim_check_counts": 0.0,
+   "dim_check_trace": 0.0,
+   "wall_pred_s": 149.740014959,
+   "wall_s": 182.20537554199998,
+   "wall_over_pred": 1.216811522236653,
+   "ei_i_exc_integral": 215086.62561178207,
+   "ei_i_inh_integral": 1276867.545388043,
+   "ei_ratio": 5.936526930747935
+  },
+  "l1_b0.70_g1.00_s0.60_8192_T10000ms_d0_s1": {
+   "arm_id": "l1_b0.70_g1.00_s0.60_8192_T10000ms_d0_s1",
+   "checks": [
+    "trace_len == round(T_ms/dt_ms) OK",
+    "counts_len == n_neuron OK"
+   ],
+   "hard_fail": [],
+   "T_s": 10.0,
+   "steps_expected": 200000,
+   "n_neuron": 8192,
+   "seed": 1,
+   "trace_len": 200000,
+   "trace_sum": 11268.0,
+   "trace_finite": true,
+   "trace_mean_rate_hz": 0.137548828125,
+   "bin_rate_hz_median": 0.13427734375,
+   "trace_bin_median_rate_hz": 0.13427734375,
+   "silent_bin_frac": 0.0,
+   "n_bins": 100,
+   "counts_n": 8192,
+   "counts_sum": 11268.0,
+   "counts_finite": true,
+   "rate_summary_hz": {
+    "median": 0.0,
+    "mean": 0.13754882812500002,
+    "p5": 0.0,
+    "p95": 1.0,
+    "max": 6.0,
+    "min": 0.0
+   },
+   "rate_median_hz": 0.0,
+   "rate_mean_hz": 0.13754882812500002,
+   "rate_p95_hz": 1.0,
+   "rate_p5_hz": 0.0,
+   "silent_frac_zero_count": 0.826171875,
+   "silent_frac_lt_thr": 0.89306640625,
+   "n_active_neurons": 1424,
+   "by_cell_type": {
+    "E": {
+     "n": 6635,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.825320271288621
+    },
+    "PV": {
+     "n": 527,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.8519924098671727
+    },
+    "SST": {
+     "n": 466,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.8347639484978541
+    },
+    "VIP": {
+     "n": 564,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.8049645390070922
+    }
+   },
+   "agg_spk_total": 11268.0,
+   "estimators_available": [
+    "agg_spk_total",
+    "counts_sum",
+    "pop_trace_sum"
+   ],
+   "estimator_rel_diffs": {
+    "agg_spk_total__vs__counts_sum": 0.0,
+    "agg_spk_total__vs__pop_trace_sum": 0.0,
+    "counts_sum__vs__pop_trace_sum": 0.0
+   },
+   "estimator_gate": "checkable",
+   "dim_check_counts": 0.0,
+   "dim_check_trace": 0.0,
+   "wall_pred_s": 138.50250495799997,
+   "wall_s": 170.080329375,
+   "wall_over_pred": 1.2279946086648454,
+   "ei_i_exc_integral": 204285.18898347765,
+   "ei_i_inh_integral": 1248047.8682017326,
+   "ei_ratio": 6.109340938577164
+  },
+  "l1_b0.70_g1.00_s0.60_8192_T10000ms_d0_s2": {
+   "arm_id": "l1_b0.70_g1.00_s0.60_8192_T10000ms_d0_s2",
+   "checks": [
+    "trace_len == round(T_ms/dt_ms) OK",
+    "counts_len == n_neuron OK"
+   ],
+   "hard_fail": [],
+   "T_s": 10.0,
+   "steps_expected": 200000,
+   "n_neuron": 8192,
+   "seed": 2,
+   "trace_len": 200000,
+   "trace_sum": 10700.0,
+   "trace_finite": true,
+   "trace_mean_rate_hz": 0.130615234375,
+   "bin_rate_hz_median": 0.130615234375,
+   "trace_bin_median_rate_hz": 0.130615234375,
+   "silent_bin_frac": 0.0,
+   "n_bins": 100,
+   "counts_n": 8192,
+   "counts_sum": 10700.0,
+   "counts_finite": true,
+   "rate_summary_hz": {
+    "median": 0.0,
+    "mean": 0.130615234375,
+    "p5": 0.0,
+    "p95": 0.9,
+    "max": 7.0,
+    "min": 0.0
+   },
+   "rate_median_hz": 0.0,
+   "rate_mean_hz": 0.130615234375,
+   "rate_p95_hz": 0.9,
+   "rate_p5_hz": 0.0,
+   "silent_frac_zero_count": 0.836181640625,
+   "silent_frac_lt_thr": 0.90185546875,
+   "n_active_neurons": 1342,
+   "by_cell_type": {
+    "E": {
+     "n": 6635,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.839336850037679
+    },
+    "PV": {
+     "n": 554,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.8212996389891697
+    },
+    "SST": {
+     "n": 446,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.8228699551569507
+    },
+    "VIP": {
+     "n": 557,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.8240574506283662
+    }
+   },
+   "agg_spk_total": 10700.0,
+   "estimators_available": [
+    "agg_spk_total",
+    "counts_sum",
+    "pop_trace_sum"
+   ],
+   "estimator_rel_diffs": {
+    "agg_spk_total__vs__counts_sum": 0.0,
+    "agg_spk_total__vs__pop_trace_sum": 0.0,
+    "counts_sum__vs__pop_trace_sum": 0.0
+   },
+   "estimator_gate": "checkable",
+   "dim_check_counts": 0.0,
+   "dim_check_trace": 0.0,
+   "wall_pred_s": 145.337095042,
+   "wall_s": 178.734678417,
+   "wall_over_pred": 1.2297939377785738,
+   "ei_i_exc_integral": 197828.98845028877,
+   "ei_i_inh_integral": 1169950.2335224152,
+   "ei_ratio": 5.91394740825056
+  },
+  "l1_b0.70_g1.00_s0.60_8192_T10000ms_d1_s0": {
+   "arm_id": "l1_b0.70_g1.00_s0.60_8192_T10000ms_d1_s0",
+   "checks": [
+    "trace_len == round(T_ms/dt_ms) OK",
+    "counts_len == n_neuron OK"
+   ],
+   "hard_fail": [],
+   "T_s": 10.0,
+   "steps_expected": 200000,
+   "n_neuron": 8192,
+   "seed": 0,
+   "trace_len": 200000,
+   "trace_sum": 23304.0,
+   "trace_finite": true,
+   "trace_mean_rate_hz": 0.28447265624999996,
+   "bin_rate_hz_median": 0.2850341796875,
+   "trace_bin_median_rate_hz": 0.2850341796875,
+   "silent_bin_frac": 0.0,
+   "n_bins": 100,
+   "counts_n": 8192,
+   "counts_sum": 23304.0,
+   "counts_finite": true,
+   "rate_summary_hz": {
+    "median": 0.0,
+    "mean": 0.28447265624999996,
+    "p5": 0.0,
+    "p95": 1.3,
+    "max": 10.5,
+    "min": 0.0
+   },
+   "rate_median_hz": 0.0,
+   "rate_mean_hz": 0.28447265624999996,
+   "rate_p95_hz": 1.3,
+   "rate_p5_hz": 0.0,
+   "silent_frac_zero_count": 0.5098876953125,
+   "silent_frac_lt_thr": 0.7908935546875,
+   "n_active_neurons": 4015,
+   "by_cell_type": {
+    "E": {
+     "n": 6635,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5121326299924642
+    },
+    "PV": {
+     "n": 542,
+     "rate_median_hz": 0.1,
+     "silent_frac_zero_count": 0.488929889298893
+    },
+    "SST": {
+     "n": 493,
+     "rate_median_hz": 0.1,
+     "silent_frac_zero_count": 0.49898580121703856
+    },
+    "VIP": {
+     "n": 522,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5134099616858238
+    }
+   },
+   "agg_spk_total": 23304.0,
+   "estimators_available": [
+    "agg_spk_total",
+    "counts_sum",
+    "pop_trace_sum"
+   ],
+   "estimator_rel_diffs": {
+    "agg_spk_total__vs__counts_sum": 0.0,
+    "agg_spk_total__vs__pop_trace_sum": 0.0,
+    "counts_sum__vs__pop_trace_sum": 0.0
+   },
+   "estimator_gate": "checkable",
+   "dim_check_counts": 0.0,
+   "dim_check_trace": 0.0,
+   "wall_pred_s": 137.21057245799997,
+   "wall_s": 174.94046279199998,
+   "wall_over_pred": 1.274978011228319,
+   "ei_i_exc_integral": 1723412.796910286,
+   "ei_i_inh_integral": 2552076.2044005394,
+   "ei_ratio": 1.4808270015029896
+  },
+  "l1_b0.70_g1.00_s0.60_8192_T10000ms_d1_s1": {
+   "arm_id": "l1_b0.70_g1.00_s0.60_8192_T10000ms_d1_s1",
+   "checks": [
+    "trace_len == round(T_ms/dt_ms) OK",
+    "counts_len == n_neuron OK"
+   ],
+   "hard_fail": [],
+   "T_s": 10.0,
+   "steps_expected": 200000,
+   "n_neuron": 8192,
+   "seed": 1,
+   "trace_len": 200000,
+   "trace_sum": 22894.0,
+   "trace_finite": true,
+   "trace_mean_rate_hz": 0.2794677734375,
+   "bin_rate_hz_median": 0.2752685546875,
+   "trace_bin_median_rate_hz": 0.2752685546875,
+   "silent_bin_frac": 0.0,
+   "n_bins": 100,
+   "counts_n": 8192,
+   "counts_sum": 22894.0,
+   "counts_finite": true,
+   "rate_summary_hz": {
+    "median": 0.0,
+    "mean": 0.27946777343749996,
+    "p5": 0.0,
+    "p95": 1.3,
+    "max": 6.2,
+    "min": 0.0
+   },
+   "rate_median_hz": 0.0,
+   "rate_mean_hz": 0.27946777343749996,
+   "rate_p95_hz": 1.3,
+   "rate_p5_hz": 0.0,
+   "silent_frac_zero_count": 0.51123046875,
+   "silent_frac_lt_thr": 0.7880859375,
+   "n_active_neurons": 4004,
+   "by_cell_type": {
+    "E": {
+     "n": 6635,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5059532780708365
+    },
+    "PV": {
+     "n": 527,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5370018975332068
+    },
+    "SST": {
+     "n": 466,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5450643776824035
+    },
+    "VIP": {
+     "n": 564,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5212765957446809
+    }
+   },
+   "agg_spk_total": 22894.0,
+   "estimators_available": [
+    "agg_spk_total",
+    "counts_sum",
+    "pop_trace_sum"
+   ],
+   "estimator_rel_diffs": {
+    "agg_spk_total__vs__counts_sum": 0.0,
+    "agg_spk_total__vs__pop_trace_sum": 0.0,
+    "counts_sum__vs__pop_trace_sum": 0.0
+   },
+   "estimator_gate": "checkable",
+   "dim_check_counts": 0.0,
+   "dim_check_trace": 0.0,
+   "wall_pred_s": 146.570640625,
+   "wall_s": 179.723478333,
+   "wall_over_pred": 1.226190167189221,
+   "ei_i_exc_integral": 1708215.5623979568,
+   "ei_i_inh_integral": 2502874.128367305,
+   "ei_ratio": 1.4651980601639192
+  },
+  "l1_b0.70_g1.00_s0.60_8192_T10000ms_d1_s2": {
+   "arm_id": "l1_b0.70_g1.00_s0.60_8192_T10000ms_d1_s2",
+   "checks": [
+    "trace_len == round(T_ms/dt_ms) OK",
+    "counts_len == n_neuron OK"
+   ],
+   "hard_fail": [],
+   "T_s": 10.0,
+   "steps_expected": 200000,
+   "n_neuron": 8192,
+   "seed": 2,
+   "trace_len": 200000,
+   "trace_sum": 22333.0,
+   "trace_finite": true,
+   "trace_mean_rate_hz": 0.27261962890624997,
+   "bin_rate_hz_median": 0.269775390625,
+   "trace_bin_median_rate_hz": 0.269775390625,
+   "silent_bin_frac": 0.0,
+   "n_bins": 100,
+   "counts_n": 8192,
+   "counts_sum": 22333.0,
+   "counts_finite": true,
+   "rate_summary_hz": {
+    "median": 0.0,
+    "mean": 0.27261962890625,
+    "p5": 0.0,
+    "p95": 1.3,
+    "max": 7.3,
+    "min": 0.0
+   },
+   "rate_median_hz": 0.0,
+   "rate_mean_hz": 0.27261962890625,
+   "rate_p95_hz": 1.3,
+   "rate_p5_hz": 0.0,
+   "silent_frac_zero_count": 0.5106201171875,
+   "silent_frac_lt_thr": 0.7950439453125,
+   "n_active_neurons": 4009,
+   "by_cell_type": {
+    "E": {
+     "n": 6635,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5113790504898267
+    },
+    "PV": {
+     "n": 554,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5126353790613718
+    },
+    "SST": {
+     "n": 446,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5336322869955157
+    },
+    "VIP": {
+     "n": 557,
+     "rate_median_hz": 0.1,
+     "silent_frac_zero_count": 0.48114901256732495
+    }
+   },
+   "agg_spk_total": 22333.0,
+   "estimators_available": [
+    "agg_spk_total",
+    "counts_sum",
+    "pop_trace_sum"
+   ],
+   "estimator_rel_diffs": {
+    "agg_spk_total__vs__counts_sum": 0.0,
+    "agg_spk_total__vs__pop_trace_sum": 0.0,
+    "counts_sum__vs__pop_trace_sum": 0.0
+   },
+   "estimator_gate": "checkable",
+   "dim_check_counts": 0.0,
+   "dim_check_trace": 0.0,
+   "wall_pred_s": 136.33000924999996,
+   "wall_s": 168.656091792,
+   "wall_over_pred": 1.2371164112717177,
+   "ei_i_exc_integral": 1701719.9078569412,
+   "ei_i_inh_integral": 2418855.316813469,
+   "ei_ratio": 1.4214180051872645
+  },
+  "l1_b0.70_g1.00_s0.90_8192_T10000ms_d0_s0": {
+   "arm_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d0_s0",
+   "checks": [
+    "trace_len == round(T_ms/dt_ms) OK",
+    "counts_len == n_neuron OK"
+   ],
+   "hard_fail": [],
+   "T_s": 10.0,
+   "steps_expected": 200000,
+   "n_neuron": 8192,
+   "seed": 0,
+   "trace_len": 200000,
+   "trace_sum": 37411.0,
+   "trace_finite": true,
+   "trace_mean_rate_hz": 0.45667724609375,
+   "bin_rate_hz_median": 0.45654296875,
+   "trace_bin_median_rate_hz": 0.45654296875,
+   "silent_bin_frac": 0.0,
+   "n_bins": 100,
+   "counts_n": 8192,
+   "counts_sum": 37411.0,
+   "counts_finite": true,
+   "rate_summary_hz": {
+    "median": 0.0,
+    "mean": 0.45667724609375,
+    "p5": 0.0,
+    "p95": 2.4,
+    "max": 42.3,
+    "min": 0.0
+   },
+   "rate_median_hz": 0.0,
+   "rate_mean_hz": 0.45667724609375,
+   "rate_p95_hz": 2.4,
+   "rate_p5_hz": 0.0,
+   "silent_frac_zero_count": 0.708740234375,
+   "silent_frac_lt_thr": 0.78369140625,
+   "n_active_neurons": 2386,
+   "by_cell_type": {
+    "E": {
+     "n": 6635,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.7074604370761115
+    },
+    "PV": {
+     "n": 542,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.7306273062730627
+    },
+    "SST": {
+     "n": 493,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.6977687626774848
+    },
+    "VIP": {
+     "n": 522,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.7126436781609196
+    }
+   },
+   "agg_spk_total": 37411.0,
+   "estimators_available": [
+    "agg_spk_total",
+    "counts_sum",
+    "pop_trace_sum"
+   ],
+   "estimator_rel_diffs": {
+    "agg_spk_total__vs__counts_sum": 0.0,
+    "agg_spk_total__vs__pop_trace_sum": 0.0,
+    "counts_sum__vs__pop_trace_sum": 0.0
+   },
+   "estimator_gate": "checkable",
+   "dim_check_counts": 0.0,
+   "dim_check_trace": 0.0,
+   "wall_pred_s": 153.15702195899996,
+   "wall_s": 198.691082667,
+   "wall_over_pred": 1.2973031214996429,
+   "ei_i_exc_integral": 703887.8132123947,
+   "ei_i_inh_integral": 3977320.6461167336,
+   "ei_ratio": 5.650503633476882
+  },
+  "l1_b0.70_g1.00_s0.90_8192_T10000ms_d0_s1": {
+   "arm_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d0_s1",
+   "checks": [
+    "trace_len == round(T_ms/dt_ms) OK",
+    "counts_len == n_neuron OK"
+   ],
+   "hard_fail": [],
+   "T_s": 10.0,
+   "steps_expected": 200000,
+   "n_neuron": 8192,
+   "seed": 1,
+   "trace_len": 200000,
+   "trace_sum": 35829.0,
+   "trace_finite": true,
+   "trace_mean_rate_hz": 0.43736572265624996,
+   "bin_rate_hz_median": 0.430908203125,
+   "trace_bin_median_rate_hz": 0.430908203125,
+   "silent_bin_frac": 0.0,
+   "n_bins": 100,
+   "counts_n": 8192,
+   "counts_sum": 35829.0,
+   "counts_finite": true,
+   "rate_summary_hz": {
+    "median": 0.0,
+    "mean": 0.43736572265624996,
+    "p5": 0.0,
+    "p95": 2.5,
+    "max": 20.8,
+    "min": 0.0
+   },
+   "rate_median_hz": 0.0,
+   "rate_mean_hz": 0.43736572265624996,
+   "rate_p95_hz": 2.5,
+   "rate_p5_hz": 0.0,
+   "silent_frac_zero_count": 0.7052001953125,
+   "silent_frac_lt_thr": 0.779296875,
+   "n_active_neurons": 2415,
+   "by_cell_type": {
+    "E": {
+     "n": 6635,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.7014318010550114
+    },
+    "PV": {
+     "n": 527,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.7267552182163188
+    },
+    "SST": {
+     "n": 466,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.7381974248927039
+    },
+    "VIP": {
+     "n": 564,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.7021276595744681
+    }
+   },
+   "agg_spk_total": 35829.0,
+   "estimators_available": [
+    "agg_spk_total",
+    "counts_sum",
+    "pop_trace_sum"
+   ],
+   "estimator_rel_diffs": {
+    "agg_spk_total__vs__counts_sum": 0.0,
+    "agg_spk_total__vs__pop_trace_sum": 0.0,
+    "counts_sum__vs__pop_trace_sum": 0.0
+   },
+   "estimator_gate": "checkable",
+   "dim_check_counts": 0.0,
+   "dim_check_trace": 0.0,
+   "wall_pred_s": 153.19981624999997,
+   "wall_s": 196.77307975,
+   "wall_over_pred": 1.2844211211643672,
+   "ei_i_exc_integral": 661275.9673523903,
+   "ei_i_inh_integral": 3848960.650957346,
+   "ei_ratio": 5.820505871955054
+  },
+  "l1_b0.70_g1.00_s0.90_8192_T10000ms_d0_s2": {
+   "arm_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d0_s2",
+   "checks": [
+    "trace_len == round(T_ms/dt_ms) OK",
+    "counts_len == n_neuron OK"
+   ],
+   "hard_fail": [],
+   "T_s": 10.0,
+   "steps_expected": 200000,
+   "n_neuron": 8192,
+   "seed": 2,
+   "trace_len": 200000,
+   "trace_sum": 34469.0,
+   "trace_finite": true,
+   "trace_mean_rate_hz": 0.42076416015624996,
+   "bin_rate_hz_median": 0.421142578125,
+   "trace_bin_median_rate_hz": 0.421142578125,
+   "silent_bin_frac": 0.0,
+   "n_bins": 100,
+   "counts_n": 8192,
+   "counts_sum": 34469.0,
+   "counts_finite": true,
+   "rate_summary_hz": {
+    "median": 0.0,
+    "mean": 0.42076416015624996,
+    "p5": 0.0,
+    "p95": 2.4,
+    "max": 24.9,
+    "min": 0.0
+   },
+   "rate_median_hz": 0.0,
+   "rate_mean_hz": 0.42076416015624996,
+   "rate_p95_hz": 2.4,
+   "rate_p5_hz": 0.0,
+   "silent_frac_zero_count": 0.71240234375,
+   "silent_frac_lt_thr": 0.7886962890625,
+   "n_active_neurons": 2356,
+   "by_cell_type": {
+    "E": {
+     "n": 6635,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.7152976639035418
+    },
+    "PV": {
+     "n": 554,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.6895306859205776
+    },
+    "SST": {
+     "n": 446,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.7085201793721974
+    },
+    "VIP": {
+     "n": 557,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.703770197486535
+    }
+   },
+   "agg_spk_total": 34469.0,
+   "estimators_available": [
+    "agg_spk_total",
+    "counts_sum",
+    "pop_trace_sum"
+   ],
+   "estimator_rel_diffs": {
+    "agg_spk_total__vs__counts_sum": 0.0,
+    "agg_spk_total__vs__pop_trace_sum": 0.0,
+    "counts_sum__vs__pop_trace_sum": 0.0
+   },
+   "estimator_gate": "checkable",
+   "dim_check_counts": 0.0,
+   "dim_check_trace": 0.0,
+   "wall_pred_s": 146.91538054200004,
+   "wall_s": 188.54088170900002,
+   "wall_over_pred": 1.2833297712835459,
+   "ei_i_exc_integral": 643307.1593384743,
+   "ei_i_inh_integral": 3656395.5138266087,
+   "ei_ratio": 5.683747585813523
+  },
+  "l1_b0.70_g1.00_s0.90_8192_T10000ms_d1_s0": {
+   "arm_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d1_s0",
+   "checks": [
+    "trace_len == round(T_ms/dt_ms) OK",
+    "counts_len == n_neuron OK"
+   ],
+   "hard_fail": [],
+   "T_s": 10.0,
+   "steps_expected": 200000,
+   "n_neuron": 8192,
+   "seed": 0,
+   "trace_len": 200000,
+   "trace_sum": 48112.0,
+   "trace_finite": true,
+   "trace_mean_rate_hz": 0.5873046875,
+   "bin_rate_hz_median": 0.5853271484375,
+   "trace_bin_median_rate_hz": 0.5853271484375,
+   "silent_bin_frac": 0.0,
+   "n_bins": 100,
+   "counts_n": 8192,
+   "counts_sum": 48112.0,
+   "counts_finite": true,
+   "rate_summary_hz": {
+    "median": 0.1,
+    "mean": 0.5873046875,
+    "p5": 0.0,
+    "p95": 2.6,
+    "max": 42.3,
+    "min": 0.0
+   },
+   "rate_median_hz": 0.1,
+   "rate_mean_hz": 0.5873046875,
+   "rate_p95_hz": 2.6,
+   "rate_p5_hz": 0.0,
+   "silent_frac_zero_count": 0.4996337890625,
+   "silent_frac_lt_thr": 0.7017822265625,
+   "n_active_neurons": 4099,
+   "by_cell_type": {
+    "E": {
+     "n": 6635,
+     "rate_median_hz": 0.1,
+     "silent_frac_zero_count": 0.4984174830444612
+    },
+    "PV": {
+     "n": 542,
+     "rate_median_hz": 0.1,
+     "silent_frac_zero_count": 0.4944649446494465
+    },
+    "SST": {
+     "n": 493,
+     "rate_median_hz": 0.1,
+     "silent_frac_zero_count": 0.4908722109533469
+    },
+    "VIP": {
+     "n": 522,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5287356321839081
+    }
+   },
+   "agg_spk_total": 48112.0,
+   "estimators_available": [
+    "agg_spk_total",
+    "counts_sum",
+    "pop_trace_sum"
+   ],
+   "estimator_rel_diffs": {
+    "agg_spk_total__vs__counts_sum": 0.0,
+    "agg_spk_total__vs__pop_trace_sum": 0.0,
+    "counts_sum__vs__pop_trace_sum": 0.0
+   },
+   "estimator_gate": "checkable",
+   "dim_check_counts": 0.0,
+   "dim_check_trace": 0.0,
+   "wall_pred_s": 155.979552875,
+   "wall_s": 199.758661292,
+   "wall_over_pred": 1.2806720984261573,
+   "ei_i_exc_integral": 2212445.1913728714,
+   "ei_i_inh_integral": 5086719.176268101,
+   "ei_ratio": 2.299139068440235
+  },
+  "l1_b0.70_g1.00_s0.90_8192_T10000ms_d1_s1": {
+   "arm_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d1_s1",
+   "checks": [
+    "trace_len == round(T_ms/dt_ms) OK",
+    "counts_len == n_neuron OK"
+   ],
+   "hard_fail": [],
+   "T_s": 10.0,
+   "steps_expected": 200000,
+   "n_neuron": 8192,
+   "seed": 1,
+   "trace_len": 200000,
+   "trace_sum": 46493.0,
+   "trace_finite": true,
+   "trace_mean_rate_hz": 0.56754150390625,
+   "bin_rate_hz_median": 0.5657958984375,
+   "trace_bin_median_rate_hz": 0.5657958984375,
+   "silent_bin_frac": 0.0,
+   "n_bins": 100,
+   "counts_n": 8192,
+   "counts_sum": 46493.0,
+   "counts_finite": true,
+   "rate_summary_hz": {
+    "median": 0.1,
+    "mean": 0.56754150390625,
+    "p5": 0.0,
+    "p95": 2.7,
+    "max": 20.9,
+    "min": 0.0
+   },
+   "rate_median_hz": 0.1,
+   "rate_mean_hz": 0.56754150390625,
+   "rate_p95_hz": 2.7,
+   "rate_p5_hz": 0.0,
+   "silent_frac_zero_count": 0.496826171875,
+   "silent_frac_lt_thr": 0.700439453125,
+   "n_active_neurons": 4122,
+   "by_cell_type": {
+    "E": {
+     "n": 6635,
+     "rate_median_hz": 0.1,
+     "silent_frac_zero_count": 0.4910324039186134
+    },
+    "PV": {
+     "n": 527,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5445920303605313
+    },
+    "SST": {
+     "n": 466,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5278969957081545
+    },
+    "VIP": {
+     "n": 564,
+     "rate_median_hz": 0.1,
+     "silent_frac_zero_count": 0.4946808510638298
+    }
+   },
+   "agg_spk_total": 46493.0,
+   "estimators_available": [
+    "agg_spk_total",
+    "counts_sum",
+    "pop_trace_sum"
+   ],
+   "estimator_rel_diffs": {
+    "agg_spk_total__vs__counts_sum": 0.0,
+    "agg_spk_total__vs__pop_trace_sum": 0.0,
+    "counts_sum__vs__pop_trace_sum": 0.0
+   },
+   "estimator_gate": "checkable",
+   "dim_check_counts": 0.0,
+   "dim_check_trace": 0.0,
+   "wall_pred_s": 191.807361125,
+   "wall_s": 235.77940137500002,
+   "wall_over_pred": 1.2292510568525243,
+   "ei_i_exc_integral": 2167775.0173187256,
+   "ei_i_inh_integral": 4951200.117680311,
+   "ei_ratio": 2.2840009125136724
+  },
+  "l1_b0.70_g1.00_s0.90_8192_T10000ms_d1_s2": {
+   "arm_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d1_s2",
+   "checks": [
+    "trace_len == round(T_ms/dt_ms) OK",
+    "counts_len == n_neuron OK"
+   ],
+   "hard_fail": [],
+   "T_s": 10.0,
+   "steps_expected": 200000,
+   "n_neuron": 8192,
+   "seed": 2,
+   "trace_len": 200000,
+   "trace_sum": 45147.0,
+   "trace_finite": true,
+   "trace_mean_rate_hz": 0.55111083984375,
+   "bin_rate_hz_median": 0.5523681640625,
+   "trace_bin_median_rate_hz": 0.5523681640625,
+   "silent_bin_frac": 0.0,
+   "n_bins": 100,
+   "counts_n": 8192,
+   "counts_sum": 45147.0,
+   "counts_finite": true,
+   "rate_summary_hz": {
+    "median": 0.1,
+    "mean": 0.55111083984375,
+    "p5": 0.0,
+    "p95": 2.6,
+    "max": 25.0,
+    "min": 0.0
+   },
+   "rate_median_hz": 0.1,
+   "rate_mean_hz": 0.55111083984375,
+   "rate_p95_hz": 2.6,
+   "rate_p5_hz": 0.0,
+   "silent_frac_zero_count": 0.49853515625,
+   "silent_frac_lt_thr": 0.7037353515625,
+   "n_active_neurons": 4108,
+   "by_cell_type": {
+    "E": {
+     "n": 6635,
+     "rate_median_hz": 0.1,
+     "silent_frac_zero_count": 0.49992464204973625
+    },
+    "PV": {
+     "n": 554,
+     "rate_median_hz": 0.1,
+     "silent_frac_zero_count": 0.48194945848375453
+    },
+    "SST": {
+     "n": 446,
+     "rate_median_hz": 0.0,
+     "silent_frac_zero_count": 0.5269058295964125
+    },
+    "VIP": {
+     "n": 557,
+     "rate_median_hz": 0.1,
+     "silent_frac_zero_count": 0.4757630161579892
+    }
+   },
+   "agg_spk_total": 45147.0,
+   "estimators_available": [
+    "agg_spk_total",
+    "counts_sum",
+    "pop_trace_sum"
+   ],
+   "estimator_rel_diffs": {
+    "agg_spk_total__vs__counts_sum": 0.0,
+    "agg_spk_total__vs__pop_trace_sum": 0.0,
+    "counts_sum__vs__pop_trace_sum": 0.0
+   },
+   "estimator_gate": "checkable",
+   "dim_check_counts": 0.0,
+   "dim_check_trace": 0.0,
+   "wall_pred_s": 233.39124358300003,
+   "wall_s": 295.297533709,
+   "wall_over_pred": 1.2652468412080098,
+   "ei_i_exc_integral": 2149642.4929466248,
+   "ei_i_inh_integral": 4768976.331341982,
+   "ei_ratio": 2.21849742317147
+  }
+ },
+ "output_invariants": {
+  "rows": 48,
+  "units": 4,
+  "criteria_per_unit": [
+   10
+  ],
+  "caliber_fields_checked": 8
+ },
+ "gate_composition": {
+  "declaration_key": "gate_g1_conditions_v2",
+  "declared": "c_and_e_and_tension_quantified",
+  "code": "c_and_e_and_tension_quantified",
+  "gate_criteria": [
+   "p5_c_selfsustain",
+   "p5_e_ei_balance",
+   "p5_g1_tension_quantified"
+  ],
+  "sanity_criteria": [
+   "p5_d_drive_elasticity"
+  ],
+  "note": "(d) 降为 sanity（M10 基线臂 +579.6% 即过 ⇒ 无判别性）"
+ },
+ "seed_effectiveness_check": "not_run",
+ "rows": [
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_a_rate_median",
+   "estimator": "per_neuron",
+   "value": 0.0,
+   "unit": "Hz",
+   "band_lo": 0.5,
+   "band_hi": 2.0,
+   "band_keys": "rate_median_hz_lo|rate_median_hz_hi",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "fail",
+   "reason": "band=[0.5,2.0] ",
+   "evidence_class": "working_point_precondition",
+   "discriminative": true,
+   "baseline_value": 0.0,
+   "baseline_meets": false,
+   "is_primary_estimator": 1,
+   "n_seeds": 3,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "主口径：逐神经元计数/T 的中位数（清单 §4.5(a)）",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_b_silent_frac",
+   "estimator": "per_neuron(zero_count)",
+   "value": 0.55322265625,
+   "unit": "",
+   "band_lo": null,
+   "band_hi": null,
+   "band_keys": "silent_frac_calcium_band_lo|silent_frac_calcium_band_hi",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "unavailable",
+   "reason": "band_not_finalized: band_not_final(final=0): silent_frac_calcium_band_lo; band_not_final(final=0): silent_frac_calcium_band_hi",
+   "evidence_class": "working_point_precondition",
+   "discriminative": true,
+   "baseline_value": 0.552978515625,
+   "baseline_meets": false,
+   "is_primary_estimator": 1,
+   "n_seeds": 3,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "M11 主静默口径 = 计数==0 的神经元比例；与 M10 的 rate<0.5 Hz 口径不同（见判据表 silent_def_*）",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_a_rate_median",
+   "estimator": "population_trace(bin_median)",
+   "value": 0.106201171875,
+   "unit": "Hz",
+   "band_lo": 0.5,
+   "band_hi": 2.0,
+   "band_keys": "rate_median_hz_lo|rate_median_hz_hi",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "fail",
+   "reason": "band=[0.5,2.0] ",
+   "evidence_class": "working_point_precondition",
+   "discriminative": true,
+   "baseline_value": 0.107421875,
+   "baseline_meets": false,
+   "is_primary_estimator": 0,
+   "n_seeds": 3,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "并列口径：群体轨迹逐箱率的中位数（描述性交叉核对）",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_b_silent_frac",
+   "estimator": "population_trace(silent_bin)",
+   "value": 0.0,
+   "unit": "",
+   "band_lo": null,
+   "band_hi": null,
+   "band_keys": "silent_frac_calcium_band_lo|silent_frac_calcium_band_hi",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "unavailable",
+   "reason": "band_not_finalized: band_not_final(final=0): silent_frac_calcium_band_lo; band_not_final(final=0): silent_frac_calcium_band_hi",
+   "evidence_class": "working_point_precondition",
+   "discriminative": true,
+   "baseline_value": 0.0,
+   "baseline_meets": false,
+   "is_primary_estimator": 0,
+   "n_seeds": 3,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "并列口径（描述性）",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_c_selfsustain",
+   "estimator": "per_neuron(pooled_counts_ratio)",
+   "value": 0.02927111453914385,
+   "unit": "",
+   "band_lo": 0.1,
+   "band_hi": null,
+   "band_keys": "selfsustain_ratio_max",
+   "ci_lo": 0.027232886256779342,
+   "ci_hi": 0.03146189273824722,
+   "status": "invalid",
+   "reason": "two_ci_methods_disagree: 上界相对差 0.371 > 0.25（对数正态 0.0314619 vs 自助 0.0431242）⇒ 先对齐口径",
+   "evidence_class": "working_point_precondition",
+   "discriminative": null,
+   "baseline_value": null,
+   "baseline_meets": null,
+   "is_primary_estimator": 1,
+   "n_seeds": 3,
+   "zero_drive_spikes": 759.0,
+   "n_neuron": 8192,
+   "note": "硬门①（≥3 seed/臂、零驱动 ≥300 脉冲）与硬门②（点估计 ≤ 上限 且 CI 上界 ≤ 上限×1.2）已机械执行；两 CI 法（泊松对数正态 / seed 自助）并列报告",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5,
+   "ci_lo_bootstrap": 0.020680124368295704,
+   "ci_hi_bootstrap": 0.04312418457508018,
+   "per_seed_ratio": [
+    0.042983852626791,
+    0.02211274060494959,
+    0.02235965746907707
+   ],
+   "selfsustain_detail": {
+    "n_seed_zero": 3,
+    "n_seed_base": 3,
+    "zero_spikes": 759.0,
+    "base_spikes": 25930.0,
+    "ratio_pooled": 0.02927111453914385,
+    "se_log": 0.03682510590551993,
+    "ci95_lognormal": [
+     0.027232886256779342,
+     0.03146189273824722
+    ],
+    "n_boot_effective": 20000,
+    "ci95_bootstrap": [
+     0.020680124368295704,
+     0.04312418457508018
+    ],
+    "ci_upper_rel_diff": 0.3706799185242751,
+    "ci_upper_conservative": 0.04312418457508018
+   }
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_d_drive_elasticity",
+   "estimator": "per_neuron(pop_mean_rate)",
+   "value": null,
+   "unit": "",
+   "band_lo": 0.3,
+   "band_hi": null,
+   "band_keys": "drive_elasticity_min",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "unavailable",
+   "reason": "dose_arm_missing(需 drive_mult∈{1,4} 且基准群率>0)",
+   "evidence_class": "sanity_precondition(non_discriminative)",
+   "discriminative": false,
+   "baseline_value": null,
+   "baseline_meets": null,
+   "is_primary_estimator": 1,
+   "n_seeds": 3,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "剂量-响应 [0.0, 0.5, 1.0, 2.0, 4.0, 8.0]；判据表登记 criterion_d_as_mechanism_evidence=0.0 ⇒ 基线自身即过该判据（M10 实测 +579.6%），故它在本工具中被标为非判别性 sanity 前置",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5,
+   "monotone_dose_median": true,
+   "monotone_pooled_15pt": false,
+   "dose_level_median_rates": [
+    0.00235595703125,
+    0.10654296875
+   ],
+   "dose_level_mean_rates": [
+    0.0030883789062499997,
+    0.10550944010416667
+   ],
+   "dose_grid": [
+    0.0,
+    1.0
+   ]
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_e_ei_balance",
+   "estimator": "synaptic_current_integral_ratio",
+   "value": 3.241604940164609,
+   "unit": "",
+   "band_lo": 0.5,
+   "band_hi": 3.0,
+   "band_keys": "ei_ratio_lo|ei_ratio_hi",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "fail",
+   "reason": "band=[0.5,3.0] 定义=i_inh_integral/i_exc_integral（判据表 ei_ratio_definition）",
+   "evidence_class": "working_point_precondition",
+   "discriminative": false,
+   "baseline_value": 0.6751141928541624,
+   "baseline_meets": true,
+   "is_primary_estimator": 1,
+   "n_seeds": null,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "数值端点为预注册设计选择（derived）；四篇文献仅支撑方向与量级（判据表 ei_ratio_* 行）",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_f_bounded",
+   "estimator": "per_neuron",
+   "value": 0.5,
+   "unit": "Hz",
+   "band_lo": null,
+   "band_hi": 200.0,
+   "band_keys": "rate_p95_max_hz",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "pass",
+   "reason": "无非有限值；率 p95 0.5 ≤ 200.0 Hz",
+   "evidence_class": "engineering_sanity",
+   "discriminative": null,
+   "baseline_value": null,
+   "baseline_meets": null,
+   "is_primary_estimator": 1,
+   "n_seeds": null,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_g_wallclock",
+   "estimator": "wall_clock",
+   "value": 150.468804209,
+   "unit": "s",
+   "band_lo": null,
+   "band_hi": null,
+   "band_keys": "single_trial_wall_s_max|single_trial_gpu_h_max",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "unavailable",
+   "reason": "band_not_finalized: band_unavailable(evidence_level=unavailable): single_trial_wall_s_max；实测墙钟上界 150.5 s（描述性，需 G0 探针定稿）",
+   "evidence_class": "budget",
+   "discriminative": null,
+   "baseline_value": null,
+   "baseline_meets": null,
+   "is_primary_estimator": 1,
+   "n_seeds": null,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "GPU-h 上限 0.5（草案 final=0，探针后定稿）",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_h_determinism",
+   "estimator": "spk_total_identity",
+   "value": null,
+   "unit": "bool",
+   "band_lo": null,
+   "band_hi": null,
+   "band_keys": "determinism_mode",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "unavailable",
+   "reason": "no_replica_arm（(h) 要求同参数重复臂；本工具只比较，不生成）",
+   "evidence_class": "registration_only(not_applicable_to_p5)",
+   "discriminative": null,
+   "baseline_value": null,
+   "baseline_meets": null,
+   "is_primary_estimator": 1,
+   "n_seeds": null,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5,
+   "p5_role": "registered_not_judged",
+   "semantics_note": "(h) 语义 = 跨进程位一致（同 config/seed 重跑），属 G0 性质（G0 已用 3 进程 sha256 一致证明）；P5 只作登记、不作 P5 判据（主agent R97 §②）"
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_i_tradeoff",
+   "estimator": "per_neuron",
+   "value": null,
+   "unit": "bool",
+   "band_lo": null,
+   "band_hi": null,
+   "band_keys": "calibration_tradeoff_requires_a_and_b|tension_detect_required",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "unavailable",
+   "reason": "(a)=fail、(b)=unavailable；带未定稿或量缺失 ⇒ 标定权衡不可判（不得静默放宽，清单 §4.5(i)）",
+   "evidence_class": "precondition_conjunction",
+   "discriminative": null,
+   "baseline_value": null,
+   "baseline_meets": null,
+   "is_primary_estimator": 1,
+   "n_seeds": null,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "子判据状态：(a)=fail、(b)=unavailable",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_a_rate_median",
+   "estimator": "per_neuron",
+   "value": 0.0,
+   "unit": "Hz",
+   "band_lo": 0.5,
+   "band_hi": 2.0,
+   "band_keys": "rate_median_hz_lo|rate_median_hz_hi",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "fail",
+   "reason": "band=[0.5,2.0] ",
+   "evidence_class": "working_point_precondition",
+   "discriminative": true,
+   "baseline_value": 0.0,
+   "baseline_meets": false,
+   "is_primary_estimator": 1,
+   "n_seeds": 3,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "主口径：逐神经元计数/T 的中位数（清单 §4.5(a)）",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_b_silent_frac",
+   "estimator": "per_neuron(zero_count)",
+   "value": 0.526123046875,
+   "unit": "",
+   "band_lo": null,
+   "band_hi": null,
+   "band_keys": "silent_frac_calcium_band_lo|silent_frac_calcium_band_hi",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "unavailable",
+   "reason": "band_not_finalized: band_not_final(final=0): silent_frac_calcium_band_lo; band_not_final(final=0): silent_frac_calcium_band_hi",
+   "evidence_class": "working_point_precondition",
+   "discriminative": true,
+   "baseline_value": 0.5230712890625,
+   "baseline_meets": false,
+   "is_primary_estimator": 1,
+   "n_seeds": 3,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "M11 主静默口径 = 计数==0 的神经元比例；与 M10 的 rate<0.5 Hz 口径不同（见判据表 silent_def_*）",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_a_rate_median",
+   "estimator": "population_trace(bin_median)",
+   "value": 0.1812744140625,
+   "unit": "Hz",
+   "band_lo": 0.5,
+   "band_hi": 2.0,
+   "band_keys": "rate_median_hz_lo|rate_median_hz_hi",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "fail",
+   "reason": "band=[0.5,2.0] ",
+   "evidence_class": "working_point_precondition",
+   "discriminative": true,
+   "baseline_value": 0.1849365234375,
+   "baseline_meets": false,
+   "is_primary_estimator": 0,
+   "n_seeds": 3,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "并列口径：群体轨迹逐箱率的中位数（描述性交叉核对）",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_b_silent_frac",
+   "estimator": "population_trace(silent_bin)",
+   "value": 0.0,
+   "unit": "",
+   "band_lo": null,
+   "band_hi": null,
+   "band_keys": "silent_frac_calcium_band_lo|silent_frac_calcium_band_hi",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "unavailable",
+   "reason": "band_not_finalized: band_not_final(final=0): silent_frac_calcium_band_lo; band_not_final(final=0): silent_frac_calcium_band_hi",
+   "evidence_class": "working_point_precondition",
+   "discriminative": true,
+   "baseline_value": 0.0,
+   "baseline_meets": false,
+   "is_primary_estimator": 0,
+   "n_seeds": 3,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "并列口径（描述性）",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_c_selfsustain",
+   "estimator": "per_neuron(pooled_counts_ratio)",
+   "value": 0.24642640073835625,
+   "unit": "",
+   "band_lo": 0.1,
+   "band_hi": null,
+   "band_keys": "selfsustain_ratio_max",
+   "ci_lo": 0.2413261959240896,
+   "ci_hi": 0.25163439364022716,
+   "status": "fail",
+   "reason": "点估计 R=0.246426（上限 0.1）；CI95(log)=[0.2413261959240896, 0.25163439364022716]；CI95(boot)=[0.23294364352784336, 0.26222334983362494]；零驱动脉冲 10947.0；seed 数 零=3/基准=3；逐 seed 比值=[0.2584247258225324, 0.24016646529735536, 0.24040055248618786]；判定未过（点估计≤上限=False、CI 上界≤0.12=False）",
+   "evidence_class": "working_point_precondition",
+   "discriminative": null,
+   "baseline_value": null,
+   "baseline_meets": null,
+   "is_primary_estimator": 1,
+   "n_seeds": 3,
+   "zero_drive_spikes": 10947.0,
+   "n_neuron": 8192,
+   "note": "硬门①（≥3 seed/臂、零驱动 ≥300 脉冲）与硬门②（点估计 ≤ 上限 且 CI 上界 ≤ 上限×1.2）已机械执行；两 CI 法（泊松对数正态 / seed 自助）并列报告",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5,
+   "ci_lo_bootstrap": 0.23294364352784336,
+   "ci_hi_bootstrap": 0.26222334983362494,
+   "per_seed_ratio": [
+    0.2584247258225324,
+    0.24016646529735536,
+    0.24040055248618786
+   ],
+   "selfsustain_detail": {
+    "n_seed_zero": 3,
+    "n_seed_base": 3,
+    "zero_spikes": 10947.0,
+    "base_spikes": 44423.0,
+    "ratio_pooled": 0.24642640073835625,
+    "se_log": 0.010670524335274805,
+    "ci95_lognormal": [
+     0.2413261959240896,
+     0.25163439364022716
+    ],
+    "n_boot_effective": 20000,
+    "ci95_bootstrap": [
+     0.23294364352784336,
+     0.26222334983362494
+    ],
+    "ci_upper_rel_diff": 0.042080718935970575,
+    "ci_upper_conservative": 0.26222334983362494
+   }
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_d_drive_elasticity",
+   "estimator": "per_neuron(pop_mean_rate)",
+   "value": null,
+   "unit": "",
+   "band_lo": 0.3,
+   "band_hi": null,
+   "band_keys": "drive_elasticity_min",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "unavailable",
+   "reason": "dose_arm_missing(需 drive_mult∈{1,4} 且基准群率>0)",
+   "evidence_class": "sanity_precondition(non_discriminative)",
+   "discriminative": false,
+   "baseline_value": null,
+   "baseline_meets": null,
+   "is_primary_estimator": 1,
+   "n_seeds": 3,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "剂量-响应 [0.0, 0.5, 1.0, 2.0, 4.0, 8.0]；判据表登记 criterion_d_as_mechanism_evidence=0.0 ⇒ 基线自身即过该判据（M10 实测 +579.6%），故它在本工具中被标为非判别性 sanity 前置",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5,
+   "monotone_dose_median": true,
+   "monotone_pooled_15pt": false,
+   "dose_level_median_rates": [
+    0.0436767578125,
+    0.1818603515625
+   ],
+   "dose_level_mean_rates": [
+    0.044543457031250004,
+    0.18075764973958333
+   ],
+   "dose_grid": [
+    0.0,
+    1.0
+   ]
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_e_ei_balance",
+   "estimator": "synaptic_current_integral_ratio",
+   "value": 3.486192586901706,
+   "unit": "",
+   "band_lo": 0.5,
+   "band_hi": 3.0,
+   "band_keys": "ei_ratio_lo|ei_ratio_hi",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "fail",
+   "reason": "band=[0.5,3.0] 定义=i_inh_integral/i_exc_integral（判据表 ei_ratio_definition）",
+   "evidence_class": "working_point_precondition",
+   "discriminative": false,
+   "baseline_value": 1.0625136881115944,
+   "baseline_meets": true,
+   "is_primary_estimator": 1,
+   "n_seeds": null,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "数值端点为预注册设计选择（derived）；四篇文献仅支撑方向与量级（判据表 ei_ratio_* 行）",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_f_bounded",
+   "estimator": "per_neuron",
+   "value": 0.8,
+   "unit": "Hz",
+   "band_lo": null,
+   "band_hi": 200.0,
+   "band_keys": "rate_p95_max_hz",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "pass",
+   "reason": "无非有限值；率 p95 0.8 ≤ 200.0 Hz",
+   "evidence_class": "engineering_sanity",
+   "discriminative": null,
+   "baseline_value": null,
+   "baseline_meets": null,
+   "is_primary_estimator": 1,
+   "n_seeds": null,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_g_wallclock",
+   "estimator": "wall_clock",
+   "value": 179.095124709,
+   "unit": "s",
+   "band_lo": null,
+   "band_hi": null,
+   "band_keys": "single_trial_wall_s_max|single_trial_gpu_h_max",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "unavailable",
+   "reason": "band_not_finalized: band_unavailable(evidence_level=unavailable): single_trial_wall_s_max；实测墙钟上界 179.1 s（描述性，需 G0 探针定稿）",
+   "evidence_class": "budget",
+   "discriminative": null,
+   "baseline_value": null,
+   "baseline_meets": null,
+   "is_primary_estimator": 1,
+   "n_seeds": null,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "GPU-h 上限 0.5（草案 final=0，探针后定稿）",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_h_determinism",
+   "estimator": "spk_total_identity",
+   "value": null,
+   "unit": "bool",
+   "band_lo": null,
+   "band_hi": null,
+   "band_keys": "determinism_mode",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "unavailable",
+   "reason": "no_replica_arm（(h) 要求同参数重复臂；本工具只比较，不生成）",
+   "evidence_class": "registration_only(not_applicable_to_p5)",
+   "discriminative": null,
+   "baseline_value": null,
+   "baseline_meets": null,
+   "is_primary_estimator": 1,
+   "n_seeds": null,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5,
+   "p5_role": "registered_not_judged",
+   "semantics_note": "(h) 语义 = 跨进程位一致（同 config/seed 重跑），属 G0 性质（G0 已用 3 进程 sha256 一致证明）；P5 只作登记、不作 P5 判据（主agent R97 §②）"
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_i_tradeoff",
+   "estimator": "per_neuron",
+   "value": null,
+   "unit": "bool",
+   "band_lo": null,
+   "band_hi": null,
+   "band_keys": "calibration_tradeoff_requires_a_and_b|tension_detect_required",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "unavailable",
+   "reason": "(a)=fail、(b)=unavailable；带未定稿或量缺失 ⇒ 标定权衡不可判（不得静默放宽，清单 §4.5(i)）",
+   "evidence_class": "precondition_conjunction",
+   "discriminative": null,
+   "baseline_value": null,
+   "baseline_meets": null,
+   "is_primary_estimator": 1,
+   "n_seeds": null,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "子判据状态：(a)=fail、(b)=unavailable",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_a_rate_median",
+   "estimator": "per_neuron",
+   "value": 0.0,
+   "unit": "Hz",
+   "band_lo": 0.5,
+   "band_hi": 2.0,
+   "band_keys": "rate_median_hz_lo|rate_median_hz_hi",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "fail",
+   "reason": "band=[0.5,2.0] ",
+   "evidence_class": "working_point_precondition",
+   "discriminative": true,
+   "baseline_value": 0.0,
+   "baseline_meets": false,
+   "is_primary_estimator": 1,
+   "n_seeds": 3,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "主口径：逐神经元计数/T 的中位数（清单 §4.5(a)）",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_b_silent_frac",
+   "estimator": "per_neuron(zero_count)",
+   "value": 0.5106201171875,
+   "unit": "",
+   "band_lo": null,
+   "band_hi": null,
+   "band_keys": "silent_frac_calcium_band_lo|silent_frac_calcium_band_hi",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "unavailable",
+   "reason": "band_not_finalized: band_not_final(final=0): silent_frac_calcium_band_lo; band_not_final(final=0): silent_frac_calcium_band_hi",
+   "evidence_class": "working_point_precondition",
+   "discriminative": true,
+   "baseline_value": 0.5098876953125,
+   "baseline_meets": false,
+   "is_primary_estimator": 1,
+   "n_seeds": 3,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "M11 主静默口径 = 计数==0 的神经元比例；与 M10 的 rate<0.5 Hz 口径不同（见判据表 silent_def_*）",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_a_rate_median",
+   "estimator": "population_trace(bin_median)",
+   "value": 0.2752685546875,
+   "unit": "Hz",
+   "band_lo": 0.5,
+   "band_hi": 2.0,
+   "band_keys": "rate_median_hz_lo|rate_median_hz_hi",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "fail",
+   "reason": "band=[0.5,2.0] ",
+   "evidence_class": "working_point_precondition",
+   "discriminative": true,
+   "baseline_value": 0.2850341796875,
+   "baseline_meets": false,
+   "is_primary_estimator": 0,
+   "n_seeds": 3,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "并列口径：群体轨迹逐箱率的中位数（描述性交叉核对）",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_b_silent_frac",
+   "estimator": "population_trace(silent_bin)",
+   "value": 0.0,
+   "unit": "",
+   "band_lo": null,
+   "band_hi": null,
+   "band_keys": "silent_frac_calcium_band_lo|silent_frac_calcium_band_hi",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "unavailable",
+   "reason": "band_not_finalized: band_not_final(final=0): silent_frac_calcium_band_lo; band_not_final(final=0): silent_frac_calcium_band_hi",
+   "evidence_class": "working_point_precondition",
+   "discriminative": true,
+   "baseline_value": 0.0,
+   "baseline_meets": false,
+   "is_primary_estimator": 0,
+   "n_seeds": 3,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "并列口径（描述性）",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_c_selfsustain",
+   "estimator": "per_neuron(pooled_counts_ratio)",
+   "value": 0.48986590010360276,
+   "unit": "",
+   "band_lo": 0.1,
+   "band_hi": null,
+   "band_keys": "selfsustain_ratio_max",
+   "ci_lo": 0.48351135349105495,
+   "ci_hi": 0.49630396132725424,
+   "status": "fail",
+   "reason": "点估计 R=0.489866（上限 0.1）；CI95(log)=[0.48351135349105495, 0.49630396132725424]；CI95(boot)=[0.467861546661643, 0.5110344332841936]；零驱动脉冲 33571.0；seed 数 零=3/基准=3；逐 seed 比值=[0.49789735667696533, 0.492181357560933, 0.47911162853176914]；判定未过（点估计≤上限=False、CI 上界≤0.12=False）",
+   "evidence_class": "working_point_precondition",
+   "discriminative": null,
+   "baseline_value": null,
+   "baseline_meets": null,
+   "is_primary_estimator": 1,
+   "n_seeds": 3,
+   "zero_drive_spikes": 33571.0,
+   "n_neuron": 8192,
+   "note": "硬门①（≥3 seed/臂、零驱动 ≥300 脉冲）与硬门②（点估计 ≤ 上限 且 CI 上界 ≤ 上限×1.2）已机械执行；两 CI 法（泊松对数正态 / seed 自助）并列报告",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5,
+   "ci_lo_bootstrap": 0.467861546661643,
+   "ci_hi_bootstrap": 0.5110344332841936,
+   "per_seed_ratio": [
+    0.49789735667696533,
+    0.492181357560933,
+    0.47911162853176914
+   ],
+   "selfsustain_detail": {
+    "n_seed_zero": 3,
+    "n_seed_base": 3,
+    "zero_spikes": 33571.0,
+    "base_spikes": 68531.0,
+    "ratio_pooled": 0.48986590010360276,
+    "se_log": 0.006661797865881423,
+    "ci95_lognormal": [
+     0.48351135349105495,
+     0.49630396132725424
+    ],
+    "n_boot_effective": 20000,
+    "ci95_bootstrap": [
+     0.467861546661643,
+     0.5110344332841936
+    ],
+    "ci_upper_rel_diff": 0.029680343307246677,
+    "ci_upper_conservative": 0.5110344332841936
+   }
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_d_drive_elasticity",
+   "estimator": "per_neuron(pop_mean_rate)",
+   "value": null,
+   "unit": "",
+   "band_lo": 0.3,
+   "band_hi": null,
+   "band_keys": "drive_elasticity_min",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "unavailable",
+   "reason": "dose_arm_missing(需 drive_mult∈{1,4} 且基准群率>0)",
+   "evidence_class": "sanity_precondition(non_discriminative)",
+   "discriminative": false,
+   "baseline_value": null,
+   "baseline_meets": null,
+   "is_primary_estimator": 1,
+   "n_seeds": 3,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "剂量-响应 [0.0, 0.5, 1.0, 2.0, 4.0, 8.0]；判据表登记 criterion_d_as_mechanism_evidence=0.0 ⇒ 基线自身即过该判据（M10 实测 +579.6%），故它在本工具中被标为非判别性 sanity 前置",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5,
+   "monotone_dose_median": true,
+   "monotone_pooled_15pt": false,
+   "dose_level_median_rates": [
+    0.137548828125,
+    0.2794677734375
+   ],
+   "dose_level_mean_rates": [
+    0.13660074869791666,
+    0.27885335286458335
+   ],
+   "dose_grid": [
+    0.0,
+    1.0
+   ]
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_e_ei_balance",
+   "estimator": "synaptic_current_integral_ratio",
+   "value": 3.6973872048767746,
+   "unit": "",
+   "band_lo": 0.5,
+   "band_hi": 3.0,
+   "band_keys": "ei_ratio_lo|ei_ratio_hi",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "fail",
+   "reason": "band=[0.5,3.0] 定义=i_inh_integral/i_exc_integral（判据表 ei_ratio_definition）",
+   "evidence_class": "working_point_precondition",
+   "discriminative": false,
+   "baseline_value": 1.4808270015029896,
+   "baseline_meets": true,
+   "is_primary_estimator": 1,
+   "n_seeds": null,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "数值端点为预注册设计选择（derived）；四篇文献仅支撑方向与量级（判据表 ei_ratio_* 行）",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_f_bounded",
+   "estimator": "per_neuron",
+   "value": 1.3,
+   "unit": "Hz",
+   "band_lo": null,
+   "band_hi": 200.0,
+   "band_keys": "rate_p95_max_hz",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "pass",
+   "reason": "无非有限值；率 p95 1.3 ≤ 200.0 Hz",
+   "evidence_class": "engineering_sanity",
+   "discriminative": null,
+   "baseline_value": null,
+   "baseline_meets": null,
+   "is_primary_estimator": 1,
+   "n_seeds": null,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_g_wallclock",
+   "estimator": "wall_clock",
+   "value": 182.20537554199998,
+   "unit": "s",
+   "band_lo": null,
+   "band_hi": null,
+   "band_keys": "single_trial_wall_s_max|single_trial_gpu_h_max",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "unavailable",
+   "reason": "band_not_finalized: band_unavailable(evidence_level=unavailable): single_trial_wall_s_max；实测墙钟上界 182.2 s（描述性，需 G0 探针定稿）",
+   "evidence_class": "budget",
+   "discriminative": null,
+   "baseline_value": null,
+   "baseline_meets": null,
+   "is_primary_estimator": 1,
+   "n_seeds": null,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "GPU-h 上限 0.5（草案 final=0，探针后定稿）",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_h_determinism",
+   "estimator": "spk_total_identity",
+   "value": null,
+   "unit": "bool",
+   "band_lo": null,
+   "band_hi": null,
+   "band_keys": "determinism_mode",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "unavailable",
+   "reason": "no_replica_arm（(h) 要求同参数重复臂；本工具只比较，不生成）",
+   "evidence_class": "registration_only(not_applicable_to_p5)",
+   "discriminative": null,
+   "baseline_value": null,
+   "baseline_meets": null,
+   "is_primary_estimator": 1,
+   "n_seeds": null,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5,
+   "p5_role": "registered_not_judged",
+   "semantics_note": "(h) 语义 = 跨进程位一致（同 config/seed 重跑），属 G0 性质（G0 已用 3 进程 sha256 一致证明）；P5 只作登记、不作 P5 判据（主agent R97 §②）"
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_i_tradeoff",
+   "estimator": "per_neuron",
+   "value": null,
+   "unit": "bool",
+   "band_lo": null,
+   "band_hi": null,
+   "band_keys": "calibration_tradeoff_requires_a_and_b|tension_detect_required",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "unavailable",
+   "reason": "(a)=fail、(b)=unavailable；带未定稿或量缺失 ⇒ 标定权衡不可判（不得静默放宽，清单 §4.5(i)）",
+   "evidence_class": "precondition_conjunction",
+   "discriminative": null,
+   "baseline_value": null,
+   "baseline_meets": null,
+   "is_primary_estimator": 1,
+   "n_seeds": null,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "子判据状态：(a)=fail、(b)=unavailable",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_a_rate_median",
+   "estimator": "per_neuron",
+   "value": 0.1,
+   "unit": "Hz",
+   "band_lo": 0.5,
+   "band_hi": 2.0,
+   "band_keys": "rate_median_hz_lo|rate_median_hz_hi",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "fail",
+   "reason": "band=[0.5,2.0] ",
+   "evidence_class": "working_point_precondition",
+   "discriminative": true,
+   "baseline_value": 0.1,
+   "baseline_meets": false,
+   "is_primary_estimator": 1,
+   "n_seeds": 3,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "主口径：逐神经元计数/T 的中位数（清单 §4.5(a)）",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_b_silent_frac",
+   "estimator": "per_neuron(zero_count)",
+   "value": 0.49853515625,
+   "unit": "",
+   "band_lo": null,
+   "band_hi": null,
+   "band_keys": "silent_frac_calcium_band_lo|silent_frac_calcium_band_hi",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "unavailable",
+   "reason": "band_not_finalized: band_not_final(final=0): silent_frac_calcium_band_lo; band_not_final(final=0): silent_frac_calcium_band_hi",
+   "evidence_class": "working_point_precondition",
+   "discriminative": true,
+   "baseline_value": 0.4996337890625,
+   "baseline_meets": false,
+   "is_primary_estimator": 1,
+   "n_seeds": 3,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "M11 主静默口径 = 计数==0 的神经元比例；与 M10 的 rate<0.5 Hz 口径不同（见判据表 silent_def_*）",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_a_rate_median",
+   "estimator": "population_trace(bin_median)",
+   "value": 0.5657958984375,
+   "unit": "Hz",
+   "band_lo": 0.5,
+   "band_hi": 2.0,
+   "band_keys": "rate_median_hz_lo|rate_median_hz_hi",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "pass",
+   "reason": "band=[0.5,2.0] ",
+   "evidence_class": "working_point_precondition",
+   "discriminative": false,
+   "baseline_value": 0.5853271484375,
+   "baseline_meets": true,
+   "is_primary_estimator": 0,
+   "n_seeds": 3,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "并列口径：群体轨迹逐箱率的中位数（描述性交叉核对）",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_b_silent_frac",
+   "estimator": "population_trace(silent_bin)",
+   "value": 0.0,
+   "unit": "",
+   "band_lo": null,
+   "band_hi": null,
+   "band_keys": "silent_frac_calcium_band_lo|silent_frac_calcium_band_hi",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "unavailable",
+   "reason": "band_not_finalized: band_not_final(final=0): silent_frac_calcium_band_lo; band_not_final(final=0): silent_frac_calcium_band_hi",
+   "evidence_class": "working_point_precondition",
+   "discriminative": true,
+   "baseline_value": 0.0,
+   "baseline_meets": false,
+   "is_primary_estimator": 0,
+   "n_seeds": 3,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "并列口径（描述性）",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_c_selfsustain",
+   "estimator": "per_neuron(pooled_counts_ratio)",
+   "value": 0.7707152670444788,
+   "unit": "",
+   "band_lo": 0.1,
+   "band_hi": null,
+   "band_keys": "selfsustain_ratio_max",
+   "ci_lo": 0.7646147601470838,
+   "ci_hi": 0.7768644470598213,
+   "status": "fail",
+   "reason": "点估计 R=0.770715（上限 0.1）；CI95(log)=[0.7646147601470838, 0.7768644470598213]；CI95(boot)=[0.7343340179379618, 0.8090242624930051]；零驱动脉冲 107709.0；seed 数 零=3/基准=3；逐 seed 比值=[0.7775814765547057, 0.7706321381713376, 0.7634837309234279]；判定未过（点估计≤上限=False、CI 上界≤0.12=False）",
+   "evidence_class": "working_point_precondition",
+   "discriminative": null,
+   "baseline_value": null,
+   "baseline_meets": null,
+   "is_primary_estimator": 1,
+   "n_seeds": 3,
+   "zero_drive_spikes": 107709.0,
+   "n_neuron": 8192,
+   "note": "硬门①（≥3 seed/臂、零驱动 ≥300 脉冲）与硬门②（点估计 ≤ 上限 且 CI 上界 ≤ 上限×1.2）已机械执行；两 CI 法（泊松对数正态 / seed 自助）并列报告",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5,
+   "ci_lo_bootstrap": 0.7343340179379618,
+   "ci_hi_bootstrap": 0.8090242624930051,
+   "per_seed_ratio": [
+    0.7775814765547057,
+    0.7706321381713376,
+    0.7634837309234279
+   ],
+   "selfsustain_detail": {
+    "n_seed_zero": 3,
+    "n_seed_base": 3,
+    "zero_spikes": 107709.0,
+    "base_spikes": 139752.0,
+    "ratio_pooled": 0.7707152670444788,
+    "se_log": 0.004054603295133293,
+    "ci95_lognormal": [
+     0.7646147601470838,
+     0.7768644470598213
+    ],
+    "n_boot_effective": 20000,
+    "ci95_bootstrap": [
+     0.7343340179379618,
+     0.8090242624930051
+    ],
+    "ci_upper_rel_diff": 0.04139694583128141,
+    "ci_upper_conservative": 0.8090242624930051
+   }
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_d_drive_elasticity",
+   "estimator": "per_neuron(pop_mean_rate)",
+   "value": null,
+   "unit": "",
+   "band_lo": 0.3,
+   "band_hi": null,
+   "band_keys": "drive_elasticity_min",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "unavailable",
+   "reason": "dose_arm_missing(需 drive_mult∈{1,4} 且基准群率>0)",
+   "evidence_class": "sanity_precondition(non_discriminative)",
+   "discriminative": false,
+   "baseline_value": null,
+   "baseline_meets": null,
+   "is_primary_estimator": 1,
+   "n_seeds": 3,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "剂量-响应 [0.0, 0.5, 1.0, 2.0, 4.0, 8.0]；判据表登记 criterion_d_as_mechanism_evidence=0.0 ⇒ 基线自身即过该判据（M10 实测 +579.6%），故它在本工具中被标为非判别性 sanity 前置",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5,
+   "monotone_dose_median": true,
+   "monotone_pooled_15pt": false,
+   "dose_level_median_rates": [
+    0.43736572265625,
+    0.56754150390625
+   ],
+   "dose_level_mean_rates": [
+    0.43826904296874997,
+    0.5686523437500001
+   ],
+   "dose_grid": [
+    0.0,
+    1.0
+   ]
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_e_ei_balance",
+   "estimator": "synaptic_current_integral_ratio",
+   "value": 3.9748213509585586,
+   "unit": "",
+   "band_lo": 0.5,
+   "band_hi": 3.0,
+   "band_keys": "ei_ratio_lo|ei_ratio_hi",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "fail",
+   "reason": "band=[0.5,3.0] 定义=i_inh_integral/i_exc_integral（判据表 ei_ratio_definition）",
+   "evidence_class": "working_point_precondition",
+   "discriminative": false,
+   "baseline_value": 2.299139068440235,
+   "baseline_meets": true,
+   "is_primary_estimator": 1,
+   "n_seeds": null,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "数值端点为预注册设计选择（derived）；四篇文献仅支撑方向与量级（判据表 ei_ratio_* 行）",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_f_bounded",
+   "estimator": "per_neuron",
+   "value": 2.7,
+   "unit": "Hz",
+   "band_lo": null,
+   "band_hi": 200.0,
+   "band_keys": "rate_p95_max_hz",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "pass",
+   "reason": "无非有限值；率 p95 2.7 ≤ 200.0 Hz",
+   "evidence_class": "engineering_sanity",
+   "discriminative": null,
+   "baseline_value": null,
+   "baseline_meets": null,
+   "is_primary_estimator": 1,
+   "n_seeds": null,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_g_wallclock",
+   "estimator": "wall_clock",
+   "value": 295.297533709,
+   "unit": "s",
+   "band_lo": null,
+   "band_hi": null,
+   "band_keys": "single_trial_wall_s_max|single_trial_gpu_h_max",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "unavailable",
+   "reason": "band_not_finalized: band_unavailable(evidence_level=unavailable): single_trial_wall_s_max；实测墙钟上界 295.3 s（描述性，需 G0 探针定稿）",
+   "evidence_class": "budget",
+   "discriminative": null,
+   "baseline_value": null,
+   "baseline_meets": null,
+   "is_primary_estimator": 1,
+   "n_seeds": null,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "GPU-h 上限 0.5（草案 final=0，探针后定稿）",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_h_determinism",
+   "estimator": "spk_total_identity",
+   "value": null,
+   "unit": "bool",
+   "band_lo": null,
+   "band_hi": null,
+   "band_keys": "determinism_mode",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "unavailable",
+   "reason": "no_replica_arm（(h) 要求同参数重复臂；本工具只比较，不生成）",
+   "evidence_class": "registration_only(not_applicable_to_p5)",
+   "discriminative": null,
+   "baseline_value": null,
+   "baseline_meets": null,
+   "is_primary_estimator": 1,
+   "n_seeds": null,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5,
+   "p5_role": "registered_not_judged",
+   "semantics_note": "(h) 语义 = 跨进程位一致（同 config/seed 重跑），属 G0 性质（G0 已用 3 进程 sha256 一致证明）；P5 只作登记、不作 P5 判据（主agent R97 §②）"
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_i_tradeoff",
+   "estimator": "per_neuron",
+   "value": null,
+   "unit": "bool",
+   "band_lo": null,
+   "band_hi": null,
+   "band_keys": "calibration_tradeoff_requires_a_and_b|tension_detect_required",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "unavailable",
+   "reason": "(a)=fail、(b)=unavailable；带未定稿或量缺失 ⇒ 标定权衡不可判（不得静默放宽，清单 §4.5(i)）",
+   "evidence_class": "precondition_conjunction",
+   "discriminative": null,
+   "baseline_value": null,
+   "baseline_meets": null,
+   "is_primary_estimator": 1,
+   "n_seeds": null,
+   "zero_drive_spikes": null,
+   "n_neuron": 8192,
+   "note": "子判据状态：(a)=fail、(b)=unavailable",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": 0,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_g1_tension_quantified",
+   "estimator": "dose_sweep_rank_correlation",
+   "value": -0.8911327886790069,
+   "unit": "",
+   "band_lo": null,
+   "band_hi": null,
+   "band_keys": "tension_detect_required|tension_spearman_max",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "unavailable",
+   "reason": "张力未定量（(a) 或 (b) 的带未定稿 ⇒ 张力只能定性（n_both_in_band 此时恒为 0，不构成张力证据））⇒ 该门条件不得判 pass/fail；**注意 n_both_in_band 在带未定稿时恒为 0，不构成张力证据**",
+   "evidence_class": "gate_condition(tension_quantified)",
+   "discriminative": null,
+   "baseline_value": null,
+   "baseline_meets": null,
+   "is_primary_estimator": 1,
+   "n_seeds": null,
+   "zero_drive_spikes": null,
+   "n_neuron": null,
+   "note": "G1 门条件之三（主agent 2026-10-11 裁决 §二.6）：(d) 已降为 sanity，门条件改为 (c) ∧ (e) ∧ 张力已定量识别",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": null,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_g1_tension_quantified",
+   "estimator": "dose_sweep_rank_correlation",
+   "value": -0.8911327886790069,
+   "unit": "",
+   "band_lo": null,
+   "band_hi": null,
+   "band_keys": "tension_detect_required|tension_spearman_max",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "unavailable",
+   "reason": "张力未定量（(a) 或 (b) 的带未定稿 ⇒ 张力只能定性（n_both_in_band 此时恒为 0，不构成张力证据））⇒ 该门条件不得判 pass/fail；**注意 n_both_in_band 在带未定稿时恒为 0，不构成张力证据**",
+   "evidence_class": "gate_condition(tension_quantified)",
+   "discriminative": null,
+   "baseline_value": null,
+   "baseline_meets": null,
+   "is_primary_estimator": 1,
+   "n_seeds": null,
+   "zero_drive_spikes": null,
+   "n_neuron": null,
+   "note": "G1 门条件之三（主agent 2026-10-11 裁决 §二.6）：(d) 已降为 sanity，门条件改为 (c) ∧ (e) ∧ 张力已定量识别",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": null,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_g1_tension_quantified",
+   "estimator": "dose_sweep_rank_correlation",
+   "value": -0.87831006565368,
+   "unit": "",
+   "band_lo": null,
+   "band_hi": null,
+   "band_keys": "tension_detect_required|tension_spearman_max",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "unavailable",
+   "reason": "张力未定量（(a) 或 (b) 的带未定稿 ⇒ 张力只能定性（n_both_in_band 此时恒为 0，不构成张力证据））⇒ 该门条件不得判 pass/fail；**注意 n_both_in_band 在带未定稿时恒为 0，不构成张力证据**",
+   "evidence_class": "gate_condition(tension_quantified)",
+   "discriminative": null,
+   "baseline_value": null,
+   "baseline_meets": null,
+   "is_primary_estimator": 1,
+   "n_seeds": null,
+   "zero_drive_spikes": null,
+   "n_neuron": null,
+   "note": "G1 门条件之三（主agent 2026-10-11 裁决 §二.6）：(d) 已降为 sanity，门条件改为 (c) ∧ (e) ∧ 张力已定量识别",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": null,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "criterion": "p5_g1_tension_quantified",
+   "estimator": "dose_sweep_rank_correlation",
+   "value": -0.87831006565368,
+   "unit": "",
+   "band_lo": null,
+   "band_hi": null,
+   "band_keys": "tension_detect_required|tension_spearman_max",
+   "ci_lo": null,
+   "ci_hi": null,
+   "status": "unavailable",
+   "reason": "张力未定量（(a) 或 (b) 的带未定稿 ⇒ 张力只能定性（n_both_in_band 此时恒为 0，不构成张力证据））⇒ 该门条件不得判 pass/fail；**注意 n_both_in_band 在带未定稿时恒为 0，不构成张力证据**",
+   "evidence_class": "gate_condition(tension_quantified)",
+   "discriminative": null,
+   "baseline_value": null,
+   "baseline_meets": null,
+   "is_primary_estimator": 1,
+   "n_seeds": null,
+   "zero_drive_spikes": null,
+   "n_neuron": null,
+   "note": "G1 门条件之三（主agent 2026-10-11 裁决 §二.6）：(d) 已降为 sanity，门条件改为 (c) ∧ (e) ∧ 张力已定量识别",
+   "protocol_id": "m11_p5_l1_sigma_n8192",
+   "protocol_T_ms": 10000.0,
+   "protocol_settle_ms": 500.0,
+   "protocol_seed": null,
+   "protocol_dt_ms": 0.05,
+   "protocol_bin_ms": 100.0,
+   "protocol_smooth_frames": 5
+  }
+ ],
+ "elapsed_s": null
+}
