@@ -13,6 +13,10 @@
   arms[]`（本工具另写 `protocol_id / fixture_kind / engine{...} / plan_id`）。
 - **硬要求**：E/I 电流积分必须**由引擎注入实测**（`MouseCortexEngine.run(ei_integrals=True)`）；
   每臂**同时**给 `pop_trace` 与 `counts`（缺一 ⇒ 评估器硬门③不可校验）。
+  **唯一例外（R113 §⑤，本次修复）**：**零驱动臂**（`role == "zero_drive"` ∨ `drive_mult == 0`）
+  的 **0 脉冲是核心观测而非故障** ⇒ **不抛错、正常落盘**，并写显式状态
+  `zero_activity=true / spikes_total=0 / ei.ei_ratio=null / ei.i_exc_integral=0.0`；
+  **非零驱动臂**的 0 响应仍是硬失败（`EXIT=1`，错误码**不再与正常观测混用**）。
 
 **产物（B3 §10.3 规范）**：`<run_id>.json`（**完成即写**）/ `.done`（mtime=完成时刻）/ `.fail`（含 stderr 尾部；
 不计入分母、四态 `invalid`）/ `<run_id>_poptrace.npy`（float32 逐步群体脉冲数）/ `<run_id>_counts.csv`
@@ -261,7 +265,39 @@ def run_one(spec: dict, out_dir: str) -> dict:
     assert int(counts.sum()) == spk_total, "双估计器（counts vs 轨迹）不一致"
     assert abs(float(pop.sum()) - spk_total) <= 0.02 * max(1.0, spk_total), \
         "双估计器（pop_trace vs counts）不一致"
-    assert res["ei_integrals"]["i_exc_integral"] > 0, "E/I 积分必须由引擎实测且非零"
+    # ---- **零驱动臂的"零活动"是显式状态，不是引擎故障**（M11 R113 §⑤；M10 D1「缺席必须是可区分的
+    # 显式状态」家族的又一次复现）----
+    # ⚠️ **缺陷（本次修复）**：下面那行原先是**无条件**硬断言 ⇒ `i_exc_integral == 0` 时
+    #   ①"零驱动臂 0 脉冲"（L3b 的**核心观测**：自持比 R→0，**正常且有价值**）
+    #   与 ②"引擎坏了"（真错误）
+    #   **共用同一个错误码**（`EXIT=1` + 产物**根本不落盘**）⇒ **无法区分**。
+    #   实测：`role=zero_drive, bias=1.00, σ=0.05, T=1 s` ⇒ 0 脉冲 ⇒ 原断言触发 ⇒ 无 JSON 产物。
+    # **判据（语义轴 ∨ 数值轴，两条都覆盖）**：
+    #   ① `role == "zero_drive"`（语义轴）：`make_plan()` 对 `dose==0` 自动打的角色；
+    #   ② `drive_mult == 0`（数值轴）：外部事件率 `drive_rate_hz * dose == 0` ⇒ `make_events()`
+    #      的 `n_ev = int(rate*T_table*dt*1e-3*n) == 0` ⇒ 引擎收到**空事件表**（与①同一物理条件）。
+    # ⇒ **必须取或**：既有产物里两种写法都出现过（模板给 `role=zero_drive, dose=0.0`；手写 spec 只给
+    #   `drive_mult=0` 而 role 仍写作 `dose`/`baseline`）⇒ 只认一条必漏另一条。
+    # **绝非放松**：`role != zero_drive` **且** `drive_mult != 0` ⇒ **原断言逐字保留**
+    #   （非零驱动下零响应 = 网络真坏；反例探针实测仍 `EXIT=1`，见验证记录）。
+    # **新分支只落在"原本必然抛错"的那条路径上** ⇒ 对 `i_exc_integral > 0` 的既有臂
+    #   ⇒ 永不进入 ⇒ 产物**逐字节不变**（改前/改后 sha256 实测一致）。
+    _ei = res["ei_integrals"]
+    _zero_drive_expected = (str(spec.get("role", "dose")) == "zero_drive") or (dose == 0.0)
+    ei_ratio_out = _ei["ei_ratio"]       # 引擎 `ei_readback()` 在 `exc == 0` 时**已经**给 `None`（非 0！）
+    zero_activity = None                 # None ⇒ 未进入新分支（正常路径）；bool ⇒ 本分支的**显式状态**
+    if not _zero_drive_expected:
+        # **非零驱动臂：原硬断言逐字保留（同一判据、同一文本）**
+        assert _ei["i_exc_integral"] > 0, "E/I 积分必须由引擎实测且非零"
+    elif not bool(_ei["i_exc_integral"] > 0):
+        # **零驱动臂 × 未实测到非零 E 电流积分** ⇒ 允许零活动，**正常落盘**
+        #   `zero_activity=True`（脉冲数 0）/ `False`（有脉冲但 E 电流积分为 0 ⇒ 同样不得静默）
+        zero_activity = (spk_total == 0)
+        try:                             # 只在本分支规范化：`ei_ratio` 必须是 JSON `null` 或有限数
+            if ei_ratio_out is None or not bool(np.isfinite(float(ei_ratio_out))):
+                ei_ratio_out = None      # **"缺席"（null）与"测得 0"（0.0）必须可区分**
+        except (TypeError, ValueError):
+            ei_ratio_out = None
 
     run_id = str(spec["run_id"])
     trace_path = os.path.join(out_dir, f"{run_id}_poptrace.npy")
@@ -285,7 +321,7 @@ def run_one(spec: dict, out_dir: str) -> dict:
         agg=dict(spk_total=spk_total),
         ei=dict(i_exc_integral=float(res["ei_integrals"]["i_exc_integral"]),
                 i_inh_integral=float(res["ei_integrals"]["i_inh_integral"]),
-                ei_ratio=res["ei_integrals"]["ei_ratio"],
+                ei_ratio=ei_ratio_out,        # 正常路径 == 引擎原值（逐字节不变）；零活动路径 ⇒ null
                 by_class=res["ei_integrals"]["by_class"],
                 sign_convention=res["ei_integrals"]["sign_convention"],
                 i_inh_integral_signed_raw=res["ei_integrals"]["i_inh_integral_signed_raw"]),
@@ -309,6 +345,18 @@ def run_one(spec: dict, out_dir: str) -> dict:
         slow_enabled=bool(spec.get("slow", True)),
         slow_trace_stats=_slow_trace_stats(eng, spec, res),
     )
+    if zero_activity is not None:
+        # **显式状态字段（只在本任务新开的零活动路径上出现 ⇒ 既有臂 JSON 逐字节不变）**：
+        #   `zero_activity=True, spikes_total=0, ei.ei_ratio=None(null), ei.i_exc_integral=0.0,
+        #    ei.i_inh_integral=0.0` —— 读回方据此**区分**"零活动（正常观测）"与"引擎坏了（真错误）"。
+        arm["zero_activity"] = bool(zero_activity)
+        arm["zero_activity_criterion"] = (
+            "role=%r, drive_mult=%r ⇒ zero_drive_expected=%s；i_exc_integral=%r（引擎实测，"
+            "未达 >0 判据）⇒ %s"
+            % (str(spec.get("role", "dose")), dose, _zero_drive_expected,
+               float(_ei["i_exc_integral"]),
+               ("允许零活动（=L3b 核心观测，非错误）" if zero_activity
+                else "E 电流积分为 0 但脉冲数 >0（如实记录，不静默）")))
     # **读回断言前置自检**（R102/§① 精神：生产者先自己证明"机制是活的"，不把问题留给下游）
     # 只在"步数足以采样"时才硬断言（极短诊断臂不因采样未触发而失败，但会显式登记原因）
     if arm["slow_enabled"]:
@@ -382,9 +430,16 @@ def run_arm_main(args) -> int:
         return 1
     with open(done, "w") as f:
         f.write("%s %s\n" % (run_id, arm["finished_at"]))
-    print("[DONE] %s  spk=%d  ei_ratio=%.4f  ms/step=%.4f  wall=%.2fs  RSS=%.0fMB" % (
-        run_id, arm["agg"]["spk_total"], arm["ei"]["ei_ratio"], arm["ms_per_step_steady"],
-        arm["wall_s"], arm["rss_mb"]), flush=True)
+    # **零活动臂必须在 stdout 里显式可见**（否则主agent 只能从产物 JSON 才能区分，日志侧仍"静默"）
+    # ⚠️ 非零活动臂的该行**逐字节不变**（`_ratio_txt` 对有限数就是原来的 `%.4f`；`ZERO_ACTIVITY` 后缀为空）
+    try:
+        _ratio_txt = "%.4f" % float(arm["ei"]["ei_ratio"])
+    except (TypeError, ValueError):
+        _ratio_txt = "null"          # `ei_ratio=None`（显式缺席）⇒ 不得让 `%.4f` 抛错
+    _zero_txt = "  ZERO_ACTIVITY=1" if arm.get("zero_activity") is True else ""
+    print("[DONE] %s  spk=%d  ei_ratio=%s  ms/step=%.4f  wall=%.2fs  RSS=%.0fMB%s" % (
+        run_id, arm["agg"]["spk_total"], _ratio_txt, arm["ms_per_step_steady"],
+        arm["wall_s"], arm["rss_mb"], _zero_txt), flush=True)
     return 0
 
 

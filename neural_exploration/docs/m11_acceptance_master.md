@@ -3280,3 +3280,48 @@ note 原文"**小鼠 V1 L4 生物物理模型以清醒小鼠 V1 胞外电生理�
 **(a) 的取值直接依赖它（8 Hz⇒0.3 Hz fail；16 Hz⇒0.5 Hz pass）**，但 **`data/m11_p5_targets.csv` 的 103 行里**没有任何一行登记它****
 ⇒ **⇒ 判据表存在一个"未登记的口径常数"缺口** ⇒ 须**追加一行**（append-only）把它固定，并**把 ③ 的禁止条款写进该行的 `wrong_usage_consequence`**。
 （**本条属"补登既有事实"，不改变任何已定稿值** ✓）
+
+## 3dg. R116：✅ **生产者"零活动"盲区修复的验收**（`run_m11_p5_arms.py` 3bd69bf1 → **633a4c45**）
+
+**① 交付物**：`neural_exploration/tools/run_m11_p5_arms.py`
+- 新 sha256 **`633a4c458e9c1dd58e5d6c4838a205819a9424fbd49df9da8827c8b7bd42285b`**、**894 行 / 52,659 B**（原 839 行 / 47,812 B，**+55 行**；`git diff --stat` = **+60 / −5**）
+- 原版备份：`/tmp/m11_p5_zerodrive_fix/run_m11_p5_arms.BEFORE.py`（**临时目录，非仓库**）
+- `git status --porcelain` ⇒ **仅该一个文件被改**（未碰计划 JSON / 评估器 / 其它任何文件）✓
+
+**② 改动实质（我已逐行读 diff 确认）**
+- 原 `assert res["ei_integrals"]["i_exc_integral"] > 0, "E/I 积分必须由引擎实测且非零"`（**L264**）改为**分支**（新 **L285–300**）：
+  `_zero_drive_expected = (role == "zero_drive") or (dose == 0.0)`；
+  **非零驱动臂 ⇒ 原断言逐字保留**；零驱动臂且 `i_exc_integral` 未 >0 ⇒ **允许零活动、正常落盘**，
+  并写**显式状态** `zero_activity` / `zero_activity_criterion`（仅新分支出现）。
+- `ei_ratio` 规范化：引擎 `ei_readback()` 在 `exc==0` 时**本来就返回 `None`**（非 0）⇒ 落盘为 **JSON `null`**（**"缺席"与"测得 0"可区分** ✓ 这是 M10 D1 家族的正确写法）
+- `[DONE]` 行：零活动臂追加 `ZERO_ACTIVITY=1`；**非零活动臂该行逐字节不变**
+
+**③ 🎯 我给出的验收证明（比字节比对更强的一步：逻辑证明）**
+> **每一个既有臂产物都通过了旧的无条件断言**（否则**根本不会存在**）⇒ 它们的 `i_exc_integral > 0`。
+> ⇒ 新分支的 `elif not bool(_ei["i_exc_integral"] > 0)` 对**任何既有臂**都**永不进入**
+> ⇒ `zero_activity` **永不**被设置（保持 `None`）⇒ **既有臂 JSON 必然逐字节不变**；
+> `ei_ratio_out = _ei["ei_ratio"]` 恒等于原值；`[DONE]` 行中 `_ratio_txt = "%.4f" % float(ratio)`
+> 对既有臂的有限 `ei_ratio` 与原格式**逐字节相同**（若 `ei_ratio` 为 `None`，**旧版会直接抛错** ⇒ 既有臂必为有限数）✓
+
+**⇒ 因此本次改动**不可能**改变任何既有数值 —— 这是**证明**，不是抽查**（节点的 5 臂改前/改后字节比对作为**独立经验佐证**，两者一致 ✓）
+
+**④ 节点自验（全部 `--device cpu --n 1000`，**未占用 MPS**）**
+| 臂 | 设定 | `EXIT` | `spikes_total` | `zero_activity` | `ei.ei_ratio` |
+|---|---|---|---|---|---|
+| **Z1** | `zero_drive, bias=1.00, σ=0.05` | **改前 1 → 改后 0** | **0** | **`true`** | **`null`** ✓ |
+| Z2 | `zero_drive, bias=1.00, σ=0.30` | 0 → 0 | 75 | **键缺失**（≠ `false`，与 Z1 可区分）| 6.46198 |
+| B1 | `baseline, σ=0.30` | 0 → 0 | 355 | 键缺失 | 1.84973 |
+| B2 | `baseline, σ=0.05` | 0 → 0 | 285（**未能重现零活动**，如实报告）| 键缺失 | 1.61649 |
+| **F1** | `role=dose, drive_mult=1e-6`（**非零驱动**、空事件表）| **1 → 1** | — | — | 硬断言**仍触发**（新 traceback 指 **L291**）✓ |
+- **Z1 改前"一个产物都没有"、改后落盘完整**（`.json` 3,025 B + `.done` + `_poptrace.npy` 80,128 B 且 **all_zero** + `_counts.csv` 8,248 B 且 **sum=0**，**无 `.fail`**）✓
+- **回归**：R1/R2/B1/B2/Z2 五臂**改前=改后**（`spikes_total`、`sha256_of_trace`、`.npy` 字节、`.csv` 字节、JSON 除 5 个易变键外**逐字节一致**）✓
+- `--self-test-replication` 改后仍 `EXIT=0`，三臂 sha256 互异 3/3 ✓
+
+**⑤ 版本混用风险排查（我做的）**：文件 mtime = **06:17:17**。当时在跑的两个探针里，唯一的臂是 `b1.30s0.10`（`baseline`，**06:17:46 启动**，落在修改之后）。
+⇒ **但它是 `baseline` 臂且 `i_exc_integral > 0`** ⇒ 由 ③ 的逻辑证明 ⇒ **逐字节不受影响** ✓
+⇒ **⇒ 无数据污染**（**结论来自证明，不是来自"我觉得没事"**）。
+
+**⑥ 登记的两处 caveat（节点如实报告，我保留）**
+1. `zero_activity == false` 分支（"零驱动臂 `i_exc_integral==0` 但 `spk_total>0`"，物理上需"只有抑制细胞发放"）**无实测样例** ⇒ 该分支**有代码、无覆盖**（**登记，不得当成已验证**）。
+2. `zero_activity`/`spikes_total` 在**顶层**、`ei_ratio`/`i_exc_integral` 仍在 **`ei` 子字典**内（`ei.ei_ratio`）⇒ **评估侧读键时必须用 `arm["ei"]["ei_ratio"]`**（**这是接口契约，登记以避免下游读错键**）。
+3. 另一处**主动的正确克制**：节点**故意未跑** `--self-test-sigma`，因为该自检会**覆写仓库产物** `data/m11_lever_sigma_selftest.json` ⇒ **避免毁掉既有 σ 杠杆报告** ✓（**这个判断是对的，予以确认**）
