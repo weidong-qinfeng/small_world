@@ -1,0 +1,22 @@
+{
+ "run_id": "l0dry_g1.00_b0.70_8192_T1000ms_d1_s0",
+ "stage": "l0dry",
+ "config_id": "p5_L0_g1.00_b0.70",
+ "T_ms": 1000.0,
+ "settle_ms": 500.0,
+ "drive_mult": 1.0,
+ "drive_rate_hz": 8.0,
+ "seed": 0,
+ "role": "baseline",
+ "mechanism": "none",
+ "delivery": "chunk",
+ "device": "mps",
+ "n_neuron": 8192,
+ "indegree": 20,
+ "gmax_scale": 1.0,
+ "bias_scale": 0.7,
+ "delay_bins": [40, 60, 80],
+ "subtypes": true,
+ "slow": true,
+ "lever": "L0-b 主杠杆 bias↓（dry-run：极短 T，只为证可执行 + 测 chunk ms/step）"
+}

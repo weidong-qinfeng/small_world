@@ -1,81 +1,113 @@
 {
-  "generated_by": "M11 执行节点 B2（工作包 = G0 引擎门 / P3）",
-  "generated_at": "2026-10-11T22:40:00Z",
-  "policy": "清单 §0.7 #13/#14 + 主agent 纪律：预计墙钟 >10 min 的作业不由本节点自行启动；此处给出**确切的命令行 + 产物路径 + 预计资源 + 终止条件**，由主agent 启动。",
-  "concurrency_rules": [
-    "MPS 作业严格串行（并发实测 ms/step 2.4→14.1，6× 退化）；开跑前 `ps aux | grep <task>`",
-    "CPU 作业一律 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1",
-    "解释器必须用项目内 venv 路径（引擎侧 = ./.venv-m9/bin/python，清单 §0.10 L5）；**禁 sys.executable**",
-    "PYTHONHASHSEED=0；判断进度看 累计 CPU 时间 / 墙钟 之比，不看 ps 的 %CPU（macOS 近期采样 + 后台 QoS 饥饿会掉到 10%）",
-    "终止任何长任务前先看进度（段间 ms/step 与 RSS 已落盘）"
-  ],
-  "jobs": [
-    {
-      "id": "J1",
-      "priority": "high",
-      "title": "E-M9-4 上游缺陷（冻结件点核参数序错位）对 M10 P5/G1 与 P6 数值的量级影响",
-      "why": "本节点已判定：M9/M10 冻结件的 point 档（非 gaba 路径）把 (t_cool, t_ahp) 传进形参 (g_ahp, cool) ⇒ 不应期门实读 t_ahp、AHP 电导实读 t_cool（M10 的 gaba_split=True 路径参数序正确 ⇒ **同一内核两条路径语义不同**）。实测单神经元 ISI 182 步 vs 文档语义 144 步。M10 的 P5/G1 静息标定与 P6 机制阶梯**全部 point 档数值都在缺陷档下取得**，故其'自持比/静默带/中位率权衡'结论可能含缺陷档成分。",
-      "command": "cd /Users/weidong/ai/small_world && PYTHONHASHSEED=0 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 ./.venv-m9/bin/python -m neural_exploration.tools.audit_m10_point_defect --n 1000 --t-s 10 --seeds 3 --device cpu --lam 0,1,4,8",
-      "artifacts": ["neural_exploration/data/m11_m10_defect_audit.csv", "neural_exploration/data/m11_m10_defect_audit.json"],
-      "precheck": "先跑 `--n 300 --t-s 1 --seeds 1 --lam 0,1,4`（<2 min）确认两档 pop 落 0.1–10 Hz 非饱和区；本节点已做冒烟（见 docs/m11_b2_notes.md B2-L7）",
-      "est_wall": "8–25 min（CPU 单线程；N=1000 × T=10 s = 200k 步 × 8 臂 × 2 档 × 3 seed 中 3 seed 可并行到 3 进程）",
-      "est_resources": "CPU ≤ 0.5 CPU-h；GPU 0；RSS ≤ 1.5 GB",
-      "stop_condition": "任一臂 NaN/∞ 或 ms/step 相对前一臂退化 >5× ⇒ 停并落 invalid",
-      "note": "**不修改任何冻结件、不改动 M10 判据带**；产物仅供主agent 判断 M10 结论的'缺陷档'成分与是否需要在 M11 侧以修正档重定标"
-    },
-    {
-      "id": "J2",
-      "priority": "high",
-      "title": "长协议真跑：N=75,909 档 T=120 s 单试次墙钟与 RSS 回归基线（NG 门输入）",
-      "why": "S 门（P6）需要 T≥120 s（清单 §0.7 #8：T ≥ 3× 目标 dwell）；本节点探针只测到 2000 步/段的稳态 ms/step（1.7165 ms/step @ N=75,909）。120 s = 2.4M 步 ⇒ 单试次约 1.14 GPU-h；需一段真实长跑确认**跨段退化**（M10 L19.1 实测 seg0 1.53 → seg1 1.89 ms/step，长单次调用退化）在 M11 内核上的量级，否则预算外推不可信。",
-      "command": "cd /Users/weidong/ai/small_world && PYTHONHASHSEED=0 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 ./.venv-m9/bin/python -m neural_exploration.tools._m11_proc_worker probe --arm on --n 75909 --device mps --segments 12 --seg-steps 20000 --density 2.0",
-      "artifacts": ["stdout JSON（建议重定向到 neural_exploration/data/m11_engine_probe_T120_seg12.json）"],
-      "est_wall": "35–75 min（12 段 × 20000 步 × 1.7–3 ms/step）",
-      "est_resources": "GPU ≈ 0.9–1.6 GPU-h；RSS ≤ 2.0 GB",
-      "stop_condition": "段间 ms/step 相对段 1 退化 >3× ⇒ 停（该情形本身即重要结论：逐试次新进程纪律必须坚持）",
-      "note": "MPS **必须串行**；本节点此刻未启动任何 MPS 作业（探针已结束）"
-    },
-    {
-      "id": "J3",
-      "priority": "medium",
-      "title": "MICrONS 钙域推断密度锚（(g) 判据的第二档密度锚）",
-      "why": "清单 §0.7 #1 要求两档密度锚（MICrONS 钙域推断 + Allen 电生理）；本节点只能用 Allen Cell Types `ef__avg_firing_rate`（n=1808，**口径受限**：表征协议下的均值率 ≠ 自发率）。MICrONS 钙域锚因 B1 的 L11.3（int16/uint16 歧义）与 L11.5（4 px/µm vs 2.5 µm/px 的 10× 差）未决而 **unavailable**。",
-      "command": "需先由主agent 裁决 DQ-1（是否允许走场级重建）与 L11.3/L11.5 两项口径核对；核对脚本建议：`tools/fetch_m11_microns.py --verify-subset` + 新增 ROI 提取/ΔF/F 反演工具（尚未交付）",
-      "artifacts": ["neural_exploration/data/m11_dwell_reference.csv（定稿后）", "neural_exploration/data/m11_imaging_rate_reference.csv"],
-      "est_wall": "视裁决：口径核对 0.5–1 h；ROI 提取 + 反演 2–6 h（CPU）",
-      "est_resources": "CPU ≤ 6 CPU-h；GPU 0",
-      "stop_condition": "口径未决 ⇒ 保持 unavailable（**未测 ≠ 未命中**，不得写入 0 或 fail）"
-    },
-    {
-      "id": "J4",
-      "priority": "low",
-      "title": "(h) 跨进程逐位的 MPS 档复测（当前只在 CPU 档完成）",
-      "why": "本节点 (h) 在 CPU（3 个全新进程 × 2 档，脉冲总数与逐神经元计数 sha256 逐位相同）。MPS 档未测：M9 的 MPS 逐位结论只对 float32 重排级成立，需实测确认 M11 内核在 MPS 上是否同样确定。",
-      "command": "cd /Users/weidong/ai/small_world && for i in 1 2 3; do PYTHONHASHSEED=0 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 ./.venv-m9/bin/python -m neural_exploration.tools._m11_proc_worker hash --arm on --n 75909 --device mps --steps 5000 --density 2.0; done",
-      "artifacts": ["stdout（3 行 JSON，比对 counts_sha256）"],
-      "est_wall": "3–8 min（3 × 20000 步 × 1.7 ms/step + 建网）",
-      "est_resources": "GPU ≤ 0.03 GPU-h；RSS ≤ 1.5 GB",
-      "stop_condition": "sha256 不一致 ⇒ 登记为 MPS 档测量限制（M9 先例：统计级），不得写成逐位承诺"
-    }
-  ],
-  "decision_requests": [
-    {
-      "id": "DQ-B2-1",
-      "question": "E-M9-4 / E-M10-1 / E-M10-2 三处上游缺陷是否需要写入 M10 的勘误节并要求 M10 节点以修正档重跑 P5/P6？",
-      "impact": "M10 的 P5/G1 与 P6 全部 point 档数值取自缺陷档内核；M10 的 gaba_split 臂与其它臂语义不同 ⇒ 阶梯内部臂间不可直接比较",
-      "my_recommendation": "至少**并列登记**：M10 结论标注'缺陷档'，M11 侧一律以 REF_FIX（修正档）为基线（本节点已如此实现）"
-    },
-    {
-      "id": "DQ-B2-2",
-      "question": "E4b（层特异双房室档）是否单独立项？",
-      "impact": "NG 门的 {point, 双房室} 两档扫描目前只有 point 档实测；双房室档 = P-EXT1（预算门控），本节点**未实现**（已显式拒绝，不静默降级）",
-      "my_recommendation": "暂缓：NG 门先用 point 档三档 N 的实测做裁决（本节点已交付），双房室档只在 P7/P9 判据不达且证据指向树突整合时立项"
-    },
-    {
-      "id": "DQ-B2-3",
-      "question": "M11 基线是否确认采用 REF_FIX（文档语义）作为默认，并在引擎冻结参数 CSV 中标注该决定？",
-      "impact": "冻结为基线后再改需重过 (a)–(h)；若主agent 要求与 M10 严格可比，则默认应改为 REF_FROZEN",
-      "my_recommendation": "采用 REF_FIX（缺陷档不应进入新里程碑基线），并把 REF_FROZEN 保留为**仅用于逐位等价与量级量化**的显式档（本节点已实现并实测：单延迟档稀疏/密集、三延迟档无外部事件时**逐位一致**）"
-    }
-  ]
+ "generated_by": "M11 执行节点 B2（工作包 = G0 引擎门 / P3）",
+ "generated_at": "2026-10-13T14:08:28Z",
+ "policy": "清单 §0.7 #13/#14 + 主agent 纪律：预计墙钟 >10 min 的作业不由本节点自行启动；此处给出**确切的命令行 + 产物路径 + 预计资源 + 终止条件**，由主agent 启动。",
+ "concurrency_rules": [
+  "MPS 作业严格串行（并发实测 ms/step 2.4→14.1，6× 退化）；开跑前 `ps aux | grep <task>`",
+  "CPU 作业一律 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1",
+  "解释器必须用项目内 venv 路径（引擎侧 = ./.venv-m9/bin/python，清单 §0.10 L5）；**禁 sys.executable**",
+  "PYTHONHASHSEED=0；判断进度看 累计 CPU 时间 / 墙钟 之比，不看 ps 的 %CPU（macOS 近期采样 + 后台 QoS 饥饿会掉到 10%）",
+  "终止任何长任务前先看进度（段间 ms/step 与 RSS 已落盘）"
+ ],
+ "jobs": [
+  {
+   "id": "J1",
+   "priority": "high",
+   "title": "E-M9-4 上游缺陷（冻结件点核参数序错位）对 M10 P5/G1 与 P6 数值的量级影响",
+   "why": "本节点已判定：M9/M10 冻结件的 point 档（非 gaba 路径）把 (t_cool, t_ahp) 传进形参 (g_ahp, cool) ⇒ 不应期门实读 t_ahp、AHP 电导实读 t_cool（M10 的 gaba_split=True 路径参数序正确 ⇒ **同一内核两条路径语义不同**）。实测单神经元 ISI 182 步 vs 文档语义 144 步。M10 的 P5/G1 静息标定与 P6 机制阶梯**全部 point 档数值都在缺陷档下取得**，故其'自持比/静默带/中位率权衡'结论可能含缺陷档成分。",
+   "command": "cd /Users/weidong/ai/small_world && PYTHONHASHSEED=0 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 ./.venv-m9/bin/python -m neural_exploration.tools.audit_m10_point_defect --n 1000 --t-s 10 --seeds 3 --device cpu --lam 0,1,4,8",
+   "artifacts": [
+    "neural_exploration/data/m11_m10_defect_audit.csv",
+    "neural_exploration/data/m11_m10_defect_audit.json"
+   ],
+   "precheck": "先跑 `--n 300 --t-s 1 --seeds 1 --lam 0,1,4`（<2 min）确认两档 pop 落 0.1–10 Hz 非饱和区；本节点已做冒烟（见 docs/m11_b2_notes.md B2-L7）",
+   "est_wall": "8–25 min（CPU 单线程；N=1000 × T=10 s = 200k 步 × 8 臂 × 2 档 × 3 seed 中 3 seed 可并行到 3 进程）",
+   "est_resources": "CPU ≤ 0.5 CPU-h；GPU 0；RSS ≤ 1.5 GB",
+   "stop_condition": "任一臂 NaN/∞ 或 ms/step 相对前一臂退化 >5× ⇒ 停并落 invalid",
+   "note": "**不修改任何冻结件、不改动 M10 判据带**；产物仅供主agent 判断 M10 结论的'缺陷档'成分与是否需要在 M11 侧以修正档重定标"
+  },
+  {
+   "id": "J2",
+   "priority": "high",
+   "title": "长协议真跑：N=75,909 档 T=120 s 单试次墙钟与 RSS 回归基线（NG 门输入）",
+   "why": "S 门（P6）需要 T≥120 s（清单 §0.7 #8：T ≥ 3× 目标 dwell）；本节点探针只测到 2000 步/段的稳态 ms/step（1.7165 ms/step @ N=75,909）。120 s = 2.4M 步 ⇒ 单试次约 1.14 GPU-h；需一段真实长跑确认**跨段退化**（M10 L19.1 实测 seg0 1.53 → seg1 1.89 ms/step，长单次调用退化）在 M11 内核上的量级，否则预算外推不可信。",
+   "command": "cd /Users/weidong/ai/small_world && PYTHONHASHSEED=0 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 ./.venv-m9/bin/python -m neural_exploration.tools._m11_proc_worker probe --arm on --n 75909 --device mps --segments 12 --seg-steps 20000 --density 2.0",
+   "artifacts": [
+    "stdout JSON（建议重定向到 neural_exploration/data/m11_engine_probe_T120_seg12.json）"
+   ],
+   "est_wall": "35–75 min（12 段 × 20000 步 × 1.7–3 ms/step）",
+   "est_resources": "GPU ≈ 0.9–1.6 GPU-h；RSS ≤ 2.0 GB",
+   "stop_condition": "段间 ms/step 相对段 1 退化 >3× ⇒ 停（该情形本身即重要结论：逐试次新进程纪律必须坚持）",
+   "note": "MPS **必须串行**；本节点此刻未启动任何 MPS 作业（探针已结束）"
+  },
+  {
+   "id": "J3",
+   "priority": "medium",
+   "title": "MICrONS 钙域推断密度锚（(g) 判据的第二档密度锚）",
+   "why": "清单 §0.7 #1 要求两档密度锚（MICrONS 钙域推断 + Allen 电生理）；本节点只能用 Allen Cell Types `ef__avg_firing_rate`（n=1808，**口径受限**：表征协议下的均值率 ≠ 自发率）。MICrONS 钙域锚因 B1 的 L11.3（int16/uint16 歧义）与 L11.5（4 px/µm vs 2.5 µm/px 的 10× 差）未决而 **unavailable**。",
+   "command": "需先由主agent 裁决 DQ-1（是否允许走场级重建）与 L11.3/L11.5 两项口径核对；核对脚本建议：`tools/fetch_m11_microns.py --verify-subset` + 新增 ROI 提取/ΔF/F 反演工具（尚未交付）",
+   "artifacts": [
+    "neural_exploration/data/m11_dwell_reference.csv（定稿后）",
+    "neural_exploration/data/m11_imaging_rate_reference.csv"
+   ],
+   "est_wall": "视裁决：口径核对 0.5–1 h；ROI 提取 + 反演 2–6 h（CPU）",
+   "est_resources": "CPU ≤ 6 CPU-h；GPU 0",
+   "stop_condition": "口径未决 ⇒ 保持 unavailable（**未测 ≠ 未命中**，不得写入 0 或 fail）"
+  },
+  {
+   "id": "J4",
+   "priority": "low",
+   "title": "(h) 跨进程逐位的 MPS 档复测（当前只在 CPU 档完成）",
+   "why": "本节点 (h) 在 CPU（3 个全新进程 × 2 档，脉冲总数与逐神经元计数 sha256 逐位相同）。MPS 档未测：M9 的 MPS 逐位结论只对 float32 重排级成立，需实测确认 M11 内核在 MPS 上是否同样确定。",
+   "command": "cd /Users/weidong/ai/small_world && for i in 1 2 3; do PYTHONHASHSEED=0 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 ./.venv-m9/bin/python -m neural_exploration.tools._m11_proc_worker hash --arm on --n 75909 --device mps --steps 5000 --density 2.0; done",
+   "artifacts": [
+    "stdout（3 行 JSON，比对 counts_sha256）"
+   ],
+   "est_wall": "3–8 min（3 × 20000 步 × 1.7 ms/step + 建网）",
+   "est_resources": "GPU ≤ 0.03 GPU-h；RSS ≤ 1.5 GB",
+   "stop_condition": "sha256 不一致 ⇒ 登记为 MPS 档测量限制（M9 先例：统计级），不得写成逐位承诺"
+  },
+  {
+   "id": "J5",
+   "priority": "high",
+   "title": "L0 杠杆扫描全量运行（42 臂，chunk，N=8192，T=10 s 单档）——交主agent 启动",
+   "why": "G1 终判 (c) fail(R=0.2802>0.10) 且 (c) 在剂量维上几乎不动（dose 0→4 中位率 ×8.1、R 不动）⇒ 必须先动内在/复发项。本计划为 (c) 的逐档复核提供每档 4 个**真正独立** seed 的 zero_drive+baseline 臂。",
+   "command": "cd /Users/weidong/ai/small_world && PYTHONHASHSEED=0 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 caffeinate -i ./.venv-m9/bin/python -m neural_exploration.tools.run_m11_p5_arms --plan neural_exploration/data/m11_p5_plan_l0.json --out-dir neural_exploration/data/m11_p5_l0_runs",
+   "artifacts": [
+    "neural_exploration/data/m11_p5_l0_runs/<run_id>.{json,done,_poptrace.npy,_counts.csv}",
+    "neural_exploration/data/m11_p5_protocol_l0_lever_n8192.json"
+   ],
+   "est_wall": "≈2.1 h（42 臂 × 平均 ~3 min；MPS 串行独占）；另加非仿真 ~7 min",
+   "est_resources": "GPU(MPS) 独占串行；单臂 RSS ≤0.7 GB（bias↓ 档低于参考档）",
+   "precheck": "①`ps aux | grep run_m11_p5` 无并发；②计划 sha256 = 011a7c797360a0bd…（跑前不得再改计划/生产者）；③驱动器启动即自动跑 `assert_plan_replication`（失败退出码 3，不许绕过）",
+   "stop_condition": "①任一臂 `.fail` 出现 ⇒ 看 fail 文件后停（连续 ≥2 臂失败驱动器自停）；②任一档出现 `seed_dimension_inert` ⇒ 立即停（复刻轴又失效）；③累计 GPU-h 触及 2.5（L0 预算 1.9832 的 +25%）⇒ 停并汇报",
+   "note": "预算（脚本算，data/m11_p5_l0_pricing.json）：L0 **1.9832 GPU-h** chunk；全臂按最贵单价的上界 2.3814；干跑校正 1.7255（乐观）。剂量维插值份额 0，杠杆维外推份额 0.8095。"
+  }
+ ],
+ "decision_requests": [
+  {
+   "id": "DQ-B2-1",
+   "question": "E-M9-4 / E-M10-1 / E-M10-2 三处上游缺陷是否需要写入 M10 的勘误节并要求 M10 节点以修正档重跑 P5/P6？",
+   "impact": "M10 的 P5/G1 与 P6 全部 point 档数值取自缺陷档内核；M10 的 gaba_split 臂与其它臂语义不同 ⇒ 阶梯内部臂间不可直接比较",
+   "my_recommendation": "至少**并列登记**：M10 结论标注'缺陷档'，M11 侧一律以 REF_FIX（修正档）为基线（本节点已如此实现）"
+  },
+  {
+   "id": "DQ-B2-2",
+   "question": "E4b（层特异双房室档）是否单独立项？",
+   "impact": "NG 门的 {point, 双房室} 两档扫描目前只有 point 档实测；双房室档 = P-EXT1（预算门控），本节点**未实现**（已显式拒绝，不静默降级）",
+   "my_recommendation": "暂缓：NG 门先用 point 档三档 N 的实测做裁决（本节点已交付），双房室档只在 P7/P9 判据不达且证据指向树突整合时立项"
+  },
+  {
+   "id": "DQ-B2-3",
+   "question": "M11 基线是否确认采用 REF_FIX（文档语义）作为默认，并在引擎冻结参数 CSV 中标注该决定？",
+   "impact": "冻结为基线后再改需重过 (a)–(h)；若主agent 要求与 M10 严格可比，则默认应改为 REF_FROZEN",
+   "my_recommendation": "采用 REF_FIX（缺陷档不应进入新里程碑基线），并把 REF_FROZEN 保留为**仅用于逐位等价与量级量化**的显式档（本节点已实现并实测：单延迟档稀疏/密集、三延迟档无外部事件时**逐位一致**）"
+  },
+  {
+   "id": "DQ-B2-4",
+   "question": "L0 用 **4 seed**（每档 zero_drive+baseline 各 4）而非预注册的 3：是否接受这一步 +0.181 GPU-h（R1 段 1.802→1.983）？",
+   "impact": "(c) = 零驱动均值/基准均值，3 seed 的 CI 太薄（当前 R=0.2802 的 3-seed CI [0.2763,0.2841] 由计数噪声撑出）；4 seed 使每档 (c) 的点估计与更宽 CI 上界都可判，减少'薄统计→invalid'的返工",
+   "my_recommendation": "接受 4 seed；若必须压预算，优先砍 L0-a 对照档（gmax 2.0 → 只留 gmax 4.0），而不是砍 seed（seed 是判据的统计基础）"
+  }
+ ]
 }
