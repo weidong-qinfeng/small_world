@@ -2901,3 +2901,40 @@ repl 实测**剂量级中位率** `0.105 → 0.854 Hz`（**×8.1，随剂量单�
 **🟢 且它明确"不声称"**："该对照只证明**接线生效与方向**，**不**证明 8192 档能把 (a) 抬进带" ✓（**这正是"最小阳性对照"的边界，它划得对**）
 **⑧ 🔴 两个硬前置已转派 B2**：① **必须**把 **`slow_trace` 统计写进臂 JSON**（当前只在引擎 `res` 里）—— **否则正式档无法做机制读回断言**（**M10 D1 家族的防线**）；
 ② 建议 CLI 暴露 `--tau-slow-ms/--slow-inc`（计划模板键组 **L436 已含**、`arm_spec_from_cli` L226–237 未透传；**臂 spec JSON 路径已可用**）；**C2 路线**另需 `build_engine`（L113–128）调用 `configure_stp` 并**显式禁 facilitate**。
+
+## 3cx. R107：L2 两个硬前置**验收通过**（B2）—— `slow_trace_stats` 落盘（含**显式缺席语义**）＋ CLI 透传 ＋ **五对惰性证明**（并如实登记对 J6 的"字段存在性偏斜"）
+
+**① ✅ `slow_trace_stats` 已落盘（臂 JSON **顶层**，**只写统计量**不写整条轨迹）**
+键集：`n, alive, mean, std, min, max, argmax_step, argmax_sample_index, sample_every_steps, argmax_t_ms, readback{…}, units{…}` + 内建一致性核对 `engine_trace_n_matches / engine_trace_mean_matches`（与引擎 `res["slow_trace"]` 对齐）✓
+**🟢 单位/原点写在接口处（R80 §⑥ 的落实）**：`argmax_step` = 采样序号 argmax × `sample_every_steps`，**单位 = 引擎步、原点 = 含 settle 的表起点**；`argmax_t_ms = argmax_step × dt_ms` ✓
+**🟢 "缺席必须是显式状态"（我点名要的）已落实**：**`slow=False` ⇒ `"slow_enabled": false` **且** `"slow_trace_stats": null`** ⇒ **"未启用"可区分于"键缺失"** ✓✓
+**⇒ 于是读回断言不会把"没启用"误判成"字段丢了"**；且 `slow=True` 且步数足够时**生产者硬断言** `n>0 ∧ alive≠None ∧ argmax_step≠None`，
+**步数不足时显式登记 `insufficient_steps_to_sample` + 原因**（**不静默、也不误杀极短诊断臂**）✓ —— **这三层设计（硬断言 / 显式缺席 / 显式不足）恰好覆盖了三种"静默失效"路径**。
+**实测样例**（N=8192/T=1 s/settle 500 ms/bias=0.70/dose=1/CPU/chunk）：
+| 臂 | 机制档 | `spk` | n | alive | mean | std | argmax_step(t) |
+|---|---|---|---|---|---|---|---|
+| `l2probe_slowdefault` | τ=1000/inc=6（默认）| 1,045 | 15 | true | 0.5591 | 0.1259 | 28,000（1400 ms）|
+| `l2probe_slowamp` | **τ=2000/inc=12**（CLI 透传）| 803 | 15 | true | **1.2999** | 0.3465 | 26,000（1300 ms）|
+| `l2probe_slowoff` | `--no-slow` | **4,822** | — | — | — | — | — |
+**② ✅ CLI 透传**：`--tau-slow-ms 2000 --slow-inc 12`（**不显式给 ⇒ 沿用 1000 / 6.0，不改变历史臂行为**）✓；行号 CLI L818/L821、`arm_spec_from_cli` L350–353（**缺键不进 spec** ✓）
+**③ ✅ 惰性证明升级为五对，全部通过**（`tools/verify_m11_producer_inert.py`；产物 `m11_producer_inert_check.json`）
+**🟢 且它把基线锚点改成**自动读 L1 计划的 `frozen_tool`****（= `git HEAD` = `eeeb2283…`）⇒ **形成链条 `L0 24617d90 → eeeb2283 → 3bd69bf1`** ✓（**这比硬编码哈希更不易随环境漂移**）
+| 检查 | 结果 |
+|---|---|
+| **[惰性]** 旧 vs 新、同一份**不带任何新键**的 spec | `sha256_of_trace` / `agg.spk_total` / `ei.ei_ratio` / `spikes_total` **全同**；**全部共同字段逐位相同**；**键集差异恰好 `+[slow_enabled, slow_trace_stats]`（只增不改）** ✓ |
+| **[默认等价]** 无键 ≡ 显式（σ=0.30、τ=1000、inc=6.0）| 键集 + 全字段逐位相同 ✓ |
+| **[新键有效]** 默认 vs τ=2000/inc=12 | 轨迹逐位**不同** ✓（**排除"键被接受但没生效"**）|
+（`counts/pop_trace` 路径与 `wall_s/pid/rss_mb/ms_per_step/finished_at` **声明为不参与比较** ✓ —— **易变量与判据量被显式分开**）
+**④ ⚠️ 它**如实登记**的一条对 J6 的影响（我采信并登记）**：
+**数值影响为零**（上式逐位证明）；**唯一影响**是 **J6 在本次改动**之后**产出的臂 JSON 多两个**信息性**键** ⇒ **同一 run 内"字段存在性偏斜"**（**判据字段 / `pop_trace` / `counts` / E/I 全不变**）。
+**⇒ 登记为本轮次的一个**已知不一致**：J6 的 24 臂中，**前 14 臂无这两个键、后 10 臂有**；
+**⇒ 后果与处置**：**判据不受影响**（二者都不参与任何判定）；**但若将来有人按"键集"做一致性检查，会看到同一 run 内键集不同** ⇒
+**已在 L1 计划的留痕（`m11_p5_plan_l1_amendment.json`，计划文件本身**未改**）里写明**，**并在本 § 明确登记** ✓
+（**这是"先证明惰性、再改"的应有代价：数值无罪，但留痕必须完整。**）
+**⑤ ✅ 事实确认（B3 的发现，我要求确认的）**：`spec.get("slow", True)` ⇒ **`slow=True` 就是默认档**（τ=1000、inc=6.0）
+⇒ **既有 G1 / L0 / L1 的全部结果都是在 slow 默认档下取得的，L2 是"放大"而非"首次启用"** ✓（已写入 B2-L29）
+**实测旁证**（同配置）：`slow off ⇒ spk 4822` vs `默认 ⇒ 1045`（**−78%**）⇒ **慢适应负反馈方向正确** ✓
+**⑥ 新哈希**：生产者 **`3bd69bf1d0b94643d6053379d370c291b512e75b75824634d79a44d0cc732f03`**（旧 `eeeb2283…`）；
+惰性工具 `6b7686ed23b5fb73ee…`；`m11_producer_inert_check.json` `13805bd9dde9e9c460…`；`m11_p5_plan_l1_amendment.json` `80e53977958d5083be…`
+**⑦ 未做（如实登记）**：**C2（STP）路线另需第三前置**（`configure_stp` **从未被调用** ⇒ STP 当前 **OFF**；需引擎接线 + CLI/计划键 + **显式禁 facilitate** + 回读断言）—— **本次未做**；
+**C1（慢适应放大）不需要它** ⇒ **等 L2 若走 C2 再派** ✓（**这正是"不提前做无用的工作"**）

@@ -176,6 +176,57 @@ def _net_echo(spec: dict, net: dict, seeds: dict) -> dict:
     return d
 
 
+def _slow_trace_stats(eng, spec: dict, res: dict):
+    """**慢变量机制读回（L2 硬前置；M10 D1「静默失效」家族的防线）**。
+
+    返回 `slow_trace_stats` 统计量（**不写整条轨迹**，避免产物膨胀）或 **`None`**。
+
+    ⚠️ **"缺席"必须是可区分的显式状态**：`slow=False` 时返回 `None`，且臂 JSON 同时写
+    `slow_enabled=False` ⇒ 读回断言看到的是"显式未启用"，而不是"键丢了"。
+
+    **单位与原点（R80 §⑥：跨接口传递的量必须在接口处写明单位）**：
+      - `argmax_step` = 采样序号 argmax × `sample_every_steps`，**单位 = 引擎步（原点含 settle 的表起点）**；
+      - `argmax_t_ms` = `argmax_step × dt_ms`（ms）；
+      - `mean/std/min/max` = **采样序列**（每 `sample_every_steps` 步取一次 `t_slow` 的神经元均值）上的统计量；
+      - `alive` 取自引擎公开读出 `slow_readback()`（判**逐神经元状态**是否真在动），另给 `trace_range`
+        （采样序列极差）供交叉核对；`engine_trace_*_matches` 为与引擎内部统计量的一致性核对。
+    """
+    if not bool(spec.get("slow", True)):
+        return None
+    try:
+        rb = dict(eng.slow_readback())
+    except Exception as ex:  # noqa: BLE001
+        rb = {"readback_error": str(ex)}
+    tr = res.get("slow_trace") or {}
+    raw = list(getattr(eng, "slow_trace", []) or [])
+    every = int(getattr(eng, "slow_sample_every", 2000) or 2000)
+    dt = float(eng.point.dt_ms)
+    if raw:
+        arr = np.asarray(raw, dtype=float)
+        k = int(np.argmax(arr))
+        stats = dict(n=int(arr.size), alive=rb.get("alive"),
+                     mean=float(arr.mean()), std=float(arr.std()),
+                     min=float(arr.min()), max=float(arr.max()),
+                     argmax_step=int(k * every), argmax_sample_index=k,
+                     sample_every_steps=every, argmax_t_ms=float(k * every * dt))
+        stats["engine_trace_n_matches"] = bool(int(tr.get("n", -1)) == int(arr.size))
+        stats["engine_trace_mean_matches"] = bool(tr and abs(float(tr.get("mean", 1e30))
+                                                            - float(arr.mean())) <= 1e-9)
+    else:
+        stats = dict(n=0, alive=rb.get("alive"), mean=None, std=None, min=None, max=None,
+                     argmax_step=None, argmax_sample_index=None, sample_every_steps=every,
+                     argmax_t_ms=None,
+                     empty_reason="引擎未产生采样序列（slow_on ∧ 采样未触发）")
+    stats["readback"] = {k: rb.get(k) for k in
+                         ("implemented", "n", "mean", "std", "min", "max", "dynamic_range",
+                          "n_nonzero", "frac_nonzero", "trace_n", "trace_std", "trace_range",
+                          "alive", "inc_per_spike", "tau_slow_ms")}
+    stats["units"] = dict(argmax_step="engine step（原点=含 settle 的表起点）",
+                          argmax_t_ms="millisecond", sample_every_steps="step",
+                          mean_std_min_max="慢电导内部单位（与 t_slow 同）")
+    return stats
+
+
 def run_one(spec: dict, out_dir: str) -> dict:
     """**单臂**：settle（丢弃）→ reset_counts → 测量窗（pop_trace + counts + E/I 积分）。"""
     n = int(spec["n_neuron"])
@@ -254,7 +305,24 @@ def run_one(spec: dict, out_dir: str) -> dict:
         n_events=int(st.size), rss_mb=round(rss_mb(), 1),
         pid=os.getpid(), finished_at=time.strftime("%Y-%m-%dT%H:%M:%S"),
         net=_net_echo(spec, net, _seeds),
+        # ---- L2 硬前置：慢变量机制读回（slow=False ⇒ 显式 null + slow_enabled=False）----
+        slow_enabled=bool(spec.get("slow", True)),
+        slow_trace_stats=_slow_trace_stats(eng, spec, res),
     )
+    # **读回断言前置自检**（R102/§① 精神：生产者先自己证明"机制是活的"，不把问题留给下游）
+    # 只在"步数足以采样"时才硬断言（极短诊断臂不因采样未触发而失败，但会显式登记原因）
+    if arm["slow_enabled"]:
+        _st = arm["slow_trace_stats"] or {}
+        _every = int(getattr(eng, "slow_sample_every", 2000) or 2000)
+        if (n_settle + n_meas) >= _every:
+            assert (_st.get("n") or 0) > 0, ("slow=True 且步数足以采样，但 slow_trace_stats.n == 0 "
+                                             "⇒ 机制静默失效（不得静默通过）")
+            assert _st.get("alive") is not None, "slow_trace_stats.alive 必须由引擎读出（不得为 None）"
+            assert _st.get("argmax_step") is not None, "slow_trace_stats.argmax_step 缺失"
+        else:
+            _st["insufficient_steps_to_sample"] = True
+            _st["note"] = ("表步数 %d < sample_every(%d) ⇒ 未采样（**极短诊断臂**的显式状态，"
+                           "不是字段丢失）" % (n_settle + n_meas, _every))
     jpath = os.path.join(out_dir, f"{run_id}.json")
     with open(jpath, "w") as f:
         json.dump(arm, f, indent=1, ensure_ascii=False)
@@ -279,6 +347,10 @@ def arm_spec_from_cli(args, run_id: str) -> dict:
               subtypes=not args.no_subtypes, slow=not args.no_slow)
     if getattr(args, "bias_log_sigma", None) is not None:      # L1 杠杆：仅显式时出现
         sp["bias_log_sigma"] = float(args.bias_log_sigma)
+    if getattr(args, "tau_slow_ms", None) is not None:         # L2 杠杆：仅显式时出现（缺键 ⇒ 默认 1000 ms）
+        sp["tau_slow_ms"] = float(args.tau_slow_ms)
+    if getattr(args, "slow_inc", None) is not None:            # L2 杠杆：仅显式时出现（缺键 ⇒ 默认 6.0）
+        sp["slow_inc"] = float(args.slow_inc)
     return sp
 
 
@@ -743,6 +815,11 @@ def main(argv=None) -> int:
     ap.add_argument("--delay-bins", default="40,60,80")
     ap.add_argument("--no-subtypes", action="store_true")
     ap.add_argument("--no-slow", action="store_true")
+    ap.add_argument("--tau-slow-ms", type=float, default=None,
+                    help="L2 慢变量时间常数（ms）。**不显式给 ⇒ 沿用既有默认 1000.0**（既有 G1/L0/L1 "
+                         "结果全部在 slow 默认档下取得）")
+    ap.add_argument("--slow-inc", type=float, default=None,
+                    help="L2 每 spike 的慢电导增量。**不显式给 ⇒ 沿用既有默认 6.0**")
     ap.add_argument("--force", action="store_true", help="plan 模式：忽略已有 .done 重跑")
     ap.add_argument("--self-test-replication", action="store_true",
                     help="复刻轴微测试（R93）：N=1000/T=100ms/seed∈{0,1,2} ⇒ 三 sha256 必须互不相同")

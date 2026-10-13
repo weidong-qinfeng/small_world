@@ -1,0 +1,37 @@
+{
+ "kind": "计划冻结记录修订留痕（不改动原计划文件）",
+ "generated_at": "2026-10-14T02:06:15",
+ "live_plan": {
+  "path": "neural_exploration/data/m11_p5_plan_l1.json",
+  "sha256_full": "8b58577222038ff91d4550a94101b09fcaa4a6d1bdfaac4d9f3451d8b36366cf"
+ },
+ "regenerated_plan": {
+  "sha256_full": null,
+  "note": "仅在 --out-json 指向真实新文件时有值"
+ },
+ "arm_grid_identical": true,
+ "n_arms": [
+  24,
+  24
+ ],
+ "field_diffs": [
+  {
+   "field": "/frozen_tool/sha256_full",
+   "regenerated": "3bd69bf1d0b94643d6053379d370c291b512e75b75824634d79a44d0cc732f03",
+   "live": "eeeb2283cbf6533531ad1a4925b39a5d6815908714587675c2eba8ca612db2b1"
+  },
+  {
+   "field": "/parent_prereg/sha256_full",
+   "regenerated": "9c6f7c60073ee07e1f48aee787040f16d24aa0efaf67b4cf65f98d2e263c6644",
+   "live": "aca821d9322a50d55c4dd604b3df8c836f6903bbc8c8e03eaac0341a17cc2fef"
+  }
+ ],
+ "interpretation": "**臂网格与全部判据参数逐字节相同**；差异只在 provenance 字段（生产者 sha / 预注册 sha）⇒ 在用计划仍是 J5 的有效输入",
+ "producer_change": {
+  "pre": "24617d90dd4a6eb9f518244808029ac3",
+  "post": "3bd69bf1d0b94643d6053379d370c291b512e75b75824634d79a44d0cc732f03",
+  "what": "加入 `--bias-log-sigma`（L1 阻塞项）+ `--self-test-sigma`",
+  "inertness_evidence": "neural_exploration/data/m11_producer_inert_check.json",
+  "inertness_claim": "不带该键的臂逐位不变；不带键 ≡ 显式 0.30"
+ }
+}

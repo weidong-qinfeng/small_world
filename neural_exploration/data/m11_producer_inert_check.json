@@ -1,8 +1,8 @@
 {
  "tool": "tools/verify_m11_producer_inert.py",
- "generated_at": "2026-10-13T20:15:39",
- "pre_change_sha256": "24617d90dd4a6eb9f518244808029ac38dd541e5e5ae3b6b1f9a6ef6b387a596",
- "post_change_sha256": "eeeb2283cbf6533531ad1a4925b39a5d6815908714587675c2eba8ca612db2b1",
+ "generated_at": "2026-10-14T02:06:05",
+ "pre_change_sha256": "eeeb2283cbf6533531ad1a4925b39a5d6815908714587675c2eba8ca612db2b1",
+ "post_change_sha256": "3bd69bf1d0b94643d6053379d370c291b512e75b75824634d79a44d0cc732f03",
  "spec_base": {
   "n_neuron": 1024,
   "T_ms": 200.0,
@@ -34,8 +34,8 @@
  ],
  "rows": [
   {
-   "pair": "旧(无键) vs 新(无键)",
-   "fields": {
+   "pair": "旧 vs 新（无新键 spec）",
+   "dynamic": {
     "sha256_of_trace": [
      "ef59af47efc796d30c649cb1cc44ecc27a849dc2ad3b0bb3df6385b14242dc3d",
      "ef59af47efc796d30c649cb1cc44ecc27a849dc2ad3b0bb3df6385b14242dc3d",
@@ -57,11 +57,18 @@
      true
     ]
    },
-   "same_product_key_set": true
+   "common_fields_identical": true,
+   "keys_added": [
+    "slow_enabled",
+    "slow_trace_stats"
+   ],
+   "keys_removed": []
   },
   {
-   "pair": "新(无键) vs 新(σ=0.30 显式)",
-   "fields": {
+   "pair": "无键 vs 显式默认",
+   "common_fields_identical": true,
+   "same_product_key_set": true,
+   "dynamic": {
     "sha256_of_trace": [
      "ef59af47efc796d30c649cb1cc44ecc27a849dc2ad3b0bb3df6385b14242dc3d",
      "ef59af47efc796d30c649cb1cc44ecc27a849dc2ad3b0bb3df6385b14242dc3d",
@@ -82,11 +89,37 @@
      64,
      true
     ]
-   },
-   "same_product_key_set": true
+   }
+  },
+  {
+   "pair": "slow=False 显式状态",
+   "slow_enabled": false,
+   "slow_trace_stats_is_null": true,
+   "slow_on_stats_keys": [
+    "alive",
+    "argmax_sample_index",
+    "argmax_step",
+    "argmax_t_ms",
+    "engine_trace_mean_matches",
+    "engine_trace_n_matches",
+    "max",
+    "mean",
+    "min",
+    "n",
+    "readback",
+    "sample_every_steps",
+    "std",
+    "units"
+   ]
+  },
+  {
+   "pair": "新键有效（正对照）",
+   "trace_differs": true,
+   "sha_default": "ef59af47efc796d30c649cb1cc44ecc27a849dc2ad3b0bb3df6385b14242dc3d",
+   "sha_amp": "ee137aa8dd30a64b3b83ae3681af7125e909e61f405ea77e0431c3e13124457f"
   }
  ],
- "verdict": "惰性成立：加 --bias-log-sigma 对不带该键的臂逐位无影响，且不显式给 ⇒ 等价于显式默认 0.30（既有臂/seed=0 锚点安全）",
+ "verdict": "五对全过：①共同字段只增不改（新增 ['slow_enabled', 'slow_trace_stats']）②不显式给 ≡ 显式默认 0.30/1000/6.0 ③slow=False ⇒ 显式 null+False ④新键改 τ/inc 真的改轨迹 ⇒ 既有臂/J6 数值安全",
  "failures": [],
- "elapsed_s": 4.54
+ "elapsed_s": 7.95
 }

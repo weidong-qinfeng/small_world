@@ -1156,3 +1156,68 @@ step ≈ **5.7 h**、chunk ≈ **2.2 h** ⇒ 口径选择对预算影响 **≈2.
   预算用的是 MPS 实测 0.6545–0.9720 ⇒ 差 ~3–4 倍。两次测量不同环境/负载、**非同口径**，**不构成价格结论**；
   若成立则 MPS 串行预算被高估。判定须 **R78 孪生臂**（同 spec、两设备、`pop_trace` 对比）——属主 agent 的
   MPS 权限范围，本节点**未启动任何 MPS 作业**。
+
+### B2-L29 L2 两个硬前置已交付（`slow_trace_stats` 落盘 + `--tau-slow-ms/--slow-inc` 透传）
+
+**生产者新 sha256 `3bd69bf1d0b94643d6053379d370c291b512e75b75824634d79a44d0cc732f03`（改动前 = `eeeb2283…`，`git HEAD` 与 L1 计划 `frozen_tool` 记录一致 ✓）**
+
+**③ 先确认事实（B3 的发现）——`slow=True` 本来就是默认档**：`run_m11_p5_arms.py` **L124–126**
+`if spec.get("slow", True): eng.configure_slow(True, tau_slow_ms=spec.get("tau_slow_ms", 1000.0),
+inc_per_spike=spec.get("slow_inc", 6.0))` ⇒ **缺键即 True**（签名默认 τ=1000 ms / inc=6.0）。
+⇒ **既有 G1 / L0 / L1 的全部结果都是在 slow 默认档下取得的**，**L2 是"放大"该机制（inc/τ），不是"首次启用"**
+（与 B3 `L2_design.L2_candidates.C1.producer_state` 一致）。本次实测旁证：同配置（bias=0.70/σ=0.30/dose=1/
+T=1 s/CPU）**slow off ⇒ spk 4822** vs **slow on 默认 ⇒ spk 1045**（**-78%**，纯负反馈方向正确）。
+
+**① `slow_trace_stats` 落盘位置与实测样例**（`<run_id>.json` **顶层**；**只写统计量，不写整条轨迹**）
+- 键：`slow_enabled` + `slow_trace_stats{n, alive, mean, std, min, max, argmax_step, argmax_sample_index,
+  sample_every_steps, argmax_t_ms, readback{…}, units{…}}`。
+  **单位/原点在接口处写明（R80 §⑥）**：`argmax_step` = 采样序号 argmax × `sample_every_steps`，**单位=引擎步、
+  原点=含 settle 的表起点**；`argmax_t_ms = argmax_step × dt_ms`；`mean/std/min/max` 是**采样序列**
+  （每 2000 步取一次 `t_slow` 的神经元均值）上的统计量；`alive` 取自引擎公开读出 `slow_readback()`
+  （判**逐神经元状态**是否在动，非采样序列）。
+- **两处一致性核对内建**：`engine_trace_n_matches` / `engine_trace_mean_matches`（与引擎 `res["slow_trace"]`
+  的统计量对齐 ⇒ 防"算了但读错"）。
+- 实测样例（N=8192、T=1 s、settle 500 ms、bias=0.70、dose=1、**CPU**、chunk，产物
+  `data/m11_p5_l2_slow_probe/`）：
+
+| 臂 | 机制档 | spk | `n` | `alive` | `mean` | `std` | `min` | `max` | `argmax_step`（t） |
+|---|---|---|---|---|---|---|---|---|---|
+| `l2probe_slowdefault…` | τ=1000/inc=6（默认） | 1045 | 15 | True | 0.5591 | 0.1259 | 0.2112 | 0.6733 | 28000（1400 ms） |
+| `l2probe_slowamp…` | **τ=2000/inc=12**（CLI 透传） | 803 | 15 | True | 1.2999 | 0.3465 | 0.4244 | 1.6269 | 26000（1300 ms） |
+| `l2probe_slowoff…` | `--no-slow` | 4822 | — | — | — | — | — | — | — |
+- **`slow=False` ⇒ 显式缺席状态**：`slow_enabled=false` **且** `slow_trace_stats=null`（**"未启用"是可区分的
+  显式状态，不是键缺失**；读回断言因此不会把它误判成"字段丢了"）。
+- **生产者侧前置自检**（R102/§① 精神，不把问题留给下游）：`slow=True` 且步数 ≥ `sample_every` 时硬断言
+  `slow_trace_stats.n>0 ∧ alive≠None ∧ argmax_step≠None`；步数不足时**不失败**但显式登记
+  `insufficient_steps_to_sample=true` + 原因（**极短诊断臂的显式状态，非静默**）。
+
+**② CLI 透传（用法一行 + 行号）**
+- 用法：`--tau-slow-ms 2000 --slow-inc 12`（可选；**不显式给 ⇒ 沿用默认 1000 / 6.0**）。行号：CLI 参数
+  **L818 / L821**；`arm_spec_from_cli` 条件透传 **L350–353**（缺键不进 spec）；装配仍是 **L124–126**；
+  计划级键组早已含二者（**L436**）⇒ 计划 JSON 路径本来可用，本次补上 CLI 路径。
+
+**④ 惰性证明（R102 §①；`tools/verify_m11_producer_inert.py`，**五对**，产物 `data/m11_producer_inert_check.json`）**
+- 基线锚点**从 L1 计划 `frozen_tool` 自动取**（`eeeb2283…`，与 `git HEAD` 一致 ✓；不再硬编码）⇒ 链条留痕
+  `L0 计划 24617d90… →（--bias-log-sigma）→ eeeb2283… →（本次）→ 3bd69bf1…`。
+- **[惰性]** 旧(`git HEAD`) vs 新、**同一份不带任何新键的 spec**：`sha256_of_trace` / `agg.spk_total` /
+  `ei.ei_ratio` / `spikes_total` **全同**；**所有共同字段（非易变）逐位相同 ✓**；键集差异**恰好=**
+  `+[slow_enabled, slow_trace_stats]`、`-[]` ⇒ **只增不改**（`counts`/`pop_trace` 路径与 `wall_s`/`pid`/
+  `rss_mb`/`ms_per_step` 等易变字段声明为不参与比较）。
+- **[默认等价]** 不带键 ≡ 显式（`bias_log_sigma=0.30`、`tau_slow_ms=1000`、`slow_inc=6.0`）⇒ **键集与全部字段逐位相同 ✓**。
+- **[显式缺席]** `slow=False` ⇒ `slow_enabled=False ∧ slow_trace_stats=null ✓`。
+- **[新键有效]** 默认档 vs `τ=2000/inc=12` ⇒ 轨迹**逐位不同 ✓**（若相同即"键被接受但没生效"）。
+- **对 J6 的影响**：**数值为零**（上列逐位证明）；唯一影响是 **J6 在本次改动之后产出的臂 JSON 多两个
+  **信息性**键**（`slow_enabled`/`slow_trace_stats`）⇒ 同一 run 内出现**字段存在性偏斜**（判据字段、
+  `pop_trace`、`counts`、E/I 一律不变）。**这一偏斜是我造成的、已登记，请主 agent 知悉**。
+- L1 计划的冻结记录同样已过时（其 `frozen_tool` = `eeeb2283…`）：留痕
+  `data/m11_p5_plan_l1_amendment.json`（**臂内容完全相同**，差异仅 2 个 provenance 字段；
+  `parent_prereg` 亦因 B3 更新而变 `9c6f7c60…`）。**计划文件本身未改**。
+
+**⑤ 与 L1 结局的一致性（附带核对）**：B3 判定 σ↑ **点燃**自持（R 0.0293→0.2437 @σ=0.45）。本节点 T=1 s 探针
+当时测到的方向与此一致（σ 0.30→0.90：spk **1045→4891**、静默 0.875→0.703）⇒ 该探针只回答"杠杆是否**活**"
+（是），不回答"是否**有用**"（否）。**这是"阳性对照"的正确用途**。
+
+**⑥ 第三条前置（不在本次派工范围，L2 的 C2/STP 路线需要）**：B3 `L2_design.producer_prerequisites③` ——
+`build_engine` 从未调用 `configure_stp` ⇒ **STP 当前 OFF**；走 C2（fallback/L2b）需再加：引擎侧
+`configure_stp` 接线 + CLI/计划键（`--stp/--u0/--tau-fac-ms/--tau-rec-ms`）+ **显式禁 facilitate** +
+回读断言。本节点**未做**（等派工），**C1（慢适应放大）不需要它**。

@@ -1,0 +1,113 @@
+{
+ "arm_id": "l2probe_slowamp_8192_T1000ms_d1_s0",
+ "config_id": "p5_L2_tau2000_inc12",
+ "T_ms": 1000.0,
+ "settle_ms": 500.0,
+ "role": "baseline",
+ "mechanism": "none",
+ "drive_mult": 1.0,
+ "seed": 0,
+ "replica_of": null,
+ "n_neuron": 8192,
+ "pop_trace": "neural_exploration/data/m11_p5_l2_slow_probe/l2probe_slowamp_8192_T1000ms_d1_s0_poptrace.npy",
+ "counts": "neural_exploration/data/m11_p5_l2_slow_probe/l2probe_slowamp_8192_T1000ms_d1_s0_counts.csv",
+ "agg": {
+  "spk_total": 803
+ },
+ "ei": {
+  "i_exc_integral": 143443.87908267975,
+  "i_inh_integral": 89279.78984117508,
+  "ei_ratio": 0.6224022273527267,
+  "by_class": null,
+  "sign_convention": "|I_inh|/|I_exc|（抑制电流为负 ⇒ 报绝对值；带 [0.5,3.0] 为量值比）",
+  "i_inh_integral_signed_raw": -89279.78984117508
+ },
+ "wall_s": 6.1716615,
+ "ms_per_step": 0.22367607290000002,
+ "device": "cpu",
+ "host": "wangxianshengs-MacBook-Pro.local",
+ "python": "3.9.6",
+ "numpy": "1.26.4",
+ "torch": "2.8.0",
+ "ms_per_step_steady": 0.22367607290000002,
+ "event_seed": 11,
+ "spikes_total": 803,
+ "seeds": {
+  "reset_seed": 0,
+  "net_seed": 0,
+  "event_seed": 11,
+  "derived_net_seed": true,
+  "derived_event_seed": true,
+  "policy": "derive(net_seed=seed, event_seed=11+seed)",
+  "triple": "net0|ev11|reset0"
+ },
+ "sha256_of_trace": "6b0acef5c5534fec25541e3fa23b79738b18538d5cf5a11ca51352f660491265",
+ "n_steps_meas": 20000,
+ "n_steps_settle": 10000,
+ "delivery": "chunk",
+ "engine_version": "m11e-1.0-4slot+laminar-delay-pack+slowvar",
+ "n_ch": 4,
+ "interpreter": {
+  "executable": "/Users/weidong/ai/small_world/.venv-m9/bin/python",
+  "python": "3.9.6",
+  "role": "engine",
+  "numpy": "1.26.4",
+  "torch": "2.8.0"
+ },
+ "drive_rate_hz": 8.0,
+ "drive_rate_hz_eff": 8.0,
+ "n_events": 98304,
+ "rss_mb": 274.0,
+ "pid": 62392,
+ "finished_at": "2026-10-14T02:06:20",
+ "net": {
+  "indegree": 20,
+  "delay_bins": [
+   40,
+   60,
+   80
+  ],
+  "gmax_scale": 1.0,
+  "bias_scale": 0.7,
+  "net_seed": 0,
+  "n_edge": 159745
+ },
+ "slow_enabled": true,
+ "slow_trace_stats": {
+  "n": 15,
+  "alive": true,
+  "mean": 1.2999000032742818,
+  "std": 0.34645493020214185,
+  "min": 0.4243878126144409,
+  "max": 1.6269093751907349,
+  "argmax_step": 26000,
+  "argmax_sample_index": 13,
+  "sample_every_steps": 2000,
+  "argmax_t_ms": 1300.0,
+  "engine_trace_n_matches": true,
+  "engine_trace_mean_matches": true,
+  "readback": {
+   "implemented": true,
+   "n": 8192,
+   "mean": 1.6233266911585815,
+   "std": 3.250601049770795,
+   "min": 0.0,
+   "max": 17.232383728027344,
+   "dynamic_range": 17.232383728027344,
+   "n_nonzero": 1731,
+   "frac_nonzero": 0.2113037109375,
+   "trace_n": 15,
+   "trace_std": 0.34645493020214185,
+   "trace_range": 1.202521562576294,
+   "alive": true,
+   "inc_per_spike": 12.0,
+   "tau_slow_ms": 2000.0
+  },
+  "units": {
+   "argmax_step": "engine step（原点=含 settle 的表起点）",
+   "argmax_t_ms": "millisecond",
+   "sample_every_steps": "step",
+   "mean_std_min_max": "慢电导内部单位（与 t_slow 同）"
+  }
+ }
+}
