@@ -1,0 +1,75 @@
+{
+ "arm_id": "c_8192_T10000ms_d2.0_s1",
+ "config_id": "p5_C",
+ "T_ms": 10000.0,
+ "settle_ms": 500.0,
+ "role": "dose",
+ "mechanism": "none",
+ "drive_mult": 2.0,
+ "seed": 1,
+ "replica_of": null,
+ "n_neuron": 8192,
+ "pop_trace": "neural_exploration/data/m11_p5_g1_runs_repl/c_8192_T10000ms_d2.0_s1_poptrace.npy",
+ "counts": "neural_exploration/data/m11_p5_g1_runs_repl/c_8192_T10000ms_d2.0_s1_counts.csv",
+ "agg": {
+  "spk_total": 45731
+ },
+ "ei": {
+  "i_exc_integral": 3435464.6328144073,
+  "i_inh_integral": 5037888.608863831,
+  "ei_ratio": 1.4664358819891803,
+  "by_class": null,
+  "sign_convention": "|I_inh|/|I_exc|（抑制电流为负 ⇒ 报绝对值；带 [0.5,3.0] 为量值比）",
+  "i_inh_integral_signed_raw": -5037888.608863831
+ },
+ "wall_s": 218.082425917,
+ "ms_per_step": 0.8679398789549999,
+ "device": "mps",
+ "host": "wangxianshengs-MacBook-Pro.local",
+ "python": "3.9.6",
+ "numpy": "1.26.4",
+ "torch": "2.8.0",
+ "ms_per_step_steady": 0.8679398789549999,
+ "event_seed": 12,
+ "spikes_total": 45731,
+ "seeds": {
+  "reset_seed": 1,
+  "net_seed": 1,
+  "event_seed": 12,
+  "derived_net_seed": true,
+  "derived_event_seed": true,
+  "policy": "derive(net_seed=seed, event_seed=11+seed)",
+  "triple": "net1|ev12|reset1"
+ },
+ "sha256_of_trace": "6055e36e8f65e0028cca0054d4142cdc2c3a52dc1ce55ca9f30b9c12b992647b",
+ "n_steps_meas": 200000,
+ "n_steps_settle": 10000,
+ "delivery": "chunk",
+ "engine_version": "m11e-1.0-4slot+laminar-delay-pack+slowvar",
+ "n_ch": 4,
+ "interpreter": {
+  "executable": "/Users/weidong/ai/small_world/.venv-m9/bin/python",
+  "python": "3.9.6",
+  "role": "engine",
+  "numpy": "1.26.4",
+  "torch": "2.8.0"
+ },
+ "drive_rate_hz": 8.0,
+ "drive_rate_hz_eff": 16.0,
+ "n_events": 1376256,
+ "rss_mb": 3014.9,
+ "pid": 58266,
+ "finished_at": "2026-10-13T07:34:18",
+ "net": {
+  "indegree": 20,
+  "delay_bins": [
+   40,
+   60,
+   80
+  ],
+  "gmax_scale": 1.0,
+  "bias_scale": 1.0,
+  "net_seed": 1,
+  "n_edge": 159745
+ }
+}
