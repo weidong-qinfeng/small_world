@@ -1,6 +1,6 @@
 {
  "generated_by": "M11 执行节点 B2（工作包 = G0 引擎门 / P3）",
- "generated_at": "2026-10-13T14:08:28Z",
+ "generated_at": "2026-10-13T20:32:25Z",
  "policy": "清单 §0.7 #13/#14 + 主agent 纪律：预计墙钟 >10 min 的作业不由本节点自行启动；此处给出**确切的命令行 + 产物路径 + 预计资源 + 终止条件**，由主agent 启动。",
  "concurrency_rules": [
   "MPS 作业严格串行（并发实测 ms/step 2.4→14.1，6× 退化）；开跑前 `ps aux | grep <task>`",
@@ -82,6 +82,22 @@
    "precheck": "①`ps aux | grep run_m11_p5` 无并发；②计划 sha256 = 011a7c797360a0bd…（跑前不得再改计划/生产者）；③驱动器启动即自动跑 `assert_plan_replication`（失败退出码 3，不许绕过）",
    "stop_condition": "①任一臂 `.fail` 出现 ⇒ 看 fail 文件后停（连续 ≥2 臂失败驱动器自停）；②任一档出现 `seed_dimension_inert` ⇒ 立即停（复刻轴又失效）；③累计 GPU-h 触及 2.5（L0 预算 1.9832 的 +25%）⇒ 停并汇报",
    "note": "预算（脚本算，data/m11_p5_l0_pricing.json）：L0 **1.9832 GPU-h** chunk；全臂按最贵单价的上界 2.3814；干跑校正 1.7255（乐观）。剂量维插值份额 0，杠杆维外推份额 0.8095。"
+  },
+  {
+   "id": "J6",
+   "priority": "high",
+   "title": "L1 σ 形状杠杆全量扫描（24 臂，chunk，N=8192，T=10 s 单档）——交主agent 启动（前提：σ 阳性对照已通过）",
+   "why": "L0-b（bias_scale=0.70）已把 R 压到 0.0293（(c) 可满足），但代价是基准活动 -72% ⇒ (a) 更差；B3 预注册 L1_design 的核心可证伪断言 = 存在 σ 档使 (a)∈[0.5,2.0] Hz 且 R≤0.10 同时成立。本节点已用 2 臂受控配对 + 反例自证证明 σ **真的改变形状**（D_KS=0.1727，静默 0.875→0.703，p90 1.0→2.0 Hz）⇒ 该杠杆值得投预算。",
+   "command": "cd /Users/weidong/ai/small_world && PYTHONHASHSEED=0 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 caffeinate -i ./.venv-m9/bin/python -m neural_exploration.tools.run_m11_p5_arms --plan neural_exploration/data/m11_p5_plan_l1.json --out-dir neural_exploration/data/m11_p5_l1_runs",
+   "artifacts": [
+    "neural_exploration/data/m11_p5_l1_runs/<run_id>.{json,done,_poptrace.npy,_counts.csv}",
+    "neural_exploration/data/m11_p5_protocol_l1_sigma_n8192.json"
+   ],
+   "est_wall": "≈1.1–1.4 h（24 臂 × ~3 min；MPS 串行独占）+ 非仿真 ~5 min",
+   "est_resources": "GPU(MPS) 独占串行；单臂 RSS ≤0.7 GB",
+   "precheck": "①`ps aux | grep run_m11_p5` **无并发**（J5/L0 结束后再跑；MPS 串行铁律）；②计划 sha256 = 8b58577222038ff9…（跑前不得改计划）；③生产者 sha256 必须 = eeeb2283cbf65335…（含 --bias-log-sigma）；④`data/m11_lever_sigma_selftest.json` 的 C1/C2/C3 必须全 true（本节点已跑过 ✓）",
+   "stop_condition": "按 B3 预注册 L1_design.stop_rules：①任一档主断言成立 ⇒ 停扫进定稿；②σ↑ 而 R 单调↑（ρ≥+0.8）⇒ 立即停（形状杠杆在自持上反向）；③连续 2 档无改善 ⇒ 停报「无改善」；④hard_failures 非空或复刻轴对出现重复 ⇒ 停查口径；⑤某档出现 i_exc_integral==0 的臂 ⇒ 该臂 invalid；≥2 个实现如此 ⇒ 整档 invalid；⑥触及包络 ⇒ 停；⑦bias_scale≤0.50 不再进 L1；⑧σ 到 0.90 仍双不达标且非反向 ⇒ 报形状杠杆不足",
+   "note": "预算（data/m11_p5_l1_pricing.json）：σ 扫描 mid 1.1150 / upper 1.3608 GPU-h（与预注册 1.115/1.361 吻合）；全段合计 mid 6.1821 / upper 8.0595（保守口径 7.3938）⇒ 在 ≤10 包络内。跨计划锚点：L1 对照档（σ=0.30）同 seed 的 dose=1 臂应与 J5 的 l0_g1.00_b0.70 同 seed 臂逐位相同。"
   }
  ],
  "decision_requests": [
@@ -108,6 +124,12 @@
    "question": "L0 用 **4 seed**（每档 zero_drive+baseline 各 4）而非预注册的 3：是否接受这一步 +0.181 GPU-h（R1 段 1.802→1.983）？",
    "impact": "(c) = 零驱动均值/基准均值，3 seed 的 CI 太薄（当前 R=0.2802 的 3-seed CI [0.2763,0.2841] 由计数噪声撑出）；4 seed 使每档 (c) 的点估计与更宽 CI 上界都可判，减少'薄统计→invalid'的返工",
    "my_recommendation": "接受 4 seed；若必须压预算，优先砍 L0-a 对照档（gmax 2.0 → 只留 gmax 4.0），而不是砍 seed（seed 是判据的统计基础）"
+  },
+  {
+   "id": "DQ-B2-5",
+   "question": "CPU 侧 chunk 单价（0.2253–0.2664 ms/step @N=8192）比 MPS 侧实测（0.6545–0.9720）低 ~3–4 倍：是否用 R78 孪生臂（同 spec、CPU vs MPS、pop_trace 对比）判定该差异是真实的设备差异？",
+   "impact": "若成立 ⇒ 所有 P5/G1/L0/L1 的 GPU-h 预算与 MPS 串行墙钟被高估 3–4 倍（L1 全段 6.18 GPU-h → ~1.7 h）；但两次测量不同环境/负载，**当前不构成价格结论**，且跨设备可比性未证（R78 要求孪生臂）",
+   "my_recommendation": "在 J5 跑完后用**同一 spec** 背靠背各跑 1 臂（MPS 归你）：若 CPU/MPS 的 pop_trace 逐位或统计一致且 ms/step 差 ≥2× ⇒ 把 P5 之后的生产口径改为 CPU（OMP_NUM_THREADS=1），预算按 CPU 单价重算"
   }
  ]
 }

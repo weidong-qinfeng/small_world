@@ -1,0 +1,76 @@
+{
+ "arm_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s2",
+ "config_id": "p5_L1_b0.70_g1.00_s0.45",
+ "T_ms": 10000.0,
+ "settle_ms": 500.0,
+ "role": "zero_drive",
+ "mechanism": "none",
+ "drive_mult": 0.0,
+ "seed": 2,
+ "replica_of": null,
+ "n_neuron": 8192,
+ "pop_trace": "neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s2_poptrace.npy",
+ "counts": "neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s2_counts.csv",
+ "agg": {
+  "spk_total": 3481
+ },
+ "ei": {
+  "i_exc_integral": 63983.90114071965,
+  "i_inh_integral": 382814.1198887229,
+  "ei_ratio": 5.982975608923886,
+  "by_class": null,
+  "sign_convention": "|I_inh|/|I_exc|（抑制电流为负 ⇒ 报绝对值；带 [0.5,3.0] 为量值比）",
+  "i_inh_integral_signed_raw": -382814.1198887229
+ },
+ "wall_s": 148.866520792,
+ "ms_per_step": 0.6240742764599999,
+ "device": "mps",
+ "host": "wangxianshengs-MacBook-Pro.local",
+ "python": "3.9.6",
+ "numpy": "1.26.4",
+ "torch": "2.8.0",
+ "ms_per_step_steady": 0.6240742764599999,
+ "event_seed": 13,
+ "spikes_total": 3481,
+ "seeds": {
+  "reset_seed": 2,
+  "net_seed": 2,
+  "event_seed": 13,
+  "derived_net_seed": true,
+  "derived_event_seed": true,
+  "policy": "derive(net_seed=seed, event_seed=11+seed)",
+  "triple": "net2|ev13|reset2"
+ },
+ "sha256_of_trace": "6cc4bf9518fb86d561b0a4d5c0600f895c26db625b434f4710c9fee79e80d9b8",
+ "n_steps_meas": 200000,
+ "n_steps_settle": 10000,
+ "delivery": "chunk",
+ "engine_version": "m11e-1.0-4slot+laminar-delay-pack+slowvar",
+ "n_ch": 4,
+ "interpreter": {
+  "executable": "/Users/weidong/ai/small_world/.venv-m9/bin/python",
+  "python": "3.9.6",
+  "role": "engine",
+  "numpy": "1.26.4",
+  "torch": "2.8.0"
+ },
+ "drive_rate_hz": 8.0,
+ "drive_rate_hz_eff": 0.0,
+ "n_events": 0,
+ "rss_mb": 940.4,
+ "pid": 61890,
+ "finished_at": "2026-10-14T00:32:07",
+ "net": {
+  "indegree": 20,
+  "delay_bins": [
+   40,
+   60,
+   80
+  ],
+  "gmax_scale": 1.0,
+  "bias_scale": 0.7,
+  "net_seed": 2,
+  "n_edge": 159745,
+  "bias_log_sigma": 0.45
+ }
+}

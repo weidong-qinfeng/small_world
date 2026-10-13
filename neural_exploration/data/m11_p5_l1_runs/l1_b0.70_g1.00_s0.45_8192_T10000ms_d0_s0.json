@@ -1,0 +1,76 @@
+{
+ "arm_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s0",
+ "config_id": "p5_L1_b0.70_g1.00_s0.45",
+ "T_ms": 10000.0,
+ "settle_ms": 500.0,
+ "role": "zero_drive",
+ "mechanism": "none",
+ "drive_mult": 0.0,
+ "seed": 0,
+ "replica_of": null,
+ "n_neuron": 8192,
+ "pop_trace": "neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s0_poptrace.npy",
+ "counts": "neural_exploration/data/m11_p5_l1_runs/l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s0_counts.csv",
+ "agg": {
+  "spk_total": 3888
+ },
+ "ei": {
+  "i_exc_integral": 72575.39692056179,
+  "i_inh_integral": 428911.26882359385,
+  "ei_ratio": 5.909871485691817,
+  "by_class": null,
+  "sign_convention": "|I_inh|/|I_exc|（抑制电流为负 ⇒ 报绝对值；带 [0.5,3.0] 为量值比）",
+  "i_inh_integral_signed_raw": -428911.26882359385
+ },
+ "wall_s": 148.155567375,
+ "ms_per_step": 0.6213317754150001,
+ "device": "mps",
+ "host": "wangxianshengs-MacBook-Pro.local",
+ "python": "3.9.6",
+ "numpy": "1.26.4",
+ "torch": "2.8.0",
+ "ms_per_step_steady": 0.6213317754150001,
+ "event_seed": 11,
+ "spikes_total": 3888,
+ "seeds": {
+  "reset_seed": 0,
+  "net_seed": 0,
+  "event_seed": 11,
+  "derived_net_seed": true,
+  "derived_event_seed": true,
+  "policy": "derive(net_seed=seed, event_seed=11+seed)",
+  "triple": "net0|ev11|reset0"
+ },
+ "sha256_of_trace": "c2ccbb9f6473f6332779aa426aa270b6e0da06cebfee49265a6a5c58ff7cbd5f",
+ "n_steps_meas": 200000,
+ "n_steps_settle": 10000,
+ "delivery": "chunk",
+ "engine_version": "m11e-1.0-4slot+laminar-delay-pack+slowvar",
+ "n_ch": 4,
+ "interpreter": {
+  "executable": "/Users/weidong/ai/small_world/.venv-m9/bin/python",
+  "python": "3.9.6",
+  "role": "engine",
+  "numpy": "1.26.4",
+  "torch": "2.8.0"
+ },
+ "drive_rate_hz": 8.0,
+ "drive_rate_hz_eff": 0.0,
+ "n_events": 0,
+ "rss_mb": 942.9,
+ "pid": 61849,
+ "finished_at": "2026-10-13T23:23:09",
+ "net": {
+  "indegree": 20,
+  "delay_bins": [
+   40,
+   60,
+   80
+  ],
+  "gmax_scale": 1.0,
+  "bias_scale": 0.7,
+  "net_seed": 0,
+  "n_edge": 159745,
+  "bias_log_sigma": 0.45
+ }
+}
