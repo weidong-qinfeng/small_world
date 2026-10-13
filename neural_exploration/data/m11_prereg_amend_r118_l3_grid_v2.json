@@ -1,0 +1,43 @@
+{
+ "amendment_id": "M11-PREREG-AMD-R118-L3-GRID-V2",
+ "status": "**事前登记**（L3 正式跑之前）—— 不修改父预注册（父文件逐字节不变，本文件引用其哈希）",
+ "supersedes": "R115 §④ 所载的 L3 网格 `bias∈[1.20,1.40] × σ∈[0.15,0.25]`",
+ "parent_prereg": {
+  "file": "data/m11_p5_lever_prereg.json",
+  "sha256": "9c6f7c60073ee07e1f48aee787040f16d24aa0efaf67b4cf65f98d2e263c6644"
+ },
+ "authority": "R118（docs/m11_acceptance_master.md §3di）",
+ "why_amended": {
+  "measured_cliff": "bias=1.30 处 σ 呈**悬崖**而非梯度：零驱动脉冲 σ=0.30/0.20/0.15 ⇒ 4,126/4,875/4,666，而 σ=0.10 ⇒ **46**（0.15→0.10 落差 **101×**）⇒ 原登记的 σ∈[0.15,0.25] 整段**远在 (c) 窗口之外**（pooled 零驱动 ≈1.4e5 ≫ 上界 ≈1.5e4）",
+  "window_reached_only_at_sigma_0.10": "换算正式口径（T=10s×3 实现，×30 外推）后 σ=0.10 的 pooled 零驱动 ≈1,380，落在窗口 [300, ≈15,400] 内",
+  "provisional_corner_readings": "(1.30, 0.10) 前置读数暂定同时落带：(a) 中位率≈1.0 Hz、活动占比 0.6063；(c) R≈0.0089；(e) 基准臂 ei_ratio=2.5767",
+  "honesty_clause": "σ=0.10 与 bias=1.15/1.45 **原在我自己登记的网格范围之外** ⇒ 按纪律必须走事前修订，**不得事后追认为本来就在范围内**"
+ },
+ "grid_v2": {
+  "axis_sigma": {
+   "values": [
+    0.1
+   ],
+   "role": "主变量（悬崖面附近的唯一可达到窗口值）",
+   "note": "σ∈[0.15,0.25] 整段经实测**排除**（不是未测，是已测且远超上界）"
+  },
+  "axis_bias": {
+   "values": [
+    1.0,
+    1.15,
+    1.3,
+    1.45
+   ],
+   "role": "沿 σ=0.10 的偏置扫描",
+   "note": "1.00 处 (a) 失败（中位率 0、活跃占比 0.274）、零驱动=0 ⇒ (c) unavailable；1.30 处三判据暂定落带"
+  },
+  "cells": "4 (bias) × 2 角色 × 3 独立实现 = **24 臂**；T=10 s；锚点 = (1.00, σ=0.30)（= 既有 L0/L1 点，用于确定性核对）",
+  "ordering": "先锚点 → (1.00,0.10) → (1.15,0.10) → (1.30,0.10) → (1.45,0.10)；每格先 baseline 后 zero_drive；**极端档（1.45）最后**"
+ },
+ "unchanged": {
+  "core_falsifiable_assertion": "同 R115 §④（窗口口径：pooled_zero_drive ∈ [300, 0.10×pooled_baseline] 且 (a) 中位率 ∈ [0.5,2.0] Hz）",
+  "drive_ban": "同 R115 §③（不得提高背景驱动去命中 (a)；b3_g1_design L146）",
+  "a_reporting": "同 R109 ⑥ + R115 §④（a_median_hz/a_active_frac/a_pop_mean_hz/pooled_zero_drive 四条并报）"
+ },
+ "provisional_status_of_R118_readings": "**R118 §③ 的三判据读数全部来自 T=1 s、单实现探针 ⇒ 一律 `provisional`，不得作为 G1 判定依据**；正式判定必须来自本修订所定的 24 臂 T=10 s × 3 实现"
+}
