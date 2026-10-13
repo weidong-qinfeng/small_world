@@ -1,0 +1,27 @@
+{
+ "run_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d0_s2",
+ "stage": "l1s90",
+ "config_id": "p5_L1_b0.70_g1.00_s0.90",
+ "T_ms": 10000.0,
+ "drive_mult": 0.0,
+ "seed": 2,
+ "role": "zero_drive",
+ "mechanism": "none",
+ "delivery": "chunk",
+ "gmax_scale": 1.0,
+ "bias_scale": 0.7,
+ "bias_log_sigma": 0.9,
+ "lever": "L1 \u03c3=3.0\u00d7 \u5bf9\u7167\uff08\u91cd\u5c3e\u4e0a\u9650\uff09",
+ "settle_ms": 500.0,
+ "drive_rate_hz": 8.0,
+ "device": "mps",
+ "indegree": 20,
+ "delay_bins": [
+  40,
+  60,
+  80
+ ],
+ "subtypes": true,
+ "slow": true,
+ "n_neuron": 8192
+}
