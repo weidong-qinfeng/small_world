@@ -1,6 +1,6 @@
 {
  "generated_by": "M11 执行节点 B3（G1 评估器作者）——按清单 §5 杠杆顺序的实验预注册（跑之前定稿）",
- "generated_at": "2026-10-13",
+ "generated_at": "2026-10-13（新增 L1_design 段：L1 形状杠杆设计 + 非构造性复刻轴 + 与当前判据状态自洽的核心断言）",
  "objective": "让 (a)(b)(c) 同时可达：把工作点从「窄分布、少静默、中位率 0.3 Hz、自持比 0.28」推到「重尾分布、近半数近静默、中位率 0.5-2 Hz、自持比 <=0.10」",
  "prerequisite_blocking_P0": {
   "finding": "G1 全量矩阵的复刻轴失效：seed in {0,1,2} 的臂产出逐位相同的 pop_trace 与 counts（15/15 组、counts sha256 全同）；根因 = 生产者以 net_seed 建网络（run_m11_p5_arms.py L124，默认 0）、以 event_seed 建事件表（L151/155，默认 11），而计划只改了 seed（仅 eng.reset(seed=)，L157）=> 有效重复数 = 1",
@@ -144,5 +144,136 @@
   "rule_3_two_distinct_purposes": "**两种『复刻』不可混用**：① **独立实现轴（net_seed 变）** 用于 (c) 的 ≥3 seed 统计门；② **位一致轴（seed 同）** 用于 (h)/G0 的跨进程确定性登记。",
   "rule_4_p5_role": "(h) 在 P5 中为**登记项**（`not_applicable_to_p5`，判据表 `p5_h_determinism_semantics`），不作 P5 判据",
   "rule_5_guard_scope": "工具守卫 `h_determinism_not_evidence` 保留（三元组相同/不可判定 ⇒ 该行不构成 P5 证据 ⇒ invalid）；命中记入 `guard_failures`（审计），因 (h) 为登记项而**不驱动整轮 verdict**"
+ },
+ "L1_design": {
+  "status": "**预注册（跑之前定稿）**；L0 已成功（R 0.2896→0.0293 @ bias_scale=0.70），L1 在其最优点上进行",
+  "baseline_shifted_to_L0_optimum": {
+   "why": "L0-b（bias_scale=0.70, gmax_scale=1.00）把 R 从 0.2896 压到 **0.0293**（远低于上限 0.1）⇒ 门条件 (c) 可满足；**L1 的起点必须改为该最优点**，而非旧的 b1.00",
+   "config": {
+    "N": 8192,
+    "gmax_scale": 1.0,
+    "bias_scale": 0.7,
+    "bias_log_mean": 230.0,
+    "bias_log_sigma_current": 0.3,
+    "delivery_production": "chunk",
+    "judgment_caliber": "step"
+   },
+   "L0_cost_measured": "bias 下调的代价：基准活动 -72%（spk 30,265 → 8,592），而 (a) 在参考档已 fail（0.3 Hz < 0.5）⇒ **同一个 bias 反向控制 (c) 与 (a)** ⇒ 这就是「结构性对立」的具体形态，也是 L1 要处理的问题",
+   "L0_excluded": "**bias_scale=0.50 及更低不再进入 L1**（压过头：零驱动 19 spk、出现 i_exc_integral==0 ⇒ 近全静默、(e) 不可测）"
+  },
+  "L1_rungs": {
+   "lever": "**bias_log_sigma 上调（阈值/内在兴奋性的对数离散度）= 形状杠杆**（默认 0.30）",
+   "rationale": "(a) 偏低与 (b) 偏低同因：当前是**窄分布**；目标分布是**重尾**（近半数近静默 + 中位率 0.5-2 Hz）⇒ 需要**分布形状**而非整体快慢。σ=0.30 ⇒ 阈值约 ±35%，σ=0.90 ⇒ 约 ±146%（真正的重尾档）",
+   "grid": [
+    {
+     "rung": "σ0 = 0.30",
+     "note": "对照（= L0 最优点原状）"
+    },
+    {
+     "rung": "σ = 0.45",
+     "note": "1.5× σ0"
+    },
+    {
+     "rung": "σ = 0.60",
+     "note": "2.0× σ0"
+    },
+    {
+     "rung": "σ = 0.90",
+     "note": "3.0× σ0（重尾档）"
+    }
+   ],
+   "per_rung_arms": "role=zero_drive（dose=0）与 role=baseline（dose=1）**各 3 个真正独立实现**；T=10 s；合计 4 档 × 2 角色 × 3 实现 = **24 run**",
+   "producer_prerequisite_B2": "**阻塞项**：bias_log_sigma **未在 CLI 暴露**（有 --bias-scale、无 --bias-log-sigma），且计划模板的臂字段清单（run_m11_p5_arms.py **L456 / L498** 的固定 key 组）**不含它** ⇒ 需 B2：① 加 --bias-log-sigma；② 把它并入 arm_spec_from_cli（L226-237）与计划模板（L456/L498）。**注**：net_kw 过滤器（**L120**）已支持该键 ⇒ 也可**临时**用 --arm <spec.json> 逐臂传（单臂模式），无需改码。"
+  },
+  "core_falsifiable_assertion": {
+   "statement": "**存在某个 σ 档使 `(a) ∈ [0.5, 2.0] Hz` 且 `R ≤ 0.10`（点估计与更宽 CI 上界 ≤0.12）同时成立。**",
+   "why_self_consistent_with_current_criterion_states": [
+    "(b) 现为 **unavailable**（真实 ROI 掩膜维缺失 ⇒ 其带非判定带）⇒ **把 (b) 写进门断言会造出恒不可判的断言**（R93 后 n_both_in_band 已算不出来）；",
+    "(a) 与 (c) **都是 final=1 的已定稿判定带** ⇒ 双目标断言**可判且有判别力**：G1 已证二者**各自可判**（(a)=0.3 Hz fail、R=0.2802 fail）而**不可同时满足** ⇒ 该断言**当前为假**，故可被 L1 证伪或证实。"
+   ],
+   "falsifier": "若整个 σ 网格上 (a) 与 R **仍单调对立**（ρ(σ, 归一化中位率) 与 ρ(σ, R) **同号**且 |ρ| ≥ 0.8，或双目标零命中）⇒ 判 **L1 失败 / 结构性对立**，写入缺失机制清单（R91 第 1 条升级为「形状杠杆亦不足」）。",
+   "positive_outcome": "某档双目标命中（含 CI 条件）⇒ 进入定稿确认，并**只**得结论「(a) 与 (c) 可同时满足」",
+   "secondary_descriptive_metrics": [
+    "(a) 的类级中位率（exc 0.5-1.0 / inh 1.5-2.0 的 literature 档为并列参照）",
+    "分布形状：rate_p95 / 中位、静默代理、Silent_proxy / 0.49 比值",
+    "(d) 剂量弹性（sanity，非 gate；若只跑 d0/d1/d4 须登记网格不全）"
+   ]
+  },
+  "b_reporting_form_R57_four_restrictions": {
+   "rule": "**(b) 一律描述性并列，不作 gate**；按 R57 四条限制使用：",
+   "1_proxy_caliber": "用 **zero_count 代理**（MICrONS field4 像素级、**无真实 ROI 掩膜**）",
+   "2_sample_thin": "样本 **thin**：单 field × 2,000 帧 ≈ 317 s（每次报告必须写明）",
+   "3_band_lower_bound_ge_3x": "**不引用 0.48-0.49 那 2% 窄带**（已被 R93 §③ 裁定 unavailable）⇒ 以对 **0.49** 的**比值/上界**形式报告",
+   "4_ratio_or_upper_bound": "只报 silent_proxy、比值 = silent_proxy / 0.49、是否 > 0.49；**不判 pass/fail**、不进任何门",
+   "bench_contributions": "该代理档另有三处 bench 来源仅作参照：fullfov_frame_unit=0.8915（口径不同）、m10_compat_rate_lt_0p5hz=1.0000（**饱和警告**）、coverage_register: missing=1(real_ROI_mask)"
+  },
+  "explicit_scope_statement": {
+   "must_write_in_every_report": "**L1 即便成功，也只能让 (a) 与 (c) 同时可行；(b) 的判定仍待「真实 ROI 掩膜」这一维。**",
+   "forbidden_reading": "**不得**让读者以为「L1 成功」=「(b) 通过」=「G1 可过」—— G1 的门 = (c) ∧ (e) ∧ 张力，且 (b) 与张力当前均为 unavailable。"
+  },
+  "replicate_axis_convention_non_constructive": {
+   "axis": "**(net_seed, event_seed) 对**（两个分量都随实现号变）：realization0=(0,11)、realization1=(1,12)、realization2=(2,13)",
+   "assertion_form": "**要求同一档内 3 个实现的 (net_seed, event_seed) 对两两互异**（**非构造性**：若只变惰性的 seed，该对**不变** ⇒ 断言会失败 ⇒ 能真正抓住惰性复刻轴）",
+   "why_replaces_triple": "旧「三元组 (net_seed, event_seed, reset_seed)」形式在 seed 惰性时**恒真**（只变 seed 就「不同」）⇒ **构造性断言**，已弃用（B2 亦改用该对形式）",
+   "division_of_labor": "**计划级**由 B2 断言（本预注册给出确切对）；**工具侧**的 h_determinism_not_evidence 守卫保持原样（只标记「该行不构成 P5 证据」），R95 §⑤ 分工不变",
+   "per_rung_seed_count": "zero_drive **3 个独立实现** 且 baseline **3 个独立实现**（RF-M11-3 的 ≥3 要求由**独立实现**满足，而不是由「声明 seed 数」满足）"
+  },
+  "stop_rules": [
+   "① 某 σ 档使**主断言成立**（(a) ∈ 带 且 R ≤ 0.1，含 CI 条件）⇒ **停扫**，进入定稿确认",
+   "② σ 上升而 R **单调上升**（ρ(σ,R) ≥ +0.8）⇒ **立即停**：形状杠杆在自持上反向 ⇒ 报「该杠杆不可用」",
+   "③ 连续 **2 档**既未使 (a) 向带内靠近、也未使 R 改善 ⇒ **停**报「无改善」（不烧完预算）",
+   "④ 任一档 hard_failures 非空，或该档 (net_seed, event_seed) 对出现重复（计划级断言违反）⇒ **停并查口径**",
+   "⑤ 任一档出现 i_exc_integral == 0 的臂（L0 的 b0.50 曾出现）⇒ 该臂判 invalid 且不参与判定；**若 ≥2 个实现如此 ⇒ 该档整档 invalid**（机制未激活）",
+   "⑥ 触及预算包络（见 budget）⇒ **停**，不得静默超支",
+   "⑦ bias_scale ≤ 0.50 的档**不再进入 L1**（L0 已证压过头）",
+   "⑧ 若 σ 已达 0.90 仍双双不达标且非反向 ⇒ 报「形状杠杆不足」，升级到 R91 第 3 条（换机制而非调参数）"
+  ],
+  "budget": {
+   "unit_prices": "chunk@8k：bias=1.00 时 dose0/1/4 = **0.6545/0.9482/0.9720** ms/step；**bias=0.70 干跑实测 0.7964**（本设计取中位 0.7964、上界 0.9720；**正式跑前须按剂量重探**）",
+   "steps_per_run_incl_settle": "T=10 s → **210,000**；T=20 s → **410,000**；T=40 s → **810,000**（settle 500 ms = 10,000 步）",
+   "segments": {
+    "L1_sigma_scan(4 档 × 2 角色 × 3 实现, T=10 s)": {
+     "runs": 24,
+     "steps": 5040000,
+     "gpu_h_mid": 1.115,
+     "gpu_h_upper": 1.361
+    },
+    "L1_final_confirm(最优 σ：5 剂量 × 3 实现 × T{10,20,40})": {
+     "runs": 45,
+     "steps": 21450000,
+     "gpu_h_mid": 4.745,
+     "gpu_h_upper": 5.791
+    },
+    "L1_twin_arms_new_condition(bias=0.70；剂量两端点 step+chunk)": {
+     "runs": 4,
+     "gpu_h_mid": 0.49
+    },
+    "L1_second_round_sigma_refine(2 档 × 6 run)": {
+     "runs": 12,
+     "steps": 2520000,
+     "gpu_h_mid": 0.557,
+     "gpu_h_upper": 0.68
+    }
+   },
+   "total": {
+    "runs": 85,
+    "gpu_h_mid": 6.907,
+    "gpu_h_upper": 8.322,
+    "envelope": "**在 ≤10 包络内**（余量 1.7-3.1 GPU-h）"
+   },
+   "wall_clock": "纯计算约 6.9 h（chunk 生产、MPS 串行）＋逐 run 新进程开销（8k 装配 30-60 s × 85 run 约 1.1 h）⇒ **约 8.0 h**；**必须托管**（B3 自跑实测占空比仅 5.7%）；进度按**累计 CPU/墙钟比**判",
+   "downgrade_plan_if_over": [
+    "④ **推荐**：定稿确认只跑 3 剂量（d0/d1/d4）⇒ 45→27 run ⇒ 2.847 GPU-h，总 **约 5.01**（代价：(d) 剂量网格不全 ⇒ 因 (d) 为 sanity 非 gate，可接受，**须登记**）",
+    "① 去掉 3.0× σ 档 ⇒ -0.279 GPU-h",
+    "② 定稿确认 T 档 3→2 ⇒ **违反硬门④**，仅作描述性 ⇒ **不推荐**",
+    "③ 定稿确认实现数 3→2 ⇒ **违反 RF-M11-3** ⇒ **不推荐**"
+   ]
+  },
+  "artifacts_expected": [
+   "neural_exploration/data/m11_p5_lever_prereg.json（本段）",
+   "m11_p5_plan_l1_sigma.json（B2 出计划；每臂含 bias_scale=0.70 / bias_log_sigma / (net_seed,event_seed) 对）",
+   "m11_p5_resting_eval_l1.json（工具评估：主断言 + 描述性 (b) 比值）"
+  ],
+  "boundaries": "不改 validate_p11_resting.py（0d3c1d99…）、不改判据表 final=1 行、不改写已判定产物、**不启动 MPS 作业**（J5 在跑，MPS 归主agent）"
  }
 }
