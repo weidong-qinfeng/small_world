@@ -1,6 +1,6 @@
 {
- "verdict_G1": "invalid",
- "verdict_reason": "存在硬失败/口径缺陷/不可能失败的判据（见 hard_failures / guard_failures / duration_flip / 判据级 invalid）⇒ 该轮结论无效；硬失败清单：[]；判据级 invalid：[]；守卫命中：[\"HGUARD/p5_h_determinism@T=120000ms: h_determinism_guard（三元组相同或不可判定）\"]",
+ "verdict_G1": "unavailable",
+ "verdict_reason": "G1 门条件中存在未测项：['p5_c_selfsustain=unavailable', 'p5_e_ei_balance=unavailable', 'p5_g1_tension_quantified=unavailable'] ⇒ 不得判 pass（未测 ≠ 未命中）",
  "gate_conditions": {
   "p5_c_selfsustain": "unavailable",
   "p5_e_ei_balance": "unavailable",
@@ -126,9 +126,9 @@
    "reason": "需 ≥3 个剂量点（含 zero_drive）才能识别张力；现 1 点（另需逐神经元 counts 才有中位率/静默）"
   }
  },
- "exit_code": 2,
+ "exit_code": 3,
  "generated_by": "tools/validate_p11_resting.py",
- "generated_at": "2026-10-13T06:20:08",
+ "generated_at": "2026-10-13T12:50:02",
  "role": "M11 P5/G1 离线评估（只做分析，不做仿真；不写判据带）",
  "protocol_path": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_smoke_protocol_S7.json",
  "protocol": {
@@ -520,7 +520,18 @@
    "protocol_seed": 0,
    "protocol_dt_ms": 0.05,
    "protocol_bin_ms": 100.0,
-   "protocol_smooth_frames": 5.0
+   "protocol_smooth_frames": 5.0,
+   "monotone_dose_median": null,
+   "monotone_pooled_15pt": null,
+   "dose_level_median_rates": [
+    0.22366666666666665
+   ],
+   "dose_level_mean_rates": [
+    0.22366666666666665
+   ],
+   "dose_grid": [
+    1.0
+   ]
   },
   {
    "config_id": "HGUARD",
@@ -632,8 +643,8 @@
    "ci_lo": null,
    "ci_hi": null,
    "status": "invalid",
-   "reason": "h_determinism_not_evidence（纪律第四十五条）：rep_same_triple vs src_h：三元组相同 {'net_seed': 0, 'event_seed': 11, 'reset_seed': 0} ⇒ 不可能失败 ⇒ 该判据在本配置下**不可能失败**（确定性引擎 + 同一三元组）⇒ 其 `pass` 不构成证据；复刻轴须改为**可变的** net_seed/event_seed（R93）后重跑",
-   "evidence_class": "engineering_sanity",
+   "reason": "【P5 登记项 —— not_applicable_to_p5（主agent R97 §②）】(h) 的语义 = **跨进程位一致（同 config/seed 重跑）**，属 **G0** 的性质（G0 已用 3 进程 sha256 一致证明）；**P5 只作登记、不作 P5 判据**。h_determinism_not_evidence（纪律第四十五条）：rep_same_triple vs src_h：三元组相同 {'net_seed': 0, 'event_seed': 11, 'reset_seed': 0} ⇒ 不可能失败 ⇒ 该判据在本配置下**不可能失败**（确定性引擎 + 同一三元组）⇒ 其 `pass` 不构成证据；复刻轴须改为**可变的** net_seed/event_seed（R93）后重跑",
+   "evidence_class": "registration_only(not_applicable_to_p5)",
    "discriminative": null,
    "baseline_value": null,
    "baseline_meets": null,
@@ -648,7 +659,9 @@
    "protocol_seed": 0,
    "protocol_dt_ms": 0.05,
    "protocol_bin_ms": 100.0,
-   "protocol_smooth_frames": 5.0
+   "protocol_smooth_frames": 5.0,
+   "p5_role": "registered_not_judged",
+   "semantics_note": "(h) 语义 = 跨进程位一致（同 config/seed 重跑），属 G0 性质（G0 已用 3 进程 sha256 一致证明）；P5 只作登记、不作 P5 判据（主agent R97 §②）"
   },
   {
    "config_id": "HGUARD",

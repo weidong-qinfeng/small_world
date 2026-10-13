@@ -558,3 +558,50 @@ R93 给 (c) 加了 `_effective_seed_check()`，但 **(h) `p5_h_determinism` 仍�
    判据设计时应对每条断言追问：**在这个配置下，它本来可能失败吗？** 不能 ⇒ 该判据只能标 `invalid/insufficient`。
 26. **同型遗漏要成对扫描**：我为 (c) 加了复刻轴守卫后，(h) **同源同型**却被漏掉 ⇒
    以后加一条"不可能失败"类守卫时，**必须把同一根因的所有判据一并扫一遍**（(c)/(h)/孪生臂/determinism 家族）。
+
+## L30 — R96 §① (d) 单调口径修正 + R97 §② (h) 登记语义
+
+### L30.1 (d) `p5_d_drive_elasticity`：**聚合层次错位**（确为口径问题，非数据问题）
+- **定位**：旧实现 `pts = sorted({(drive_mult, rate) ...}, key=lambda t: t[0])` —— 集合内**同一剂量下的多个 seed 顺序任意**，
+  随后 `monotone = all(b >= a)` 在**这 15 个池化点**上判 ⇒ **seed 间离散本身就能破坏单调性**。
+- **实测违反对（p5_C, T=10 s）全部是"同剂量内"**：`(0.0, 0.119653) → (0.0, 0.104871)`、`(0.5,…)→(0.5,…)` 等 **5 处**（每剂量 1 处）；
+  而**剂量级中位数严格递增**（见下）。
+- **修正**：判定序列 = **剂量级聚合值**（主口径 **中位数**，并列均值），dose 排序后判非减；旧口径保留为 `monotone_pooled_15pt`（**仅审计，不参与判定**）。
+  **注释已写入工具**（`_eval_elasticity` 内，"聚合层次错位"说明）。新行字段：`monotone_dose_median / monotone_pooled_15pt / dose_level_median_rates / dose_level_mean_rates / dose_grid`。
+- **修前 / 修后（同一 `m11_p5_protocol_g1_repl_cd.json`）**：
+
+| T | value | 修前 status | 修后 status | 剂量级中位序列（修后） | 旧口径 |
+|---|---|---|---|---|---|
+| 10 s | 1.2819 | **fail**（唯因单调=False） | **pass** | 0.104871 / 0.260559 / **0.373218** / 0.558240 / 0.854102 | False |
+| 20 s | 1.3109 | fail | **pass** | 0.106989 / 0.260974 / 0.373877 / 0.558801 / 0.850781 | False |
+| 40 s | 1.2988 | fail | **pass** | 0.107785 / 0.262830 / 0.374066 / 0.558575 / 0.848215 | False |
+
+  ⇒ 序列**严格递增**（五档、每档 3 seed，剂量网格 `[0,0.5,1,2,4]`）；value 均 ≥0.3 下限。输出文件 **`m11_p5_resting_eval_repl_v6.{csv,json}`**（**未覆盖** `m11_p5_resting_eval_repl.*`）。
+
+### L30.2 (h) 登记语义（R97 §②1/§②2/§②3）
+- **(h) = 登记项**：判据表新增行 **`p5_h_determinism_semantics = not_applicable_to_p5`**（append-only；CSV 103 行 / JSON 115 行）；
+  工具输出把 (h) 行标 `evidence_class=registration_only(not_applicable_to_p5)`、`p5_role=registered_not_judged`，reason 首句注明"属 G0 性质、P5 只登记"。
+- **D 段复刻臂 seed 约定**（写入 `m11_p5_lever_prereg.json::replica_axis_convention`）：**复刻臂 `seed` 必须与源臂相同**；
+  并区分**两种"复刻"**：① 独立实现轴（**net_seed 变**）用于 (c) 的 ≥3 seed 统计门；② 位一致轴（**seed 同**）用于 (h)/G0 的跨进程确定性登记。
+  本轮 repl 的 D 段用了 `seed=7`（源臂 0）⇒ **不同 seed ⇒ 必然不同** ⇒ (h) 判 fail（登记如实）；下一批计划恢复同 seed 后才有意义。
+- **守卫保留**（不改 `(net,event)` 对形式，理由 R95 §⑤：B2 的计划级断言管计划缺陷，本守卫管"该行不构成 P5 证据"，**各司其职**）；
+  **作用域界定**：守卫命中仍写 `guard_failures`（审计）+ 该行 `invalid`，但因 (h) 已是**登记项**，**不再驱动整轮 verdict**
+  （连带语义变化：冒烟 **S7 由 `invalid`/exit2 变为 `unavailable`/exit3**，而 **(h)=invalid、guards=1 照旧** —— 已登记）。
+- **repl v6 终态**：`gate = {c: fail, e: pass, tension: unavailable}` ⇒ **verdict = `fail` / exit=1**，`hard_failures=[]`，`guard_failures=0`
+  （D 段 seed=7 ⇒ 三元组**不同** ⇒ "不构成证据"守卫不适用；该行 fail 是**如实登记**的位不一致）⇒ **与主agent R97 §③ 的 G1 终态 `fail ∧ pass ∧ unavailable` 一致**。
+
+### L30.3 哈希（现场重算）
+| 时点 | 工具 sha256 | 大小 |
+|---|---|---|
+| 本项修改前（= (h) 守卫版） | `f99d5c6cc71beddd3ec7a74d988ceb2d8863a017399feb0a7e4ff5e94c2cf7ae` | 99,312 B |
+| **本次修改后** | 见 L30.4 | — |
+
+### L30.4 工具最终 sha256
+`neural_exploration/tools/validate_p11_resting.py` = **0d3c1d990dfe707720ec316b57ae2bb699181dae0d87042c920638ed9a4c48f3**（102,697 B / 1,649 行；现场 sha256sum 重算）。
+判据表：`data/m11_p5_targets.csv` = **eb5695bda10888bb610e72c1dc402b793cb1468950ed907e212f58b979df2a17**（60,211 B / 103 行）；`m11_p5_targets.json`（115 行；**既有 CSV↔JSON 漂移仍在**，见 L28.4/B-1，未由本次变更引入）。
+
+### L30.5 教训
+27. **判"序关系"必须先把同一工况聚合到同一层再判序**：本次 (d) 把"同剂量多 seed"摊平成并列点 ⇒ 噪声被误读成"非单调"；
+   **凡"单调/排序/凹性"类判据，先检查聚合层次**，并**并列报告两种口径**（主判定用聚合层，池化层仅审计）。
+28. **同一根因的判据家族要成对扫描**（承 L29.6）：(c) 的复刻轴 ↔ (h) 的位一致轴是**两种不同的"复刻"**，
+   **混用会造出"必然失败"或"必然通过"两种伪结论**（R95 改 seed ⇒ 必然 fail；R93 前 seed 惰性 ⇒ 必然 pass/过窄 CI）。

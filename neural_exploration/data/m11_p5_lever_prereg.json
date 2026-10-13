@@ -137,5 +137,12 @@
   "action_taken": "按 >10 min 交主agent 托管 + 终止前先看进度：看进度（5.7% 占空比、零产物）=> 终止 => 转为托管作业 J7（见 m11_b3_managed_jobs.json）",
   "why_this_probe_matters": "它只有一个目的：证明复刻轴修正（改 net_seed）确实改变实现。若 J7 两臂 pop_trace 不同 => 修正有效，(c)/(h) 才能按 >=3 独立实现重判；若仍相同 => net_seed 未接入网络构建，须由 B2 查 build_laminar_probe_column 的 seed 用法（更深一层缺陷）。",
   "not_claimed": "本节点未取得该探针的任何数值结论；复刻轴修正尚未被验证"
+ },
+ "replica_axis_convention": {
+  "rule_1_effective_axis": "复刻（独立实现）一律用 **net_seed**（必要时叠加 event_seed）；`seed` 只进 `eng.reset`，实测**不改变实现** ⇒ 不得作为复刻轴（R93/L28.2）",
+  "rule_2_determinism_arms": "**(h)/D 段的复刻臂 `seed` 必须与源臂相同**（R97 §②2）：(h) 的语义 = **跨进程位一致**（属 G0 性质），其复刻臂与源臂必须同 config/同 seed；改 seed ⇒ 必然不同 ⇒ 造出「必然失败」配置（R95 裁决⑥ 的实现错误，已由主agent 更正）",
+  "rule_3_two_distinct_purposes": "**两种『复刻』不可混用**：① **独立实现轴（net_seed 变）** 用于 (c) 的 ≥3 seed 统计门；② **位一致轴（seed 同）** 用于 (h)/G0 的跨进程确定性登记。",
+  "rule_4_p5_role": "(h) 在 P5 中为**登记项**（`not_applicable_to_p5`，判据表 `p5_h_determinism_semantics`），不作 P5 判据",
+  "rule_5_guard_scope": "工具守卫 `h_determinism_not_evidence` 保留（三元组相同/不可判定 ⇒ 该行不构成 P5 证据 ⇒ invalid）；命中记入 `guard_failures`（审计），因 (h) 为登记项而**不驱动整轮 verdict**"
  }
 }

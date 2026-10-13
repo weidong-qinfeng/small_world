@@ -341,7 +341,7 @@
  },
  "exit_code": 3,
  "generated_by": "tools/validate_p11_resting.py",
- "generated_at": "2026-10-13T06:20:20",
+ "generated_at": "2026-10-13T12:50:02",
  "role": "M11 P5/G1 离线评估（只做分析，不做仿真；不写判据带）",
  "protocol_path": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_smoke_protocol_S5.json",
  "protocol": {
@@ -842,7 +842,21 @@
    "protocol_seed": 0,
    "protocol_dt_ms": 0.05,
    "protocol_bin_ms": 100.0,
-   "protocol_smooth_frames": 5
+   "protocol_smooth_frames": 5,
+   "monotone_dose_median": true,
+   "monotone_pooled_15pt": true,
+   "dose_level_median_rates": [
+    0.038,
+    0.224
+   ],
+   "dose_level_mean_rates": [
+    0.038,
+    0.224
+   ],
+   "dose_grid": [
+    0.0,
+    1.0
+   ]
   },
   {
    "config_id": "LADDER_M0",
@@ -955,7 +969,7 @@
    "ci_hi": null,
    "status": "unavailable",
    "reason": "no_replica_arm（(h) 要求同参数重复臂；本工具只比较，不生成）",
-   "evidence_class": "engineering_sanity",
+   "evidence_class": "registration_only(not_applicable_to_p5)",
    "discriminative": null,
    "baseline_value": null,
    "baseline_meets": null,
@@ -970,7 +984,9 @@
    "protocol_seed": 0,
    "protocol_dt_ms": 0.05,
    "protocol_bin_ms": 100.0,
-   "protocol_smooth_frames": 5
+   "protocol_smooth_frames": 5,
+   "p5_role": "registered_not_judged",
+   "semantics_note": "(h) 语义 = 跨进程位一致（同 config/seed 重跑），属 G0 性质（G0 已用 3 进程 sha256 一致证明）；P5 只作登记、不作 P5 判据（主agent R97 §②）"
   },
   {
    "config_id": "LADDER_M0",
@@ -1218,7 +1234,21 @@
    "protocol_seed": 0,
    "protocol_dt_ms": 0.05,
    "protocol_bin_ms": 100.0,
-   "protocol_smooth_frames": 5
+   "protocol_smooth_frames": 5,
+   "monotone_dose_median": true,
+   "monotone_pooled_15pt": true,
+   "dose_level_median_rates": [
+    0.03846666666666666,
+    0.22366666666666665
+   ],
+   "dose_level_mean_rates": [
+    0.03846666666666666,
+    0.22366666666666665
+   ],
+   "dose_grid": [
+    0.0,
+    1.0
+   ]
   },
   {
    "config_id": "LADDER_M0",
@@ -1331,7 +1361,7 @@
    "ci_hi": null,
    "status": "unavailable",
    "reason": "no_replica_arm（(h) 要求同参数重复臂；本工具只比较，不生成）",
-   "evidence_class": "engineering_sanity",
+   "evidence_class": "registration_only(not_applicable_to_p5)",
    "discriminative": null,
    "baseline_value": null,
    "baseline_meets": null,
@@ -1346,7 +1376,9 @@
    "protocol_seed": 0,
    "protocol_dt_ms": 0.05,
    "protocol_bin_ms": 100.0,
-   "protocol_smooth_frames": 5
+   "protocol_smooth_frames": 5,
+   "p5_role": "registered_not_judged",
+   "semantics_note": "(h) 语义 = 跨进程位一致（同 config/seed 重跑），属 G0 性质（G0 已用 3 进程 sha256 一致证明）；P5 只作登记、不作 P5 判据（主agent R97 §②）"
   },
   {
    "config_id": "LADDER_M0",
@@ -1594,7 +1626,21 @@
    "protocol_seed": 0,
    "protocol_dt_ms": 0.05,
    "protocol_bin_ms": 100.0,
-   "protocol_smooth_frames": 5
+   "protocol_smooth_frames": 5,
+   "monotone_dose_median": true,
+   "monotone_pooled_15pt": true,
+   "dose_level_median_rates": [
+    0.03846666666666666,
+    0.22366666666666665
+   ],
+   "dose_level_mean_rates": [
+    0.03846666666666666,
+    0.22366666666666665
+   ],
+   "dose_grid": [
+    0.0,
+    1.0
+   ]
   },
   {
    "config_id": "LADDER_M0",
@@ -1707,7 +1753,7 @@
    "ci_hi": null,
    "status": "unavailable",
    "reason": "no_replica_arm（(h) 要求同参数重复臂；本工具只比较，不生成）",
-   "evidence_class": "engineering_sanity",
+   "evidence_class": "registration_only(not_applicable_to_p5)",
    "discriminative": null,
    "baseline_value": null,
    "baseline_meets": null,
@@ -1722,7 +1768,9 @@
    "protocol_seed": 0,
    "protocol_dt_ms": 0.05,
    "protocol_bin_ms": 100.0,
-   "protocol_smooth_frames": 5
+   "protocol_smooth_frames": 5,
+   "p5_role": "registered_not_judged",
+   "semantics_note": "(h) 语义 = 跨进程位一致（同 config/seed 重跑），属 G0 性质（G0 已用 3 进程 sha256 一致证明）；P5 只作登记、不作 P5 判据（主agent R97 §②）"
   },
   {
    "config_id": "LADDER_M0",

@@ -597,7 +597,8 @@ class Evaluator:
               band_keys: str = "", ci_lo: Any = None, ci_hi: Any = None, n_seeds: Any = None,
               zero_spikes: Any = None, n_neuron: Any = None, evidence_class: str = "working_point_precondition",
               discriminative: Any = None, baseline_value: Any = None, baseline_meets: Any = None,
-              is_primary: int = 1, note: str = "", arm: Optional[Arm] = None) -> None:
+              is_primary: int = 1, note: str = "", arm: Optional[Arm] = None, **extra: Any) -> None:
+        """`**extra`：判据特有的口径字段（如 (d) 的剂量级聚合序列、仅审计用的旧口径）额外落到行上。"""
         assert status in STATES, status
         row = {"config_id": config_id, "T_ms": T_ms, "mechanism": mechanism, "criterion": criterion,
                "estimator": estimator, "value": value, "unit": unit, "band_lo": band_lo, "band_hi": band_hi,
@@ -607,6 +608,8 @@ class Evaluator:
                "is_primary_estimator": is_primary, "n_seeds": n_seeds, "zero_drive_spikes": zero_spikes,
                "n_neuron": n_neuron, "note": note}
         row.update(self._proto_fields(arm, T_ms))
+        if extra:
+            row.update(extra)
         self.rows.append(row)
 
     # ---------------- 主流程 ----------------
@@ -899,26 +902,48 @@ class Evaluator:
             if m.get("trace_sum") is not None and a.n_neuron:
                 return m["trace_sum"] / a.n_neuron / (a.T_ms / 1000.0)
             return None
-        pts = sorted({(a.drive_mult, rate_of(a)) for a in allarms if rate_of(a) is not None},
-                     key=lambda t: t[0])
+        # 【(d) 单调口径修正（主agent R96 §①，与「聚合层次错位」同族）】
+        #   旧实现把 **同一剂量下的多个 seed** 摊成并列点后按 dose 排序（`set` 内顺序任意）再判"不减"
+        #   ⇒ **seed 间离散本身就会破坏单调性**，即使"剂量级中位/均值"严格单调（实测 p5_C：5 个剂量
+        #   的 seed 极差 0.0021–0.0148，导致 5 处**同剂量内**的假违反）。
+        #   **正确口径：判"序关系"必须先把同一工况（同 cell/dose）聚合到同一层，再判序。**
+        #   ⇒ 判定序列 = **剂量级聚合值**（主口径 = 中位数；并列报告均值），dose 排序后判非减。
+        #   旧口径（15 点池化）保留为 `monotone_pooled_15pt` 仅供审计，**不参与判定**。
+        raw_pts = [(a.drive_mult, rate_of(a)) for a in allarms if rate_of(a) is not None]
+        by_dose: Dict[float, List[float]] = {}
+        for dm, rr in raw_pts:
+            by_dose.setdefault(float(dm), []).append(float(rr))
+        doses = sorted(by_dose)
+        dose_med = [float(np.median(by_dose[k])) for k in doses]
+        dose_mean = [float(np.mean(by_dose[k])) for k in doses]
+        n_per_dose = [len(by_dose[k]) for k in doses]
+        pts = sorted(set(raw_pts), key=lambda t: t[0])
         d = dict(pts)
         r1, r4 = d.get(1.0), d.get(4.0)
-        monotone = all(b >= a - 1e-12 for (_, a), (_, b) in zip(pts, pts[1:])) if len(pts) >= 2 else None
+        monotone_dose = (all(b >= a - 1e-12 for a, b in zip(dose_med, dose_med[1:]))
+                         if len(dose_med) >= 2 else None)
+        monotone_pooled = all(b >= a - 1e-12 for (_, a), (_, b) in zip(pts, pts[1:])) if len(pts) >= 2 else None
+        monotone = monotone_dose   # ★ 判定口径（主口径 = 剂量级中位数）
         if r1 is None or r4 is None or r1 <= 0:
             status, reason, val = "unavailable", "dose_arm_missing(需 drive_mult∈{1,4} 且基准群率>0)", None
         elif lo_lim is None:
             status, reason, val = "unavailable", "band_not_finalized: drive_elasticity_min", None
         else:
             val = (r4 - r1) / r1
-            ok = (val >= lo_lim) and bool(monotone)
+            ok = (val >= lo_lim) and bool(monotone_dose)
             status = "pass" if ok else "fail"
-            reason = (f"4× 增幅={val:+.4f}（下限 {lo_lim}）、单调={monotone}、剂量点={[p[0] for p in pts]}"
+            reason = (f"4× 增幅={val:+.4f}（下限 {lo_lim}）；**单调（剂量级中位数）= {monotone_dose}**、"
+                      f"剂量级中位序列={[round(x, 6) for x in dose_med]}、剂量级均值序列={[round(x, 6) for x in dose_mean]}、"
+                      f"剂量网格={doses}、每剂量 seed 数={n_per_dose}；"
+                      f"【审计】旧口径 15 点池化单调={monotone_pooled}（**不参与判定**：seed 间离散会破坏它）"
                       + ("；【登记条款】该判据通过**不得**作为机制有效性证据"
                          if (reg == 0) else ""))
         self._emit(config_id=cfg, T_ms=T_ms, mechanism=mech, criterion=CRIT["d"],
                    estimator="per_neuron(pop_mean_rate)",
                    value=val, unit="", status=status, reason=reason, band_lo=lo_lim, band_hi=None,
                    band_keys="drive_elasticity_min", n_seeds=len({a.seed for a in allarms if a.seed is not None}) or None,
+                   monotone_dose_median=monotone_dose, monotone_pooled_15pt=monotone_pooled,
+                   dose_level_median_rates=dose_med, dose_level_mean_rates=dose_mean, dose_grid=doses,
                    n_neuron=n_neuron, evidence_class="sanity_precondition(non_discriminative)",
                    discriminative=(False if reg == 0 else None),
                    baseline_value=None, baseline_meets=None,
@@ -1037,7 +1062,9 @@ class Evaluator:
             st, rs = "unavailable", "no_replica_arm（(h) 要求同参数重复臂；本工具只比较，不生成）"
         elif guard_hits:
             st = "invalid"
-            rs = ("h_determinism_not_evidence（纪律第四十五条）：" + "；".join(guard_hits) +
+            rs = ("【P5 登记项 —— not_applicable_to_p5（主agent R97 §②）】(h) 的语义 = **跨进程位一致（同 config/seed 重跑）**，"
+                  "属 **G0** 的性质（G0 已用 3 进程 sha256 一致证明）；**P5 只作登记、不作 P5 判据**。"
+                  "h_determinism_not_evidence（纪律第四十五条）：" + "；".join(guard_hits) +
                   " ⇒ 该判据在本配置下**不可能失败**（确定性引擎 + 同一三元组）⇒ 其 `pass` 不构成证据"
                   "；复刻轴须改为**可变的** net_seed/event_seed（R93）后重跑")
             self.guard_failures.append(f"{cfg}/{CRIT['h']}@T={T_ms:g}ms: h_determinism_guard（三元组相同或不可判定）")
@@ -1045,13 +1072,19 @@ class Evaluator:
             st = "fail"
             rs = f"同参数重跑脉冲数不一致：{['%s(%s vs %s)' % (d['arm'], d.get('spk_a'), d.get('spk_b')) for d in detail if d.get('identical') is False]}"
         elif all(d.get("identical") is True for d in detail):
-            st, rs = "pass", "同参数重复臂逐值一致（统计级）"
+            st = "pass"
+            rs = ("【P5 登记项 —— not_applicable_to_p5（主agent R97 §②）】(h) 的语义 = 跨进程位一致（同 config/seed），属 G0；"
+                  "P5 只登记、不判 —— 本行的 pass 亦**不得**作为 P5 判据；同参数重复臂逐值一致（统计级）")
         else:
-            st, rs = "unavailable", f"replica 比较不可完成：{detail}"
+            st, rs = "unavailable", (f"【P5 登记项 —— not_applicable_to_p5（R97 §②）】(h) 属 G0 性质；"
+                                     f"P5 只登记：replica 比较不可完成：{detail}")
         self._emit(config_id=cfg, T_ms=T_ms, mechanism=mech, criterion=CRIT["h"], estimator="spk_total_identity",
                    value=(int(all(d.get("identical") is True for d in detail)) if detail and reps else None),
                    unit="bool", status=st, reason=rs, band_keys="determinism_mode", n_neuron=n_neuron,
-                   evidence_class="engineering_sanity", arm=(arms[0] if arms else None))
+                   evidence_class="registration_only(not_applicable_to_p5)", arm=(arms[0] if arms else None),
+                   p5_role="registered_not_judged",
+                   semantics_note=("(h) 语义 = 跨进程位一致（同 config/seed 重跑），属 G0 性质（G0 已用 3 进程 sha256 一致证明）；"
+                                   "P5 只作登记、不作 P5 判据（主agent R97 §②）"))
 
         # (i) 标定权衡：(a) ∧ (b)
         a_rows = [r for r in self.rows if r["config_id"] == cfg and abs(r["T_ms"] - T_ms) < 1e-9
@@ -1305,9 +1338,10 @@ class Evaluator:
         # R-G1：阶梯的 prefix 同一性**不再**单独触发 invalid（见 _duration_ladder 的降级说明）；
         # 阶梯仍可在别处为 invalid（例如跨 T 判定翻转 ⇒ _apply_duration_flip）
         ladder_bad = [cfg for cfg, blk in self.duration_ladder.items() if blk["status"] == "invalid"]
-        # 纪律第四十五条：**不可能失败的判据**（守卫命中）⇒ 该轮不得判 pass（guard_failures 非空 ⇒ invalid）
-        invalid = (bool(self.hard_failures) or "invalid" in gate.values() or bool(ladder_bad)
-                   or bool(self.guard_failures))
+        # 纪律第四十五条的**作用域界定**（主agent R97 §②）：(h) 现为 **P5 登记项**（not_applicable_to_p5）
+        #   ⇒ 其守卫命中记入 `guard_failures`（审计 + 行状态 invalid）**但不再驱动整轮 verdict**
+        #   （登记项不该决定整轮有效性；`guard_failures` 仍完整落盘，供 G0/P6 侧读取）。
+        invalid = (bool(self.hard_failures) or "invalid" in gate.values() or bool(ladder_bad))
         if invalid:
             g1, why = "invalid", ("存在硬失败/口径缺陷/不可能失败的判据（见 hard_failures / guard_failures / duration_flip / 判据级 invalid）⇒ 该轮结论无效；"
                                   "硬失败清单：" + (json.dumps(self.hard_failures, ensure_ascii=False) if self.hard_failures else "[]")
