@@ -1,0 +1,452 @@
+{
+ "tool": "tools/price_m11_p5_l1.py",
+ "generated_at": "2026-10-13T20:15:16",
+ "plan_path": "neural_exploration/data/m11_p5_plan_l1.json",
+ "plan_sha256": "8b58577222038ff91d4550a94101b09fcaa4a6d1bdfaac4d9f3451d8b36366cf",
+ "units": {
+  "gpu_h": "GPU-hour=3.6e6 ms",
+  "ms_per_step": "millisecond per step",
+  "note": "gpu_h = steps × ms_per_step / 3.6e6"
+ },
+ "unit_prices": {
+  "bias1_chunk_ms": {
+   "0.0": 0.6545,
+   "0.5": 0.813,
+   "1.0": 0.9482,
+   "2.0": 0.9587,
+   "4.0": 0.972
+  },
+  "bias07_dose1_ms": 0.7964,
+  "bias07_over_bias1_ratio": 0.839907192575406,
+  "upper_ms": 0.972,
+  "source": "G1 实测 + L0 干跑实测（MPS）"
+ },
+ "dimension_self_check": {
+  "identity": "gpu_h = steps×ms_per_step/3.6e6",
+  "worked_example": {
+   "steps": 210000,
+   "ms": 0.7964,
+   "gpu_h": 0.04645666666666667
+  },
+  "prereg_scan_mid": 1.115
+ },
+ "scan": {
+  "n_runs": 24,
+  "steps": 5040000,
+  "gpu_h_mid": 1.1149600000000002,
+  "gpu_h_upper": 1.3607999999999996,
+  "gpu_h_dose_aware": 0.9422834802784222,
+  "prereg_mid": 1.115,
+  "prereg_upper": 1.361,
+  "delta_vs_prereg_mid": -3.999999999981796e-05
+ },
+ "final_confirm": {
+  "n_runs": 45,
+  "steps": 21450000,
+  "gpu_h_mid": 4.350265707656614,
+  "prereg_mid": 4.745,
+  "downgrade_3doses": {
+   "n_runs": 27,
+   "steps": 12870000,
+   "gpu_h_mid": 2.576989949729312
+  }
+ },
+ "twin_arms": {
+  "n_runs": 4,
+  "steps": 840000,
+  "gpu_h_mid": 0.1593793890177881
+ },
+ "refine_round": {
+  "n_runs": 12,
+  "steps": 2520000,
+  "gpu_h_mid": 0.55748
+ },
+ "totals": {
+  "mid_gpu_h": 6.182085096674402,
+  "upper_gpu_h": 8.0595,
+  "conservative_gpu_h": 7.3937583333333325,
+  "conservative_parts": {
+   "scan": 1.3607999999999996,
+   "final_confirm": 5.17946,
+   "twin": 0.18975833333333333,
+   "refine": 0.66374
+  },
+  "upper_parts": {
+   "scan": 1.3607999999999996,
+   "final_confirm": 5.7915,
+   "twin": 0.2268,
+   "refine": 0.6804
+  },
+  "downgraded_total_gpu_h": 4.2361328190255225,
+  "prereg_total_mid": 6.907,
+  "prereg_total_upper": 8.322,
+  "envelope_gpu_h": 10.0,
+  "within_envelope": true,
+  "wall_clock_note": "MPS 串行 ≈ mid GPU-h 小时；另加逐臂新进程开销（本节点实测 8k 短臂 6–7 s，10 s 档约 30–60 s/臂）"
+ },
+ "cpu_probe_cross_environment": "本次 σ 探针在 **CPU** 侧实测 chunk = 0.2600(σ=0.3), 0.2253(σ=0.3), 0.2664(σ=0.9), 0.2470(σ=0.9) ms/step（N=8192/T=1 s），而预算用的是 **MPS** 实测 0.7964/0.9482 ⇒ **两者不是同口径、不可直接比价**；且 R78 要求跨设备可比性须由孪生臂（同 spec、两设备、pop_trace 逐位/统计一致）先证 —— 属主 agent 的 MPS 权限范围",
+ "cpu_probe_prices": [
+  {
+   "run_id": "l1probe_s0.30_8192_T1000ms_d1_s1",
+   "device": "cpu",
+   "ms_per_step": 0.26000028334999997,
+   "sigma": 0.3
+  },
+  {
+   "run_id": "l1probe_s0.30_8192_T1000ms_d1_s0",
+   "device": "cpu",
+   "ms_per_step": 0.22533482500000002,
+   "sigma": 0.3
+  },
+  {
+   "run_id": "l1probe_s0.90_8192_T1000ms_d1_s0_dup",
+   "device": "cpu",
+   "ms_per_step": 0.26636170625,
+   "sigma": 0.9
+  },
+  {
+   "run_id": "l1probe_s0.90_8192_T1000ms_d1_s0",
+   "device": "cpu",
+   "ms_per_step": 0.24700099375000004,
+   "sigma": 0.9
+  }
+ ],
+ "rows": [
+  {
+   "segment": "L1_sigma_scan",
+   "run_id": "l1_b0.70_g1.00_s0.30_8192_T10000ms_d0_s0",
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "bias_log_sigma": 0.3,
+   "drive_mult": 0.0,
+   "role": "zero_drive",
+   "steps": 210000,
+   "ms_mid": 0.7964,
+   "ms_dose_aware": 0.5497192575406032,
+   "gpu_h_mid": 0.04645666666666667,
+   "gpu_h_upper": 0.0567,
+   "gpu_h_dose_aware": 0.032066956689868524
+  },
+  {
+   "segment": "L1_sigma_scan",
+   "run_id": "l1_b0.70_g1.00_s0.30_8192_T10000ms_d0_s1",
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "bias_log_sigma": 0.3,
+   "drive_mult": 0.0,
+   "role": "zero_drive",
+   "steps": 210000,
+   "ms_mid": 0.7964,
+   "ms_dose_aware": 0.5497192575406032,
+   "gpu_h_mid": 0.04645666666666667,
+   "gpu_h_upper": 0.0567,
+   "gpu_h_dose_aware": 0.032066956689868524
+  },
+  {
+   "segment": "L1_sigma_scan",
+   "run_id": "l1_b0.70_g1.00_s0.30_8192_T10000ms_d0_s2",
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "bias_log_sigma": 0.3,
+   "drive_mult": 0.0,
+   "role": "zero_drive",
+   "steps": 210000,
+   "ms_mid": 0.7964,
+   "ms_dose_aware": 0.5497192575406032,
+   "gpu_h_mid": 0.04645666666666667,
+   "gpu_h_upper": 0.0567,
+   "gpu_h_dose_aware": 0.032066956689868524
+  },
+  {
+   "segment": "L1_sigma_scan",
+   "run_id": "l1_b0.70_g1.00_s0.30_8192_T10000ms_d1_s0",
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "bias_log_sigma": 0.3,
+   "drive_mult": 1.0,
+   "role": "baseline",
+   "steps": 210000,
+   "ms_mid": 0.7964,
+   "ms_dose_aware": 0.7964,
+   "gpu_h_mid": 0.04645666666666667,
+   "gpu_h_upper": 0.0567,
+   "gpu_h_dose_aware": 0.04645666666666667
+  },
+  {
+   "segment": "L1_sigma_scan",
+   "run_id": "l1_b0.70_g1.00_s0.30_8192_T10000ms_d1_s1",
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "bias_log_sigma": 0.3,
+   "drive_mult": 1.0,
+   "role": "baseline",
+   "steps": 210000,
+   "ms_mid": 0.7964,
+   "ms_dose_aware": 0.7964,
+   "gpu_h_mid": 0.04645666666666667,
+   "gpu_h_upper": 0.0567,
+   "gpu_h_dose_aware": 0.04645666666666667
+  },
+  {
+   "segment": "L1_sigma_scan",
+   "run_id": "l1_b0.70_g1.00_s0.30_8192_T10000ms_d1_s2",
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "bias_log_sigma": 0.3,
+   "drive_mult": 1.0,
+   "role": "baseline",
+   "steps": 210000,
+   "ms_mid": 0.7964,
+   "ms_dose_aware": 0.7964,
+   "gpu_h_mid": 0.04645666666666667,
+   "gpu_h_upper": 0.0567,
+   "gpu_h_dose_aware": 0.04645666666666667
+  },
+  {
+   "segment": "L1_sigma_scan",
+   "run_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s0",
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "bias_log_sigma": 0.45,
+   "drive_mult": 0.0,
+   "role": "zero_drive",
+   "steps": 210000,
+   "ms_mid": 0.7964,
+   "ms_dose_aware": 0.5497192575406032,
+   "gpu_h_mid": 0.04645666666666667,
+   "gpu_h_upper": 0.0567,
+   "gpu_h_dose_aware": 0.032066956689868524
+  },
+  {
+   "segment": "L1_sigma_scan",
+   "run_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s1",
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "bias_log_sigma": 0.45,
+   "drive_mult": 0.0,
+   "role": "zero_drive",
+   "steps": 210000,
+   "ms_mid": 0.7964,
+   "ms_dose_aware": 0.5497192575406032,
+   "gpu_h_mid": 0.04645666666666667,
+   "gpu_h_upper": 0.0567,
+   "gpu_h_dose_aware": 0.032066956689868524
+  },
+  {
+   "segment": "L1_sigma_scan",
+   "run_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s2",
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "bias_log_sigma": 0.45,
+   "drive_mult": 0.0,
+   "role": "zero_drive",
+   "steps": 210000,
+   "ms_mid": 0.7964,
+   "ms_dose_aware": 0.5497192575406032,
+   "gpu_h_mid": 0.04645666666666667,
+   "gpu_h_upper": 0.0567,
+   "gpu_h_dose_aware": 0.032066956689868524
+  },
+  {
+   "segment": "L1_sigma_scan",
+   "run_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d1_s0",
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "bias_log_sigma": 0.45,
+   "drive_mult": 1.0,
+   "role": "baseline",
+   "steps": 210000,
+   "ms_mid": 0.7964,
+   "ms_dose_aware": 0.7964,
+   "gpu_h_mid": 0.04645666666666667,
+   "gpu_h_upper": 0.0567,
+   "gpu_h_dose_aware": 0.04645666666666667
+  },
+  {
+   "segment": "L1_sigma_scan",
+   "run_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d1_s1",
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "bias_log_sigma": 0.45,
+   "drive_mult": 1.0,
+   "role": "baseline",
+   "steps": 210000,
+   "ms_mid": 0.7964,
+   "ms_dose_aware": 0.7964,
+   "gpu_h_mid": 0.04645666666666667,
+   "gpu_h_upper": 0.0567,
+   "gpu_h_dose_aware": 0.04645666666666667
+  },
+  {
+   "segment": "L1_sigma_scan",
+   "run_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d1_s2",
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "bias_log_sigma": 0.45,
+   "drive_mult": 1.0,
+   "role": "baseline",
+   "steps": 210000,
+   "ms_mid": 0.7964,
+   "ms_dose_aware": 0.7964,
+   "gpu_h_mid": 0.04645666666666667,
+   "gpu_h_upper": 0.0567,
+   "gpu_h_dose_aware": 0.04645666666666667
+  },
+  {
+   "segment": "L1_sigma_scan",
+   "run_id": "l1_b0.70_g1.00_s0.60_8192_T10000ms_d0_s0",
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "bias_log_sigma": 0.6,
+   "drive_mult": 0.0,
+   "role": "zero_drive",
+   "steps": 210000,
+   "ms_mid": 0.7964,
+   "ms_dose_aware": 0.5497192575406032,
+   "gpu_h_mid": 0.04645666666666667,
+   "gpu_h_upper": 0.0567,
+   "gpu_h_dose_aware": 0.032066956689868524
+  },
+  {
+   "segment": "L1_sigma_scan",
+   "run_id": "l1_b0.70_g1.00_s0.60_8192_T10000ms_d0_s1",
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "bias_log_sigma": 0.6,
+   "drive_mult": 0.0,
+   "role": "zero_drive",
+   "steps": 210000,
+   "ms_mid": 0.7964,
+   "ms_dose_aware": 0.5497192575406032,
+   "gpu_h_mid": 0.04645666666666667,
+   "gpu_h_upper": 0.0567,
+   "gpu_h_dose_aware": 0.032066956689868524
+  },
+  {
+   "segment": "L1_sigma_scan",
+   "run_id": "l1_b0.70_g1.00_s0.60_8192_T10000ms_d0_s2",
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "bias_log_sigma": 0.6,
+   "drive_mult": 0.0,
+   "role": "zero_drive",
+   "steps": 210000,
+   "ms_mid": 0.7964,
+   "ms_dose_aware": 0.5497192575406032,
+   "gpu_h_mid": 0.04645666666666667,
+   "gpu_h_upper": 0.0567,
+   "gpu_h_dose_aware": 0.032066956689868524
+  },
+  {
+   "segment": "L1_sigma_scan",
+   "run_id": "l1_b0.70_g1.00_s0.60_8192_T10000ms_d1_s0",
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "bias_log_sigma": 0.6,
+   "drive_mult": 1.0,
+   "role": "baseline",
+   "steps": 210000,
+   "ms_mid": 0.7964,
+   "ms_dose_aware": 0.7964,
+   "gpu_h_mid": 0.04645666666666667,
+   "gpu_h_upper": 0.0567,
+   "gpu_h_dose_aware": 0.04645666666666667
+  },
+  {
+   "segment": "L1_sigma_scan",
+   "run_id": "l1_b0.70_g1.00_s0.60_8192_T10000ms_d1_s1",
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "bias_log_sigma": 0.6,
+   "drive_mult": 1.0,
+   "role": "baseline",
+   "steps": 210000,
+   "ms_mid": 0.7964,
+   "ms_dose_aware": 0.7964,
+   "gpu_h_mid": 0.04645666666666667,
+   "gpu_h_upper": 0.0567,
+   "gpu_h_dose_aware": 0.04645666666666667
+  },
+  {
+   "segment": "L1_sigma_scan",
+   "run_id": "l1_b0.70_g1.00_s0.60_8192_T10000ms_d1_s2",
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "bias_log_sigma": 0.6,
+   "drive_mult": 1.0,
+   "role": "baseline",
+   "steps": 210000,
+   "ms_mid": 0.7964,
+   "ms_dose_aware": 0.7964,
+   "gpu_h_mid": 0.04645666666666667,
+   "gpu_h_upper": 0.0567,
+   "gpu_h_dose_aware": 0.04645666666666667
+  },
+  {
+   "segment": "L1_sigma_scan",
+   "run_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d0_s0",
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "bias_log_sigma": 0.9,
+   "drive_mult": 0.0,
+   "role": "zero_drive",
+   "steps": 210000,
+   "ms_mid": 0.7964,
+   "ms_dose_aware": 0.5497192575406032,
+   "gpu_h_mid": 0.04645666666666667,
+   "gpu_h_upper": 0.0567,
+   "gpu_h_dose_aware": 0.032066956689868524
+  },
+  {
+   "segment": "L1_sigma_scan",
+   "run_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d0_s1",
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "bias_log_sigma": 0.9,
+   "drive_mult": 0.0,
+   "role": "zero_drive",
+   "steps": 210000,
+   "ms_mid": 0.7964,
+   "ms_dose_aware": 0.5497192575406032,
+   "gpu_h_mid": 0.04645666666666667,
+   "gpu_h_upper": 0.0567,
+   "gpu_h_dose_aware": 0.032066956689868524
+  },
+  {
+   "segment": "L1_sigma_scan",
+   "run_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d0_s2",
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "bias_log_sigma": 0.9,
+   "drive_mult": 0.0,
+   "role": "zero_drive",
+   "steps": 210000,
+   "ms_mid": 0.7964,
+   "ms_dose_aware": 0.5497192575406032,
+   "gpu_h_mid": 0.04645666666666667,
+   "gpu_h_upper": 0.0567,
+   "gpu_h_dose_aware": 0.032066956689868524
+  },
+  {
+   "segment": "L1_sigma_scan",
+   "run_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d1_s0",
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "bias_log_sigma": 0.9,
+   "drive_mult": 1.0,
+   "role": "baseline",
+   "steps": 210000,
+   "ms_mid": 0.7964,
+   "ms_dose_aware": 0.7964,
+   "gpu_h_mid": 0.04645666666666667,
+   "gpu_h_upper": 0.0567,
+   "gpu_h_dose_aware": 0.04645666666666667
+  },
+  {
+   "segment": "L1_sigma_scan",
+   "run_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d1_s1",
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "bias_log_sigma": 0.9,
+   "drive_mult": 1.0,
+   "role": "baseline",
+   "steps": 210000,
+   "ms_mid": 0.7964,
+   "ms_dose_aware": 0.7964,
+   "gpu_h_mid": 0.04645666666666667,
+   "gpu_h_upper": 0.0567,
+   "gpu_h_dose_aware": 0.04645666666666667
+  },
+  {
+   "segment": "L1_sigma_scan",
+   "run_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d1_s2",
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "bias_log_sigma": 0.9,
+   "drive_mult": 1.0,
+   "role": "baseline",
+   "steps": 210000,
+   "ms_mid": 0.7964,
+   "ms_dose_aware": 0.7964,
+   "gpu_h_mid": 0.04645666666666667,
+   "gpu_h_upper": 0.0567,
+   "gpu_h_dose_aware": 0.04645666666666667
+  }
+ ]
+}

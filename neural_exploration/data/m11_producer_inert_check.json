@@ -1,0 +1,92 @@
+{
+ "tool": "tools/verify_m11_producer_inert.py",
+ "generated_at": "2026-10-13T20:15:39",
+ "pre_change_sha256": "24617d90dd4a6eb9f518244808029ac38dd541e5e5ae3b6b1f9a6ef6b387a596",
+ "post_change_sha256": "eeeb2283cbf6533531ad1a4925b39a5d6815908714587675c2eba8ca612db2b1",
+ "spec_base": {
+  "n_neuron": 1024,
+  "T_ms": 200.0,
+  "settle_ms": 0.0,
+  "drive_mult": 1.0,
+  "drive_rate_hz": 8.0,
+  "seed": 0,
+  "device": "cpu",
+  "config_id": "inert_check",
+  "role": "baseline",
+  "mechanism": "none",
+  "delivery": "chunk",
+  "indegree": 20,
+  "gmax_scale": 1.0,
+  "bias_scale": 0.7,
+  "delay_bins": [
+   40,
+   60,
+   80
+  ],
+  "subtypes": true,
+  "slow": true
+ },
+ "dynamic_fields": [
+  "sha256_of_trace",
+  "agg.spk_total",
+  "ei.ei_ratio",
+  "spikes_total"
+ ],
+ "rows": [
+  {
+   "pair": "旧(无键) vs 新(无键)",
+   "fields": {
+    "sha256_of_trace": [
+     "ef59af47efc796d30c649cb1cc44ecc27a849dc2ad3b0bb3df6385b14242dc3d",
+     "ef59af47efc796d30c649cb1cc44ecc27a849dc2ad3b0bb3df6385b14242dc3d",
+     true
+    ],
+    "agg.spk_total": [
+     64,
+     64,
+     true
+    ],
+    "ei.ei_ratio": [
+     1.391304437051348,
+     1.391304437051348,
+     true
+    ],
+    "spikes_total": [
+     64,
+     64,
+     true
+    ]
+   },
+   "same_product_key_set": true
+  },
+  {
+   "pair": "新(无键) vs 新(σ=0.30 显式)",
+   "fields": {
+    "sha256_of_trace": [
+     "ef59af47efc796d30c649cb1cc44ecc27a849dc2ad3b0bb3df6385b14242dc3d",
+     "ef59af47efc796d30c649cb1cc44ecc27a849dc2ad3b0bb3df6385b14242dc3d",
+     true
+    ],
+    "agg.spk_total": [
+     64,
+     64,
+     true
+    ],
+    "ei.ei_ratio": [
+     1.391304437051348,
+     1.391304437051348,
+     true
+    ],
+    "spikes_total": [
+     64,
+     64,
+     true
+    ]
+   },
+   "same_product_key_set": true
+  }
+ ],
+ "verdict": "惰性成立：加 --bias-log-sigma 对不带该键的臂逐位无影响，且不显式给 ⇒ 等价于显式默认 0.30（既有臂/seed=0 锚点安全）",
+ "failures": [],
+ "elapsed_s": 4.54
+}

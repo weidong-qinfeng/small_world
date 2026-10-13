@@ -1,0 +1,137 @@
+{
+ "tool": "tools/analyze_m11_sigma_probe.py",
+ "generated_at": "2026-10-13T20:15:52",
+ "dir": "neural_exploration/data/m11_p5_l1_sigma_probe",
+ "controlled_pair": {
+  "A": "l1probe_s0.30_8192_T1000ms_d1_s0",
+  "B": "l1probe_s0.90_8192_T1000ms_d1_s0",
+  "key_A": [
+   0,
+   11,
+   0
+  ],
+  "key_B": [
+   0,
+   11,
+   0
+  ],
+  "sigma_A": 0.3,
+  "sigma_B": 0.9,
+  "env_A": {
+   "net.gmax_scale": 1.0,
+   "net.bias_scale": 0.7,
+   "drive_mult": 1.0,
+   "T_ms": 1000.0,
+   "settle_ms": 500.0,
+   "delivery": "chunk",
+   "net.indegree": 20,
+   "net.delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "n_neuron": 8192
+  },
+  "env_B": {
+   "net.gmax_scale": 1.0,
+   "net.bias_scale": 0.7,
+   "drive_mult": 1.0,
+   "T_ms": 1000.0,
+   "settle_ms": 500.0,
+   "delivery": "chunk",
+   "net.indegree": 20,
+   "net.delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "n_neuron": 8192
+  },
+  "controlled": true
+ },
+ "metrics_A": {
+  "n": 8192,
+  "rate_mean": 0.1275634765625,
+  "rate_median": 0.0,
+  "rate_p10": 0.0,
+  "rate_p50": 0.0,
+  "rate_p90": 1.0,
+  "spread_p10_p90": 1.0,
+  "spread_ratio_p90_over_p10": Infinity,
+  "silent_frac": 0.8753662109375,
+  "rate_max": 3.0
+ },
+ "metrics_B": {
+  "n": 8192,
+  "rate_mean": 0.5970458984375,
+  "rate_median": 0.0,
+  "rate_p10": 0.0,
+  "rate_p50": 0.0,
+  "rate_p90": 2.0,
+  "spread_p10_p90": 2.0,
+  "spread_ratio_p90_over_p10": Infinity,
+  "silent_frac": 0.70263671875,
+  "rate_max": 42.0
+ },
+ "sha256_of_trace": {
+  "A": "abbc16c0104975e82ae4fac6e18137bceef5511e2703ee00ff3877bfc7348f0d",
+  "B": "386d5ebd24c756cf829cb707aa098bf1bccb20f86c7f784928535c065c90e553"
+ },
+ "dimension_self_check": {
+  "identity": "rate_hz = counts / (T_ms/1e3)",
+  "counts": 8,
+  "T_ms": 1000.0,
+  "rate_hz": 8.0
+ },
+ "thresholds": {
+  "min_D": 0.1,
+  "noise_mult": 3.0,
+  "min_spread_rel": 0.25,
+  "D_threshold_used": 0.1
+ },
+ "D_KS": 0.1727294921875,
+ "spread_p10_p90_ratio": 2.0,
+ "negative_control": {
+  "tag": "negative_same_sigma",
+  "arms": [
+   "l1probe_s0.90_8192_T1000ms_d1_s0",
+   "l1probe_s0.90_8192_T1000ms_d1_s0_dup"
+  ],
+  "D": 0.0,
+  "bit_identical": true,
+  "spread_p10_p90_ratio": 1.0,
+  "key_X": [
+   0,
+   11,
+   0
+  ],
+  "key_Y": [
+   0,
+   11,
+   0
+  ]
+ },
+ "noise_floor": {
+  "tag": "noise_same_sigma_other_netseed",
+  "arms": [
+   "l1probe_s0.30_8192_T1000ms_d1_s0",
+   "l1probe_s0.30_8192_T1000ms_d1_s1"
+  ],
+  "D": 0.0062255859375,
+  "bit_identical": false,
+  "spread_p10_p90_ratio": 1.0,
+  "key_X": [
+   0,
+   11,
+   0
+  ],
+  "key_Y": [
+   1,
+   12,
+   1
+  ]
+ },
+ "D_noise_floor": 0.0062255859375,
+ "verdict": "EFFECT（σ 真改变了逐神经元率分布的形状）",
+ "failures": []
+}

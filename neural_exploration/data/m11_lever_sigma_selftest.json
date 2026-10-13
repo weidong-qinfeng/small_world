@@ -1,0 +1,105 @@
+{
+ "tool": "run_m11_p5_arms.sigma_lever_micro_test",
+ "generated_at": "2026-10-13T20:15:43",
+ "lever": "bias_log_sigma",
+ "conditions": {
+  "n_neuron": 8192,
+  "T_ms": 1000.0,
+  "settle_ms": 500.0,
+  "bias_scale": 0.7,
+  "gmax_scale": 1.0,
+  "drive_mult": 1.0,
+  "delivery": "step",
+  "device": "cpu",
+  "sigma_control": 0.3,
+  "sigma_high": 0.9
+ },
+ "thresholds": {
+  "min_D": 0.1,
+  "noise_mult": 3.0,
+  "min_spread_rel": 0.25
+ },
+ "arms": {
+  "control": {
+   "sha256_of_trace": "abbc16c0104975e82ae4fac6e18137bceef5511e2703ee00ff3877bfc7348f0d",
+   "spk_total": 1045,
+   "n": 8192,
+   "rate_mean": 0.1275634765625,
+   "rate_median": 0.0,
+   "rate_p10": 0.0,
+   "rate_p50": 0.0,
+   "rate_p90": 1.0,
+   "spread_p10_p90": 1.0,
+   "spread_ratio_p90_over_p10": Infinity,
+   "silent_frac": 0.8753662109375,
+   "rate_max": 3.0
+  },
+  "high": {
+   "sha256_of_trace": "386d5ebd24c756cf829cb707aa098bf1bccb20f86c7f784928535c065c90e553",
+   "spk_total": 4891,
+   "n": 8192,
+   "rate_mean": 0.5970458984375,
+   "rate_median": 0.0,
+   "rate_p10": 0.0,
+   "rate_p50": 0.0,
+   "rate_p90": 2.0,
+   "spread_p10_p90": 2.0,
+   "spread_ratio_p90_over_p10": Infinity,
+   "silent_frac": 0.70263671875,
+   "rate_max": 42.0
+  },
+  "high_dup": {
+   "sha256_of_trace": "386d5ebd24c756cf829cb707aa098bf1bccb20f86c7f784928535c065c90e553",
+   "spk_total": 4891,
+   "n": 8192,
+   "rate_mean": 0.5970458984375,
+   "rate_median": 0.0,
+   "rate_p10": 0.0,
+   "rate_p50": 0.0,
+   "rate_p90": 2.0,
+   "spread_p10_p90": 2.0,
+   "spread_ratio_p90_over_p10": Infinity,
+   "silent_frac": 0.70263671875,
+   "rate_max": 42.0
+  },
+  "default_no_key": {
+   "sha256_of_trace": "abbc16c0104975e82ae4fac6e18137bceef5511e2703ee00ff3877bfc7348f0d",
+   "spk_total": 1045,
+   "n": 8192,
+   "rate_mean": 0.1275634765625,
+   "rate_median": 0.0,
+   "rate_p10": 0.0,
+   "rate_p50": 0.0,
+   "rate_p90": 1.0,
+   "spread_p10_p90": 1.0,
+   "spread_ratio_p90_over_p10": Infinity,
+   "silent_frac": 0.8753662109375,
+   "rate_max": 3.0
+  },
+  "control_other_seed": {
+   "sha256_of_trace": "d74ab5067147ef50cce900cbec25c2ef5823d65f1c81e799c6e1843630c3a225",
+   "spk_total": 980,
+   "n": 8192,
+   "rate_mean": 0.11962890625,
+   "rate_median": 0.0,
+   "rate_p10": 0.0,
+   "rate_p50": 0.0,
+   "rate_p90": 1.0,
+   "spread_p10_p90": 1.0,
+   "spread_ratio_p90_over_p10": Infinity,
+   "silent_frac": 0.881591796875,
+   "rate_max": 2.0
+  }
+ },
+ "verdict": {
+  "C1_lever_effective": true,
+  "C1_threshold": 0.1,
+  "D_effect": 0.1727294921875,
+  "D_noise_floor": 0.0062255859375,
+  "spread_p10_p90_ratio": 2.0,
+  "C2_detector_no_false_positive": true,
+  "C2_D_null": 0.0,
+  "C3_default_semantics_preserved": true,
+  "one_liner": "if you claim an effect and C1 is false, this command exits non-zero (9) — no silent pass"
+ }
+}

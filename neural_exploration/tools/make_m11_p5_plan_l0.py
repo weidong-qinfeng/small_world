@@ -54,7 +54,12 @@ from neural_exploration.tools.run_m11_p5_arms import (NET_DEFAULTS, assert_plan_
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 DATA_DIR = os.path.join(PROJECT_ROOT, "neural_exploration", "data")
 PRODUCER = os.path.join(PROJECT_ROOT, "neural_exploration", "tools", "run_m11_p5_arms.py")
-PRODUCER_SHA = "24617d90dd4a6eb9f518244808029ac3"
+PRODUCER_SHA = "eeeb2283cbf6533531ad1a4925b39a5d6815908714587675c2eba8ca612db2b1"
+# ⚠️ **工具版本变更留痕（B2-L28）**：`data/m11_p5_plan_l0.json` 写于改动前、其 `frozen_tool.sha256_full`
+#    记的是 `24617d90dd4a6eb9f518244808029ac3`。此后为 L1 加入 `--bias-log-sigma`（新 sha 见上），
+#    **改动对不带该键的臂逐位惰性**（`tools/verify_m11_producer_inert.py` 实证：旧/新模块同 spec
+#    `sha256_of_trace` 相同、且"不带键" ≡ "显式 0.30"）。变更记录见
+#    `data/m11_p5_plan_l0_amendment.json`；**L0 计划文件本身未改**（J5 正在用，其 sha 引用有效）。
 PREREG = os.path.join(DATA_DIR, "m11_p5_lever_prereg.json")
 
 N = 8192
@@ -77,6 +82,21 @@ LEVELS = (
     ("p5_L0_g4.00_b1.00", "g4.00_b1.00", "l0a",   4.00, 1.00, "L0-a 对照 gmax↑", False),
 )
 CFG_RE = re.compile(r"^p5_L0_g(\d+\.\d\d)_b(\d+\.\d\d)$")
+
+# ---- L1（B3 设计，主 agent 2026-10-13 派工）：阈值异质性 σ 的形状杠杆 ----
+# 基线 = **L0 的 bias_scale=0.70 档**（主 agent 指定）；gmax=1.00；σ ∈ {0.30 对照, 0.45, 0.60, 0.90}
+# (config_id, tag, stage, bias_scale, gmax_scale, sigma, lever, with_elasticity)
+L1_LEVELS = (
+    ("p5_L1_b0.70_g1.00_s0.30", "b0.70_g1.00_s0.30", "l1ctl", 0.70, 1.00, 0.30, "L1 对照档 σ=0.30（=夹具默认）", True),
+    ("p5_L1_b0.70_g1.00_s0.45", "b0.70_g1.00_s0.45", "l1s45", 0.70, 1.00, 0.45, "L1 σ=1.5× 对照", True),
+    ("p5_L1_b0.70_g1.00_s0.60", "b0.70_g1.00_s0.60", "l1s60", 0.70, 1.00, 0.60, "L1 σ=2.0× 对照", True),
+    ("p5_L1_b0.70_g1.00_s0.90", "b0.70_g1.00_s0.90", "l1s90", 0.70, 1.00, 0.90, "L1 σ=3.0× 对照（重尾上限）", True),
+)
+CFG_RE_L1 = re.compile(r"^p5_L1_b(\d+\.\d\d)_g(\d+\.\d\d)_s(\d+\.\d\d)$")
+# B3 预注册 `L1_design.replicate_axis_convention.per_rung_seed_count`：每档 zero_drive/baseline
+# **各 3 个真正独立实现**（realization0=(net0,ev11)、1=(1,12)、2=(2,13)）⇒ 4 档 × 2 角色 × 3 实现 = **24 run**
+L1_SEEDS = (0, 1, 2)
+L1_SEED_PAIRS = {0: (0, 11), 1: (1, 12), 2: (2, 13)}          # (net_seed, event_seed) 预注册对
 
 
 def role_of(dose: float) -> str:
@@ -178,6 +198,122 @@ def build_plan() -> dict:
     return plan
 
 
+def build_plan_l1(with_elasticity: bool = False, seeds=L1_SEEDS) -> dict:
+    """**L1 计划**：σ 四档 × {dose 0, 1} × **3 个独立实现** = **24 臂**（B3 预注册 `L1_design` 的
+    `per_rung_arms`：每档 zero_drive 与 baseline 各 3 个真正独立实现；`(net_seed, event_seed)` 对
+    两两互异）。`with_elasticity=True` 时每档追加 1 个 dose=4 探针（+4 臂，供 (d) sanity，网格登记为不全）。
+
+    与 L0 的两点结构差异：①`config_id` 形如 `p5_L1_b<bias>_g<gmax>_s<sigma>`（σ 也进 id）；
+    ②每臂**必须显式带 `bias_log_sigma`**（含对照档 0.30）——由 `assert_lever_structure` 强制，
+    以堵"键被接受但没进计划/没生效"的静默失效（M10 L21、D2 同族）。基线 bias_scale=0.70、gmax_scale=1.00。
+    """
+    arms, levels = [], []
+    for cfg, tag, stage, bs, gs, sg, lever, elast in L1_LEVELS:
+        elast = bool(elast and with_elasticity)
+        m = CFG_RE_L1.match(cfg)
+        assert m and abs(float(m.group(1)) - bs) < 1e-9 and abs(float(m.group(2)) - gs) < 1e-9 \
+            and abs(float(m.group(3)) - sg) < 1e-9, "L1 config_id 与档定义不一致：%s" % cfg
+        rids = []
+        for dose in (0.0, 1.0):
+            for sd in seeds:
+                a = dict(run_id="l1_%s_%d_T%dms_d%g_s%d" % (tag, N, int(T_MS), dose, sd),
+                         stage=stage, config_id=cfg, T_ms=T_MS, drive_mult=dose, seed=sd,
+                         role=role_of(dose), mechanism="none", delivery=DELIVERY,
+                         gmax_scale=gs, bias_scale=bs, bias_log_sigma=sg, lever=lever)
+                arms.append(a)
+                rids.append(a["run_id"])
+        if elast:
+            a = dict(run_id="l1_%s_%d_T%dms_d%g_s%d" % (tag, N, int(T_MS), ELASTICITY_DOSE,
+                                                       ELASTICITY_SEED),
+                     stage="l1d4", config_id=cfg, T_ms=T_MS, drive_mult=ELASTICITY_DOSE,
+                     seed=ELASTICITY_SEED, role=role_of(ELASTICITY_DOSE), mechanism="none",
+                     delivery=DELIVERY, gmax_scale=gs, bias_scale=bs, bias_log_sigma=sg,
+                     lever=lever + " | (d) 弹性探针")
+            arms.append(a)
+            rids.append(a["run_id"])
+        levels.append(dict(config_id=cfg, stage=stage, gmax_scale=gs, bias_scale=bs,
+                           bias_log_sigma=sg, lever=lever, n_seeds=len(seeds), seeds=list(seeds),
+                           net_event_pairs={str(k): list(v) for k, v in
+                                            L1_SEED_PAIRS.items() if k in set(seeds)},
+                           elasticity_arm=bool(elast), run_ids=rids))
+    ids = [a["run_id"] for a in arms]
+    assert len(ids) == len(set(ids)), "run_id 必须唯一"
+    plan = dict(
+        plan_id="l1_sigma_n8192",
+        structure=("L1 σ 形状杠杆扫描（4 档 × {dose 0,1} × %d 独立实现%s = %d 臂；"
+                   "B3 预注册 L1_design）" % (len(seeds),
+                                            " + %d 个 (d) 探针" % len(L1_LEVELS) if with_elasticity else "",
+                                            len(arms))),
+        parent_prereg=dict(path="neural_exploration/data/m11_p5_lever_prereg.json",
+                           sha256_full=sha256_of(PREREG),
+                           cited=dict(lever="L1 阈值异质性（bias_log_sigma↑）",
+                                      design="B3 L1 设计（已验收）；σ∈{0.30 对照,0.45,0.60,0.90}，"
+                                             "基线 bias_scale=0.70 / gmax_scale=1.00（主 agent 2026-10-13 派工）",
+                                      hypothesis="(a) 偏低与 (b) 偏低同因：窄分布 ⇒ 加宽阈值分布应同时把"
+                                                 "中位率与静默比例往目标推；n_both_in_band ≥1 才算支撑",
+                                      stop_rules=["扫描后 n_both_in_band 仍为 0 ⇒ 判张力结构性（R91）",
+                                                  "任一档 seed_dimension_inert ⇒ 立即停",
+                                                  "任一档 hard_failures 非空 ⇒ 停并查口径"])),
+        units={"T_ms": "millisecond", "settle_ms": "millisecond", "dt_ms": "millisecond",
+               "wall_s": "second", "ms_per_step": "millisecond per step",
+               "drive_rate_hz": "Hz per neuron", "gpu_h": "GPU-hour (=3.6e6 ms)",
+               "bias_scale": "无量纲倍数（乘在偏置张量上）",
+               "gmax_scale": "无量纲倍数（乘在突触权重上）",
+               "bias_log_sigma": "无量纲（对数正态宽度；乘在标准正态分量上，不改 RNG 序列）",
+               "note": "R80 §⑥：跨接口传递的量必须在接口定义处写明单位；接收方写产物前必须做量纲自检"},
+        n_neuron=N, settle_ms=SETTLE_MS, dt_ms=DT_MS, drive_rate_hz=DRIVE_RATE_HZ,
+        device="mps", bin_ms=100.0, smooth_frames=5, estimator="per_neuron",
+        indegree=NET_DEFAULTS["indegree"], gmax_scale=1.0, bias_scale=0.70,
+        bias_log_sigma=0.30, delay_bins=list(NET_DEFAULTS["delay_bins"]),
+        seed_policy={"net_seed": "derive(=seed)", "event_seed": "derive(=11+seed)",
+                     "reset_seed": "=seed", "per_arm_explicit": True,
+                     "rationale": "R93 第 43 条：复刻轴三源分别声明；L1 每臂显式带 bias_log_sigma"},
+        subtypes=True, slow=True,
+        production_delivery=DELIVERY, criterion_delivery="step",
+        launch_prefix="caffeinate -i",
+        judged_units=[dict(config_id=l["config_id"], T_ms=T_MS, mechanism="none",
+                           zero_drive_seeds=list(seeds), baseline_seeds=list(seeds),
+                           bias_log_sigma=l["bias_log_sigma"],
+                           net_event_pairs=l["net_event_pairs"],
+                           note="评估器逐 (config_id,T,mechanism) 复核 (a)(b)(c)(e)；(d) 需 dose 4")
+                      for l in levels],
+        prerequisites=dict(
+            cli_exposure="生产者 `--bias-log-sigma`（B2 已加；不显式给 ⇒ 沿用夹具默认 0.30）",
+            positive_control_required=("**跑前必须过** `--self-test-sigma`（R84 第 37 条：未证伪过的断言不构成"
+                                       "证据）⇒ 产物 `neural_exploration/data/m11_lever_sigma_selftest.json`；"
+                                       "C1 杠杆生效 + C2 反例自证 + C3 默认语义保持，三者齐备"),
+            producer_amendment="本计划要求生产者 sha256 = %s（含 `--bias-log-sigma`）；"
+                               "L0 计划的 frozen_tool 记的是改动前 sha（见 data/m11_p5_plan_l0_amendment.json）"
+                               % PRODUCER_SHA[:16]),
+        lever_prereg_falsifier="σ 扫描下 (中位率, 静默) 云团若不朝可行角移动 ⇒ 判张力结构性，停机并写入"
+                               "缺失机制清单（需换机制而非调参数）",
+        frozen_tool=dict(path="neural_exploration/tools/run_m11_p5_arms.py",
+                         sha256_prefix=PRODUCER_SHA, sha256_full=sha256_of(PRODUCER),
+                         rule="R48：本计划跑前不得再改生产者；改动即作废本冻结记录"),
+        cross_plan_anchor=dict(
+            l1_control_arm="l1_b0.70_g1.00_s0.30_8192_T10000ms_d1_s0",
+            l0_arm="l0_g1.00_b0.70_8192_T10000ms_d1_s0",
+            rule="σ=0.30 是夹具默认值 ⇒ L1 对照档 seed=0 的 dose=1 臂应与 L0 `p5_L0_g1.00_b0.70` "
+                 "同 seed 臂**逐位相同**（跨计划可复现锚点；不同即说明 σ 键改了行为）"),
+        levels=levels, arms=arms)
+    return plan
+
+
+def _cfg_expect(cfg: str):
+    """从 `config_id` 解析该档**声明的杠杆取值**（解析不出 ⇒ None ⇒ 断言判失败）。
+
+    L0：`p5_L0_g<gmax>_b<bias>`；L1：`p5_L1_b<bias>_g<gmax>_s<sigma>`。
+    """
+    m = CFG_RE.match(cfg)
+    if m:
+        return dict(gmax_scale=float(m.group(1)), bias_scale=float(m.group(2)))
+    m = CFG_RE_L1.match(cfg)
+    if m:
+        return dict(bias_scale=float(m.group(1)), gmax_scale=float(m.group(2)),
+                    bias_log_sigma=float(m.group(3)))
+    return None
+
+
 def assert_l0_structure(plan: dict) -> dict:
     """**L0 结构断言（非可选；可证伪）**：① 每档 `config_id` 内的杠杆取值 == 逐臂声明；
     ② 每档 `zero_drive` ≥3 个不同 seed 且 `baseline` 存在；③ 角色规则 == 剂量规则；
@@ -193,18 +329,22 @@ def assert_l0_structure(plan: dict) -> dict:
             fails_cfg.append("%s: role=%s 与 dose=%s 不符（角色规则必须逐字对齐 C 段）"
                              % (a["run_id"], a["role"], a["drive_mult"]))
     for cfg, lst in sorted(by_cfg.items()):
-        m = CFG_RE.match(cfg)
-        if not m:
+        exp = _cfg_expect(cfg)
+        if exp is None:
             fails_cfg.append("config_id 未编码杠杆取值：%s" % cfg)
             continue
-        gs, bs = float(m.group(1)), float(m.group(2))
         for a in lst:
-            if abs(float(a["gmax_scale"]) - gs) > 1e-9 or abs(float(a["bias_scale"]) - bs) > 1e-9:
-                fails_cfg.append("%s: 臂声明 gmax=%s/bias=%s ≠ config_id(%s) 的 g=%s/b=%s"
-                                 % (a["run_id"], a["gmax_scale"], a["bias_scale"], cfg, gs, bs))
+            for k, v in exp.items():
+                if k not in a:
+                    fails_cfg.append("%s: config_id(%s) 要求 %s=%s，但该臂**没有这个键**"
+                                     "（杠杆静默失效形态）" % (a["run_id"], cfg, k, v))
+                elif abs(float(a[k]) - v) > 1e-9:
+                    fails_cfg.append("%s: 臂声明 %s=%s ≠ config_id(%s) 的 %s=%s"
+                                     % (a["run_id"], k, a[k], cfg, k, v))
         zs = {a["seed"] for a in lst if a["role"] == "zero_drive"}
         bs_seeds = {a["seed"] for a in lst if a["role"] == "baseline"}
-        rows.append((cfg, gs, bs, len(zs), len(bs_seeds), len(lst)))
+        rows.append((cfg, exp.get("gmax_scale"), exp.get("bias_scale"),
+                     len(zs), len(bs_seeds), len(lst)))
         if len(zs) < MIN_INDEP_SEEDS:
             fails_seed.append("%s: zero_drive 独立 seed 数 %d < %d（(c) 的 CI 会失效）"
                               % (cfg, len(zs), MIN_INDEP_SEEDS))
@@ -242,9 +382,12 @@ def assert_l0_structure(plan: dict) -> dict:
         for x in fails_net[:10]:
             print("   -", x)
         raise SystemExit(5)
-    print("L0 结构断言通过：%d 档 × (zero_drive/baseline ≥%d seed)；config_id 已编码杠杆取值；"
+    print("杠杆结构断言通过：%d 档 × (zero_drive/baseline ≥%d 独立实现)；config_id 已编码杠杆取值；"
           "判据单元内 net_seed 一一对应" % (len(by_cfg), MIN_INDEP_SEEDS))
     return dict(n_configs=len(by_cfg), n_units=len(by_unit), n_arms=len(plan["arms"]))
+
+
+assert_lever_structure = assert_l0_structure      # 通用别名：L0/L1 共用同一实现
 
 
 def stats(plan: dict) -> dict:
@@ -298,12 +441,79 @@ def verify_runs(plan: dict, out_dir: str) -> int:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--out-json", default=os.path.join(DATA_DIR, "m11_p5_plan_l0.json"))
-    ap.add_argument("--check", default=None, help="**只读**校验既有计划（不改文件）")
+    ap.add_argument("--section", default="l0", choices=("l0", "l1"),
+                    help="l0=杠杆扫描（bias_scale/gmax_scale）；l1=σ 形状杠杆扫描（bias_log_sigma）")
+    ap.add_argument("--out-json", default=None,
+                    help="默认按 --section 落到 data/m11_p5_plan_<section>.json")
+    ap.add_argument("--check", default=None, help="**只读**校验既有计划（不改文件；段由 plan_id 自识别）")
+    ap.add_argument("--l1-seeds", default="0,1,2",
+                    help="L1：独立实现号（预注册 0,1,2 ⇒ 24 臂；给 0,1,2,3 ⇒ 32 臂，CI 更稳、更贵）")
+    ap.add_argument("--l1-elasticity", action="store_true",
+                    help="L1：每档追加 1 个 dose=4 探针（+4 臂，供 (d) sanity；B3 预注册默认不跑）")
     ap.add_argument("--self-test-negative", action="store_true",
-                    help="反例自检：4 个故意做坏的计划必须各自触发断言（非零退出）")
+                    help="反例自检：故意做坏的计划必须各自触发断言（L0 4 例 + L1 2 例）")
     ap.add_argument("--verify-runs", default=None, help="跑后核对产物目录")
+    ap.add_argument("--diff-against", default=None,
+                    help="**只读**：把磁盘上既有计划与刚构建的计划做**逐字段 diff**（证明『只有 provenance "
+                         "字段变了、臂网格没变』，用于工具/预注册变更后的留痕）")
+    ap.add_argument("--amendment-out", default=None,
+                    help="配合 --diff-against：把 diff + 工具变更 + 惰性证据写成 amendment JSON")
     args = ap.parse_args(argv)
+    if args.out_json is None:
+        args.out_json = os.path.join(DATA_DIR, "m11_p5_plan_%s.json" % args.section)
+    l1_seeds = tuple(int(x) for x in str(args.l1_seeds).split(",") if x.strip() != "")
+    builder = (build_plan if args.section == "l0"
+               else (lambda: build_plan_l1(with_elasticity=bool(args.l1_elasticity),
+                                           seeds=l1_seeds)))
+
+    if args.diff_against:
+        with open(args.diff_against) as f:
+            live = json.load(f)
+        fresh = builder()
+
+        def flat(d, pre=""):
+            out = {}
+            if isinstance(d, dict):
+                for k, v in d.items():
+                    out.update(flat(v, pre + "/" + str(k)))
+            elif isinstance(d, list):
+                for i, v in enumerate(d):
+                    out.update(flat(v, pre + "/%d" % i))
+            else:
+                out[pre] = d
+            return out
+
+        fa, fb = flat(fresh), flat(live)
+        diffs = [(k, fa.get(k, "<缺>"), fb.get(k, "<缺>"))
+                 for k in sorted(set(fa) | set(fb)) if fa.get(k) != fb.get(k)]
+        print("== 计划 diff：刚构建 vs 磁盘在用（%s）==" % args.diff_against)
+        print("  字段差异 %d 处｜臂数 %d vs %d｜**臂内容完全相同 = %s**"
+              % (len(diffs), len(fresh["arms"]), len(live["arms"]),
+                 fresh["arms"] == live["arms"]))
+        for k, x, y in diffs[:12]:
+            print("   - %s\n       重构建: %s\n       在用  : %s" % (k, str(x)[:90], str(y)[:90]))
+        if args.amendment_out:
+            am = dict(kind="计划冻结记录修订留痕（不改动原计划文件）",
+                      generated_at=time.strftime("%Y-%m-%dT%H:%M:%S"),
+                      live_plan=dict(path=os.path.relpath(args.diff_against, PROJECT_ROOT),
+                                     sha256_full=sha256_of(args.diff_against)),
+                      regenerated_plan=dict(sha256_full=sha256_of(args.out_json)
+                                            if os.path.exists(args.out_json) else None,
+                                            note="仅在 --out-json 指向真实新文件时有值"),
+                      arm_grid_identical=(fresh["arms"] == live["arms"]),
+                      n_arms=[len(live["arms"]), len(fresh["arms"])],
+                      field_diffs=[dict(field=k, regenerated=str(x), live=str(y)) for k, x, y in diffs],
+                      interpretation="**臂网格与全部判据参数逐字节相同**；差异只在 provenance "
+                                     "字段（生产者 sha / 预注册 sha）⇒ 在用计划仍是 J5 的有效输入",
+                      producer_change=dict(pre="24617d90dd4a6eb9f518244808029ac3",
+                                           post=sha256_of(PRODUCER),
+                                           what="加入 `--bias-log-sigma`（L1 阻塞项）+ `--self-test-sigma`",
+                                           inertness_evidence="neural_exploration/data/m11_producer_inert_check.json",
+                                           inertness_claim="不带该键的臂逐位不变；不带键 ≡ 显式 0.30"))
+            with open(args.amendment_out, "w") as f:
+                json.dump(am, f, indent=1, ensure_ascii=False)
+            print("  修订留痕 -> %s" % args.amendment_out)
+        return 0
 
     if args.check:
         with open(args.check) as f:
@@ -330,11 +540,18 @@ def main(argv=None) -> int:
         p4 = build_plan()
         p4["arms"] = [a for a in p4["arms"]
                       if not (a["role"] == "zero_drive" and a["seed"] in (2, 3))]
+        # ⑤⑥ L1 专有反例：σ 与 config_id 不符 / 臂**缺 σ 键**（键被接受但没进计划）
+        p5 = build_plan_l1()
+        p5["arms"][3] = dict(p5["arms"][3], bias_log_sigma=0.99)
+        p6 = build_plan_l1()
+        p6["arms"][5] = {k: v for k, v in p6["arms"][5].items() if k != "bias_log_sigma"}
         cases = (("①T 单位 bug", p1, [("量纲断言", assert_plan_dimensions)]),
                  ("②恒定 net_seed", p2, [("生产者复刻轴预检", assert_plan_replication),
                                           ("L0 结构断言(net_seed 轴)", assert_l0_structure)]),
                  ("③config_id 与杠杆不符", p3, [("L0 结构断言", assert_l0_structure)]),
-                 ("④zero_drive seed<3", p4, [("L0 结构断言", assert_l0_structure)]))
+                 ("④zero_drive seed<3", p4, [("L0 结构断言", assert_l0_structure)]),
+                 ("⑤L1 σ 与 config_id 不符", p5, [("杠杆结构断言", assert_lever_structure)]),
+                 ("⑥L1 臂缺 σ 键", p6, [("杠杆结构断言", assert_lever_structure)]))
         caught, notes = [], []
         for name, pl, fns in cases:
             hit = []
@@ -356,18 +573,18 @@ def main(argv=None) -> int:
                 print("   ✗ %s：**全部断言未触发（不可证伪）**" % name)
         for n in notes:
             print("   ⚠ " + n)
-        if len(caught) != 4:
-            print("**反例自检失败：只有 %d/4 坏计划被拦下**" % len(caught))
+        if len(caught) != len(cases):
+            print("**反例自检失败：只有 %d/%d 坏计划被拦下**" % (len(caught), len(cases)))
             return 3
-        print("反例自检通过：4/4 坏计划至少被一条断言拦下（断言可证伪）")
+        print("反例自检通过：%d/%d 坏计划至少被一条断言拦下（断言可证伪）" % (len(caught), len(cases)))
         return 0
 
-    plan = build_plan()
+    plan = builder()
     if args.verify_runs:
         return verify_runs(plan, args.verify_runs)
 
-    print("== ①L0 结构断言（写出前）==")
-    assert_l0_structure(plan)
+    print("== ①杠杆结构断言（写出前；段=%s）==" % args.section)
+    assert_lever_structure(plan)
     print("== ②复刻轴预检（生产者自带，非构造性）==")
     assert_plan_replication(plan)
     print("== ③量纲自检（写出前；R80）==")

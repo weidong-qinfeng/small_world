@@ -1106,3 +1106,53 @@ step ≈ **5.7 h**、chunk ≈ **2.2 h** ⇒ 口径选择对预算影响 **≈2.
 - 与预注册的差异（须主 agent 知情）：①seed 3→**4**（`(c)` 是两均值之比，3 seed 的 CI 太薄）；②**省掉重复档**：
   预注册把 `gmax=1.0` 与 `bias=1.0` 各算一档（36 runs），本计划合并为**一个参考档**（42 臂含 2 个 (d) 探针），
   净增 0.181 GPU-h 换来每档 4 seed + (d) 可判。
+
+### B2-L28 L1 阻塞项解除（`--bias-log-sigma`）＋ σ 杠杆阳性对照 ＋ L1 计划（24 臂）
+
+**① 生产者改动（新 sha256 `eeeb2283cbf6533531ad1a4925b39a5d6815908714587675c2eba8ca612db2b1`，旧 `24617d90…`）**
+- `arm_spec_from_cli`：加 `bias_log_sigma` —— **只在显式给出时进 spec**（缺键 ⇒ `net_kw` 过滤器不提该参数
+  ⇒ 夹具签名默认 `0.30`）⇒ 既有臂（含 seed=0 逐位锚点）行为与产物**字节不变**。
+- 计划模板：`p0`/`p2` 两个臂 key 组 ＋ 计划级键同规则条件化；`run_plan_main` 的计划级合并 key 组加
+  `bias_log_sigma`/`bias_log_mean`；`replication_micro_test` 臂亦支持；产物回显 `net.bias_log_sigma`
+  **只在 spec 带键时写入** ⇒ **J5 正在跑的 L0 臂产物不会出现版本偏斜**。
+- 用法一行（单臂）：`--bias-log-sigma 0.90`（缺省 = 沿用默认 0.30）。
+
+**② 改动惰性验证（`tools/verify_m11_producer_inert.py` → `data/m11_producer_inert_check.json`）**
+- `git show HEAD:`（改动前 `24617d90…` ✓）与工作树跑**同一份不带键的 spec**：`sha256_of_trace` /
+  `agg.spk_total` / `ei.ei_ratio` / `spikes_total` 全同、产物 JSON **键集相同**；
+- **默认等价**：不带键 ≡ 显式 `0.30` ⇒ 逐位相同（"不显式给沿用默认"被实测钉住）；
+- **计划面**：`--diff-against` ⇒ L0 在用计划 vs 重构建 **臂内容完全相同**，差异仅 3 个 provenance 字段
+  （`frozen_tool.sha256_prefix/full`、`parent_prereg.sha256_full`；后者因 B3 18:58 更新预注册
+  `fd52d252…`→`aca821d9…`）。留痕 `data/m11_p5_plan_l0_amendment.json`；**L0 计划文件未改动**（J5 的输入
+  与其 sha 引用保持有效）。⚠️ L0 计划里"工具 sha=24617d90…"是**当时**的记录，今日工具 sha 见上；判据
+  参数与臂网格零变化。
+
+**③ σ 杠杆阳性对照（R84 第 37 条；阈值跑前声明：`D_KS ≥ max(0.10, 3×噪声底)` 且 `|p90−p10 极差比−1| ≥ 25%`）**
+- **2 臂受控配对**（CLI `--bias-log-sigma`；同 net/event/reset seed、同 bias=0.70/gmax=1.00/dose=1/T=1 s，
+  CPU，chunk，N=8192）：σ=0.30 ⇒ `spk=1045 静默=0.8754 p90=1.0 极差=1.0`；σ=0.90 ⇒
+  `spk=4891 静默=0.7026 p90=2.0 极差=2.0`；`ei_ratio 0.7883 → 2.3274`。**D_KS=0.1727 ≥ 0.10、
+  极差比 2.000 ⇒ EFFECT**（`data/m11_l1_sigma_probe.json`）。
+- **反例自证**：同 σ 同规格重跑 ⇒ `D=0.0000`、`sha256_of_trace` 逐位相同 ⇒ 检测器不假阳性；
+  **噪声底**（同 σ 换 net_seed 0→1）⇒ `D=0.0062`（≪0.10，阈值非虚设）。
+- **一行可复用**：`--self-test-sigma [--n 8192 --T-ms 1000 --bias-scale 0.7]` ⇒ 五臂（对照/高/重跑/缺键/
+  换 seed）自证 **C1 生效 + C2 反例 + C3 默认语义**，全过才返回 0（产物 `data/m11_lever_sigma_selftest.json`）；
+  本次 `D=0.1727`、三项 ✓。**反例模式** `--sigma-negative-only` ⇒ 打印 `no_effect` 并**退出码 12**。
+- ⚠️ T=1 s 下 `rate_median=0`（静默 70–88%）⇒ 形状要看 `silent_frac/p90/KS`；率的**中位数**在该时长被
+  离散化吃掉，T=10 s（正式 L1）才有分辨力。
+
+**④ L1 计划（`data/m11_p5_plan_l1.json`，sha256 `8b58577222038ff91d4550a94101b09fcaa4a6d1bdfaac4d9f3451d8b36366cf`）**
+- **严格按 B3 预注册 `L1_design`**：σ ∈ {0.30 对照, 0.45, 0.60, 0.90} × {zero_drive, baseline} ×
+  **3 个真正独立实现** ⇒ **24 臂 / 5,040,000 步**（与预注册 `per_rung_arms` 数字一致）；基线
+  `bias_scale=0.70 / gmax_scale=1.00`；`T=10 s` 单档；chunk 生产 / step 判据。
+- `config_id` 编码 σ：`p5_L1_b0.70_g1.00_s0.30|s0.45|s0.60|s0.90`（逐臂核对，**缺键即失败**）；
+  变体开关 `--l1-seeds 0,1,2,3`（32 臂）与 `--l1-elasticity`（+4 个 dose=4 探针）。
+- 断言全过（写出前 + 只读复核）；反例自检 **6/6**（新增 L1 两例：σ 与 config_id 不符→4、臂缺 σ 键→4）。
+- **跨计划锚点**：σ=0.30 是夹具默认 ⇒ L1 对照档同 seed 的 dose=1 臂应与 L0 `p5_L0_g1.00_b0.70` 同 seed 臂
+  **逐位相同**（J5 正在产出后者 ⇒ 跑完可直接对拍）。
+- **预算（`tools/price_m11_p5_l1.py`）**：σ 扫描 **mid 1.1150 / upper 1.3608**（预注册 1.115 / 1.361 吻合）；
+  定稿确认 45 run 4.3503（降级 27 run 2.5770）、孪生臂 0.1594、σ 细化 0.5575 ⇒ **合计 mid 6.1821 /
+  upper 8.0595**（预注册 6.907 / 8.322；保守口径 7.3938）⇒ 均在 ≤10 包络内。
+- **一条观察（须主 agent 处置）**：σ 探针在 **CPU** 侧 chunk 实测 **0.2253–0.2664 ms/step**（N=8192/T=1 s），
+  预算用的是 MPS 实测 0.6545–0.9720 ⇒ 差 ~3–4 倍。两次测量不同环境/负载、**非同口径**，**不构成价格结论**；
+  若成立则 MPS 串行预算被高估。判定须 **R78 孪生臂**（同 spec、两设备、`pop_trace` 对比）——属主 agent 的
+  MPS 权限范围，本节点**未启动任何 MPS 作业**。

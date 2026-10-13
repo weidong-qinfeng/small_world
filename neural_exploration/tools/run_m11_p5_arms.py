@@ -163,6 +163,19 @@ def effective_seeds(spec: dict) -> dict:
                         if (ns is None and es is None) else "explicit/partial"),
                 triple="net%d|ev%d|reset%d" % (net_seed, event_seed, seed))
 
+def _net_echo(spec: dict, net: dict, seeds: dict) -> dict:
+    """产物里的网络档回显。**`bias_log_sigma` 只在 spec 显式带上时才写入** ⇒ 历史上不带该键的臂
+    产物 JSON **字节不变**（J5 正在跑的 L0 臂属此类；不得让同一作业内出现版本偏斜）。"""
+    d = dict(indegree=int(spec.get("indegree", NET_DEFAULTS["indegree"])),
+             delay_bins=list(spec.get("delay_bins") or NET_DEFAULTS["delay_bins"]),
+             gmax_scale=float(spec.get("gmax_scale", 1.0)),
+             bias_scale=float(spec.get("bias_scale", 1.0)),
+             net_seed=int(seeds["net_seed"]), n_edge=int(net["meta"]["n_edge"]))
+    if "bias_log_sigma" in spec:
+        d["bias_log_sigma"] = float(spec["bias_log_sigma"])
+    return d
+
+
 def run_one(spec: dict, out_dir: str) -> dict:
     """**单臂**：settle（丢弃）→ reset_counts → 测量窗（pop_trace + counts + E/I 积分）。"""
     n = int(spec["n_neuron"])
@@ -240,11 +253,7 @@ def run_one(spec: dict, out_dir: str) -> dict:
         drive_rate_hz=rate0, drive_rate_hz_eff=rate0 * dose,
         n_events=int(st.size), rss_mb=round(rss_mb(), 1),
         pid=os.getpid(), finished_at=time.strftime("%Y-%m-%dT%H:%M:%S"),
-        net=dict(indegree=int(spec.get("indegree", NET_DEFAULTS["indegree"])),
-                 delay_bins=list(spec.get("delay_bins") or NET_DEFAULTS["delay_bins"]),
-                 gmax_scale=float(spec.get("gmax_scale", 1.0)),
-                 bias_scale=float(spec.get("bias_scale", 1.0)),
-                 net_seed=int(_seeds["net_seed"]), n_edge=int(net["meta"]["n_edge"])),
+        net=_net_echo(spec, net, _seeds),
     )
     jpath = os.path.join(out_dir, f"{run_id}.json")
     with open(jpath, "w") as f:
@@ -253,14 +262,24 @@ def run_one(spec: dict, out_dir: str) -> dict:
 
 
 def arm_spec_from_cli(args, run_id: str) -> dict:
-    return dict(run_id=run_id, stage=args.stage, n_neuron=args.n, T_ms=args.T_ms,
-                delivery=args.delivery,
-                settle_ms=args.settle_ms, drive_mult=args.dose, drive_rate_hz=args.drive_rate_hz,
-                seed=args.seed, event_seed=args.event_seed, config_id=args.config_id,
-                role=args.role, mechanism=args.mechanism, device=args.device,
-                indegree=args.indegree, gmax_scale=args.gmax_scale, bias_scale=args.bias_scale,
-                net_seed=args.net_seed, delay_bins=tuple(int(x) for x in args.delay_bins.split(",")),
-                subtypes=not args.no_subtypes, slow=not args.no_slow)
+    """CLI ⇒ 单臂 spec。
+
+    ⚠️ **杠杆键只在显式给出时才进 spec**（`bias_log_sigma`）：缺键 ⇒ `net_kw` 过滤器不提该参数
+    ⇒ 夹具用其签名默认值（`mouse_cortex_circuit.build_laminar_probe_column(bias_log_sigma=0.30)`）
+    ⇒ **既有臂（含 seed=0 逐位锚点）的行为与产物字节不变**（已由
+    `tools/verify_m11_producer_inert.py` 与 `--self-test-sigma` 的 C3 断言实测）。
+    """
+    sp = dict(run_id=run_id, stage=args.stage, n_neuron=args.n, T_ms=args.T_ms,
+              delivery=args.delivery,
+              settle_ms=args.settle_ms, drive_mult=args.dose, drive_rate_hz=args.drive_rate_hz,
+              seed=args.seed, event_seed=args.event_seed, config_id=args.config_id,
+              role=args.role, mechanism=args.mechanism, device=args.device,
+              indegree=args.indegree, gmax_scale=args.gmax_scale, bias_scale=args.bias_scale,
+              net_seed=args.net_seed, delay_bins=tuple(int(x) for x in args.delay_bins.split(",")),
+              subtypes=not args.no_subtypes, slow=not args.no_slow)
+    if getattr(args, "bias_log_sigma", None) is not None:      # L1 杠杆：仅显式时出现
+        sp["bias_log_sigma"] = float(args.bias_log_sigma)
+    return sp
 
 
 def run_arm_main(args) -> int:
@@ -413,8 +432,8 @@ def run_plan_main(args) -> int:
         spec.setdefault("settle_ms", plan["settle_ms"])
         spec.setdefault("drive_rate_hz", plan.get("drive_rate_hz", 8.0))
         spec.setdefault("device", plan.get("device", "mps"))
-        for k in ("indegree", "gmax_scale", "bias_scale", "net_seed", "delay_bins",
-                  "subtypes", "slow", "tau_slow_ms", "slow_inc"):
+        for k in ("indegree", "gmax_scale", "bias_scale", "bias_log_sigma", "bias_log_mean",
+                  "net_seed", "delay_bins", "subtypes", "slow", "tau_slow_ms", "slow_inc"):
             if k in plan and k not in spec:
                 spec[k] = plan[k]
         spec["n_neuron"] = int(spec.get("n_neuron", plan["n_neuron"]))
@@ -454,7 +473,9 @@ def replication_micro_test(args) -> int:
                   settle_ms=0.0, drive_mult=1.0, drive_rate_hz=8.0, seed=sd, device="cpu",
                   config_id="repl_test", role="dose", mechanism="none", delivery="chunk",
                   indegree=20, gmax_scale=1.0, bias_scale=1.0, delay_bins=(40, 60, 80),
-                  subtypes=True, slow=True)
+                  subtypes=True, slow=True,
+                  **({"bias_log_sigma": float(args.bias_log_sigma)}
+                     if getattr(args, "bias_log_sigma", None) is not None else {}))
         a = run_one(sp, tmp)
         three.append(a["seeds"])
         shas.append(a["sha256_of_trace"])
@@ -468,6 +489,171 @@ def replication_micro_test(args) -> int:
     return 0
 
 
+def _counts_of(arm: dict, out_dir: str) -> np.ndarray:
+    """从臂产物的 `_counts.csv` 读逐神经元计数（与 `pop_trace` 的双估计器一致性已由 run_one 断言）。"""
+    import csv as _csv
+    p = os.path.join(out_dir, str(arm["arm_id"]) + "_counts.csv")
+    out = []
+    with open(p) as f:
+        for row in _csv.DictReader(f):
+            out.append(int(row["count"]))
+    return np.asarray(out, dtype=np.int64)
+
+
+def ks_statistic(a, b) -> float:
+    """两样本 KS 统计量 D = sup|F_a − F_b|（**精确排序算法，不给 p 值**）。
+
+    M10 教训：KS 的**渐近 p 值**在 λ→0 时会振荡（曾把"完全相同的分布"报成 p=0.0）⇒ 本工具只取
+    与分布无关的 D，阈值由**同杠杆不同 seed** 的实测噪声底标定，不依赖渐近近似。
+    """
+    a = np.sort(np.asarray(a, dtype=np.float64))
+    b = np.sort(np.asarray(b, dtype=np.float64))
+    if a.size == 0 or b.size == 0:
+        return float("nan")
+    data = np.concatenate([a, b])
+    ca = np.searchsorted(a, data, side="right") / float(a.size)
+    cb = np.searchsorted(b, data, side="right") / float(b.size)
+    return float(np.max(np.abs(ca - cb)))
+
+
+def rate_dist_metrics(counts, T_ms: float) -> dict:
+    """**率的分布指标（量纲自检：rate_hz = counts / (T_ms/1000)）**。
+
+    算例自检（脚本打印）：counts=8 @ T_ms=1000 ⇒ rate=8 Hz。指标都是"率"的统计量（单位 Hz），
+    `silent_frac` 是无量纲比例 ⇒ 与单位无关。
+    """
+    r = np.asarray(counts, dtype=np.float64) / (float(T_ms) / 1000.0)
+    p10, p50, p90 = (float(np.percentile(r, q)) for q in (10, 50, 90))
+    return dict(n=int(r.size), rate_mean=float(r.mean()), rate_median=p50,
+                rate_p10=p10, rate_p50=p50, rate_p90=p90,
+                spread_p10_p90=float(p90 - p10),
+                spread_ratio_p90_over_p10=(float(p90 / p10) if p10 > 0 else float("inf")),
+                silent_frac=float((r == 0.0).mean()), rate_max=float(r.max()))
+
+
+# ---- 阳性对照阈值（**跑前声明**，见 --self-test-sigma；反例自证见 C2/C3）----
+SIGMA_EFFECT_MIN_D = 0.10          # KS 距离下限（分布形状明显不同）
+SIGMA_EFFECT_NOISE_MULT = 3.0      # 且必须 > 3 × 同杠杆不同 seed 的噪声底
+SIGMA_EFFECT_MIN_SPREAD_REL = 0.25  # 且 p90−p10 极差相对变化 ≥ 25%
+
+
+def sigma_lever_micro_test(args) -> int:
+    """**新杠杆启用前的阳性对照（R84 第 37 条：未证伪过的断言不构成证据）**——以 `bias_log_sigma` 为例。
+
+    臂集（同进程、CPU、同 bias/gmax/seed，只改 σ；**N/T 由 `--n/--T-ms` 给**）：
+      ① 对照 σ=σ_ctl  ② 高 σ=σ_hi  ③ 高 σ 的**重跑**（同规格 ⇒ 必须逐位相同）④ **不带键**（默认）
+      ⑤ 对照 σ 换 seed（**噪声底**：同杠杆不同实现）
+    断言（任一不成立 ⇒ 非零退出，绝不静默通过）：
+      C1 **杠杆生效**：D(①,②) ≥ max(%.2f, %.1f×D(①,⑤)) 且 |(p90−p10)比 − 1| ≥ %.0f%%；
+         否则打印 `no_effect` 并退出 **9**（⇒ 该杠杆不值得投 GPU-h）
+      C2 **反例自证（检测器不假阳性）**：D(②,③)=0 且两臂 `sha256_of_trace` 相同；否则退出 **10**
+      C3 **默认语义保持**：④（不带键）与 ①（显式 σ=默认 0.30）逐位相同；否则退出 **11**
+    另：`--sigma-negative-only` ⇒ 只跑"两臂同 σ"并**按声明有论断处理** ⇒ 打印 `no_effect` 并退出 **12**
+    （这就是"故意让两臂 σ 相同"的反例自证）。
+    """ % (SIGMA_EFFECT_MIN_D, SIGMA_EFFECT_NOISE_MULT, 100 * SIGMA_EFFECT_MIN_SPREAD_REL)
+    import tempfile
+    tmp = tempfile.mkdtemp(prefix="m11_sigma_")
+    n = int(args.n)
+    T = float(args.T_ms)
+    base = dict(n_neuron=n, T_ms=T, settle_ms=float(args.settle_ms), drive_mult=float(args.dose),
+                drive_rate_hz=float(args.drive_rate_hz), device="cpu", config_id="sigma_probe",
+                role="baseline", mechanism="none", delivery=args.delivery, indegree=args.indegree,
+                gmax_scale=float(args.gmax_scale), bias_scale=float(args.bias_scale),
+                delay_bins=(40, 60, 80), subtypes=True, slow=True)
+    lo, hi = float(args.sigma_control), float(args.sigma_high)
+    print("== σ 杠杆阳性对照（CPU / N=%d / T=%.0f ms / settle=%.0f ms / bias=%.2f / gmax=%.2f / "
+          "dose=%.1f / %s / 默认=0.30）=="
+          % (n, T, base["settle_ms"], base["bias_scale"], base["gmax_scale"], base["drive_mult"],
+             base["delivery"]))
+
+    def go(tag, sigma, seed, with_key=True):
+        sp = dict(base, run_id="sig_%s" % tag, seed=int(seed))
+        if with_key:
+            sp["bias_log_sigma"] = float(sigma)
+        a = run_one(sp, tmp)
+        a["_rate"] = rate_dist_metrics(_counts_of(a, tmp), T)
+        print("  [臂] %-22s σ=%-6s seed=%d  key=%s  spk=%-7d 中位率=%.4f Hz 静默=%.4f "
+              "p10=%.3f p90=%.3f 极差=%.3f  sha=%s"
+              % (tag, ("%.2f" % sigma) if with_key else "缺省", seed, with_key,
+                 a["agg"]["spk_total"], a["_rate"]["rate_median"], a["_rate"]["silent_frac"],
+                 a["_rate"]["rate_p10"], a["_rate"]["rate_p90"], a["_rate"]["spread_p10_p90"],
+                 a["sha256_of_trace"][:16]), flush=True)
+        return a
+
+    if args.sigma_negative_only:
+        a = go("hi_first", hi, 0)
+        b = go("hi_second", hi, 0)
+        D = ks_statistic(_counts_of(a, tmp), _counts_of(b, tmp))
+        same = (a["sha256_of_trace"] == b["sha256_of_trace"])
+        print("  [反例自证] 两臂 σ 相同（%.2f）⇒ D=%.4f、逐位相同=%s ⇒ 判定 **no_effect**"
+              % (hi, D, same))
+        print("  若把这对臂当作『σ 改变了形状』的证据，本命令**拒绝**（退出码 12）")
+        return 12
+
+    a_ctl = go("ctl", lo, 0)
+    a_hi = go("hi", hi, 0)
+    a_dup = go("hi_dup", hi, 0)
+    a_def = go("default", lo, 0, with_key=False)
+    a_ctl2 = go("ctl_otherseed", lo, 1)
+    c_ctl, c_hi = _counts_of(a_ctl, tmp), _counts_of(a_hi, tmp)
+    D_effect = ks_statistic(c_ctl, c_hi)
+    D_noise = ks_statistic(c_ctl, _counts_of(a_ctl2, tmp))
+    D_null = ks_statistic(c_hi, _counts_of(a_dup, tmp))
+    sp_ratio = (a_hi["_rate"]["spread_p10_p90"] / a_ctl["_rate"]["spread_p10_p90"]
+                if a_ctl["_rate"]["spread_p10_p90"] > 0 else float("inf"))
+    thr = max(SIGMA_EFFECT_MIN_D, SIGMA_EFFECT_NOISE_MULT * D_noise)
+    eff = (D_effect >= thr) and (abs(sp_ratio - 1.0) >= SIGMA_EFFECT_MIN_SPREAD_REL)
+    rep = (D_null == 0.0) and (a_hi["sha256_of_trace"] == a_dup["sha256_of_trace"])
+    dflt = (a_def["sha256_of_trace"] == a_ctl["sha256_of_trace"])
+    # 量纲自检算例（R76/R80）
+    ex_counts, ex_T = 8, 1000.0
+    print("  [量纲自检] counts=8 @ T=1000 ms ⇒ rate=%g Hz（rate_hz = counts/(T_ms/1e3)）；"
+          "silent_frac 无量纲" % (ex_counts / (ex_T / 1000.0)))
+    print("  [C1 杠杆生效] D(σ%.2f,σ%.2f)=%.4f ≥ max(%.2f, %.1f×D_noise=%.4f)=%.4f ；"
+          "极差比 %.4f（需偏离 1 至少 %.0f%%）⇒ %s"
+          % (lo, hi, D_effect, SIGMA_EFFECT_MIN_D, SIGMA_EFFECT_NOISE_MULT, D_noise, thr,
+             sp_ratio, 100 * SIGMA_EFFECT_MIN_SPREAD_REL, "**EFFECT**" if eff else "**no_effect**"))
+    print("  [C2 反例自证] 同 σ 同 seed 重跑：D=%.4f、逐位相同=%s ⇒ %s"
+          % (D_null, a_hi["sha256_of_trace"] == a_dup["sha256_of_trace"],
+             "检测器不假阳性 ✓" if rep else "**检测器假阳性 ✗**"))
+    print("  [C3 默认语义] 不带键 vs 显式 σ=%.2f：逐位相同=%s ⇒ %s"
+          % (lo, dflt, "历史臂语义保持 ✓" if dflt else "**语义被改变 ✗**"))
+    print("  [噪声底] 同 σ=%.2f 换 seed ⇒ D=%.4f（检测器的抽样噪声底，非 0）" % (lo, D_noise))
+    rep_json = dict(tool="run_m11_p5_arms.sigma_lever_micro_test",
+                    generated_at=time.strftime("%Y-%m-%dT%H:%M:%S"), lever="bias_log_sigma",
+                    conditions=dict(n_neuron=n, T_ms=T, settle_ms=base["settle_ms"],
+                                    bias_scale=base["bias_scale"], gmax_scale=base["gmax_scale"],
+                                    drive_mult=base["drive_mult"], delivery=base["delivery"],
+                                    device="cpu", sigma_control=lo, sigma_high=hi),
+                    thresholds=dict(min_D=SIGMA_EFFECT_MIN_D, noise_mult=SIGMA_EFFECT_NOISE_MULT,
+                                    min_spread_rel=SIGMA_EFFECT_MIN_SPREAD_REL),
+                    arms={k: dict(sha256_of_trace=v["sha256_of_trace"], spk_total=v["agg"]["spk_total"],
+                                  **v["_rate"]) for k, v in
+                          (("control", a_ctl), ("high", a_hi), ("high_dup", a_dup),
+                           ("default_no_key", a_def), ("control_other_seed", a_ctl2))},
+                    verdict=dict(C1_lever_effective=eff, C1_threshold=thr, D_effect=D_effect,
+                                 D_noise_floor=D_noise, spread_p10_p90_ratio=sp_ratio,
+                                 C2_detector_no_false_positive=rep, C2_D_null=D_null,
+                                 C3_default_semantics_preserved=dflt,
+                                 one_liner="if you claim an effect and C1 is false, this command "
+                                           "exits non-zero (9) — no silent pass"))
+    p = os.path.join(DATA_DIR, "m11_lever_sigma_selftest.json")
+    with open(p, "w") as f:
+        json.dump(rep_json, f, indent=1, ensure_ascii=False)
+    print("  报告 -> %s" % p)
+    if not eff:
+        print("**σ 杠杆判定 no_effect（形状没动）⇒ 退出码 9，L1 全量不值当投 GPU-h**")
+        return 9
+    if not rep:
+        print("**反例自证失败（检测器对同规格臂报出差异）⇒ 退出码 10**")
+        return 10
+    if not dflt:
+        print("**默认语义断言失败（不带键 ≠ 显式 0.30）⇒ 退出码 11**")
+        return 11
+    print("σ 杠杆阳性对照通过：C1 生效 + C2 反例自证 + C3 默认语义保持（三者齐备才算证据）")
+    return 0
+
+
 def make_plan(args) -> int:
     n = args.n
     doses = [float(x) for x in args.doses.split(",")]
@@ -476,19 +662,23 @@ def make_plan(args) -> int:
     if stage == "p0":
         for d in doses:
             rid = "%s_%s_T%dms_d%s_s%s" % (stage, n, int(args.T_ms), d, args.seed)
-            arms.append(dict(run_id=rid, stage=stage, config_id="p5_%s" % stage, T_ms=float(args.T_ms),
-                             drive_mult=d, seed=int(args.seed),
-                             role=("zero_drive" if d == 0 else "dose"),
-                             mechanism="none"))
+            a = dict(run_id=rid, stage=stage, config_id="p5_%s" % stage, T_ms=float(args.T_ms),
+                     drive_mult=d, seed=int(args.seed),
+                     role=("zero_drive" if d == 0 else "dose"), mechanism="none")
+            if args.bias_log_sigma is not None:            # L1 杠杆：仅显式时进臂 key 组
+                a["bias_log_sigma"] = float(args.bias_log_sigma)
+            arms.append(a)
     elif stage == "p2":
         for ratio in (1, 2, 4):
             T = float(args.T_ms) * ratio
             for d in doses:
                 rid = "%s_%s_T%dms_d%s_s%s" % (stage, n, int(T), d, args.seed)
-                arms.append(dict(run_id=rid, stage=stage, config_id="p5_%s" % stage, T_ms=T,
-                                 drive_mult=d, seed=int(args.seed),
-                                 role=("zero_drive" if d == 0 else "dose"),
-                                 mechanism="none"))
+                a = dict(run_id=rid, stage=stage, config_id="p5_%s" % stage, T_ms=T,
+                         drive_mult=d, seed=int(args.seed),
+                         role=("zero_drive" if d == 0 else "dose"), mechanism="none")
+                if args.bias_log_sigma is not None:
+                    a["bias_log_sigma"] = float(args.bias_log_sigma)
+                arms.append(a)
     else:
         raise SystemExit("未知模板：%s" % stage)
     plan = dict(plan_id="%s_n%s_T%d_s%s" % (stage, n, int(args.T_ms), args.seed),
@@ -499,6 +689,8 @@ def make_plan(args) -> int:
                 net_seed=args.net_seed,
                 delay_bins=[int(x) for x in args.delay_bins.split(",")],
                 arms=arms)
+    if args.bias_log_sigma is not None:                    # 计划级同键（仅显式时）
+        plan["bias_log_sigma"] = float(args.bias_log_sigma)
     with open(args.out_json, "w") as f:
         json.dump(plan, f, indent=1, ensure_ascii=False)
     print("plan(%d arms) -> %s" % (len(arms), args.out_json), flush=True)
@@ -536,6 +728,16 @@ def main(argv=None) -> int:
     ap.add_argument("--indegree", type=int, default=NET_DEFAULTS["indegree"])
     ap.add_argument("--gmax-scale", type=float, default=1.0)
     ap.add_argument("--bias-scale", type=float, default=1.0)
+    ap.add_argument("--bias-log-sigma", type=float, default=None,
+                    help="L1 阈值异质性杠杆（对数正态宽度，无量纲）。**不显式给 ⇒ 沿用夹具默认 0.30**"
+                         "（保持既有臂（含 seed=0 逐位锚点）的行为与产物字节不变）")
+    ap.add_argument("--self-test-sigma", action="store_true",
+                    help="**新杠杆启用前的阳性对照**（R84 第 37 条）：对照/高/重跑/缺键/换 seed 五臂 ⇒ "
+                         "C1 杠杆生效 + C2 反例自证 + C3 默认语义保持；任一不成立即非零退出")
+    ap.add_argument("--sigma-control", type=float, default=0.30, help="self-test-sigma：对照组 σ")
+    ap.add_argument("--sigma-high", type=float, default=0.90, help="self-test-sigma：高组 σ")
+    ap.add_argument("--sigma-negative-only", action="store_true",
+                    help="self-test-sigma：只跑『两臂同 σ』⇒ 必须判 no_effect 且退出 12（反例自证）")
     ap.add_argument("--net-seed", type=int, default=None,
                     help="不显式给 ⇒ 由 seed 派生（=seed）；R93 复刻轴纪律")
     ap.add_argument("--delay-bins", default="40,60,80")
@@ -545,6 +747,8 @@ def main(argv=None) -> int:
     ap.add_argument("--self-test-replication", action="store_true",
                     help="复刻轴微测试（R93）：N=1000/T=100ms/seed∈{0,1,2} ⇒ 三 sha256 必须互不相同")
     args = ap.parse_args(argv)
+    if args.self_test_sigma:
+        return sigma_lever_micro_test(args)
     if args.self_test_replication:
         return replication_micro_test(args)
     if args.make_plan:

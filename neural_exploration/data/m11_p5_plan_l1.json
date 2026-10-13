@@ -1,0 +1,715 @@
+{
+ "plan_id": "l1_sigma_n8192",
+ "structure": "L1 σ 形状杠杆扫描（4 档 × {dose 0,1} × 3 独立实现 = 24 臂；B3 预注册 L1_design）",
+ "parent_prereg": {
+  "path": "neural_exploration/data/m11_p5_lever_prereg.json",
+  "sha256_full": "aca821d9322a50d55c4dd604b3df8c836f6903bbc8c8e03eaac0341a17cc2fef",
+  "cited": {
+   "lever": "L1 阈值异质性（bias_log_sigma↑）",
+   "design": "B3 L1 设计（已验收）；σ∈{0.30 对照,0.45,0.60,0.90}，基线 bias_scale=0.70 / gmax_scale=1.00（主 agent 2026-10-13 派工）",
+   "hypothesis": "(a) 偏低与 (b) 偏低同因：窄分布 ⇒ 加宽阈值分布应同时把中位率与静默比例往目标推；n_both_in_band ≥1 才算支撑",
+   "stop_rules": [
+    "扫描后 n_both_in_band 仍为 0 ⇒ 判张力结构性（R91）",
+    "任一档 seed_dimension_inert ⇒ 立即停",
+    "任一档 hard_failures 非空 ⇒ 停并查口径"
+   ]
+  }
+ },
+ "units": {
+  "T_ms": "millisecond",
+  "settle_ms": "millisecond",
+  "dt_ms": "millisecond",
+  "wall_s": "second",
+  "ms_per_step": "millisecond per step",
+  "drive_rate_hz": "Hz per neuron",
+  "gpu_h": "GPU-hour (=3.6e6 ms)",
+  "bias_scale": "无量纲倍数（乘在偏置张量上）",
+  "gmax_scale": "无量纲倍数（乘在突触权重上）",
+  "bias_log_sigma": "无量纲（对数正态宽度；乘在标准正态分量上，不改 RNG 序列）",
+  "note": "R80 §⑥：跨接口传递的量必须在接口定义处写明单位；接收方写产物前必须做量纲自检"
+ },
+ "n_neuron": 8192,
+ "settle_ms": 500.0,
+ "dt_ms": 0.05,
+ "drive_rate_hz": 8.0,
+ "device": "mps",
+ "bin_ms": 100.0,
+ "smooth_frames": 5,
+ "estimator": "per_neuron",
+ "indegree": 20,
+ "gmax_scale": 1.0,
+ "bias_scale": 0.7,
+ "bias_log_sigma": 0.3,
+ "delay_bins": [
+  40,
+  60,
+  80
+ ],
+ "seed_policy": {
+  "net_seed": "derive(=seed)",
+  "event_seed": "derive(=11+seed)",
+  "reset_seed": "=seed",
+  "per_arm_explicit": true,
+  "rationale": "R93 第 43 条：复刻轴三源分别声明；L1 每臂显式带 bias_log_sigma"
+ },
+ "subtypes": true,
+ "slow": true,
+ "production_delivery": "chunk",
+ "criterion_delivery": "step",
+ "launch_prefix": "caffeinate -i",
+ "judged_units": [
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "zero_drive_seeds": [
+    0,
+    1,
+    2
+   ],
+   "baseline_seeds": [
+    0,
+    1,
+    2
+   ],
+   "bias_log_sigma": 0.3,
+   "net_event_pairs": {
+    "0": [
+     0,
+     11
+    ],
+    "1": [
+     1,
+     12
+    ],
+    "2": [
+     2,
+     13
+    ]
+   },
+   "note": "评估器逐 (config_id,T,mechanism) 复核 (a)(b)(c)(e)；(d) 需 dose 4"
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "zero_drive_seeds": [
+    0,
+    1,
+    2
+   ],
+   "baseline_seeds": [
+    0,
+    1,
+    2
+   ],
+   "bias_log_sigma": 0.45,
+   "net_event_pairs": {
+    "0": [
+     0,
+     11
+    ],
+    "1": [
+     1,
+     12
+    ],
+    "2": [
+     2,
+     13
+    ]
+   },
+   "note": "评估器逐 (config_id,T,mechanism) 复核 (a)(b)(c)(e)；(d) 需 dose 4"
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "zero_drive_seeds": [
+    0,
+    1,
+    2
+   ],
+   "baseline_seeds": [
+    0,
+    1,
+    2
+   ],
+   "bias_log_sigma": 0.6,
+   "net_event_pairs": {
+    "0": [
+     0,
+     11
+    ],
+    "1": [
+     1,
+     12
+    ],
+    "2": [
+     2,
+     13
+    ]
+   },
+   "note": "评估器逐 (config_id,T,mechanism) 复核 (a)(b)(c)(e)；(d) 需 dose 4"
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "T_ms": 10000.0,
+   "mechanism": "none",
+   "zero_drive_seeds": [
+    0,
+    1,
+    2
+   ],
+   "baseline_seeds": [
+    0,
+    1,
+    2
+   ],
+   "bias_log_sigma": 0.9,
+   "net_event_pairs": {
+    "0": [
+     0,
+     11
+    ],
+    "1": [
+     1,
+     12
+    ],
+    "2": [
+     2,
+     13
+    ]
+   },
+   "note": "评估器逐 (config_id,T,mechanism) 复核 (a)(b)(c)(e)；(d) 需 dose 4"
+  }
+ ],
+ "prerequisites": {
+  "cli_exposure": "生产者 `--bias-log-sigma`（B2 已加；不显式给 ⇒ 沿用夹具默认 0.30）",
+  "positive_control_required": "**跑前必须过** `--self-test-sigma`（R84 第 37 条：未证伪过的断言不构成证据）⇒ 产物 `neural_exploration/data/m11_lever_sigma_selftest.json`；C1 杠杆生效 + C2 反例自证 + C3 默认语义保持，三者齐备",
+  "producer_amendment": "本计划要求生产者 sha256 = eeeb2283cbf65335（含 `--bias-log-sigma`）；L0 计划的 frozen_tool 记的是改动前 sha（见 data/m11_p5_plan_l0_amendment.json）"
+ },
+ "lever_prereg_falsifier": "σ 扫描下 (中位率, 静默) 云团若不朝可行角移动 ⇒ 判张力结构性，停机并写入缺失机制清单（需换机制而非调参数）",
+ "frozen_tool": {
+  "path": "neural_exploration/tools/run_m11_p5_arms.py",
+  "sha256_prefix": "eeeb2283cbf6533531ad1a4925b39a5d6815908714587675c2eba8ca612db2b1",
+  "sha256_full": "eeeb2283cbf6533531ad1a4925b39a5d6815908714587675c2eba8ca612db2b1",
+  "rule": "R48：本计划跑前不得再改生产者；改动即作废本冻结记录"
+ },
+ "cross_plan_anchor": {
+  "l1_control_arm": "l1_b0.70_g1.00_s0.30_8192_T10000ms_d1_s0",
+  "l0_arm": "l0_g1.00_b0.70_8192_T10000ms_d1_s0",
+  "rule": "σ=0.30 是夹具默认值 ⇒ L1 对照档 seed=0 的 dose=1 臂应与 L0 `p5_L0_g1.00_b0.70` 同 seed 臂**逐位相同**（跨计划可复现锚点；不同即说明 σ 键改了行为）"
+ },
+ "levels": [
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "stage": "l1ctl",
+   "gmax_scale": 1.0,
+   "bias_scale": 0.7,
+   "bias_log_sigma": 0.3,
+   "lever": "L1 对照档 σ=0.30（=夹具默认）",
+   "n_seeds": 3,
+   "seeds": [
+    0,
+    1,
+    2
+   ],
+   "net_event_pairs": {
+    "0": [
+     0,
+     11
+    ],
+    "1": [
+     1,
+     12
+    ],
+    "2": [
+     2,
+     13
+    ]
+   },
+   "elasticity_arm": false,
+   "run_ids": [
+    "l1_b0.70_g1.00_s0.30_8192_T10000ms_d0_s0",
+    "l1_b0.70_g1.00_s0.30_8192_T10000ms_d0_s1",
+    "l1_b0.70_g1.00_s0.30_8192_T10000ms_d0_s2",
+    "l1_b0.70_g1.00_s0.30_8192_T10000ms_d1_s0",
+    "l1_b0.70_g1.00_s0.30_8192_T10000ms_d1_s1",
+    "l1_b0.70_g1.00_s0.30_8192_T10000ms_d1_s2"
+   ]
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "stage": "l1s45",
+   "gmax_scale": 1.0,
+   "bias_scale": 0.7,
+   "bias_log_sigma": 0.45,
+   "lever": "L1 σ=1.5× 对照",
+   "n_seeds": 3,
+   "seeds": [
+    0,
+    1,
+    2
+   ],
+   "net_event_pairs": {
+    "0": [
+     0,
+     11
+    ],
+    "1": [
+     1,
+     12
+    ],
+    "2": [
+     2,
+     13
+    ]
+   },
+   "elasticity_arm": false,
+   "run_ids": [
+    "l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s0",
+    "l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s1",
+    "l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s2",
+    "l1_b0.70_g1.00_s0.45_8192_T10000ms_d1_s0",
+    "l1_b0.70_g1.00_s0.45_8192_T10000ms_d1_s1",
+    "l1_b0.70_g1.00_s0.45_8192_T10000ms_d1_s2"
+   ]
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "stage": "l1s60",
+   "gmax_scale": 1.0,
+   "bias_scale": 0.7,
+   "bias_log_sigma": 0.6,
+   "lever": "L1 σ=2.0× 对照",
+   "n_seeds": 3,
+   "seeds": [
+    0,
+    1,
+    2
+   ],
+   "net_event_pairs": {
+    "0": [
+     0,
+     11
+    ],
+    "1": [
+     1,
+     12
+    ],
+    "2": [
+     2,
+     13
+    ]
+   },
+   "elasticity_arm": false,
+   "run_ids": [
+    "l1_b0.70_g1.00_s0.60_8192_T10000ms_d0_s0",
+    "l1_b0.70_g1.00_s0.60_8192_T10000ms_d0_s1",
+    "l1_b0.70_g1.00_s0.60_8192_T10000ms_d0_s2",
+    "l1_b0.70_g1.00_s0.60_8192_T10000ms_d1_s0",
+    "l1_b0.70_g1.00_s0.60_8192_T10000ms_d1_s1",
+    "l1_b0.70_g1.00_s0.60_8192_T10000ms_d1_s2"
+   ]
+  },
+  {
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "stage": "l1s90",
+   "gmax_scale": 1.0,
+   "bias_scale": 0.7,
+   "bias_log_sigma": 0.9,
+   "lever": "L1 σ=3.0× 对照（重尾上限）",
+   "n_seeds": 3,
+   "seeds": [
+    0,
+    1,
+    2
+   ],
+   "net_event_pairs": {
+    "0": [
+     0,
+     11
+    ],
+    "1": [
+     1,
+     12
+    ],
+    "2": [
+     2,
+     13
+    ]
+   },
+   "elasticity_arm": false,
+   "run_ids": [
+    "l1_b0.70_g1.00_s0.90_8192_T10000ms_d0_s0",
+    "l1_b0.70_g1.00_s0.90_8192_T10000ms_d0_s1",
+    "l1_b0.70_g1.00_s0.90_8192_T10000ms_d0_s2",
+    "l1_b0.70_g1.00_s0.90_8192_T10000ms_d1_s0",
+    "l1_b0.70_g1.00_s0.90_8192_T10000ms_d1_s1",
+    "l1_b0.70_g1.00_s0.90_8192_T10000ms_d1_s2"
+   ]
+  }
+ ],
+ "arms": [
+  {
+   "run_id": "l1_b0.70_g1.00_s0.30_8192_T10000ms_d0_s0",
+   "stage": "l1ctl",
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "T_ms": 10000.0,
+   "drive_mult": 0.0,
+   "seed": 0,
+   "role": "zero_drive",
+   "mechanism": "none",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 0.7,
+   "bias_log_sigma": 0.3,
+   "lever": "L1 对照档 σ=0.30（=夹具默认）"
+  },
+  {
+   "run_id": "l1_b0.70_g1.00_s0.30_8192_T10000ms_d0_s1",
+   "stage": "l1ctl",
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "T_ms": 10000.0,
+   "drive_mult": 0.0,
+   "seed": 1,
+   "role": "zero_drive",
+   "mechanism": "none",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 0.7,
+   "bias_log_sigma": 0.3,
+   "lever": "L1 对照档 σ=0.30（=夹具默认）"
+  },
+  {
+   "run_id": "l1_b0.70_g1.00_s0.30_8192_T10000ms_d0_s2",
+   "stage": "l1ctl",
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "T_ms": 10000.0,
+   "drive_mult": 0.0,
+   "seed": 2,
+   "role": "zero_drive",
+   "mechanism": "none",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 0.7,
+   "bias_log_sigma": 0.3,
+   "lever": "L1 对照档 σ=0.30（=夹具默认）"
+  },
+  {
+   "run_id": "l1_b0.70_g1.00_s0.30_8192_T10000ms_d1_s0",
+   "stage": "l1ctl",
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "T_ms": 10000.0,
+   "drive_mult": 1.0,
+   "seed": 0,
+   "role": "baseline",
+   "mechanism": "none",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 0.7,
+   "bias_log_sigma": 0.3,
+   "lever": "L1 对照档 σ=0.30（=夹具默认）"
+  },
+  {
+   "run_id": "l1_b0.70_g1.00_s0.30_8192_T10000ms_d1_s1",
+   "stage": "l1ctl",
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "T_ms": 10000.0,
+   "drive_mult": 1.0,
+   "seed": 1,
+   "role": "baseline",
+   "mechanism": "none",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 0.7,
+   "bias_log_sigma": 0.3,
+   "lever": "L1 对照档 σ=0.30（=夹具默认）"
+  },
+  {
+   "run_id": "l1_b0.70_g1.00_s0.30_8192_T10000ms_d1_s2",
+   "stage": "l1ctl",
+   "config_id": "p5_L1_b0.70_g1.00_s0.30",
+   "T_ms": 10000.0,
+   "drive_mult": 1.0,
+   "seed": 2,
+   "role": "baseline",
+   "mechanism": "none",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 0.7,
+   "bias_log_sigma": 0.3,
+   "lever": "L1 对照档 σ=0.30（=夹具默认）"
+  },
+  {
+   "run_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s0",
+   "stage": "l1s45",
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "T_ms": 10000.0,
+   "drive_mult": 0.0,
+   "seed": 0,
+   "role": "zero_drive",
+   "mechanism": "none",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 0.7,
+   "bias_log_sigma": 0.45,
+   "lever": "L1 σ=1.5× 对照"
+  },
+  {
+   "run_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s1",
+   "stage": "l1s45",
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "T_ms": 10000.0,
+   "drive_mult": 0.0,
+   "seed": 1,
+   "role": "zero_drive",
+   "mechanism": "none",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 0.7,
+   "bias_log_sigma": 0.45,
+   "lever": "L1 σ=1.5× 对照"
+  },
+  {
+   "run_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d0_s2",
+   "stage": "l1s45",
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "T_ms": 10000.0,
+   "drive_mult": 0.0,
+   "seed": 2,
+   "role": "zero_drive",
+   "mechanism": "none",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 0.7,
+   "bias_log_sigma": 0.45,
+   "lever": "L1 σ=1.5× 对照"
+  },
+  {
+   "run_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d1_s0",
+   "stage": "l1s45",
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "T_ms": 10000.0,
+   "drive_mult": 1.0,
+   "seed": 0,
+   "role": "baseline",
+   "mechanism": "none",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 0.7,
+   "bias_log_sigma": 0.45,
+   "lever": "L1 σ=1.5× 对照"
+  },
+  {
+   "run_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d1_s1",
+   "stage": "l1s45",
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "T_ms": 10000.0,
+   "drive_mult": 1.0,
+   "seed": 1,
+   "role": "baseline",
+   "mechanism": "none",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 0.7,
+   "bias_log_sigma": 0.45,
+   "lever": "L1 σ=1.5× 对照"
+  },
+  {
+   "run_id": "l1_b0.70_g1.00_s0.45_8192_T10000ms_d1_s2",
+   "stage": "l1s45",
+   "config_id": "p5_L1_b0.70_g1.00_s0.45",
+   "T_ms": 10000.0,
+   "drive_mult": 1.0,
+   "seed": 2,
+   "role": "baseline",
+   "mechanism": "none",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 0.7,
+   "bias_log_sigma": 0.45,
+   "lever": "L1 σ=1.5× 对照"
+  },
+  {
+   "run_id": "l1_b0.70_g1.00_s0.60_8192_T10000ms_d0_s0",
+   "stage": "l1s60",
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "T_ms": 10000.0,
+   "drive_mult": 0.0,
+   "seed": 0,
+   "role": "zero_drive",
+   "mechanism": "none",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 0.7,
+   "bias_log_sigma": 0.6,
+   "lever": "L1 σ=2.0× 对照"
+  },
+  {
+   "run_id": "l1_b0.70_g1.00_s0.60_8192_T10000ms_d0_s1",
+   "stage": "l1s60",
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "T_ms": 10000.0,
+   "drive_mult": 0.0,
+   "seed": 1,
+   "role": "zero_drive",
+   "mechanism": "none",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 0.7,
+   "bias_log_sigma": 0.6,
+   "lever": "L1 σ=2.0× 对照"
+  },
+  {
+   "run_id": "l1_b0.70_g1.00_s0.60_8192_T10000ms_d0_s2",
+   "stage": "l1s60",
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "T_ms": 10000.0,
+   "drive_mult": 0.0,
+   "seed": 2,
+   "role": "zero_drive",
+   "mechanism": "none",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 0.7,
+   "bias_log_sigma": 0.6,
+   "lever": "L1 σ=2.0× 对照"
+  },
+  {
+   "run_id": "l1_b0.70_g1.00_s0.60_8192_T10000ms_d1_s0",
+   "stage": "l1s60",
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "T_ms": 10000.0,
+   "drive_mult": 1.0,
+   "seed": 0,
+   "role": "baseline",
+   "mechanism": "none",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 0.7,
+   "bias_log_sigma": 0.6,
+   "lever": "L1 σ=2.0× 对照"
+  },
+  {
+   "run_id": "l1_b0.70_g1.00_s0.60_8192_T10000ms_d1_s1",
+   "stage": "l1s60",
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "T_ms": 10000.0,
+   "drive_mult": 1.0,
+   "seed": 1,
+   "role": "baseline",
+   "mechanism": "none",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 0.7,
+   "bias_log_sigma": 0.6,
+   "lever": "L1 σ=2.0× 对照"
+  },
+  {
+   "run_id": "l1_b0.70_g1.00_s0.60_8192_T10000ms_d1_s2",
+   "stage": "l1s60",
+   "config_id": "p5_L1_b0.70_g1.00_s0.60",
+   "T_ms": 10000.0,
+   "drive_mult": 1.0,
+   "seed": 2,
+   "role": "baseline",
+   "mechanism": "none",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 0.7,
+   "bias_log_sigma": 0.6,
+   "lever": "L1 σ=2.0× 对照"
+  },
+  {
+   "run_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d0_s0",
+   "stage": "l1s90",
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "T_ms": 10000.0,
+   "drive_mult": 0.0,
+   "seed": 0,
+   "role": "zero_drive",
+   "mechanism": "none",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 0.7,
+   "bias_log_sigma": 0.9,
+   "lever": "L1 σ=3.0× 对照（重尾上限）"
+  },
+  {
+   "run_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d0_s1",
+   "stage": "l1s90",
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "T_ms": 10000.0,
+   "drive_mult": 0.0,
+   "seed": 1,
+   "role": "zero_drive",
+   "mechanism": "none",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 0.7,
+   "bias_log_sigma": 0.9,
+   "lever": "L1 σ=3.0× 对照（重尾上限）"
+  },
+  {
+   "run_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d0_s2",
+   "stage": "l1s90",
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "T_ms": 10000.0,
+   "drive_mult": 0.0,
+   "seed": 2,
+   "role": "zero_drive",
+   "mechanism": "none",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 0.7,
+   "bias_log_sigma": 0.9,
+   "lever": "L1 σ=3.0× 对照（重尾上限）"
+  },
+  {
+   "run_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d1_s0",
+   "stage": "l1s90",
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "T_ms": 10000.0,
+   "drive_mult": 1.0,
+   "seed": 0,
+   "role": "baseline",
+   "mechanism": "none",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 0.7,
+   "bias_log_sigma": 0.9,
+   "lever": "L1 σ=3.0× 对照（重尾上限）"
+  },
+  {
+   "run_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d1_s1",
+   "stage": "l1s90",
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "T_ms": 10000.0,
+   "drive_mult": 1.0,
+   "seed": 1,
+   "role": "baseline",
+   "mechanism": "none",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 0.7,
+   "bias_log_sigma": 0.9,
+   "lever": "L1 σ=3.0× 对照（重尾上限）"
+  },
+  {
+   "run_id": "l1_b0.70_g1.00_s0.90_8192_T10000ms_d1_s2",
+   "stage": "l1s90",
+   "config_id": "p5_L1_b0.70_g1.00_s0.90",
+   "T_ms": 10000.0,
+   "drive_mult": 1.0,
+   "seed": 2,
+   "role": "baseline",
+   "mechanism": "none",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 0.7,
+   "bias_log_sigma": 0.9,
+   "lever": "L1 σ=3.0× 对照（重尾上限）"
+  }
+ ]
+}

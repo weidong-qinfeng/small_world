@@ -1,0 +1,42 @@
+{
+ "kind": "计划冻结记录修订留痕（不改动原计划文件）",
+ "generated_at": "2026-10-13T20:15:28",
+ "live_plan": {
+  "path": "neural_exploration/data/m11_p5_plan_l0.json",
+  "sha256_full": "011a7c797360a0bdcee1b03c2d7e73a18a676a51a8dfd255e0b7141f3506c821"
+ },
+ "regenerated_plan": {
+  "sha256_full": "514e8bbe95d891769d4ec92377fdd02ac79225faf70e6014b0c635814f2a1a2f",
+  "note": "仅在 --out-json 指向真实新文件时有值"
+ },
+ "arm_grid_identical": true,
+ "n_arms": [
+  42,
+  42
+ ],
+ "field_diffs": [
+  {
+   "field": "/frozen_tool/sha256_full",
+   "regenerated": "eeeb2283cbf6533531ad1a4925b39a5d6815908714587675c2eba8ca612db2b1",
+   "live": "24617d90dd4a6eb9f518244808029ac38dd541e5e5ae3b6b1f9a6ef6b387a596"
+  },
+  {
+   "field": "/frozen_tool/sha256_prefix",
+   "regenerated": "eeeb2283cbf6533531ad1a4925b39a5d6815908714587675c2eba8ca612db2b1",
+   "live": "24617d90dd4a6eb9f518244808029ac3"
+  },
+  {
+   "field": "/parent_prereg/sha256_full",
+   "regenerated": "aca821d9322a50d55c4dd604b3df8c836f6903bbc8c8e03eaac0341a17cc2fef",
+   "live": "fd52d252525d8b5037a037d1162472881acba7be596e277e8b659c236fc920de"
+  }
+ ],
+ "interpretation": "**臂网格与全部判据参数逐字节相同**；差异只在 provenance 字段（生产者 sha / 预注册 sha）⇒ 在用计划仍是 J5 的有效输入",
+ "producer_change": {
+  "pre": "24617d90dd4a6eb9f518244808029ac3",
+  "post": "eeeb2283cbf6533531ad1a4925b39a5d6815908714587675c2eba8ca612db2b1",
+  "what": "加入 `--bias-log-sigma`（L1 阻塞项）+ `--self-test-sigma`",
+  "inertness_evidence": "neural_exploration/data/m11_producer_inert_check.json",
+  "inertness_claim": "不带该键的臂逐位不变；不带键 ≡ 显式 0.30"
+ }
+}
