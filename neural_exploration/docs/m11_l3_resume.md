@@ -55,17 +55,24 @@ caffeinate -i /tmp/l3_run.sh > /tmp/ma_l3.log 2>&1 &
 
 ## 三、判定（跑完后照此做）
 
-### 3.1 评估器
+### 3.1 评估器（**命令已核对 CLI，2026-10-14 修正**）
+🔴 **先弄清机制**：`tools/validate_p11_resting.py` **没有 `--runs` 选项** —— 它吃的是 `--protocol-json`，而**臂清单（含每臂 `pop_trace`/`counts` 路径）就在那个协议 JSON 里**。
+**协议 JSON 由生产者在计划跑完后自动写出**（`tools/run_m11_p5_arms.py` **L507–536**：`path = os.path.join(DATA_DIR, 「m11_p5_protocol_%s.json」 % plan_id)`，并打印 `protocol -> …`）。
+本计划 `plan_id = p5_L3_sigma_cliff_bias_scan` ⇒ 协议文件将是：
+**`neural_exploration/data/m11_p5_protocol_p5_L3_sigma_cliff_bias_scan.json`**（`p5_` 会重复一次，这是代码决定的，不是笔误）。
 ```bash
 cd /Users/weidong/ai/small_world/neural_exploration
-# ⚠️ 解释器口径（R34）：引擎侧 .venv-m9（唯一有 torch）／评估器侧 .venv-m11（只有 numpy+h5py）
+# ① 先确认协议文件已生成（跑完才会出现；若没有 ⇒ 作业还没跑完）
+ls -la data/m11_p5_protocol_p5_L3_sigma_cliff_bias_scan.json
+# ② 用评估器侧解释器（.venv-m11：只有 numpy+h5py，无 torch；R34）
 /Users/weidong/ai/small_world/.venv-m11/bin/python tools/validate_p11_resting.py \
-    --runs data/m11_p5_l3_runs \
-    --protocol data/m11_p5_protocol_l1_sigma_n8192.json \
-    --targets data/m11_p5_targets.csv \
+    --protocol-json data/m11_p5_protocol_p5_L3_sigma_cliff_bias_scan.json \
+    --targets-csv data/m11_p5_targets.csv \
     --out-csv data/m11_p5_l3_eval.csv --out-json data/m11_p5_l3_eval.json
 ```
-（**先用 `--help` 核对参数名**；本文件写作时未逐个核对长选项拼写。）
+**评估器 CLI 的完整选项**（实测 `--help`，供按需取用）：
+`--protocol-json`｜`--pop-trace`/`--counts`/`--dt-ms`/`--T-ms`/`--settle-ms`/`--n-neuron`/`--seed`/`--role`/`--mechanism`/`--config-id`/`--protocol-id`（**单臂模式**）｜`--targets-csv`｜`--out-csv`/`--out-json`｜`--n-boot`｜`--check-targets`（判据表 CSV⟺JSON 自检后退出）｜`--smoke-emit-counts`/`--smoke-scale`｜`--quiet`｜`--save-json-dir`。
+⚠️ **本工具对『杠杆扫描计划』有结构性错配**（R108 §⑤）：它按『每 config 一个值』设计，因此 `(c)` 的 `invalid`/`unavailable`、`(d)`/`(h)` 的 `unavailable` 有可能是**计划结构造成**的，**不一定是科学结论** ⇒ **判定必须以 `tools/report_m11_l3.py`（四条报告量，含 `c_judgeable` 与 `triviality_flag`）为主、评估器为辅**。
 
 ### 3.2 三条判据与带（**逐字不变**）
 | 判据 | 口径 | 带 | 来源 |
