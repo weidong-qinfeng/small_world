@@ -3,16 +3,40 @@
 > **用途**：L3 正式跑跨会话（墙钟约 68 h，因本机占空比 ≈5%）。任何新会话读本文件即可接管。
 > **上游裁决**：`docs/m11_acceptance_master.md` §3di（R118）、§3dj（R119）；事前修订 `data/m11_prereg_amend_r118_l3_grid_v2.json`。
 
-## 一、当前状态（启动于 2026-10-13T23:29:00Z / 本地 07:29:00）
+## 一、当前状态（**已两次换计划 —— 以本节为准**）
+
+🔴 **当前在跑的计划是**：`data/m11_p5_plan_l3_c1_first.json`（sha256 **`53a8e66753022dd785e878315e6730d0dde854853751701c421d690142b274fe`**）
+顺序 = **`C1零 → C1基 → C0零 → C0基 → A0 → C2 → C3`**（依据 **R135**；每格零驱动优先）
+启动：`caffeinate -i /tmp/l3_run3.sh > /tmp/ma_l3c.log 2>&1 &`（`START3 2026-10-14T00:47:15Z`）
+**⚠️ 三次启动脚本都要 `pgrep -f run_m11_p5_arms` 先确认为空；同一时刻只跑一个计划。**
+
+**换计划历史（各计划均与新计划"臂集合完全相同、仅顺序不同" ⇒ 已完成臂 `[SKIP]` 复用、零返工）**
+| 序 | 计划文件 | sha256 | 顺序 | 启动脚本/日志 |
+|---|---|---|---|---|
+| 1 | `data/m11_p5_plan_l3.json`（**冻结**）| `4aab49b0…` | C2→A0→C1→C3→C0 | `/tmp/l3_run.sh` / `/tmp/ma_l3.log` |
+| 2 | `data/m11_p5_plan_l3_priority_ignition.json`（**已作废**，见同名 `.SUPERSEDED`）| `8b60d073…` | C0零→C1零→… | `/tmp/l3_run2.sh` / `/tmp/ma_l3b.log` |
+| **3（当前）** | **`data/m11_p5_plan_l3_c1_first.json`** | **`53a8e667…`** | **C1零→C1基→C0零→C0基→A0→C2→C3** | `/tmp/l3_run3.sh` / `/tmp/ma_l3c.log` |
+**作废标记（纪律第六十三条）**：`m11_p5_plan_l3_replan.json.SUPERSEDED`、`m11_p5_plan_l3_grid_v2_replan.json.SUPERSEDED`、`m11_p5_plan_l3_priority_ignition.json.SUPERSEDED`
+⇒ **这三份都不得运行**（"结构完整的过期计划"危害高于残缺文件——残缺会被发现，完整会被执行）。
 
 | 项 | 值 |
 |---|---|
-| 作业 | `caffeinate -i /tmp/l3_run.sh > /tmp/ma_l3.log 2>&1 &`（**托管后台作业**）|
-| 计划（冻结）| `data/m11_p5_plan_l3.frozen_for_run.json`，sha256 **`4aab49b00177a22e21f65b884bd29d95a8e7333e76cb109ae8fcd8bb9bd94615`** |
+| **冻结计划**（**不在跑，但审计链基准**）| `data/m11_p5_plan_l3.frozen_for_run.json`，sha256 **`4aab49b00177a22e21f65b884bd29d95a8e7333e76cb109ae8fcd8bb9bd94615`**（`data/m11_p5_plan_l3.json` 应与之逐字节相同）|
 | 生产者 | `tools/run_m11_p5_arms.py` sha256 **`633a4c458e9c1dd58e5d6c4838a205819a9424fbd49df9da8827c8b7bd42285b`**（894 行）|
-| 输出目录 | **`neural_exploration/data/m11_p5_l3_runs/`**（`--out-dir` 已用**绝对路径**，见 R119 §②）|
+| 输出目录 | **`neural_exploration/data/m11_p5_l3_runs/`**（`--out-dir` 必须**绝对路径**，见 R119 §②）|
 | 臂数 | **30**（5 格 × 2 角色 × 3 独立实现），`T_ms=10000`、`settle_ms=500` ⇒ **步数 210,000** |
 | 云/规模 | **不降规模、不用云 GPU、本机 MPS**（用户明令）|
+
+### 🔴 已得结论（截至 R137，**全部为正式口径 T=10 s 实测**）
+| 格（`σ=0.10`）| (a) 中位率 | (e) `ei_ratio` | (c) `R` |
+|---|---|---|---|
+| `bias=1.00` | 预期 fail（探针活跃占比 0.27）| — | **`unavailable`**（pooled≈15 < 硬门① 300）|
+| **`bias=1.15`** | **待基准臂**（最关键）| 待基准臂 | **`≈0.175`（fail，可判）** —— 零驱动 9,150/9,209 |
+| `bias=1.30` | **✓ 0.600 Hz** | **✓ 2.5970** | **`0.7322`（fail）** |
+**⇒ 关键化简（R137）**：基准臂**驱动主导** ⇒ `pooled_baseline` 在 bias 轴上近似恒定（≈52,400/实现）
+⇒ **`R ≤ 0.10` 等价于 `pooled_zero_drive ≤ ≈15,700`（每实现 ≤≈5,200）** ⇒ 问题已降为**一维区间**：
+**(c) 可满足 ⇔ `bias` 略低于 1.15 且每实现零驱动 ∈ [100, ≈5,200]**；
+而 **(a) 需高 bias** ⇒ **若 `bias=1.15` 的基准中位率 <0.5 ⇒ 夹缝为空**（**`C1` 的 3 个基准臂是唯一能定案的一组读数**）。
 
 ### 查进度（三条命令）
 ```bash
