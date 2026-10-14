@@ -1,0 +1,1021 @@
+# M12 S1-GATE 预注册区域白名单（来源=data/m12_raw/s2/model_Structure_all.json，graph_id=1；规则=CCFv3 depth 阈值；**出数前定死**；由 tools/probe_m12_s1_gate.py 确定性重生成 ⇒ 重跑 sha256 应一致）
+whitelist_id,structure_id,acronym,name,depth,st_level,parent_structure_id,graph_id,structure_id_path
+W_DEPTH_LE2,8,grey,Basic cell groups and regions,1,1,997,1,/997/8/
+W_DEPTH_LE2,73,VS,ventricular systems,1,1,997,1,/997/73/
+W_DEPTH_LE2,81,VL,lateral ventricle,2,8,73,1,/997/73/81/
+W_DEPTH_LE2,124,IVF,interventricular foramen,2,8,73,1,/997/73/124/
+W_DEPTH_LE2,129,V3,third ventricle,2,8,73,1,/997/73/129/
+W_DEPTH_LE2,140,AQ,cerebral aqueduct,2,8,73,1,/997/73/140/
+W_DEPTH_LE2,145,V4,fourth ventricle,2,8,73,1,/997/73/145/
+W_DEPTH_LE2,164,c,"central canal, spinal cord/medulla",2,8,73,1,/997/73/164/
+W_DEPTH_LE2,343,BS,Brain stem,2,2,8,1,/997/8/343/
+W_DEPTH_LE2,512,CB,Cerebellum,2,2,8,1,/997/8/512/
+W_DEPTH_LE2,567,CH,Cerebrum,2,2,8,1,/997/8/567/
+W_DEPTH_LE2,624,IPF,Interpeduncular fossa,2,7,1024,1,/997/1024/624/
+W_DEPTH_LE2,960,cbf,cerebellum related fiber tracts,2,2,1009,1,/997/1009/960/
+W_DEPTH_LE2,967,cm,cranial nerves,2,2,1009,1,/997/1009/967/
+W_DEPTH_LE2,983,lfbs,lateral forebrain bundle system,2,2,1009,1,/997/1009/983/
+W_DEPTH_LE2,991,mfbs,medial forebrain bundle system,2,2,1009,1,/997/1009/991/
+W_DEPTH_LE2,997,root,root,0,0,,1,/997/
+W_DEPTH_LE2,1000,eps,extrapyramidal fiber systems,2,2,1009,1,/997/1009/1000/
+W_DEPTH_LE2,1009,fiber tracts,fiber tracts,1,1,997,1,/997/1009/
+W_DEPTH_LE2,1024,grv,grooves,1,1,997,1,/997/1024/
+W_DEPTH_LE2,1032,grv of CTX,grooves of the cerebral cortex,2,7,1024,1,/997/1024/1032/
+W_DEPTH_LE2,1040,grv of CBX,grooves of the cerebellar cortex,2,7,1024,1,/997/1024/1040/
+W_DEPTH_LE2,304325711,retina,retina,1,1,997,1,/997/304325711/
+W_DEPTH_LE2,484682512,scwm,supra-callosal cerebral white matter,2,2,1009,1,/997/1009/484682512/
+W_DEPTH_LE3,3,sec,secondary fissure,3,8,1040,1,/997/1024/1040/3/
+W_DEPTH_LE3,8,grey,Basic cell groups and regions,1,1,997,1,/997/8/
+W_DEPTH_LE3,11,plf,posterolateral fissure,3,8,1040,1,/997/1024/1040/11/
+W_DEPTH_LE3,18,nf,nodular fissure,3,8,1040,1,/997/1024/1040/18/
+W_DEPTH_LE3,25,sif,simple fissure,3,8,1040,1,/997/1024/1040/25/
+W_DEPTH_LE3,34,icf,intercrural fissure,3,8,1040,1,/997/1024/1040/34/
+W_DEPTH_LE3,43,apf,ansoparamedian fissure,3,8,1040,1,/997/1024/1040/43/
+W_DEPTH_LE3,49,ipf,intraparafloccular fissure,3,8,1040,1,/997/1024/1040/49/
+W_DEPTH_LE3,57,pms,paramedian sulcus,3,8,1040,1,/997/1024/1040/57/
+W_DEPTH_LE3,65,pfs,parafloccular sulcus,3,8,1040,1,/997/1024/1040/65/
+W_DEPTH_LE3,73,VS,ventricular systems,1,1,997,1,/997/73/
+W_DEPTH_LE3,81,VL,lateral ventricle,2,8,73,1,/997/73/81/
+W_DEPTH_LE3,89,RC,rhinocele,3,9,81,1,/997/73/81/89/
+W_DEPTH_LE3,98,SEZ,subependymal zone,3,9,81,1,/997/73/81/98/
+W_DEPTH_LE3,108,chpl,choroid plexus,3,9,81,1,/997/73/81/108/
+W_DEPTH_LE3,116,chfl,choroid fissure,3,9,81,1,/997/73/81/116/
+W_DEPTH_LE3,124,IVF,interventricular foramen,2,8,73,1,/997/73/124/
+W_DEPTH_LE3,129,V3,third ventricle,2,8,73,1,/997/73/129/
+W_DEPTH_LE3,140,AQ,cerebral aqueduct,2,8,73,1,/997/73/140/
+W_DEPTH_LE3,145,V4,fourth ventricle,2,8,73,1,/997/73/145/
+W_DEPTH_LE3,153,V4r,lateral recess,3,9,145,1,/997/73/145/153/
+W_DEPTH_LE3,164,c,"central canal, spinal cord/medulla",2,8,73,1,/997/73/164/
+W_DEPTH_LE3,313,MB,Midbrain,3,5,343,1,/997/8/343/313/
+W_DEPTH_LE3,343,BS,Brain stem,2,2,8,1,/997/8/343/
+W_DEPTH_LE3,512,CB,Cerebellum,2,2,8,1,/997/8/512/
+W_DEPTH_LE3,519,CBN,Cerebellar nuclei,3,5,512,1,/997/8/512/519/
+W_DEPTH_LE3,528,CBX,Cerebellar cortex,3,5,512,1,/997/8/512/528/
+W_DEPTH_LE3,567,CH,Cerebrum,2,2,8,1,/997/8/567/
+W_DEPTH_LE3,623,CNU,Cerebral nuclei,3,3,567,1,/997/8/567/623/
+W_DEPTH_LE3,624,IPF,Interpeduncular fossa,2,7,1024,1,/997/1024/624/
+W_DEPTH_LE3,688,CTX,Cerebral cortex,3,3,567,1,/997/8/567/688/
+W_DEPTH_LE3,710,VIn,abducens nerve,3,8,967,1,/997/1009/967/710/
+W_DEPTH_LE3,717,XIn,accessory spinal nerve,3,8,967,1,/997/1009/967/717/
+W_DEPTH_LE3,728,arb,arbor vitae,3,8,960,1,/997/1009/960/728/
+W_DEPTH_LE3,736,ctb,central tegmental bundle,3,8,1000,1,/997/1009/1000/736/
+W_DEPTH_LE3,744,cbc,cerebellar commissure,3,8,960,1,/997/1009/960/744/
+W_DEPTH_LE3,752,cbp,cerebellar peduncles,3,7,960,1,/997/1009/960/752/
+W_DEPTH_LE3,760,epsc,cerebral nuclei related,3,7,1000,1,/997/1009/1000/760/
+W_DEPTH_LE3,768,mfbc,cerebrum related,3,7,991,1,/997/1009/991/768/
+W_DEPTH_LE3,776,cc,corpus callosum,3,8,983,1,/997/1009/983/776/
+W_DEPTH_LE3,784,cst,corticospinal tract,3,8,983,1,/997/1009/983/784/
+W_DEPTH_LE3,792,drt,dorsal roots,3,7,967,1,/997/1009/967/792/
+W_DEPTH_LE3,798,VIIn,facial nerve,3,8,967,1,/997/1009/967/798/
+W_DEPTH_LE3,808,IXn,glossopharyngeal nerve,3,8,967,1,/997/1009/967/808/
+W_DEPTH_LE3,813,XIIn,hypoglossal nerve,3,8,967,1,/997/1009/967/813/
+W_DEPTH_LE3,824,mfsbshy,hypothalamus related,3,7,991,1,/997/1009/991/824/
+W_DEPTH_LE3,832,IIIn,oculomotor nerve,3,8,967,1,/997/1009/967/832/
+W_DEPTH_LE3,840,In,olfactory nerve,3,8,967,1,/997/1009/967/840/
+W_DEPTH_LE3,848,IIn,optic nerve,3,8,967,1,/997/1009/967/848/
+W_DEPTH_LE3,855,rst,retriculospinal tract,3,8,1000,1,/997/1009/1000/855/
+W_DEPTH_LE3,863,rust,rubrospinal tract,3,8,1000,1,/997/1009/1000/863/
+W_DEPTH_LE3,871,sst,spinothalamic tract,3,8,967,1,/997/1009/967/871/
+W_DEPTH_LE3,877,tsp,tectospinal pathway,3,8,1000,1,/997/1009/1000/877/
+W_DEPTH_LE3,885,tn,terminal nerve,3,8,967,1,/997/1009/967/885/
+W_DEPTH_LE3,896,lfbst,thalamus related,3,7,983,1,/997/1009/983/896/
+W_DEPTH_LE3,901,Vn,trigeminal nerve,3,8,967,1,/997/1009/967/901/
+W_DEPTH_LE3,911,IVn,trochlear nerve,3,8,967,1,/997/1009/967/911/
+W_DEPTH_LE3,917,Xn,vagus nerve,3,8,967,1,/997/1009/967/917/
+W_DEPTH_LE3,925,vrt,ventral roots,3,7,967,1,/997/1009/967/925/
+W_DEPTH_LE3,933,VIIIn,vestibulocochlear nerve,3,8,967,1,/997/1009/967/933/
+W_DEPTH_LE3,941,vsp,vestibulospinal pathway,3,8,1000,1,/997/1009/1000/941/
+W_DEPTH_LE3,949,von,vomeronasal nerve,3,8,967,1,/997/1009/967/949/
+W_DEPTH_LE3,960,cbf,cerebellum related fiber tracts,2,2,1009,1,/997/1009/960/
+W_DEPTH_LE3,967,cm,cranial nerves,2,2,1009,1,/997/1009/967/
+W_DEPTH_LE3,983,lfbs,lateral forebrain bundle system,2,2,1009,1,/997/1009/983/
+W_DEPTH_LE3,991,mfbs,medial forebrain bundle system,2,2,1009,1,/997/1009/991/
+W_DEPTH_LE3,997,root,root,0,0,,1,/997/
+W_DEPTH_LE3,1000,eps,extrapyramidal fiber systems,2,2,1009,1,/997/1009/1000/
+W_DEPTH_LE3,1009,fiber tracts,fiber tracts,1,1,997,1,/997/1009/
+W_DEPTH_LE3,1024,grv,grooves,1,1,997,1,/997/1024/
+W_DEPTH_LE3,1032,grv of CTX,grooves of the cerebral cortex,2,7,1024,1,/997/1024/1032/
+W_DEPTH_LE3,1040,grv of CBX,grooves of the cerebellar cortex,2,7,1024,1,/997/1024/1040/
+W_DEPTH_LE3,1055,eg,endorhinal groove,3,8,1032,1,/997/1024/1032/1055/
+W_DEPTH_LE3,1063,hf,hippocampal fissure,3,8,1032,1,/997/1024/1032/1063/
+W_DEPTH_LE3,1065,HB,Hindbrain,3,3,343,1,/997/8/343/1065/
+W_DEPTH_LE3,1071,rf,rhinal fissure,3,8,1032,1,/997/1024/1032/1071/
+W_DEPTH_LE3,1078,ri,rhinal incisure,3,8,1032,1,/997/1024/1032/1078/
+W_DEPTH_LE3,1087,pce,precentral fissure,3,8,1040,1,/997/1024/1040/1087/
+W_DEPTH_LE3,1095,pcf,preculminate fissure,3,8,1040,1,/997/1024/1040/1095/
+W_DEPTH_LE3,1103,pri,primary fissure,3,8,1040,1,/997/1024/1040/1103/
+W_DEPTH_LE3,1112,psf,posterior superior fissure,3,8,1040,1,/997/1024/1040/1112/
+W_DEPTH_LE3,1119,ppf,prepyramidal fissure,3,8,1040,1,/997/1024/1040/1119/
+W_DEPTH_LE3,1129,IB,Interbrain,3,3,343,1,/997/8/343/1129/
+W_DEPTH_LE3,304325711,retina,retina,1,1,997,1,/997/304325711/
+W_DEPTH_LE3,484682512,scwm,supra-callosal cerebral white matter,2,2,1009,1,/997/1009/484682512/
+W_DEPTH_LE5,3,sec,secondary fissure,3,8,1040,1,/997/1024/1040/3/
+W_DEPTH_LE5,4,IC,Inferior colliculus,5,8,339,1,/997/8/343/313/339/4/
+W_DEPTH_LE5,6,int,internal capsule,4,9,784,1,/997/1009/983/784/6/
+W_DEPTH_LE5,8,grey,Basic cell groups and regions,1,1,997,1,/997/8/
+W_DEPTH_LE5,11,plf,posterolateral fissure,3,8,1040,1,/997/1024/1040/11/
+W_DEPTH_LE5,14,im,internal medullary lamina of the thalamus,4,8,896,1,/997/1009/983/896/14/
+W_DEPTH_LE5,16,6b,"Layer 6b, isocortex",5,11,703,1,/997/8/567/688/703/16/
+W_DEPTH_LE5,18,nf,nodular fissure,3,8,1040,1,/997/1024/1040/18/
+W_DEPTH_LE5,21,lotg,"lateral olfactory tract, general",4,9,840,1,/997/1009/967/840/21/
+W_DEPTH_LE5,25,sif,simple fissure,3,8,1040,1,/997/1024/1040/25/
+W_DEPTH_LE5,29,sttl,lateral spinothalamic tract,4,9,871,1,/997/1009/967/871/29/
+W_DEPTH_LE5,34,icf,intercrural fissure,3,8,1040,1,/997/1024/1040/34/
+W_DEPTH_LE5,35,III,Oculomotor nucleus,5,8,323,1,/997/8/343/313/323/35/
+W_DEPTH_LE5,37,lab,longitudinal association bundle,4,8,768,1,/997/1009/991/768/37/
+W_DEPTH_LE5,43,apf,ansoparamedian fissure,3,8,1040,1,/997/1024/1040/43/
+W_DEPTH_LE5,46,mfbsma,mammillary related,4,8,824,1,/997/1009/991/824/46/
+W_DEPTH_LE5,49,ipf,intraparafloccular fissure,3,8,1040,1,/997/1024/1040/49/
+W_DEPTH_LE5,54,mfb,medial forebrain bundle,4,8,824,1,/997/1009/991/824/54/
+W_DEPTH_LE5,57,pms,paramedian sulcus,3,8,1040,1,/997/1024/1040/57/
+W_DEPTH_LE5,58,MT,Medial terminal nucleus of the accessory optic tract,5,8,323,1,/997/8/343/313/323/58/
+W_DEPTH_LE5,62,mlf,medial longitudinal fascicle,4,9,832,1,/997/1009/967/832/62/
+W_DEPTH_LE5,65,pfs,parafloccular sulcus,3,8,1040,1,/997/1024/1040/65/
+W_DEPTH_LE5,66,LT,Lateral terminal nucleus of the accessory optic tract,5,8,323,1,/997/8/343/313/323/66/
+W_DEPTH_LE5,70,mfbsm,midbrain related,4,8,824,1,/997/1009/991/824/70/
+W_DEPTH_LE5,73,VS,ventricular systems,1,1,997,1,/997/73/
+W_DEPTH_LE5,75,DT,Dorsal terminal nucleus of the accessory optic tract,5,8,323,1,/997/8/343/313/323/75/
+W_DEPTH_LE5,78,mcp,middle cerebellar peduncle,4,8,752,1,/997/1009/960/752/78/
+W_DEPTH_LE5,81,VL,lateral ventricle,2,8,73,1,/997/73/81/
+W_DEPTH_LE5,86,mtc,middle thalamic commissure,4,8,896,1,/997/1009/983/896/86/
+W_DEPTH_LE5,89,RC,rhinocele,3,9,81,1,/997/73/81/89/
+W_DEPTH_LE5,91,IP,Interposed nucleus,4,8,519,1,/997/8/512/519/91/
+W_DEPTH_LE5,93,moV,motor root of the trigeminal nerve,4,9,901,1,/997/1009/967/901/93/
+W_DEPTH_LE5,98,SEZ,subependymal zone,3,9,81,1,/997/73/81/98/
+W_DEPTH_LE5,102,nst,nigrostriatal tract,4,8,760,1,/997/1009/1000/760/102/
+W_DEPTH_LE5,108,chpl,choroid plexus,3,9,81,1,/997/73/81/108/
+W_DEPTH_LE5,109,ntt,nigrothalamic fibers,4,8,760,1,/997/1009/1000/760/109/
+W_DEPTH_LE5,115,IV,Trochlear nucleus,5,8,323,1,/997/8/343/313/323/115/
+W_DEPTH_LE5,116,chfl,choroid fissure,3,9,81,1,/997/73/81/116/
+W_DEPTH_LE5,117,och,optic chiasm,4,9,848,1,/997/1009/967/848/117/
+W_DEPTH_LE5,124,IVF,interventricular foramen,2,8,73,1,/997/73/124/
+W_DEPTH_LE5,125,opt,optic tract,4,9,848,1,/997/1009/967/848/125/
+W_DEPTH_LE5,128,MRN,Midbrain reticular nucleus,5,8,323,1,/997/8/343/313/323/128/
+W_DEPTH_LE5,129,V3,third ventricle,2,8,73,1,/997/73/129/
+W_DEPTH_LE5,131,LA,Lateral amygdalar nucleus,5,8,703,1,/997/8/567/688/703/131/
+W_DEPTH_LE5,134,ptf,pallidotegmental fascicle,4,8,760,1,/997/1009/1000/760/134/
+W_DEPTH_LE5,140,AQ,cerebral aqueduct,2,8,73,1,/997/73/140/
+W_DEPTH_LE5,141,PVR,Periventricular region,5,6,1097,1,/997/8/343/1129/1097/141/
+W_DEPTH_LE5,142,pap,pallidothalamic pathway,4,8,760,1,/997/1009/1000/760/142/
+W_DEPTH_LE5,145,V4,fourth ventricle,2,8,73,1,/997/73/145/
+W_DEPTH_LE5,150,pvbh,periventricular bundle of the hypothalamus,4,8,824,1,/997/1009/991/824/150/
+W_DEPTH_LE5,153,V4r,lateral recess,3,9,145,1,/997/73/145/153/
+W_DEPTH_LE5,157,PVZ,Periventricular zone,5,6,1097,1,/997/8/343/1129/1097/157/
+W_DEPTH_LE5,158,pc,posterior commissure,4,9,832,1,/997/1009/967/832/158/
+W_DEPTH_LE5,164,c,"central canal, spinal cord/medulla",2,8,73,1,/997/73/164/
+W_DEPTH_LE5,165,RAmb,Midbrain raphe nuclei,5,7,348,1,/997/8/343/313/348/165/
+W_DEPTH_LE5,166,pmx,premammillary commissure,4,8,824,1,/997/1009/991/824/166/
+W_DEPTH_LE5,174,poc,preoptic commissure,4,8,824,1,/997/1009/991/824/174/
+W_DEPTH_LE5,182,php,propriohypothalamic pathways,4,8,824,1,/997/1009/991/824/182/
+W_DEPTH_LE5,190,py,pyramid,4,9,784,1,/997/1009/983/784/190/
+W_DEPTH_LE5,198,pyd,pyramidal decussation,4,9,784,1,/997/1009/983/784/198/
+W_DEPTH_LE5,205,rstl,"retriculospinal tract, lateral part",4,9,855,1,/997/1009/1000/855/205/
+W_DEPTH_LE5,213,rstm,"retriculospinal tract, medial part",4,9,855,1,/997/1009/1000/855/213/
+W_DEPTH_LE5,214,RN,Red nucleus,5,8,323,1,/997/8/343/313/323/214/
+W_DEPTH_LE5,221,rrt,rubroreticular tract,4,9,863,1,/997/1009/1000/863/221/
+W_DEPTH_LE5,229,sV,sensory root of the trigeminal nerve,4,9,901,1,/997/1009/967/901/229/
+W_DEPTH_LE5,231,AT,Anterior tegmental nucleus,5,8,323,1,/997/8/343/313/323/231/
+W_DEPTH_LE5,237,ts,solitary tract,4,9,917,1,/997/1009/967/917/237/
+W_DEPTH_LE5,245,scrt,spinocervical tract,4,9,871,1,/997/1009/967/871/245/
+W_DEPTH_LE5,246,RR,"Midbrain reticular nucleus, retrorubral area",5,8,323,1,/997/8/343/313/323/246/
+W_DEPTH_LE5,253,shp,spinohypothalamic pathway,4,9,871,1,/997/1009/967/871/253/
+W_DEPTH_LE5,261,sop,spino-olivary pathway,4,9,871,1,/997/1009/967/871/261/
+W_DEPTH_LE5,270,srp,spinoreticular pathway,4,9,871,1,/997/1009/967/871/270/
+W_DEPTH_LE5,271,SAG,Nucleus sagulum,5,8,339,1,/997/8/343/313/339/271/
+W_DEPTH_LE5,275,LSX,Lateral septal complex,5,6,477,1,/997/8/567/623/477/275/
+W_DEPTH_LE5,277,stp,spinotectal pathway,4,9,871,1,/997/1009/967/871/277/
+W_DEPTH_LE5,278,sAMY,Striatum-like amygdalar nuclei,5,6,477,1,/997/8/567/623/477/278/
+W_DEPTH_LE5,285,step,spinotelenchephalic pathway,4,9,871,1,/997/1009/967/871/285/
+W_DEPTH_LE5,290,LZ,Hypothalamic lateral zone,5,6,1097,1,/997/8/343/1129/1097/290/
+W_DEPTH_LE5,293,svp,spinovestibular pathway,4,9,871,1,/997/1009/967/871/293/
+W_DEPTH_LE5,294,SCm,"Superior colliculus, motor related",5,8,323,1,/997/8/343/313/323/294/
+W_DEPTH_LE5,295,BLA,Basolateral amygdalar nucleus,5,8,703,1,/997/8/567/688/703/295/
+W_DEPTH_LE5,301,st,stria terminalis,4,8,768,1,/997/1009/991/768/301/
+W_DEPTH_LE5,302,SCs,"Superior colliculus, sensory related",5,8,339,1,/997/8/343/313/339/302/
+W_DEPTH_LE5,309,snp,striatonigral pathway,4,8,760,1,/997/1009/1000/760/309/
+W_DEPTH_LE5,313,MB,Midbrain,3,5,343,1,/997/8/343/313/
+W_DEPTH_LE5,315,Isocortex,Isocortex,5,5,695,1,/997/8/567/688/695/315/
+W_DEPTH_LE5,317,stf,subthalamic fascicle,4,8,760,1,/997/1009/1000/760/317/
+W_DEPTH_LE5,319,BMA,Basomedial amygdalar nucleus,5,8,703,1,/997/8/567/688/703/319/
+W_DEPTH_LE5,323,MBmot,"Midbrain, motor related",4,6,313,1,/997/8/343/313/323/
+W_DEPTH_LE5,326,scp,superior cerebelar peduncles,4,8,752,1,/997/1009/960/752/326/
+W_DEPTH_LE5,336,csc,superior colliculus commissure,4,9,848,1,/997/1009/967/848/336/
+W_DEPTH_LE5,339,MBsen,"Midbrain, sensory related",4,6,313,1,/997/8/343/313/339/
+W_DEPTH_LE5,341,smd,supramammillary decussation,4,8,824,1,/997/1009/991/824/341/
+W_DEPTH_LE5,343,BS,Brain stem,2,2,8,1,/997/8/343/
+W_DEPTH_LE5,348,MBsta,"Midbrain, behavioral state related",4,6,313,1,/997/8/343/313/348/
+W_DEPTH_LE5,349,sup,supraoptic commissures,4,8,824,1,/997/1009/991/824/349/
+W_DEPTH_LE5,354,MY,Medulla,4,5,1065,1,/997/8/343/1065/354/
+W_DEPTH_LE5,357,ttp,tectothalamic pathway,4,9,848,1,/997/1009/967/848/357/
+W_DEPTH_LE5,365,tp,thalamic peduncles,4,8,896,1,/997/1009/983/896/365/
+W_DEPTH_LE5,370,MY-mot,"Medulla, motor related",5,6,354,1,/997/8/343/1065/354/370/
+W_DEPTH_LE5,373,tct,trigeminocerebellar tract,4,8,752,1,/997/1009/960/752/373/
+W_DEPTH_LE5,374,SNc,"Substantia nigra, compact part",5,8,348,1,/997/8/343/313/348/374/
+W_DEPTH_LE5,379,MY-sat,"Medulla, behavioral state related",5,6,354,1,/997/8/343/1065/354/379/
+W_DEPTH_LE5,381,SNr,"Substantia nigra, reticular part",5,8,323,1,/997/8/343/313/323/381/
+W_DEPTH_LE5,384,IVd,trochlear nerve decussation,4,9,911,1,/997/1009/967/911/384/
+W_DEPTH_LE5,386,MY-sen,"Medulla, sensory related",5,6,354,1,/997/8/343/1065/354/386/
+W_DEPTH_LE5,389,sttv,ventral spinothalamic tract,4,9,871,1,/997/1009/967/871/389/
+W_DEPTH_LE5,397,vtd,ventral tegmental decussation,4,9,863,1,/997/1009/1000/863/397/
+W_DEPTH_LE5,405,vlt,ventrolateral hypothalamic tract,4,8,824,1,/997/1009/991/824/405/
+W_DEPTH_LE5,413,vVIIIn,vestibular nerve,4,9,933,1,/997/1009/967/933/413/
+W_DEPTH_LE5,459,aolt,accessory olfactory tract,5,10,21,1,/997/1009/967/840/21/459/
+W_DEPTH_LE5,460,MEV,Midbrain trigeminal nucleus,5,8,339,1,/997/8/343/313/339/460/
+W_DEPTH_LE5,466,alv,alveus,5,9,1099,1,/997/1009/991/768/1099/466/
+W_DEPTH_LE5,467,MEZ,Hypothalamic medial zone,5,6,1097,1,/997/8/343/1129/1097/467/
+W_DEPTH_LE5,474,ab,angular path,5,9,1099,1,/997/1009/991/768/1099/474/
+W_DEPTH_LE5,477,STR,Striatum,4,5,623,1,/997/8/567/623/477/
+W_DEPTH_LE5,482,bic,brachium of the inferior colliculus,5,10,948,1,/997/1009/967/933/948/482/
+W_DEPTH_LE5,485,STRd,Striatum dorsal region,5,6,477,1,/997/8/567/623/477/485/
+W_DEPTH_LE5,490,bct,bulbocerebellar tract,5,9,1123,1,/997/1009/960/752/1123/490/
+W_DEPTH_LE5,493,STRv,Striatum ventral region,5,6,477,1,/997/8/567/623/477/493/
+W_DEPTH_LE5,499,cct,cuneocerebellar tract,5,9,1123,1,/997/1009/960/752/1123/499/
+W_DEPTH_LE5,506,das,dorsal acoustic stria,5,10,948,1,/997/1009/967/933/948/506/
+W_DEPTH_LE5,512,CB,Cerebellum,2,2,8,1,/997/8/512/
+W_DEPTH_LE5,514,dc,dorsal column,5,9,932,1,/997/1009/967/792/932/514/
+W_DEPTH_LE5,519,CBN,Cerebellar nuclei,3,5,512,1,/997/8/512/519/
+W_DEPTH_LE5,522,dcm,dorsal commissure of the spinal cord,5,9,932,1,/997/1009/967/792/932/522/
+W_DEPTH_LE5,528,CBX,Cerebellar cortex,3,5,512,1,/997/8/512/528/
+W_DEPTH_LE5,530,df,dorsal fornix,5,9,1099,1,/997/1009/991/768/1099/530/
+W_DEPTH_LE5,538,lotd,dorsal limb,5,10,21,1,/997/1009/967/840/21/538/
+W_DEPTH_LE5,547,dlf,dorsal longitudinal fascicle,5,9,70,1,/997/1009/991/824/70/547/
+W_DEPTH_LE5,549,TH,Thalamus,4,5,1129,1,/997/8/343/1129/549/
+W_DEPTH_LE5,553,sctd,dorsal spinocerebellar tract,5,9,1123,1,/997/1009/960/752/1123/553/
+W_DEPTH_LE5,563,dtt,dorsal tegmental tract,5,9,70,1,/997/1009/991/824/70/563/
+W_DEPTH_LE5,567,CH,Cerebrum,2,2,8,1,/997/8/567/
+W_DEPTH_LE5,570,dl,dorsolateral fascicle,5,9,932,1,/997/1009/967/792/932/570/
+W_DEPTH_LE5,579,ec,external capsule,5,10,956,1,/997/1009/983/776/956/579/
+W_DEPTH_LE5,580,NB,Nucleus of the brachium of the inferior colliculus,5,8,339,1,/997/8/343/313/339/580/
+W_DEPTH_LE5,583,CLA,Claustrum,5,8,703,1,/997/8/567/688/703/583/
+W_DEPTH_LE5,586,fpr,fasciculus proprius,5,9,932,1,/997/1009/967/792/932/586/
+W_DEPTH_LE5,595,fr,fasciculus retroflexus,5,9,1083,1,/997/1009/991/824/1083/595/
+W_DEPTH_LE5,603,fi,fimbria,5,9,1099,1,/997/1009/991/768/1099/603/
+W_DEPTH_LE5,611,hbc,habenular commissure,5,9,1083,1,/997/1009/991/824/1083/611/
+W_DEPTH_LE5,615,SNl,"Substantia nigra, lateral part",5,8,323,1,/997/8/343/313/323/615/
+W_DEPTH_LE5,616,CUN,Cuneiform nucleus,5,8,323,1,/997/8/343/313/323/616/
+W_DEPTH_LE5,618,hc,hippocampal commissures,5,9,1099,1,/997/1009/991/768/1099/618/
+W_DEPTH_LE5,623,CNU,Cerebral nuclei,3,3,567,1,/997/8/567/623/
+W_DEPTH_LE5,624,IPF,Interpeduncular fossa,2,7,1024,1,/997/1024/624/
+W_DEPTH_LE5,627,hht,hypothalamohypophysial tract,5,10,285,1,/997/1009/967/871/285/627/
+W_DEPTH_LE5,633,cic,inferior colliculus commissure,5,10,948,1,/997/1009/967/933/948/633/
+W_DEPTH_LE5,641,ias,intermediate acoustic stria,5,10,948,1,/997/1009/967/933/948/641/
+W_DEPTH_LE5,645,VERM,Vermal regions,4,6,528,1,/997/8/512/528/645/
+W_DEPTH_LE5,650,jrb,juxtarestiform body,5,9,1123,1,/997/1009/960/752/1123/650/
+W_DEPTH_LE5,658,ll,lateral lemniscus,5,10,948,1,/997/1009/967/933/948/658/
+W_DEPTH_LE5,665,lot,"lateral olfactory tract, body",5,10,21,1,/997/1009/967/840/21/665/
+W_DEPTH_LE5,673,mp,mammillary peduncle,5,9,46,1,/997/1009/991/824/46/673/
+W_DEPTH_LE5,681,mtg,mammillotegmental tract,5,9,46,1,/997/1009/991/824/46/681/
+W_DEPTH_LE5,688,CTX,Cerebral cortex,3,3,567,1,/997/8/567/688/
+W_DEPTH_LE5,690,mtt,mammillothalamic tract,5,9,46,1,/997/1009/991/824/46/690/
+W_DEPTH_LE5,695,CTXpl,Cortical plate,4,4,688,1,/997/8/567/688/695/
+W_DEPTH_LE5,697,ml,medial lemniscus,5,9,932,1,/997/1009/967/792/932/697/
+W_DEPTH_LE5,698,OLF,Olfactory areas,5,5,695,1,/997/8/567/688/695/698/
+W_DEPTH_LE5,703,CTXsp,Cortical subplate,4,5,688,1,/997/8/567/688/703/
+W_DEPTH_LE5,705,mtV,midbrain tract of the trigeminal nerve,5,10,229,1,/997/1009/967/901/229/705/
+W_DEPTH_LE5,710,VIn,abducens nerve,3,8,967,1,/997/1009/967/710/
+W_DEPTH_LE5,713,per,perforant path,5,9,1099,1,/997/1009/991/768/1099/713/
+W_DEPTH_LE5,717,XIn,accessory spinal nerve,3,8,967,1,/997/1009/967/717/
+W_DEPTH_LE5,722,pvbt,periventricular bundle of the thalamus,5,9,1068,1,/997/1009/991/824/1068/722/
+W_DEPTH_LE5,728,arb,arbor vitae,3,8,960,1,/997/1009/960/728/
+W_DEPTH_LE5,730,PIS,pineal stalk,5,9,1083,1,/997/1009/991/824/1083/730/
+W_DEPTH_LE5,736,ctb,central tegmental bundle,3,8,1000,1,/997/1009/1000/736/
+W_DEPTH_LE5,737,fxpo,postcommissural fornix,5,9,1099,1,/997/1009/991/768/1099/737/
+W_DEPTH_LE5,744,cbc,cerebellar commissure,3,8,960,1,/997/1009/960/744/
+W_DEPTH_LE5,745,fxprg,"precommissural fornix, general",5,9,1099,1,/997/1009/991/768/1099/745/
+W_DEPTH_LE5,749,VTA,Ventral tegmental area,5,8,323,1,/997/8/343/313/323/749/
+W_DEPTH_LE5,752,cbp,cerebellar peduncles,3,7,960,1,/997/1009/960/752/
+W_DEPTH_LE5,753,pm,principal mammillary tract,5,9,46,1,/997/1009/991/824/46/753/
+W_DEPTH_LE5,757,VTN,Ventral tegmental nucleus,5,8,323,1,/997/8/343/313/323/757/
+W_DEPTH_LE5,760,epsc,cerebral nuclei related,3,7,1000,1,/997/1009/1000/760/
+W_DEPTH_LE5,762,phpd,"propriohypothalamic pathways, dorsal",5,9,182,1,/997/1009/991/824/182/762/
+W_DEPTH_LE5,768,mfbc,cerebrum related,3,7,991,1,/997/1009/991/768/
+W_DEPTH_LE5,770,phpl,"propriohypothalamic pathways, lateral",5,9,182,1,/997/1009/991/824/182/770/
+W_DEPTH_LE5,771,P,Pons,4,5,1065,1,/997/8/343/1065/771/
+W_DEPTH_LE5,776,cc,corpus callosum,3,8,983,1,/997/1009/983/776/
+W_DEPTH_LE5,779,phpm,"propriohypothalamic pathways, medial",5,9,182,1,/997/1009/991/824/182/779/
+W_DEPTH_LE5,780,PA,Posterior amygdalar nucleus,5,8,703,1,/997/8/567/688/703/780/
+W_DEPTH_LE5,784,cst,corticospinal tract,3,8,983,1,/997/1009/983/784/
+W_DEPTH_LE5,787,phpv,"propriohypothalamic pathways, ventral",5,9,182,1,/997/1009/991/824/182/787/
+W_DEPTH_LE5,792,drt,dorsal roots,3,7,967,1,/997/1009/967/792/
+W_DEPTH_LE5,794,sptV,spinal tract of the trigeminal nerve,5,10,229,1,/997/1009/967/901/229/794/
+W_DEPTH_LE5,795,PAG,Periaqueductal gray,5,8,323,1,/997/8/343/313/323/795/
+W_DEPTH_LE5,798,VIIn,facial nerve,3,8,967,1,/997/1009/967/798/
+W_DEPTH_LE5,802,sm,stria medullaris,5,9,1083,1,/997/1009/991/824/1083/802/
+W_DEPTH_LE5,803,PAL,Pallidum,4,5,623,1,/997/8/567/623/803/
+W_DEPTH_LE5,808,IXn,glossopharyngeal nerve,3,8,967,1,/997/1009/967/808/
+W_DEPTH_LE5,809,PALc,"Pallidum, caudal region",5,6,803,1,/997/8/567/623/803/809/
+W_DEPTH_LE5,812,dscp,superior cerebellar peduncle decussation,5,9,326,1,/997/1009/960/752/326/812/
+W_DEPTH_LE5,813,XIIn,hypoglossal nerve,3,8,967,1,/997/1009/967/813/
+W_DEPTH_LE5,817,supa,"supraoptic commissures, anterior",5,9,349,1,/997/1009/991/824/349/817/
+W_DEPTH_LE5,818,PALd,"Pallidum, dorsal region",5,6,803,1,/997/8/567/623/803/818/
+W_DEPTH_LE5,824,mfsbshy,hypothalamus related,3,7,991,1,/997/1009/991/824/
+W_DEPTH_LE5,825,supd,"supraoptic commissures, dorsal",5,9,349,1,/997/1009/991/824/349/825/
+W_DEPTH_LE5,826,PALm,"Pallidum, medial region",5,6,803,1,/997/8/567/623/803/826/
+W_DEPTH_LE5,832,IIIn,oculomotor nerve,3,8,967,1,/997/1009/967/832/
+W_DEPTH_LE5,833,supv,"supraoptic commissures, ventral",5,9,349,1,/997/1009/991/824/349/833/
+W_DEPTH_LE5,835,PALv,"Pallidum, ventral region",5,6,803,1,/997/8/567/623/803/835/
+W_DEPTH_LE5,840,In,olfactory nerve,3,8,967,1,/997/1009/967/840/
+W_DEPTH_LE5,841,tb,trapezoid body,5,10,948,1,/997/1009/967/933/948/841/
+W_DEPTH_LE5,846,DN,Dentate nucleus,4,8,519,1,/997/8/512/519/846/
+W_DEPTH_LE5,848,IIn,optic nerve,3,8,967,1,/997/1009/967/848/
+W_DEPTH_LE5,850,uf,uncinate fascicle,5,9,326,1,/997/1009/960/752/326/850/
+W_DEPTH_LE5,855,rst,retriculospinal tract,3,8,1000,1,/997/1009/1000/855/
+W_DEPTH_LE5,856,DORpm,"Thalamus, polymodal association cortex related",5,6,549,1,/997/8/343/1129/549/856/
+W_DEPTH_LE5,858,vc,ventral commissure of the spinal cord,5,9,932,1,/997/1009/967/792/932/858/
+W_DEPTH_LE5,863,rust,rubrospinal tract,3,8,1000,1,/997/1009/1000/863/
+W_DEPTH_LE5,864,DORsm,"Thalamus, sensory-motor cortex related",5,6,549,1,/997/8/343/1129/549/864/
+W_DEPTH_LE5,866,sctv,ventral spinocerebellar tract,5,9,326,1,/997/1009/960/752/326/866/
+W_DEPTH_LE5,871,sst,spinothalamic tract,3,8,967,1,/997/1009/967/871/
+W_DEPTH_LE5,874,PBG,Parabigeminal nucleus,5,8,339,1,/997/8/343/313/339/874/
+W_DEPTH_LE5,876,aot,accessory optic tract,4,9,848,1,/997/1009/967/848/876/
+W_DEPTH_LE5,877,tsp,tectospinal pathway,3,8,1000,1,/997/1009/1000/877/
+W_DEPTH_LE5,884,amc,amygdalar capsule,4,8,768,1,/997/1009/991/768/884/
+W_DEPTH_LE5,885,tn,terminal nerve,3,8,967,1,/997/1009/967/885/
+W_DEPTH_LE5,892,apd,ansa peduncularis,4,8,768,1,/997/1009/991/768/892/
+W_DEPTH_LE5,896,lfbst,thalamus related,3,7,983,1,/997/1009/983/896/
+W_DEPTH_LE5,900,aco,"anterior commissure, olfactory limb",4,9,840,1,/997/1009/967/840/900/
+W_DEPTH_LE5,901,Vn,trigeminal nerve,3,8,967,1,/997/1009/967/901/
+W_DEPTH_LE5,908,act,"anterior commissure, temporal limb",4,8,768,1,/997/1009/991/768/908/
+W_DEPTH_LE5,911,IVn,trochlear nerve,3,8,967,1,/997/1009/967/911/
+W_DEPTH_LE5,912,LING,Lingula (I),5,8,645,1,/997/8/512/528/645/912/
+W_DEPTH_LE5,916,bsc,brachium of the superior colliculus,4,9,848,1,/997/1009/967/848/916/
+W_DEPTH_LE5,917,Xn,vagus nerve,3,8,967,1,/997/1009/967/917/
+W_DEPTH_LE5,920,CENT,Central lobule,5,7,645,1,/997/8/512/528/645/920/
+W_DEPTH_LE5,924,cpd,cerebal peduncle,4,9,784,1,/997/1009/983/784/924/
+W_DEPTH_LE5,925,vrt,ventral roots,3,7,967,1,/997/1009/967/925/
+W_DEPTH_LE5,928,CUL,Culmen,5,7,645,1,/997/8/512/528/645/928/
+W_DEPTH_LE5,932,cett,cervicothalamic tract,4,8,792,1,/997/1009/967/792/932/
+W_DEPTH_LE5,933,VIIIn,vestibulocochlear nerve,3,8,967,1,/997/1009/967/933/
+W_DEPTH_LE5,936,DEC,Declive (VI),5,8,645,1,/997/8/512/528/645/936/
+W_DEPTH_LE5,940,cing,cingulum bundle,4,8,768,1,/997/1009/991/768/940/
+W_DEPTH_LE5,941,vsp,vestibulospinal pathway,3,8,1000,1,/997/1009/1000/941/
+W_DEPTH_LE5,942,EP,Endopiriform nucleus,5,8,703,1,/997/8/567/688/703/942/
+W_DEPTH_LE5,944,FOTU,Folium-tuber vermis (VII),5,8,645,1,/997/8/512/528/645/944/
+W_DEPTH_LE5,948,cVIIIn,cochlear nerve,4,9,933,1,/997/1009/967/933/948/
+W_DEPTH_LE5,949,von,vomeronasal nerve,3,8,967,1,/997/1009/967/949/
+W_DEPTH_LE5,951,PYR,Pyramus (VIII),5,8,645,1,/997/8/512/528/645/951/
+W_DEPTH_LE5,956,fa,"corpus callosum, anterior forceps",4,9,776,1,/997/1009/983/776/956/
+W_DEPTH_LE5,957,UVU,Uvula (IX),5,8,645,1,/997/8/512/528/645/957/
+W_DEPTH_LE5,960,cbf,cerebellum related fiber tracts,2,2,1009,1,/997/1009/960/
+W_DEPTH_LE5,964,ee,"corpus callosum, extreme capsule",4,9,776,1,/997/1009/983/776/964/
+W_DEPTH_LE5,967,cm,cranial nerves,2,2,1009,1,/997/1009/967/
+W_DEPTH_LE5,968,NOD,Nodulus (X),5,8,645,1,/997/8/512/528/645/968/
+W_DEPTH_LE5,971,fp,"corpus callosum, posterior forceps",4,9,776,1,/997/1009/983/776/971/
+W_DEPTH_LE5,975,EW,Edinger-Westphal nucleus,5,8,323,1,/997/8/343/313/323/975/
+W_DEPTH_LE5,979,ccr,"corpus callosum, rostrum",4,9,776,1,/997/1009/983/776/979/
+W_DEPTH_LE5,983,lfbs,lateral forebrain bundle system,2,2,1009,1,/997/1009/983/
+W_DEPTH_LE5,986,ccs,"corpus callosum, splenium",4,9,776,1,/997/1009/983/776/986/
+W_DEPTH_LE5,987,P-mot,"Pons, motor related",5,6,771,1,/997/8/343/1065/771/987/
+W_DEPTH_LE5,989,FN,Fastigial nucleus,4,8,519,1,/997/8/512/519/989/
+W_DEPTH_LE5,991,mfbs,medial forebrain bundle system,2,2,1009,1,/997/1009/991/
+W_DEPTH_LE5,994,cbt,corticobulbar tract,4,9,784,1,/997/1009/983/784/994/
+W_DEPTH_LE5,997,root,root,0,0,,1,/997/
+W_DEPTH_LE5,1000,eps,extrapyramidal fiber systems,2,2,1009,1,/997/1009/1000/
+W_DEPTH_LE5,1003,cpt,corticopontine tract,4,9,784,1,/997/1009/983/784/1003/
+W_DEPTH_LE5,1007,SIM,Simple lobule,5,8,1073,1,/997/8/512/528/1073/1007/
+W_DEPTH_LE5,1009,fiber tracts,fiber tracts,1,1,997,1,/997/1009/
+W_DEPTH_LE5,1012,crt,corticorubral tract,4,9,784,1,/997/1009/983/784/1012/
+W_DEPTH_LE5,1016,onl,olfactory nerve layer of main olfactory bulb,4,9,840,1,/997/1009/967/840/1016/
+W_DEPTH_LE5,1017,AN,Ansiform lobule,5,7,1073,1,/997/8/512/528/1073/1017/
+W_DEPTH_LE5,1019,cstc,"corticospinal tract, crossed",4,9,784,1,/997/1009/983/784/1019/
+W_DEPTH_LE5,1024,grv,grooves,1,1,997,1,/997/1024/
+W_DEPTH_LE5,1025,PRM,Paramedian lobule,5,8,1073,1,/997/8/512/528/1073/1025/
+W_DEPTH_LE5,1028,cstu,"corticospinal tract, uncrossed",4,9,784,1,/997/1009/983/784/1028/
+W_DEPTH_LE5,1032,grv of CTX,grooves of the cerebral cortex,2,7,1024,1,/997/1024/1032/
+W_DEPTH_LE5,1033,COPY,Copula pyramidis,5,8,1073,1,/997/8/512/528/1073/1033/
+W_DEPTH_LE5,1036,cte,corticotectal tract,4,9,784,1,/997/1009/983/784/1036/
+W_DEPTH_LE5,1040,grv of CBX,grooves of the cerebellar cortex,2,7,1024,1,/997/1024/1040/
+W_DEPTH_LE5,1041,PFL,Paraflocculus,5,8,1073,1,/997/8/512/528/1073/1041/
+W_DEPTH_LE5,1043,tspc,crossed tectospinal pathway,4,9,877,1,/997/1009/1000/877/1043/
+W_DEPTH_LE5,1049,FL,Flocculus,5,8,1073,1,/997/8/512/528/1073/1049/
+W_DEPTH_LE5,1051,tspd,direct tectospinal pathway,4,9,877,1,/997/1009/1000/877/1051/
+W_DEPTH_LE5,1052,PPN,Pedunculopontine nucleus,5,8,348,1,/997/8/343/313/348/1052/
+W_DEPTH_LE5,1055,eg,endorhinal groove,3,8,1032,1,/997/1024/1032/1055/
+W_DEPTH_LE5,1060,dtd,doral tegmental decussation,4,9,877,1,/997/1009/1000/877/1060/
+W_DEPTH_LE5,1063,hf,hippocampal fissure,3,8,1032,1,/997/1024/1032/1063/
+W_DEPTH_LE5,1065,HB,Hindbrain,3,3,343,1,/997/8/343/1065/
+W_DEPTH_LE5,1068,mfbst,dorsal thalamus related,4,8,824,1,/997/1009/991/824/1068/
+W_DEPTH_LE5,1071,rf,rhinal fissure,3,8,1032,1,/997/1024/1032/1071/
+W_DEPTH_LE5,1073,HEM,Hemispheric regions,4,6,528,1,/997/8/512/528/1073/
+W_DEPTH_LE5,1076,cvb,efferent cochleovestibular bundle,4,9,933,1,/997/1009/967/933/1076/
+W_DEPTH_LE5,1078,ri,rhinal incisure,3,8,1032,1,/997/1024/1032/1078/
+W_DEPTH_LE5,1083,mfbse,epithalamus related,4,8,824,1,/997/1009/991/824/1083/
+W_DEPTH_LE5,1087,pce,precentral fissure,3,8,1040,1,/997/1024/1040/1087/
+W_DEPTH_LE5,1089,HPF,Hippocampal formation,5,5,695,1,/997/8/567/688/695/1089/
+W_DEPTH_LE5,1092,em,external medullary lamina of the thalamus,4,8,896,1,/997/1009/983/896/1092/
+W_DEPTH_LE5,1095,pcf,preculminate fissure,3,8,1040,1,/997/1024/1040/1095/
+W_DEPTH_LE5,1097,HY,Hypothalamus,4,5,1129,1,/997/8/343/1129/1097/
+W_DEPTH_LE5,1099,fxs,fornix system,4,8,768,1,/997/1009/991/768/1099/
+W_DEPTH_LE5,1100,PRT,Pretectal region,5,8,323,1,/997/8/343/313/323/1100/
+W_DEPTH_LE5,1103,pri,primary fissure,3,8,1040,1,/997/1024/1040/1103/
+W_DEPTH_LE5,1108,ccg,genu of corpus callosum,4,9,776,1,/997/1009/983/776/1108/
+W_DEPTH_LE5,1112,psf,posterior superior fissure,3,8,1040,1,/997/1024/1040/1112/
+W_DEPTH_LE5,1116,gVIIn,genu of the facial nerve,4,9,798,1,/997/1009/967/798/1116/
+W_DEPTH_LE5,1117,P-sat,"Pons, behavioral state related",5,6,771,1,/997/8/343/1065/771/1117/
+W_DEPTH_LE5,1119,ppf,prepyramidal fissure,3,8,1040,1,/997/1024/1040/1119/
+W_DEPTH_LE5,1123,icp,inferior cerebellar peduncle,4,8,752,1,/997/1009/960/752/1123/
+W_DEPTH_LE5,1129,IB,Interbrain,3,3,343,1,/997/8/343/1129/
+W_DEPTH_LE5,1131,iVIIn,intermediate nerve,4,9,798,1,/997/1009/967/798/1131/
+W_DEPTH_LE5,1132,P-sen,"Pons, sensory related",5,6,771,1,/997/8/343/1065/771/1132/
+W_DEPTH_LE5,1143,CBXgr,"Cerebellar cortex, granular layer",4,11,528,1,/997/8/512/528/1143/
+W_DEPTH_LE5,1144,CBXmo,"Cerebellar cortex, molecular layer",4,11,528,1,/997/8/512/528/1144/
+W_DEPTH_LE5,1145,CBXpu,"Cerebellar cortex, Purkinje layer",4,11,528,1,/997/8/512/528/1145/
+W_DEPTH_LE5,10671,ME,Median eminence,5,8,1097,1,/997/8/343/1129/1097/10671/
+W_DEPTH_LE5,304325711,retina,retina,1,1,997,1,/997/304325711/
+W_DEPTH_LE5,484682512,scwm,supra-callosal cerebral white matter,2,2,1009,1,/997/1009/484682512/
+W_DEPTH_LE5,484682516,ccb,"corpus callosum, body",4,9,776,1,/997/1009/983/776/484682516/
+W_DEPTH_LE5,484682520,or,optic radiation,4,8,896,1,/997/1009/983/896/484682520/
+W_DEPTH_LE5,484682524,ar,auditory radiation,4,8,896,1,/997/1009/983/896/484682524/
+W_DEPTH_LE5,484682528,stc,commissural branch of stria terminalis,5,9,301,1,/997/1009/991/768/301/484682528/
+W_DEPTH_LE5,549009207,InCo,Intercollicular nucleus,5,8,323,1,/997/8/343/313/323/549009207/
+W_DEPTH_LE5,549009211,MA3,Medial accesory oculomotor nucleus,5,8,323,1,/997/8/343/313/323/549009211/
+W_DEPTH_LE5,589508455,VeCB,Vestibulocerebellar nucleus,4,8,519,1,/997/8/512/519/589508455/
+W_DEPTH_LE5,599626923,SCO,Subcommissural organ,5,8,339,1,/997/8/343/313/339/599626923/
+W_DEPTH_LE5,606826663,Pa4,Paratrochlear nucleus,5,8,323,1,/997/8/343/313/323/606826663/
+W_DEPTH_LE5,607344830,PN,Paranigral nucleus,5,8,323,1,/997/8/343/313/323/607344830/
+W_DEPTH_LE6,3,sec,secondary fissure,3,8,1040,1,/997/1024/1040/3/
+W_DEPTH_LE6,4,IC,Inferior colliculus,5,8,339,1,/997/8/343/313/339/4/
+W_DEPTH_LE6,6,int,internal capsule,4,9,784,1,/997/1009/983/784/6/
+W_DEPTH_LE6,7,PSV,Principal sensory nucleus of the trigeminal,6,8,1132,1,/997/8/343/1065/771/1132/7/
+W_DEPTH_LE6,8,grey,Basic cell groups and regions,1,1,997,1,/997/8/
+W_DEPTH_LE6,10,SCig,"Superior colliculus, motor related, intermediate gray layer",6,9,294,1,/997/8/343/313/323/294/10/
+W_DEPTH_LE6,11,plf,posterolateral fissure,3,8,1040,1,/997/1024/1040/11/
+W_DEPTH_LE6,12,IF,Interfascicular nucleus raphe,6,8,165,1,/997/8/343/313/348/165/12/
+W_DEPTH_LE6,14,im,internal medullary lamina of the thalamus,4,8,896,1,/997/1009/983/896/14/
+W_DEPTH_LE6,16,6b,"Layer 6b, isocortex",5,11,703,1,/997/8/567/688/703/16/
+W_DEPTH_LE6,17,SCiw,"Superior colliculus, motor related, intermediate white layer",6,9,294,1,/997/8/343/313/323/294/17/
+W_DEPTH_LE6,18,nf,nodular fissure,3,8,1040,1,/997/1024/1040/18/
+W_DEPTH_LE6,21,lotg,"lateral olfactory tract, general",4,9,840,1,/997/1009/967/840/21/
+W_DEPTH_LE6,22,PTLp,Posterior parietal association areas,6,6,315,1,/997/8/567/688/695/315/22/
+W_DEPTH_LE6,23,AAA,Anterior amygdalar area,6,8,278,1,/997/8/567/623/477/278/23/
+W_DEPTH_LE6,25,sif,simple fissure,3,8,1040,1,/997/1024/1040/25/
+W_DEPTH_LE6,26,SCdg,"Superior colliculus, motor related, deep gray layer",6,9,294,1,/997/8/343/313/323/294/26/
+W_DEPTH_LE6,29,sttl,lateral spinothalamic tract,4,9,871,1,/997/1009/967/871/29/
+W_DEPTH_LE6,30,PVa,"Periventricular hypothalamic nucleus, anterior part",6,9,157,1,/997/8/343/1129/1097/157/30/
+W_DEPTH_LE6,31,ACA,Anterior cingulate area,6,8,315,1,/997/8/567/688/695/315/31/
+W_DEPTH_LE6,34,icf,intercrural fissure,3,8,1040,1,/997/1024/1040/34/
+W_DEPTH_LE6,35,III,Oculomotor nucleus,5,8,323,1,/997/8/343/313/323/35/
+W_DEPTH_LE6,37,lab,longitudinal association bundle,4,8,768,1,/997/1009/991/768/37/
+W_DEPTH_LE6,38,PVH,Paraventricular hypothalamic nucleus,6,8,157,1,/997/8/343/1129/1097/157/38/
+W_DEPTH_LE6,42,SCdw,"Superior colliculus, motor related, deep white layer",6,9,294,1,/997/8/343/313/323/294/42/
+W_DEPTH_LE6,43,apf,ansoparamedian fissure,3,8,1040,1,/997/1024/1040/43/
+W_DEPTH_LE6,44,ILA,Infralimbic area,6,8,315,1,/997/8/567/688/695/315/44/
+W_DEPTH_LE6,46,mfbsma,mammillary related,4,8,824,1,/997/1009/991/824/46/
+W_DEPTH_LE6,49,ipf,intraparafloccular fissure,3,8,1040,1,/997/1024/1040/49/
+W_DEPTH_LE6,50,PRC,Precommissural nucleus,6,9,795,1,/997/8/343/313/323/795/50/
+W_DEPTH_LE6,51,ILM,Intralaminar nuclei of the dorsal thalamus,6,7,856,1,/997/8/343/1129/549/856/51/
+W_DEPTH_LE6,54,mfb,medial forebrain bundle,4,8,824,1,/997/1009/991/824/54/
+W_DEPTH_LE6,56,ACB,Nucleus accumbens,6,8,493,1,/997/8/567/623/477/493/56/
+W_DEPTH_LE6,57,pms,paramedian sulcus,3,8,1040,1,/997/1024/1040/57/
+W_DEPTH_LE6,58,MT,Medial terminal nucleus of the accessory optic tract,5,8,323,1,/997/8/343/313/323/58/
+W_DEPTH_LE6,62,mlf,medial longitudinal fascicle,4,9,832,1,/997/1009/967/832/62/
+W_DEPTH_LE6,63,PVHd,"Paraventricular hypothalamic nucleus, descending division",6,8,467,1,/997/8/343/1129/1097/467/63/
+W_DEPTH_LE6,65,pfs,parafloccular sulcus,3,8,1040,1,/997/1024/1040/65/
+W_DEPTH_LE6,66,LT,Lateral terminal nucleus of the accessory optic tract,5,8,323,1,/997/8/343/313/323/66/
+W_DEPTH_LE6,67,INC,Interstitial nucleus of Cajal,6,9,795,1,/997/8/343/313/323/795/67/
+W_DEPTH_LE6,70,mfbsm,midbrain related,4,8,824,1,/997/1009/991/824/70/
+W_DEPTH_LE6,72,ADP,Anterodorsal preoptic nucleus,6,8,141,1,/997/8/343/1129/1097/141/72/
+W_DEPTH_LE6,73,VS,ventricular systems,1,1,997,1,/997/73/
+W_DEPTH_LE6,75,DT,Dorsal terminal nucleus of the accessory optic tract,5,8,323,1,/997/8/343/313/323/75/
+W_DEPTH_LE6,76,INV,Interstitial nucleus of the vestibular nerve,6,8,370,1,/997/8/343/1065/354/370/76/
+W_DEPTH_LE6,78,mcp,middle cerebellar peduncle,4,8,752,1,/997/1009/960/752/78/
+W_DEPTH_LE6,80,AHA,Anterior hypothalamic area,6,8,141,1,/997/8/343/1129/1097/141/80/
+W_DEPTH_LE6,81,VL,lateral ventricle,2,8,73,1,/997/73/81/
+W_DEPTH_LE6,83,IO,Inferior olivary complex,6,8,370,1,/997/8/343/1065/354/370/83/
+W_DEPTH_LE6,85,sct,spinocerebellar tract,6,10,812,1,/997/1009/960/752/326/812/85/
+W_DEPTH_LE6,86,mtc,middle thalamic commissure,4,8,896,1,/997/1009/983/896/86/
+W_DEPTH_LE6,88,AHN,Anterior hypothalamic nucleus,6,8,467,1,/997/8/343/1129/1097/467/88/
+W_DEPTH_LE6,89,RC,rhinocele,3,9,81,1,/997/73/81/89/
+W_DEPTH_LE6,91,IP,Interposed nucleus,4,8,519,1,/997/8/512/519/91/
+W_DEPTH_LE6,93,moV,motor root of the trigeminal nerve,4,9,901,1,/997/1009/967/901/93/
+W_DEPTH_LE6,95,AI,Agranular insular area,6,8,315,1,/997/8/567/688/695/315/95/
+W_DEPTH_LE6,98,SEZ,subependymal zone,3,9,81,1,/997/73/81/98/
+W_DEPTH_LE6,100,IPN,Interpeduncular nucleus,6,8,165,1,/997/8/343/313/348/165/100/
+W_DEPTH_LE6,102,nst,nigrostriatal tract,4,8,760,1,/997/1009/1000/760/102/
+W_DEPTH_LE6,106,ISN,Inferior salivatory nucleus,6,8,370,1,/997/8/343/1065/354/370/106/
+W_DEPTH_LE6,108,chpl,choroid plexus,3,9,81,1,/997/73/81/108/
+W_DEPTH_LE6,109,ntt,nigrothalamic fibers,4,8,760,1,/997/1009/1000/760/109/
+W_DEPTH_LE6,115,IV,Trochlear nucleus,5,8,323,1,/997/8/343/313/323/115/
+W_DEPTH_LE6,116,chfl,choroid fissure,3,9,81,1,/997/73/81/116/
+W_DEPTH_LE6,117,och,optic chiasm,4,9,848,1,/997/1009/967/848/117/
+W_DEPTH_LE6,118,PVi,"Periventricular hypothalamic nucleus, intermediate part",6,9,157,1,/997/8/343/1129/1097/157/118/
+W_DEPTH_LE6,124,IVF,interventricular foramen,2,8,73,1,/997/73/124/
+W_DEPTH_LE6,125,opt,optic tract,4,9,848,1,/997/1009/967/848/125/
+W_DEPTH_LE6,126,PVp,"Periventricular hypothalamic nucleus, posterior part",6,8,141,1,/997/8/343/1129/1097/141/126/
+W_DEPTH_LE6,128,MRN,Midbrain reticular nucleus,5,8,323,1,/997/8/343/313/323/128/
+W_DEPTH_LE6,129,V3,third ventricle,2,8,73,1,/997/73/129/
+W_DEPTH_LE6,131,LA,Lateral amygdalar nucleus,5,8,703,1,/997/8/567/688/703/131/
+W_DEPTH_LE6,133,PVpo,"Periventricular hypothalamic nucleus, preoptic part",6,8,141,1,/997/8/343/1129/1097/141/133/
+W_DEPTH_LE6,134,ptf,pallidotegmental fascicle,4,8,760,1,/997/1009/1000/760/134/
+W_DEPTH_LE6,135,AMB,Nucleus ambiguus,6,8,370,1,/997/8/343/1065/354/370/135/
+W_DEPTH_LE6,136,IRN,Intermediate reticular nucleus,6,8,370,1,/997/8/343/1065/354/370/136/
+W_DEPTH_LE6,138,LAT,Lateral group of the dorsal thalamus,6,7,856,1,/997/8/343/1129/549/856/138/
+W_DEPTH_LE6,140,AQ,cerebral aqueduct,2,8,73,1,/997/73/140/
+W_DEPTH_LE6,141,PVR,Periventricular region,5,6,1097,1,/997/8/343/1129/1097/141/
+W_DEPTH_LE6,142,pap,pallidothalamic pathway,4,8,760,1,/997/1009/1000/760/142/
+W_DEPTH_LE6,145,V4,fourth ventricle,2,8,73,1,/997/73/145/
+W_DEPTH_LE6,146,PRNr,Pontine reticular nucleus,6,8,1117,1,/997/8/343/1065/771/1117/146/
+W_DEPTH_LE6,147,LC,Locus ceruleus,6,8,1117,1,/997/8/343/1065/771/1117/147/
+W_DEPTH_LE6,150,pvbh,periventricular bundle of the hypothalamus,4,8,824,1,/997/1009/991/824/150/
+W_DEPTH_LE6,151,AOB,Accessory olfactory bulb,6,8,698,1,/997/8/567/688/695/698/151/
+W_DEPTH_LE6,153,V4r,lateral recess,3,9,145,1,/997/73/145/153/
+W_DEPTH_LE6,154,PHY,Perihypoglossal nuclei,6,7,370,1,/997/8/343/1065/354/370/154/
+W_DEPTH_LE6,157,PVZ,Periventricular zone,5,6,1097,1,/997/8/343/1129/1097/157/
+W_DEPTH_LE6,158,pc,posterior commissure,4,9,832,1,/997/1009/967/832/158/
+W_DEPTH_LE6,159,AON,Anterior olfactory nucleus,6,8,698,1,/997/8/567/688/695/698/159/
+W_DEPTH_LE6,162,LDT,Laterodorsal tegmental nucleus,6,8,1117,1,/997/8/343/1065/771/1117/162/
+W_DEPTH_LE6,164,c,"central canal, spinal cord/medulla",2,8,73,1,/997/73/164/
+W_DEPTH_LE6,165,RAmb,Midbrain raphe nuclei,5,7,348,1,/997/8/343/313/348/165/
+W_DEPTH_LE6,166,pmx,premammillary commissure,4,8,824,1,/997/1009/991/824/166/
+W_DEPTH_LE6,173,RCH,Retrochiasmatic area,6,8,290,1,/997/8/343/1129/1097/290/173/
+W_DEPTH_LE6,174,poc,preoptic commissure,4,8,824,1,/997/1009/991/824/174/
+W_DEPTH_LE6,182,php,propriohypothalamic pathways,4,8,824,1,/997/1009/991/824/182/
+W_DEPTH_LE6,184,FRP,"Frontal pole, cerebral cortex",6,8,315,1,/997/8/567/688/695/315/184/
+W_DEPTH_LE6,190,py,pyramid,4,9,784,1,/997/1009/983/784/190/
+W_DEPTH_LE6,194,LHA,Lateral hypothalamic area,6,8,290,1,/997/8/343/1129/1097/290/194/
+W_DEPTH_LE6,197,RL,Rostral linear nucleus raphe,6,8,165,1,/997/8/343/313/348/165/197/
+W_DEPTH_LE6,198,pyd,pyramidal decussation,4,9,784,1,/997/1009/983/784/198/
+W_DEPTH_LE6,203,LIN,Linear nucleus of the medulla,6,8,370,1,/997/8/343/1065/354/370/203/
+W_DEPTH_LE6,205,rstl,"retriculospinal tract, lateral part",4,9,855,1,/997/1009/1000/855/205/
+W_DEPTH_LE6,206,RM,Nucleus raphe magnus,6,8,379,1,/997/8/343/1065/354/379/206/
+W_DEPTH_LE6,207,AP,Area postrema,6,8,386,1,/997/8/343/1065/354/386/207/
+W_DEPTH_LE6,213,rstm,"retriculospinal tract, medial part",4,9,855,1,/997/1009/1000/855/213/
+W_DEPTH_LE6,214,RN,Red nucleus,5,8,323,1,/997/8/343/313/323/214/
+W_DEPTH_LE6,215,APN,Anterior pretectal nucleus,6,9,1100,1,/997/8/343/313/323/1100/215/
+W_DEPTH_LE6,221,rrt,rubroreticular tract,4,9,863,1,/997/1009/1000/863/221/
+W_DEPTH_LE6,222,RO,Nucleus raphe obscurus,6,8,379,1,/997/8/343/1065/354/379/222/
+W_DEPTH_LE6,223,ARH,Arcuate hypothalamic nucleus,6,8,157,1,/997/8/343/1129/1097/157/223/
+W_DEPTH_LE6,226,LPO,Lateral preoptic area,6,8,290,1,/997/8/343/1129/1097/290/226/
+W_DEPTH_LE6,229,sV,sensory root of the trigeminal nerve,4,9,901,1,/997/1009/967/901/229/
+W_DEPTH_LE6,230,RPA,Nucleus raphe pallidus,6,8,379,1,/997/8/343/1065/354/379/230/
+W_DEPTH_LE6,231,AT,Anterior tegmental nucleus,5,8,323,1,/997/8/343/313/323/231/
+W_DEPTH_LE6,235,LRN,Lateral reticular nucleus,6,8,370,1,/997/8/343/1065/354/370/235/
+W_DEPTH_LE6,237,ts,solitary tract,4,9,917,1,/997/1009/967/917/237/
+W_DEPTH_LE6,238,RPO,Nucleus raphe pontis,6,8,1117,1,/997/8/343/1065/771/1117/238/
+W_DEPTH_LE6,239,ATN,Anterior group of the dorsal thalamus,6,7,856,1,/997/8/343/1129/549/856/239/
+W_DEPTH_LE6,242,LS,Lateral septal nucleus,6,8,275,1,/997/8/567/623/477/275/242/
+W_DEPTH_LE6,245,scrt,spinocervical tract,4,9,871,1,/997/1009/967/871/245/
+W_DEPTH_LE6,246,RR,"Midbrain reticular nucleus, retrorubral area",5,8,323,1,/997/8/343/313/323/246/
+W_DEPTH_LE6,247,AUD,Auditory areas,6,6,315,1,/997/8/567/688/695/315/247/
+W_DEPTH_LE6,253,shp,spinohypothalamic pathway,4,9,871,1,/997/1009/967/871/253/
+W_DEPTH_LE6,254,RSP,Retrosplenial area,6,8,315,1,/997/8/567/688/695/315/254/
+W_DEPTH_LE6,261,sop,spino-olivary pathway,4,9,871,1,/997/1009/967/871/261/
+W_DEPTH_LE6,262,RT,Reticular nucleus of the thalamus,6,8,856,1,/997/8/343/1129/549/856/262/
+W_DEPTH_LE6,263,AVP,Anteroventral preoptic nucleus,6,8,141,1,/997/8/343/1129/1097/141/263/
+W_DEPTH_LE6,270,srp,spinoreticular pathway,4,9,871,1,/997/1009/967/871/270/
+W_DEPTH_LE6,271,SAG,Nucleus sagulum,5,8,339,1,/997/8/343/313/339/271/
+W_DEPTH_LE6,272,AVPV,Anteroventral periventricular nucleus,6,8,141,1,/997/8/343/1129/1097/141/272/
+W_DEPTH_LE6,275,LSX,Lateral septal complex,5,6,477,1,/997/8/567/623/477/275/
+W_DEPTH_LE6,277,stp,spinotectal pathway,4,9,871,1,/997/1009/967/871/277/
+W_DEPTH_LE6,278,sAMY,Striatum-like amygdalar nuclei,5,6,477,1,/997/8/567/623/477/278/
+W_DEPTH_LE6,280,B,Barrington's nucleus,6,8,987,1,/997/8/343/1065/771/987/280/
+W_DEPTH_LE6,283,LTN,Lateral tegmental nucleus,6,8,987,1,/997/8/343/1065/771/987/283/
+W_DEPTH_LE6,285,step,spinotelenchephalic pathway,4,9,871,1,/997/1009/967/871/285/
+W_DEPTH_LE6,286,SCH,Suprachiasmatic nucleus,6,8,141,1,/997/8/343/1129/1097/141/286/
+W_DEPTH_LE6,287,BAC,Bed nucleus of the anterior commissure,6,8,809,1,/997/8/567/623/803/809/287/
+W_DEPTH_LE6,290,LZ,Hypothalamic lateral zone,5,6,1097,1,/997/8/343/1129/1097/290/
+W_DEPTH_LE6,292,BA,Bed nucleus of the accessory olfactory tract,6,8,278,1,/997/8/567/623/477/278/292/
+W_DEPTH_LE6,293,svp,spinovestibular pathway,4,9,871,1,/997/1009/967/871/293/
+W_DEPTH_LE6,294,SCm,"Superior colliculus, motor related",5,8,323,1,/997/8/343/313/323/294/
+W_DEPTH_LE6,295,BLA,Basolateral amygdalar nucleus,5,8,703,1,/997/8/567/688/703/295/
+W_DEPTH_LE6,298,MA,Magnocellular nucleus,6,8,835,1,/997/8/567/623/803/835/298/
+W_DEPTH_LE6,301,st,stria terminalis,4,8,768,1,/997/1009/991/768/301/
+W_DEPTH_LE6,302,SCs,"Superior colliculus, sensory related",5,8,339,1,/997/8/343/313/339/302/
+W_DEPTH_LE6,303,BLAa,"Basolateral amygdalar nucleus, anterior part",6,9,295,1,/997/8/567/688/703/295/303/
+W_DEPTH_LE6,307,MARN,Magnocellular reticular nucleus,6,8,370,1,/997/8/343/1065/354/370/307/
+W_DEPTH_LE6,309,snp,striatonigral pathway,4,8,760,1,/997/1009/1000/760/309/
+W_DEPTH_LE6,310,SF,Septofimbrial nucleus,6,8,275,1,/997/8/567/623/477/275/310/
+W_DEPTH_LE6,311,BLAp,"Basolateral amygdalar nucleus, posterior part",6,9,295,1,/997/8/567/688/703/295/311/
+W_DEPTH_LE6,313,MB,Midbrain,3,5,343,1,/997/8/343/313/
+W_DEPTH_LE6,315,Isocortex,Isocortex,5,5,695,1,/997/8/567/688/695/315/
+W_DEPTH_LE6,317,stf,subthalamic fascicle,4,8,760,1,/997/1009/1000/760/317/
+W_DEPTH_LE6,318,SG,Supragenual nucleus,6,8,987,1,/997/8/343/1065/771/987/318/
+W_DEPTH_LE6,319,BMA,Basomedial amygdalar nucleus,5,8,703,1,/997/8/567/688/703/319/
+W_DEPTH_LE6,323,MBmot,"Midbrain, motor related",4,6,313,1,/997/8/343/313/323/
+W_DEPTH_LE6,326,scp,superior cerebelar peduncles,4,8,752,1,/997/1009/960/752/326/
+W_DEPTH_LE6,327,BMAa,"Basomedial amygdalar nucleus, anterior part",6,9,319,1,/997/8/567/688/703/319/327/
+W_DEPTH_LE6,331,MBO,Mammillary body,6,7,467,1,/997/8/343/1129/1097/467/331/
+W_DEPTH_LE6,332,ASO,Accessory supraoptic group,6,7,157,1,/997/8/343/1129/1097/157/332/
+W_DEPTH_LE6,333,SH,Septohippocampal nucleus,6,8,275,1,/997/8/567/623/477/275/333/
+W_DEPTH_LE6,334,BMAp,"Basomedial amygdalar nucleus, posterior part",6,9,319,1,/997/8/567/688/703/319/334/
+W_DEPTH_LE6,336,csc,superior colliculus commissure,4,9,848,1,/997/1009/967/848/336/
+W_DEPTH_LE6,338,SFO,Subfornical organ,6,8,141,1,/997/8/343/1129/1097/141/338/
+W_DEPTH_LE6,339,MBsen,"Midbrain, sensory related",4,6,313,1,/997/8/343/313/339/
+W_DEPTH_LE6,341,smd,supramammillary decussation,4,8,824,1,/997/1009/991/824/341/
+W_DEPTH_LE6,342,SI,Substantia innominata,6,8,835,1,/997/8/567/623/803/835/342/
+W_DEPTH_LE6,343,BS,Brain stem,2,2,8,1,/997/8/343/
+W_DEPTH_LE6,347,SBPV,Subparaventricular zone,6,8,141,1,/997/8/343/1129/1097/141/347/
+W_DEPTH_LE6,348,MBsta,"Midbrain, behavioral state related",4,6,313,1,/997/8/343/313/348/
+W_DEPTH_LE6,349,sup,supraoptic commissures,4,8,824,1,/997/1009/991/824/349/
+W_DEPTH_LE6,350,SLC,Subceruleus nucleus,6,8,1117,1,/997/8/343/1065/771/1117/350/
+W_DEPTH_LE6,351,BST,Bed nuclei of the stria terminalis,6,8,809,1,/997/8/567/623/803/809/351/
+W_DEPTH_LE6,354,MY,Medulla,4,5,1065,1,/997/8/343/1065/354/
+W_DEPTH_LE6,356,PST,Preparasubthalamic nucleus,6,8,290,1,/997/8/343/1129/1097/290/356/
+W_DEPTH_LE6,357,ttp,tectothalamic pathway,4,9,848,1,/997/1009/967/848/357/
+W_DEPTH_LE6,358,SLD,Sublaterodorsal nucleus,6,8,1117,1,/997/8/343/1065/771/1117/358/
+W_DEPTH_LE6,364,PSTN,Parasubthalamic nucleus,6,8,290,1,/997/8/343/1129/1097/290/364/
+W_DEPTH_LE6,365,tp,thalamic peduncles,4,8,896,1,/997/1009/983/896/365/
+W_DEPTH_LE6,370,MY-mot,"Medulla, motor related",5,6,354,1,/997/8/343/1065/354/370/
+W_DEPTH_LE6,372,ICB,Infracerebellar nucleus,6,8,370,1,/997/8/343/1065/354/370/372/
+W_DEPTH_LE6,373,tct,trigeminocerebellar tract,4,8,752,1,/997/1009/960/752/373/
+W_DEPTH_LE6,374,SNc,"Substantia nigra, compact part",5,8,348,1,/997/8/343/313/348/374/
+W_DEPTH_LE6,379,MY-sat,"Medulla, behavioral state related",5,6,354,1,/997/8/343/1065/354/379/
+W_DEPTH_LE6,380,cuf,cuneate fascicle,6,10,514,1,/997/1009/967/792/932/514/380/
+W_DEPTH_LE6,381,SNr,"Substantia nigra, reticular part",5,8,323,1,/997/8/343/313/323/381/
+W_DEPTH_LE6,384,IVd,trochlear nerve decussation,4,9,911,1,/997/1009/967/911/384/
+W_DEPTH_LE6,386,MY-sen,"Medulla, sensory related",5,6,354,1,/997/8/343/1065/354/386/
+W_DEPTH_LE6,388,grf,gracile fascicle,6,10,514,1,/997/1009/967/792/932/514/388/
+W_DEPTH_LE6,389,sttv,ventral spinothalamic tract,4,9,871,1,/997/1009/967/871/389/
+W_DEPTH_LE6,390,SO,Supraoptic nucleus,6,8,157,1,/997/8/343/1129/1097/157/390/
+W_DEPTH_LE6,395,MDRN,Medullary reticular nucleus,6,8,370,1,/997/8/343/1065/354/370/395/
+W_DEPTH_LE6,396,iaf,internal arcuate fibers,6,10,514,1,/997/1009/967/792/932/514/396/
+W_DEPTH_LE6,397,vtd,ventral tegmental decussation,4,9,863,1,/997/1009/1000/863/397/
+W_DEPTH_LE6,398,SOC,Superior olivary complex,6,8,1132,1,/997/8/343/1065/771/1132/398/
+W_DEPTH_LE6,403,MEA,Medial amygdalar nucleus,6,8,278,1,/997/8/567/623/477/278/403/
+W_DEPTH_LE6,404,oct,olivocerebellar tract,6,10,490,1,/997/1009/960/752/1123/490/404/
+W_DEPTH_LE6,405,vlt,ventrolateral hypothalamic tract,4,8,824,1,/997/1009/991/824/405/
+W_DEPTH_LE6,406,SPF,Subparafascicular nucleus,6,8,864,1,/997/8/343/1129/549/864/406/
+W_DEPTH_LE6,410,rct,reticulocerebellar tract,6,10,490,1,/997/1009/960/752/1123/490/410/
+W_DEPTH_LE6,413,vVIIIn,vestibular nerve,4,9,933,1,/997/1009/967/933/413/
+W_DEPTH_LE6,420,db,precommissural fornix diagonal band,6,10,745,1,/997/1009/991/768/1099/745/420/
+W_DEPTH_LE6,428,mct,medial corticohypothalamic tract,6,10,737,1,/997/1009/991/768/1099/737/428/
+W_DEPTH_LE6,429,SPVC,"Spinal nucleus of the trigeminal, caudal part",6,9,386,1,/997/8/343/1065/354/386/429/
+W_DEPTH_LE6,436,fx,columns of the fornix,6,10,737,1,/997/1009/991/768/1099/737/436/
+W_DEPTH_LE6,437,SPVI,"Spinal nucleus of the trigeminal, interpolar part",6,9,386,1,/997/8/343/1065/354/386/437/
+W_DEPTH_LE6,443,dhc,dorsal hippocampal commissure,6,10,618,1,/997/1009/991/768/1099/618/443/
+W_DEPTH_LE6,444,MED,Medial group of the dorsal thalamus,6,7,856,1,/997/8/343/1129/549/856/444/
+W_DEPTH_LE6,445,SPVO,"Spinal nucleus of the trigeminal, oral part",6,9,386,1,/997/8/343/1065/354/386/445/
+W_DEPTH_LE6,449,vhc,ventral hippocampal commissure,6,10,618,1,/997/1009/991/768/1099/618/449/
+W_DEPTH_LE6,451,BLAv,"Basolateral amygdalar nucleus, ventral part",6,9,295,1,/997/8/567/688/703/295/451/
+W_DEPTH_LE6,452,MEPO,Median preoptic nucleus,6,8,141,1,/997/8/343/1129/1097/141/452/
+W_DEPTH_LE6,453,SS,Somatosensory areas,6,6,315,1,/997/8/567/688/695/315/453/
+W_DEPTH_LE6,459,aolt,accessory olfactory tract,5,10,21,1,/997/1009/967/840/21/459/
+W_DEPTH_LE6,460,MEV,Midbrain trigeminal nucleus,5,8,339,1,/997/8/343/313/339/460/
+W_DEPTH_LE6,462,SSN,Superior salivatory nucleus,6,8,987,1,/997/8/343/1065/771/987/462/
+W_DEPTH_LE6,466,alv,alveus,5,9,1099,1,/997/1009/991/768/1099/466/
+W_DEPTH_LE6,467,MEZ,Hypothalamic medial zone,5,6,1097,1,/997/8/343/1129/1097/467/
+W_DEPTH_LE6,470,STN,Subthalamic nucleus,6,8,290,1,/997/8/343/1129/1097/290/470/
+W_DEPTH_LE6,474,ab,angular path,5,9,1099,1,/997/1009/991/768/1099/474/
+W_DEPTH_LE6,477,STR,Striatum,4,5,623,1,/997/8/567/623/477/
+W_DEPTH_LE6,482,bic,brachium of the inferior colliculus,5,10,948,1,/997/1009/967/933/948/482/
+W_DEPTH_LE6,485,STRd,Striatum dorsal region,5,6,477,1,/997/8/567/623/477/485/
+W_DEPTH_LE6,490,bct,bulbocerebellar tract,5,9,1123,1,/997/1009/960/752/1123/490/
+W_DEPTH_LE6,493,STRv,Striatum ventral region,5,6,477,1,/997/8/567/623/477/493/
+W_DEPTH_LE6,499,cct,cuneocerebellar tract,5,9,1123,1,/997/1009/960/752/1123/499/
+W_DEPTH_LE6,500,MO,Somatomotor areas,6,6,315,1,/997/8/567/688/695/315/500/
+W_DEPTH_LE6,506,das,dorsal acoustic stria,5,10,948,1,/997/1009/967/933/948/506/
+W_DEPTH_LE6,507,MOB,Main olfactory bulb,6,8,698,1,/997/8/567/688/695/698/507/
+W_DEPTH_LE6,512,CB,Cerebellum,2,2,8,1,/997/8/512/
+W_DEPTH_LE6,514,dc,dorsal column,5,9,932,1,/997/1009/967/792/932/514/
+W_DEPTH_LE6,515,MPN,Medial preoptic nucleus,6,8,467,1,/997/8/343/1129/1097/467/515/
+W_DEPTH_LE6,519,CBN,Cerebellar nuclei,3,5,512,1,/997/8/512/519/
+W_DEPTH_LE6,522,dcm,dorsal commissure of the spinal cord,5,9,932,1,/997/1009/967/792/932/522/
+W_DEPTH_LE6,523,MPO,Medial preoptic area,6,8,141,1,/997/8/343/1129/1097/141/523/
+W_DEPTH_LE6,528,CBX,Cerebellar cortex,3,5,512,1,/997/8/512/528/
+W_DEPTH_LE6,530,df,dorsal fornix,5,9,1099,1,/997/1009/991/768/1099/530/
+W_DEPTH_LE6,531,MPT,Medial pretectal area,6,9,1100,1,/997/8/343/313/323/1100/531/
+W_DEPTH_LE6,534,SUT,Supratrigeminal nucleus,6,8,987,1,/997/8/343/1065/771/987/534/
+W_DEPTH_LE6,536,CEA,Central amygdalar nucleus,6,8,278,1,/997/8/567/623/477/278/536/
+W_DEPTH_LE6,538,lotd,dorsal limb,5,10,21,1,/997/1009/967/840/21/538/
+W_DEPTH_LE6,539,MRNm,"Midbrain reticular nucleus, magnocellular part",6,9,128,1,/997/8/343/313/323/128/539/
+W_DEPTH_LE6,541,TEa,Temporal association areas,6,6,315,1,/997/8/567/688/695/315/541/
+W_DEPTH_LE6,547,dlf,dorsal longitudinal fascicle,5,9,70,1,/997/1009/991/824/70/547/
+W_DEPTH_LE6,548,MRNmg,"Midbrain reticular nucleus, magnocellular part, general",6,9,128,1,/997/8/343/313/323/128/548/
+W_DEPTH_LE6,549,TH,Thalamus,4,5,1129,1,/997/8/343/1129/549/
+W_DEPTH_LE6,552,PRNv,"Pontine reticular nucleus, ventral part",6,8,987,1,/997/8/343/1065/771/987/552/
+W_DEPTH_LE6,553,sctd,dorsal spinocerebellar tract,5,9,1123,1,/997/1009/960/752/1123/553/
+W_DEPTH_LE6,555,MRNp,"Midbrain reticular nucleus, parvicellular part",6,9,128,1,/997/8/343/313/323/128/555/
+W_DEPTH_LE6,563,dtt,dorsal tegmental tract,5,9,70,1,/997/1009/991/824/70/563/
+W_DEPTH_LE6,566,TR,Postpiriform transition area,6,8,698,1,/997/8/567/688/695/698/566/
+W_DEPTH_LE6,567,CH,Cerebrum,2,2,8,1,/997/8/567/
+W_DEPTH_LE6,568,ACVI,Accessory abducens nucleus,6,8,370,1,/997/8/343/1065/354/370/568/
+W_DEPTH_LE6,570,dl,dorsolateral fascicle,5,9,932,1,/997/1009/967/792/932/570/
+W_DEPTH_LE6,571,MTN,Midline group of the dorsal thalamus,6,7,856,1,/997/8/343/1129/549/856/571/
+W_DEPTH_LE6,574,TRN,Tegmental reticular nucleus,6,8,987,1,/997/8/343/1065/771/987/574/
+W_DEPTH_LE6,576,ACVII,Accessory facial motor nucleus,6,8,370,1,/997/8/343/1065/354/370/576/
+W_DEPTH_LE6,579,ec,external capsule,5,10,956,1,/997/1009/983/776/956/579/
+W_DEPTH_LE6,580,NB,Nucleus of the brachium of the inferior colliculus,5,8,339,1,/997/8/343/313/339/580/
+W_DEPTH_LE6,581,TRS,Triangular nucleus of septum,6,8,826,1,/997/8/567/623/803/826/581/
+W_DEPTH_LE6,583,CLA,Claustrum,5,8,703,1,/997/8/567/688/703/583/
+W_DEPTH_LE6,586,fpr,fasciculus proprius,5,9,932,1,/997/1009/967/792/932/586/
+W_DEPTH_LE6,587,ND,Nucleus of Darkschewitsch,6,9,795,1,/997/8/343/313/323/795/587/
+W_DEPTH_LE6,589,TT,Taenia tecta,6,8,698,1,/997/8/567/688/695/698/589/
+W_DEPTH_LE6,591,CLI,Central linear nucleus raphe,6,8,165,1,/997/8/343/313/348/165/591/
+W_DEPTH_LE6,595,fr,fasciculus retroflexus,5,9,1083,1,/997/1009/991/824/1083/595/
+W_DEPTH_LE6,603,fi,fimbria,5,9,1099,1,/997/1009/991/768/1099/603/
+W_DEPTH_LE6,604,NI,Nucleus incertus,6,8,1117,1,/997/8/343/1065/771/1117/604/
+W_DEPTH_LE6,607,CN,Cochlear nuclei,6,7,386,1,/997/8/343/1065/354/386/607/
+W_DEPTH_LE6,609,SPA,Subparafascicular area,6,8,864,1,/997/8/343/1129/549/864/609/
+W_DEPTH_LE6,611,hbc,habenular commissure,5,9,1083,1,/997/1009/991/824/1083/611/
+W_DEPTH_LE6,612,NLL,Nucleus of the lateral lemniscus,6,8,1132,1,/997/8/343/1065/771/1132/612/
+W_DEPTH_LE6,614,TU,Tuberal nucleus,6,8,290,1,/997/8/343/1129/1097/290/614/
+W_DEPTH_LE6,615,SNl,"Substantia nigra, lateral part",5,8,323,1,/997/8/343/313/323/615/
+W_DEPTH_LE6,616,CUN,Cuneiform nucleus,5,8,323,1,/997/8/343/313/323/616/
+W_DEPTH_LE6,618,hc,hippocampal commissures,5,9,1099,1,/997/1009/991/768/1099/618/
+W_DEPTH_LE6,619,NLOT,Nucleus of the lateral olfactory tract,6,8,698,1,/997/8/567/688/695/698/619/
+W_DEPTH_LE6,621,V,Motor nucleus of trigeminal,6,8,987,1,/997/8/343/1065/771/987/621/
+W_DEPTH_LE6,623,CNU,Cerebral nuclei,3,3,567,1,/997/8/567/623/
+W_DEPTH_LE6,624,IPF,Interpeduncular fossa,2,7,1024,1,/997/1024/624/
+W_DEPTH_LE6,627,hht,hypothalamohypophysial tract,5,10,285,1,/997/1009/967/871/285/627/
+W_DEPTH_LE6,628,NOT,Nucleus of the optic tract,6,9,1100,1,/997/8/343/313/323/1100/628/
+W_DEPTH_LE6,631,COA,Cortical amygdalar area,6,8,698,1,/997/8/567/688/695/698/631/
+W_DEPTH_LE6,633,cic,inferior colliculus commissure,5,10,948,1,/997/1009/967/933/948/633/
+W_DEPTH_LE6,634,NPC,Nucleus of the posterior commissure,6,9,1100,1,/997/8/343/313/323/1100/634/
+W_DEPTH_LE6,637,VENT,Ventral group of the dorsal thalamus,6,7,864,1,/997/8/343/1129/549/864/637/
+W_DEPTH_LE6,640,EV,Efferent vestibular nucleus,6,8,370,1,/997/8/343/1065/354/370/640/
+W_DEPTH_LE6,641,ias,intermediate acoustic stria,5,10,948,1,/997/1009/967/933/948/641/
+W_DEPTH_LE6,642,NTB,Nucleus of the trapezoid body,6,8,386,1,/997/8/343/1065/354/386/642/
+W_DEPTH_LE6,645,VERM,Vermal regions,4,6,528,1,/997/8/512/528/645/
+W_DEPTH_LE6,650,jrb,juxtarestiform body,5,9,1123,1,/997/1009/960/752/1123/650/
+W_DEPTH_LE6,651,NTS,Nucleus of the solitary tract,6,8,386,1,/997/8/343/1065/354/386/651/
+W_DEPTH_LE6,653,VI,Abducens nucleus,6,8,370,1,/997/8/343/1065/354/370/653/
+W_DEPTH_LE6,658,ll,lateral lemniscus,5,10,948,1,/997/1009/967/933/948/658/
+W_DEPTH_LE6,661,VII,Facial motor nucleus,6,8,370,1,/997/8/343/1065/354/370/661/
+W_DEPTH_LE6,665,lot,"lateral olfactory tract, body",5,10,21,1,/997/1009/967/840/21/665/
+W_DEPTH_LE6,669,VIS,Visual areas,6,6,315,1,/997/8/567/688/695/315/669/
+W_DEPTH_LE6,672,CP,Caudoputamen,6,8,485,1,/997/8/567/623/477/485/672/
+W_DEPTH_LE6,673,mp,mammillary peduncle,5,9,46,1,/997/1009/991/824/46/673/
+W_DEPTH_LE6,677,VISC,Visceral area,6,8,315,1,/997/8/567/688/695/315/677/
+W_DEPTH_LE6,679,CS,Superior central nucleus raphe,6,8,1117,1,/997/8/343/1065/771/1117/679/
+W_DEPTH_LE6,681,mtg,mammillotegmental tract,5,9,46,1,/997/1009/991/824/46/681/
+W_DEPTH_LE6,688,CTX,Cerebral cortex,3,3,567,1,/997/8/567/688/
+W_DEPTH_LE6,689,VLPO,Ventrolateral preoptic nucleus,6,8,141,1,/997/8/343/1129/1097/141/689/
+W_DEPTH_LE6,690,mtt,mammillothalamic tract,5,9,46,1,/997/1009/991/824/46/690/
+W_DEPTH_LE6,693,VMH,Ventromedial hypothalamic nucleus,6,8,467,1,/997/8/343/1129/1097/467/693/
+W_DEPTH_LE6,695,CTXpl,Cortical plate,4,4,688,1,/997/8/567/688/695/
+W_DEPTH_LE6,697,ml,medial lemniscus,5,9,932,1,/997/1009/967/792/932/697/
+W_DEPTH_LE6,698,OLF,Olfactory areas,5,5,695,1,/997/8/567/688/695/698/
+W_DEPTH_LE6,701,VNC,Vestibular nuclei,6,7,370,1,/997/8/343/1065/354/370/701/
+W_DEPTH_LE6,703,CTXsp,Cortical subplate,4,5,688,1,/997/8/567/688/703/
+W_DEPTH_LE6,705,mtV,midbrain tract of the trigeminal nerve,5,10,229,1,/997/1009/967/901/229/705/
+W_DEPTH_LE6,706,OP,Olivary pretectal nucleus,6,9,1100,1,/997/8/343/313/323/1100/706/
+W_DEPTH_LE6,710,VIn,abducens nerve,3,8,967,1,/997/1009/967/710/
+W_DEPTH_LE6,713,per,perforant path,5,9,1099,1,/997/1009/991/768/1099/713/
+W_DEPTH_LE6,714,ORB,Orbital area,6,8,315,1,/997/8/567/688/695/315/714/
+W_DEPTH_LE6,717,XIn,accessory spinal nerve,3,8,967,1,/997/1009/967/717/
+W_DEPTH_LE6,720,DCN,Dorsal column nuclei,6,7,386,1,/997/8/343/1065/354/386/720/
+W_DEPTH_LE6,722,pvbt,periventricular bundle of the thalamus,5,9,1068,1,/997/1009/991/824/1068/722/
+W_DEPTH_LE6,728,arb,arbor vitae,3,8,960,1,/997/1009/960/728/
+W_DEPTH_LE6,730,PIS,pineal stalk,5,9,1083,1,/997/1009/991/824/1083/730/
+W_DEPTH_LE6,736,ctb,central tegmental bundle,3,8,1000,1,/997/1009/1000/736/
+W_DEPTH_LE6,737,fxpo,postcommissural fornix,5,9,1099,1,/997/1009/991/768/1099/737/
+W_DEPTH_LE6,744,cbc,cerebellar commissure,3,8,960,1,/997/1009/960/744/
+W_DEPTH_LE6,745,fxprg,"precommissural fornix, general",5,9,1099,1,/997/1009/991/768/1099/745/
+W_DEPTH_LE6,749,VTA,Ventral tegmental area,5,8,323,1,/997/8/343/313/323/749/
+W_DEPTH_LE6,752,cbp,cerebellar peduncles,3,7,960,1,/997/1009/960/752/
+W_DEPTH_LE6,753,pm,principal mammillary tract,5,9,46,1,/997/1009/991/824/46/753/
+W_DEPTH_LE6,754,OT,Olfactory tubercle,6,8,493,1,/997/8/567/623/477/493/754/
+W_DEPTH_LE6,757,VTN,Ventral tegmental nucleus,5,8,323,1,/997/8/343/313/323/757/
+W_DEPTH_LE6,760,epsc,cerebral nuclei related,3,7,1000,1,/997/1009/1000/760/
+W_DEPTH_LE6,762,phpd,"propriohypothalamic pathways, dorsal",5,9,182,1,/997/1009/991/824/182/762/
+W_DEPTH_LE6,763,OV,Vascular organ of the lamina terminalis,6,8,141,1,/997/8/343/1129/1097/141/763/
+W_DEPTH_LE6,765,x,Nucleus x,6,8,370,1,/997/8/343/1065/354/370/765/
+W_DEPTH_LE6,768,mfbc,cerebrum related,3,7,991,1,/997/1009/991/768/
+W_DEPTH_LE6,770,phpl,"propriohypothalamic pathways, lateral",5,9,182,1,/997/1009/991/824/182/770/
+W_DEPTH_LE6,771,P,Pons,4,5,1065,1,/997/8/343/1065/771/
+W_DEPTH_LE6,773,XII,Hypoglossal nucleus,6,8,370,1,/997/8/343/1065/354/370/773/
+W_DEPTH_LE6,776,cc,corpus callosum,3,8,983,1,/997/1009/983/776/
+W_DEPTH_LE6,779,phpm,"propriohypothalamic pathways, medial",5,9,182,1,/997/1009/991/824/182/779/
+W_DEPTH_LE6,780,PA,Posterior amygdalar nucleus,5,8,703,1,/997/8/567/688/703/780/
+W_DEPTH_LE6,781,y,Nucleus y,6,8,370,1,/997/8/343/1065/354/370/781/
+W_DEPTH_LE6,784,cst,corticospinal tract,3,8,983,1,/997/1009/983/784/
+W_DEPTH_LE6,787,phpv,"propriohypothalamic pathways, ventral",5,9,182,1,/997/1009/991/824/182/787/
+W_DEPTH_LE6,788,PAA,Piriform-amygdalar area,6,8,698,1,/997/8/567/688/695/698/788/
+W_DEPTH_LE6,789,z,Nucleus z,6,8,386,1,/997/8/343/1065/354/386/789/
+W_DEPTH_LE6,792,drt,dorsal roots,3,7,967,1,/997/1009/967/792/
+W_DEPTH_LE6,794,sptV,spinal tract of the trigeminal nerve,5,10,229,1,/997/1009/967/901/229/794/
+W_DEPTH_LE6,795,PAG,Periaqueductal gray,5,8,323,1,/997/8/343/313/323/795/
+W_DEPTH_LE6,797,ZI,Zona incerta,6,8,290,1,/997/8/343/1129/1097/290/797/
+W_DEPTH_LE6,798,VIIn,facial nerve,3,8,967,1,/997/1009/967/798/
+W_DEPTH_LE6,802,sm,stria medullaris,5,9,1083,1,/997/1009/991/824/1083/802/
+W_DEPTH_LE6,803,PAL,Pallidum,4,5,623,1,/997/8/567/623/803/
+W_DEPTH_LE6,808,IXn,glossopharyngeal nerve,3,8,967,1,/997/1009/967/808/
+W_DEPTH_LE6,809,PALc,"Pallidum, caudal region",5,6,803,1,/997/8/567/623/803/809/
+W_DEPTH_LE6,811,ICc,"Inferior colliculus, central nucleus",6,9,4,1,/997/8/343/313/339/4/811/
+W_DEPTH_LE6,812,dscp,superior cerebellar peduncle decussation,5,9,326,1,/997/1009/960/752/326/812/
+W_DEPTH_LE6,813,XIIn,hypoglossal nerve,3,8,967,1,/997/1009/967/813/
+W_DEPTH_LE6,814,DP,Dorsal peduncular area,6,8,698,1,/997/8/567/688/695/698/814/
+W_DEPTH_LE6,817,supa,"supraoptic commissures, anterior",5,9,349,1,/997/1009/991/824/349/817/
+W_DEPTH_LE6,818,PALd,"Pallidum, dorsal region",5,6,803,1,/997/8/567/623/803/818/
+W_DEPTH_LE6,820,ICd,"Inferior colliculus, dorsal nucleus",6,9,4,1,/997/8/343/313/339/4/820/
+W_DEPTH_LE6,822,RHP,Retrohippocampal region,6,6,1089,1,/997/8/567/688/695/1089/822/
+W_DEPTH_LE6,824,mfsbshy,hypothalamus related,3,7,991,1,/997/1009/991/824/
+W_DEPTH_LE6,825,supd,"supraoptic commissures, dorsal",5,9,349,1,/997/1009/991/824/349/825/
+W_DEPTH_LE6,826,PALm,"Pallidum, medial region",5,6,803,1,/997/8/567/623/803/826/
+W_DEPTH_LE6,828,ICe,"Inferior colliculus, external nucleus",6,9,4,1,/997/8/343/313/339/4/828/
+W_DEPTH_LE6,830,DMH,Dorsomedial nucleus of the hypothalamus,6,8,141,1,/997/8/343/1129/1097/141/830/
+W_DEPTH_LE6,832,IIIn,oculomotor nerve,3,8,967,1,/997/1009/967/832/
+W_DEPTH_LE6,833,supv,"supraoptic commissures, ventral",5,9,349,1,/997/1009/991/824/349/833/
+W_DEPTH_LE6,834,SCzo,"Superior colliculus, zonal layer",6,9,302,1,/997/8/343/313/339/302/834/
+W_DEPTH_LE6,835,PALv,"Pallidum, ventral region",5,6,803,1,/997/8/567/623/803/835/
+W_DEPTH_LE6,839,DMX,Dorsal motor nucleus of the vagus nerve,6,8,370,1,/997/8/343/1065/354/370/839/
+W_DEPTH_LE6,840,In,olfactory nerve,3,8,967,1,/997/1009/967/840/
+W_DEPTH_LE6,841,tb,trapezoid body,5,10,948,1,/997/1009/967/933/948/841/
+W_DEPTH_LE6,842,SCsg,"Superior colliculus, superficial gray layer",6,9,302,1,/997/8/343/313/339/302/842/
+W_DEPTH_LE6,846,DN,Dentate nucleus,4,8,519,1,/997/8/512/519/846/
+W_DEPTH_LE6,848,IIn,optic nerve,3,8,967,1,/997/1009/967/848/
+W_DEPTH_LE6,850,uf,uncinate fascicle,5,9,326,1,/997/1009/960/752/326/850/
+W_DEPTH_LE6,851,SCop,"Superior colliculus, optic layer",6,9,302,1,/997/8/343/313/339/302/851/
+W_DEPTH_LE6,852,PARN,Parvicellular reticular nucleus,6,8,370,1,/997/8/343/1065/354/370/852/
+W_DEPTH_LE6,855,rst,retriculospinal tract,3,8,1000,1,/997/1009/1000/855/
+W_DEPTH_LE6,856,DORpm,"Thalamus, polymodal association cortex related",5,6,549,1,/997/8/343/1129/549/856/
+W_DEPTH_LE6,858,vc,ventral commissure of the spinal cord,5,9,932,1,/997/1009/967/792/932/858/
+W_DEPTH_LE6,859,PAS,Parasolitary nucleus,6,8,370,1,/997/8/343/1065/354/370/859/
+W_DEPTH_LE6,863,rust,rubrospinal tract,3,8,1000,1,/997/1009/1000/863/
+W_DEPTH_LE6,864,DORsm,"Thalamus, sensory-motor cortex related",5,6,549,1,/997/8/343/1129/549/864/
+W_DEPTH_LE6,866,sctv,ventral spinocerebellar tract,5,9,326,1,/997/1009/960/752/326/866/
+W_DEPTH_LE6,867,PB,Parabrachial nucleus,6,8,1132,1,/997/8/343/1065/771/1132/867/
+W_DEPTH_LE6,871,sst,spinothalamic tract,3,8,967,1,/997/1009/967/871/
+W_DEPTH_LE6,872,DR,Dorsal nucleus raphe,6,8,165,1,/997/8/343/313/348/165/872/
+W_DEPTH_LE6,874,PBG,Parabigeminal nucleus,5,8,339,1,/997/8/343/313/339/874/
+W_DEPTH_LE6,876,aot,accessory optic tract,4,9,848,1,/997/1009/967/848/876/
+W_DEPTH_LE6,877,tsp,tectospinal pathway,3,8,1000,1,/997/1009/1000/877/
+W_DEPTH_LE6,880,DTN,Dorsal tegmental nucleus,6,8,987,1,/997/8/343/1065/771/987/880/
+W_DEPTH_LE6,884,amc,amygdalar capsule,4,8,768,1,/997/1009/991/768/884/
+W_DEPTH_LE6,885,tn,terminal nerve,3,8,967,1,/997/1009/967/885/
+W_DEPTH_LE6,887,ECO,Efferent cochlear group,6,8,370,1,/997/8/343/1065/354/370/887/
+W_DEPTH_LE6,892,apd,ansa peduncularis,4,8,768,1,/997/1009/991/768/892/
+W_DEPTH_LE6,895,ECT,Ectorhinal area,6,8,315,1,/997/8/567/688/695/315/895/
+W_DEPTH_LE6,896,lfbst,thalamus related,3,7,983,1,/997/1009/983/896/
+W_DEPTH_LE6,898,PCG,Pontine central gray,6,8,987,1,/997/8/343/1065/771/987/898/
+W_DEPTH_LE6,900,aco,"anterior commissure, olfactory limb",4,9,840,1,/997/1009/967/840/900/
+W_DEPTH_LE6,901,Vn,trigeminal nerve,3,8,967,1,/997/1009/967/901/
+W_DEPTH_LE6,903,ECU,External cuneate nucleus,6,8,386,1,/997/8/343/1065/354/386/903/
+W_DEPTH_LE6,904,MSC,Medial septal complex,6,8,826,1,/997/8/567/623/803/826/904/
+W_DEPTH_LE6,908,act,"anterior commissure, temporal limb",4,8,768,1,/997/1009/991/768/908/
+W_DEPTH_LE6,911,IVn,trochlear nerve,3,8,967,1,/997/1009/967/911/
+W_DEPTH_LE6,912,LING,Lingula (I),5,8,645,1,/997/8/512/528/645/912/
+W_DEPTH_LE6,914,PD,Posterodorsal preoptic nucleus,6,8,141,1,/997/8/343/1129/1097/141/914/
+W_DEPTH_LE6,916,bsc,brachium of the superior colliculus,4,9,848,1,/997/1009/967/848/916/
+W_DEPTH_LE6,917,Xn,vagus nerve,3,8,967,1,/997/1009/967/917/
+W_DEPTH_LE6,920,CENT,Central lobule,5,7,645,1,/997/8/512/528/645/920/
+W_DEPTH_LE6,922,PERI,Perirhinal area,6,8,315,1,/997/8/567/688/695/315/922/
+W_DEPTH_LE6,924,cpd,cerebal peduncle,4,9,784,1,/997/1009/983/784/924/
+W_DEPTH_LE6,925,vrt,ventral roots,3,7,967,1,/997/1009/967/925/
+W_DEPTH_LE6,928,CUL,Culmen,5,7,645,1,/997/8/512/528/645/928/
+W_DEPTH_LE6,931,PG,Pontine gray,6,8,987,1,/997/8/343/1065/771/987/931/
+W_DEPTH_LE6,932,cett,cervicothalamic tract,4,8,792,1,/997/1009/967/792/932/
+W_DEPTH_LE6,933,VIIIn,vestibulocochlear nerve,3,8,967,1,/997/1009/967/933/
+W_DEPTH_LE6,936,DEC,Declive (VI),5,8,645,1,/997/8/512/528/645/936/
+W_DEPTH_LE6,938,PGRN,Paragigantocellular reticular nucleus,6,8,370,1,/997/8/343/1065/354/370/938/
+W_DEPTH_LE6,940,cing,cingulum bundle,4,8,768,1,/997/1009/991/768/940/
+W_DEPTH_LE6,941,vsp,vestibulospinal pathway,3,8,1000,1,/997/1009/1000/941/
+W_DEPTH_LE6,942,EP,Endopiriform nucleus,5,8,703,1,/997/8/567/688/703/942/
+W_DEPTH_LE6,944,FOTU,Folium-tuber vermis (VII),5,8,645,1,/997/8/512/528/645/944/
+W_DEPTH_LE6,946,PH,Posterior hypothalamic nucleus,6,8,467,1,/997/8/343/1129/1097/467/946/
+W_DEPTH_LE6,948,cVIIIn,cochlear nerve,4,9,933,1,/997/1009/967/933/948/
+W_DEPTH_LE6,949,von,vomeronasal nerve,3,8,967,1,/997/1009/967/949/
+W_DEPTH_LE6,951,PYR,Pyramus (VIII),5,8,645,1,/997/8/512/528/645/951/
+W_DEPTH_LE6,952,EPd,"Endopiriform nucleus, dorsal part",6,9,942,1,/997/8/567/688/703/942/952/
+W_DEPTH_LE6,956,fa,"corpus callosum, anterior forceps",4,9,776,1,/997/1009/983/776/956/
+W_DEPTH_LE6,957,UVU,Uvula (IX),5,8,645,1,/997/8/512/528/645/957/
+W_DEPTH_LE6,958,EPI,Epithalamus,6,7,856,1,/997/8/343/1129/549/856/958/
+W_DEPTH_LE6,960,cbf,cerebellum related fiber tracts,2,2,1009,1,/997/1009/960/
+W_DEPTH_LE6,961,PIR,Piriform area,6,8,698,1,/997/8/567/688/695/698/961/
+W_DEPTH_LE6,964,ee,"corpus callosum, extreme capsule",4,9,776,1,/997/1009/983/776/964/
+W_DEPTH_LE6,966,EPv,"Endopiriform nucleus, ventral part",6,9,942,1,/997/8/567/688/703/942/966/
+W_DEPTH_LE6,967,cm,cranial nerves,2,2,1009,1,/997/1009/967/
+W_DEPTH_LE6,968,NOD,Nodulus (X),5,8,645,1,/997/8/512/528/645/968/
+W_DEPTH_LE6,971,fp,"corpus callosum, posterior forceps",4,9,776,1,/997/1009/983/776/971/
+W_DEPTH_LE6,972,PL,Prelimbic area,6,8,315,1,/997/8/567/688/695/315/972/
+W_DEPTH_LE6,975,EW,Edinger-Westphal nucleus,5,8,323,1,/997/8/343/313/323/975/
+W_DEPTH_LE6,976,CENT2,Lobule II,6,8,920,1,/997/8/512/528/645/920/976/
+W_DEPTH_LE6,979,ccr,"corpus callosum, rostrum",4,9,776,1,/997/1009/983/776/979/
+W_DEPTH_LE6,980,PMd,Dorsal premammillary nucleus,6,8,467,1,/997/8/343/1129/1097/467/980/
+W_DEPTH_LE6,983,lfbs,lateral forebrain bundle system,2,2,1009,1,/997/1009/983/
+W_DEPTH_LE6,984,CENT3,Lobule III,6,8,920,1,/997/8/512/528/645/920/984/
+W_DEPTH_LE6,986,ccs,"corpus callosum, splenium",4,9,776,1,/997/1009/983/776/986/
+W_DEPTH_LE6,987,P-mot,"Pons, motor related",5,6,771,1,/997/8/343/1065/771/987/
+W_DEPTH_LE6,989,FN,Fastigial nucleus,4,8,519,1,/997/8/512/519/989/
+W_DEPTH_LE6,991,mfbs,medial forebrain bundle system,2,2,1009,1,/997/1009/991/
+W_DEPTH_LE6,992,CUL4,Lobule IV,6,8,928,1,/997/8/512/528/645/928/992/
+W_DEPTH_LE6,994,cbt,corticobulbar tract,4,9,784,1,/997/1009/983/784/994/
+W_DEPTH_LE6,995,PMR,Paramedian reticular nucleus,6,8,370,1,/997/8/343/1065/354/370/995/
+W_DEPTH_LE6,997,root,root,0,0,,1,/997/
+W_DEPTH_LE6,998,FS,Fundus of striatum,6,8,493,1,/997/8/567/623/477/493/998/
+W_DEPTH_LE6,1000,eps,extrapyramidal fiber systems,2,2,1009,1,/997/1009/1000/
+W_DEPTH_LE6,1001,CUL5,Lobule V,6,8,928,1,/997/8/512/528/645/928/1001/
+W_DEPTH_LE6,1003,cpt,corticopontine tract,4,9,784,1,/997/1009/983/784/1003/
+W_DEPTH_LE6,1004,PMv,Ventral premammillary nucleus,6,8,467,1,/997/8/343/1129/1097/467/1004/
+W_DEPTH_LE6,1007,SIM,Simple lobule,5,8,1073,1,/997/8/512/528/1073/1007/
+W_DEPTH_LE6,1008,GENd,"Geniculate group, dorsal thalamus",6,7,864,1,/997/8/343/1129/549/864/1008/
+W_DEPTH_LE6,1009,fiber tracts,fiber tracts,1,1,997,1,/997/1009/
+W_DEPTH_LE6,1012,crt,corticorubral tract,4,9,784,1,/997/1009/983/784/1012/
+W_DEPTH_LE6,1014,GENv,"Geniculate group, ventral thalamus",6,7,856,1,/997/8/343/1129/549/856/1014/
+W_DEPTH_LE6,1016,onl,olfactory nerve layer of main olfactory bulb,4,9,840,1,/997/1009/967/840/1016/
+W_DEPTH_LE6,1017,AN,Ansiform lobule,5,7,1073,1,/997/8/512/528/1073/1017/
+W_DEPTH_LE6,1019,cstc,"corticospinal tract, crossed",4,9,784,1,/997/1009/983/784/1019/
+W_DEPTH_LE6,1022,GPe,"Globus pallidus, external segment",6,8,818,1,/997/8/567/623/803/818/1022/
+W_DEPTH_LE6,1024,grv,grooves,1,1,997,1,/997/1024/
+W_DEPTH_LE6,1025,PRM,Paramedian lobule,5,8,1073,1,/997/8/512/528/1073/1025/
+W_DEPTH_LE6,1028,cstu,"corticospinal tract, uncrossed",4,9,784,1,/997/1009/983/784/1028/
+W_DEPTH_LE6,1031,GPi,"Globus pallidus, internal segment",6,8,818,1,/997/8/567/623/803/818/1031/
+W_DEPTH_LE6,1032,grv of CTX,grooves of the cerebral cortex,2,7,1024,1,/997/1024/1032/
+W_DEPTH_LE6,1033,COPY,Copula pyramidis,5,8,1073,1,/997/8/512/528/1073/1033/
+W_DEPTH_LE6,1036,cte,corticotectal tract,4,9,784,1,/997/1009/983/784/1036/
+W_DEPTH_LE6,1040,grv of CBX,grooves of the cerebellar cortex,2,7,1024,1,/997/1024/1040/
+W_DEPTH_LE6,1041,PFL,Paraflocculus,5,8,1073,1,/997/8/512/528/1073/1041/
+W_DEPTH_LE6,1043,tspc,crossed tectospinal pathway,4,9,877,1,/997/1009/1000/877/1043/
+W_DEPTH_LE6,1044,PP,Peripeduncular nucleus,6,8,864,1,/997/8/343/1129/549/864/1044/
+W_DEPTH_LE6,1048,GRN,Gigantocellular reticular nucleus,6,8,370,1,/997/8/343/1065/354/370/1048/
+W_DEPTH_LE6,1049,FL,Flocculus,5,8,1073,1,/997/8/512/528/1073/1049/
+W_DEPTH_LE6,1051,tspd,direct tectospinal pathway,4,9,877,1,/997/1009/1000/877/1051/
+W_DEPTH_LE6,1052,PPN,Pedunculopontine nucleus,5,8,348,1,/997/8/343/313/348/1052/
+W_DEPTH_LE6,1055,eg,endorhinal groove,3,8,1032,1,/997/1024/1032/1055/
+W_DEPTH_LE6,1056,ANcr1,Crus 1,6,8,1017,1,/997/8/512/528/1073/1017/1056/
+W_DEPTH_LE6,1057,GU,Gustatory areas,6,6,315,1,/997/8/567/688/695/315/1057/
+W_DEPTH_LE6,1060,dtd,doral tegmental decussation,4,9,877,1,/997/1009/1000/877/1060/
+W_DEPTH_LE6,1061,PPT,Posterior pretectal nucleus,6,9,1100,1,/997/8/343/313/323/1100/1061/
+W_DEPTH_LE6,1063,hf,hippocampal fissure,3,8,1032,1,/997/1024/1032/1063/
+W_DEPTH_LE6,1064,ANcr2,Crus 2,6,8,1017,1,/997/8/512/528/1073/1017/1064/
+W_DEPTH_LE6,1065,HB,Hindbrain,3,3,343,1,/997/8/343/1065/
+W_DEPTH_LE6,1068,mfbst,dorsal thalamus related,4,8,824,1,/997/1009/991/824/1068/
+W_DEPTH_LE6,1069,PPY,Parapyramidal nucleus,6,8,370,1,/997/8/343/1065/354/370/1069/
+W_DEPTH_LE6,1071,rf,rhinal fissure,3,8,1032,1,/997/1024/1032/1071/
+W_DEPTH_LE6,1073,HEM,Hemispheric regions,4,6,528,1,/997/8/512/528/1073/
+W_DEPTH_LE6,1076,cvb,efferent cochleovestibular bundle,4,9,933,1,/997/1009/967/933/1076/
+W_DEPTH_LE6,1078,ri,rhinal incisure,3,8,1032,1,/997/1024/1032/1078/
+W_DEPTH_LE6,1080,HIP,Hippocampal region,6,6,1089,1,/997/8/567/688/695/1089/1080/
+W_DEPTH_LE6,1083,mfbse,epithalamus related,4,8,824,1,/997/1009/991/824/1083/
+W_DEPTH_LE6,1087,pce,precentral fissure,3,8,1040,1,/997/1024/1040/1087/
+W_DEPTH_LE6,1089,HPF,Hippocampal formation,5,5,695,1,/997/8/567/688/695/1089/
+W_DEPTH_LE6,1091,"CUL4, 5",Lobules IV-V,6,8,928,1,/997/8/512/528/645/928/1091/
+W_DEPTH_LE6,1092,em,external medullary lamina of the thalamus,4,8,896,1,/997/1009/983/896/1092/
+W_DEPTH_LE6,1093,PRNc,"Pontine reticular nucleus, caudal part",6,8,987,1,/997/8/343/1065/771/987/1093/
+W_DEPTH_LE6,1095,pcf,preculminate fissure,3,8,1040,1,/997/1024/1040/1095/
+W_DEPTH_LE6,1097,HY,Hypothalamus,4,5,1129,1,/997/8/343/1129/1097/
+W_DEPTH_LE6,1099,fxs,fornix system,4,8,768,1,/997/1009/991/768/1099/
+W_DEPTH_LE6,1100,PRT,Pretectal region,5,8,323,1,/997/8/343/313/323/1100/
+W_DEPTH_LE6,1103,pri,primary fissure,3,8,1040,1,/997/1024/1040/1103/
+W_DEPTH_LE6,1105,IA,Intercalated amygdalar nucleus,6,8,278,1,/997/8/567/623/477/278/1105/
+W_DEPTH_LE6,1108,ccg,genu of corpus callosum,4,9,776,1,/997/1009/983/776/1108/
+W_DEPTH_LE6,1109,PS,Parastrial nucleus,6,8,141,1,/997/8/343/1129/1097/141/1109/
+W_DEPTH_LE6,1112,psf,posterior superior fissure,3,8,1040,1,/997/1024/1040/1112/
+W_DEPTH_LE6,1116,gVIIn,genu of the facial nerve,4,9,798,1,/997/1009/967/798/1116/
+W_DEPTH_LE6,1117,P-sat,"Pons, behavioral state related",5,6,771,1,/997/8/343/1065/771/1117/
+W_DEPTH_LE6,1119,ppf,prepyramidal fissure,3,8,1040,1,/997/1024/1040/1119/
+W_DEPTH_LE6,1123,icp,inferior cerebellar peduncle,4,8,752,1,/997/1009/960/752/1123/
+W_DEPTH_LE6,1124,PSCH,Suprachiasmatic preoptic nucleus,6,8,141,1,/997/8/343/1129/1097/141/1124/
+W_DEPTH_LE6,1129,IB,Interbrain,3,3,343,1,/997/8/343/1129/
+W_DEPTH_LE6,1131,iVIIn,intermediate nerve,4,9,798,1,/997/1009/967/798/1131/
+W_DEPTH_LE6,1132,P-sen,"Pons, sensory related",5,6,771,1,/997/8/343/1065/771/1132/
+W_DEPTH_LE6,1143,CBXgr,"Cerebellar cortex, granular layer",4,11,528,1,/997/8/512/528/1143/
+W_DEPTH_LE6,1144,CBXmo,"Cerebellar cortex, molecular layer",4,11,528,1,/997/8/512/528/1144/
+W_DEPTH_LE6,1145,CBXpu,"Cerebellar cortex, Purkinje layer",4,11,528,1,/997/8/512/528/1145/
+W_DEPTH_LE6,10671,ME,Median eminence,5,8,1097,1,/997/8/343/1129/1097/10671/
+W_DEPTH_LE6,10672,SIMgr,"Simple lobule, granular layer",6,11,1007,1,/997/8/512/528/1073/1007/10672/
+W_DEPTH_LE6,10673,SIMpu,"Simple lobule, Purkinje layer",6,11,1007,1,/997/8/512/528/1073/1007/10673/
+W_DEPTH_LE6,10674,SIMmo,"Simple lobule, molecular layer",6,11,1007,1,/997/8/512/528/1073/1007/10674/
+W_DEPTH_LE6,10681,PRMgr,"Paramedian lobule, granular layer",6,11,1025,1,/997/8/512/528/1073/1025/10681/
+W_DEPTH_LE6,10682,PRMpu,"Paramedian lobule, Purkinje layer",6,11,1025,1,/997/8/512/528/1073/1025/10682/
+W_DEPTH_LE6,10683,PRMmo,"Paramedian lobule, molecular layer",6,11,1025,1,/997/8/512/528/1073/1025/10683/
+W_DEPTH_LE6,10684,COPYgr,"Copula pyramidis, granular layer",6,11,1033,1,/997/8/512/528/1073/1033/10684/
+W_DEPTH_LE6,10685,COPYpu,"Copula pyramidis, Purkinje layer",6,11,1033,1,/997/8/512/528/1073/1033/10685/
+W_DEPTH_LE6,10686,COPYmo,"Copula pyramidis, molecular layer",6,11,1033,1,/997/8/512/528/1073/1033/10686/
+W_DEPTH_LE6,10687,PFLgr,"Paraflocculus, granular layer",6,11,1041,1,/997/8/512/528/1073/1041/10687/
+W_DEPTH_LE6,10688,PFLpu,"Paraflocculus, Purkinje layer",6,11,1041,1,/997/8/512/528/1073/1041/10688/
+W_DEPTH_LE6,10689,PFLmo,"Paraflocculus, molecular layer",6,11,1041,1,/997/8/512/528/1073/1041/10689/
+W_DEPTH_LE6,10690,FLgr,"Flocculus, granular layer",6,11,1049,1,/997/8/512/528/1073/1049/10690/
+W_DEPTH_LE6,10691,FLpu,"Flocculus, Purkinje layer",6,11,1049,1,/997/8/512/528/1073/1049/10691/
+W_DEPTH_LE6,10692,FLmo,"Flocculus, molecular layer",6,11,1049,1,/997/8/512/528/1073/1049/10692/
+W_DEPTH_LE6,10705,LINGgr,"Lingula (I), granular layer",6,11,912,1,/997/8/512/528/645/912/10705/
+W_DEPTH_LE6,10706,LINGpu,"Lingula (I), Purkinje layer",6,11,912,1,/997/8/512/528/645/912/10706/
+W_DEPTH_LE6,10707,LINGmo,"Lingula (I), molecular layer",6,11,912,1,/997/8/512/528/645/912/10707/
+W_DEPTH_LE6,10723,DECgr,"Declive (VI), granular layer",6,11,936,1,/997/8/512/528/645/936/10723/
+W_DEPTH_LE6,10724,DECpu,"Declive (VI), Purkinje layer",6,11,936,1,/997/8/512/528/645/936/10724/
+W_DEPTH_LE6,10725,DECmo,"Declive (VI), molecular layer",6,11,936,1,/997/8/512/528/645/936/10725/
+W_DEPTH_LE6,10726,FOTUgr,"Folium-tuber vermis (VII), granular layer",6,11,944,1,/997/8/512/528/645/944/10726/
+W_DEPTH_LE6,10727,FOTUpu,"Folium-tuber vermis (VII), Purkinje layer",6,11,944,1,/997/8/512/528/645/944/10727/
+W_DEPTH_LE6,10728,FOTUmo,"Folium-tuber vermis (VII), molecular layer",6,11,944,1,/997/8/512/528/645/944/10728/
+W_DEPTH_LE6,10729,PYRgr,"Pyramus (VIII), granular layer",6,11,951,1,/997/8/512/528/645/951/10729/
+W_DEPTH_LE6,10730,PYRpu,"Pyramus (VIII), Purkinje layer",6,11,951,1,/997/8/512/528/645/951/10730/
+W_DEPTH_LE6,10731,PYRmo,"Pyramus (VIII), molecular layer",6,11,951,1,/997/8/512/528/645/951/10731/
+W_DEPTH_LE6,10732,UVUgr,"Uvula (IX), granular layer",6,11,957,1,/997/8/512/528/645/957/10732/
+W_DEPTH_LE6,10733,UVUpu,"Uvula (IX), Purkinje layer",6,11,957,1,/997/8/512/528/645/957/10733/
+W_DEPTH_LE6,10734,UVUmo,"Uvula (IX), molecular layer",6,11,957,1,/997/8/512/528/645/957/10734/
+W_DEPTH_LE6,10735,NODgr,"Nodulus (X), granular layer",6,11,968,1,/997/8/512/528/645/968/10735/
+W_DEPTH_LE6,10736,NODpu,"Nodulus (X), Purkinje layer",6,11,968,1,/997/8/512/528/645/968/10736/
+W_DEPTH_LE6,10737,NODmo,"Nodulus (X), molecular layer",6,11,968,1,/997/8/512/528/645/968/10737/
+W_DEPTH_LE6,304325711,retina,retina,1,1,997,1,/997/304325711/
+W_DEPTH_LE6,484682512,scwm,supra-callosal cerebral white matter,2,2,1009,1,/997/1009/484682512/
+W_DEPTH_LE6,484682516,ccb,"corpus callosum, body",4,9,776,1,/997/1009/983/776/484682516/
+W_DEPTH_LE6,484682520,or,optic radiation,4,8,896,1,/997/1009/983/896/484682520/
+W_DEPTH_LE6,484682524,ar,auditory radiation,4,8,896,1,/997/1009/983/896/484682524/
+W_DEPTH_LE6,484682528,stc,commissural branch of stria terminalis,5,9,301,1,/997/1009/991/768/301/484682528/
+W_DEPTH_LE6,549009199,LSS,Lateral strip of striatum,6,8,493,1,/997/8/567/623/477/493/549009199/
+W_DEPTH_LE6,549009203,RPF,Retroparafascicular nucleus,6,9,1100,1,/997/8/343/313/323/1100/549009203/
+W_DEPTH_LE6,549009207,InCo,Intercollicular nucleus,5,8,323,1,/997/8/343/313/323/549009207/
+W_DEPTH_LE6,549009211,MA3,Medial accesory oculomotor nucleus,5,8,323,1,/997/8/343/313/323/549009211/
+W_DEPTH_LE6,549009215,P5,Peritrigeminal zone,6,8,987,1,/997/8/343/1065/771/987/549009215/
+W_DEPTH_LE6,549009219,Acs5,Accessory trigeminal nucleus,6,8,987,1,/997/8/343/1065/771/987/549009219/
+W_DEPTH_LE6,549009223,PC5,Parvicellular motor 5 nucleus,6,8,987,1,/997/8/343/1065/771/987/549009223/
+W_DEPTH_LE6,549009227,I5,Intertrigeminal nucleus,6,8,987,1,/997/8/343/1065/771/987/549009227/
+W_DEPTH_LE6,576073699,VMPO,Ventromedial preoptic nucleus,6,8,141,1,/997/8/343/1129/1097/141/576073699/
+W_DEPTH_LE6,576073704,PeF,Perifornical nucleus,6,8,290,1,/997/8/343/1129/1097/290/576073704/
+W_DEPTH_LE6,589508451,Pa5,Paratrigeminal nucleus,6,8,386,1,/997/8/343/1065/354/386/589508451/
+W_DEPTH_LE6,589508455,VeCB,Vestibulocerebellar nucleus,4,8,519,1,/997/8/512/519/589508455/
+W_DEPTH_LE6,599626923,SCO,Subcommissural organ,5,8,339,1,/997/8/343/313/339/599626923/
+W_DEPTH_LE6,599626927,PDTg,Posterodorsal tegmental nucleus,6,8,987,1,/997/8/343/1065/771/987/599626927/
+W_DEPTH_LE6,606826663,Pa4,Paratrochlear nucleus,5,8,323,1,/997/8/343/313/323/606826663/
+W_DEPTH_LE6,607344830,PN,Paranigral nucleus,5,8,323,1,/997/8/343/313/323/607344830/
+W_DEPTH_LE6,614454277,Su3,Supraoculomotor periaqueductal gray,6,9,795,1,/997/8/343/313/323/795/614454277/

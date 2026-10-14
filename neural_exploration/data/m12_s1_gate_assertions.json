@@ -1,0 +1,133 @@
+{
+  "assertions": [
+    {
+      "claim": "S2 结构表计数（本轮实测）== S2 已落盘件 total_rows（跨节点一致性）",
+      "id": "Z1",
+      "measured": "A1=13709 vs disk=13709",
+      "note": "",
+      "pass_": true
+    },
+    {
+      "claim": "PSU 全表行数 ≥ 10⁶（§2.2 第 460 行 unavailable 条件的第一半）",
+      "id": "Z2",
+      "measured": "A2=16357801",
+      "note": "",
+      "pass_": true
+    },
+    {
+      "claim": "**白名单过滤语义成立**：Σ(逐 id 单独计数) == count(`$in<同一白名单>`)",
+      "id": "Z3",
+      "measured": "Σ=396424 vs $in=396424（n_ids=24）",
+      "note": "不成立 ⇒ 所有白名单过滤计数与由其推出的 ETA 全部 invalid",
+      "pass_": true
+    },
+    {
+      "claim": "白名单层级嵌套 ⇒ 过滤计数单调不减（depth≤2 ⊂ ≤3 ⊂ ≤5 ⊂ ≤6）",
+      "id": "Z4",
+      "measured": "[396424, 1009176, 4185500, 8162198]",
+      "note": "",
+      "pass_": true
+    },
+    {
+      "claim": "`$in[...]`（带方括号）**语法错误**且 `$in...`（逗号列表）成功 —— HTTP 均 200，只有 `success` 字段能区分 ⇒ 「HTTP 200 ≠ 查询成功」",
+      "id": "Z5",
+      "measured": "A14(success=False, msg=line 1, column 73: no viable alternative at input \"2\"\nmodel:) / A15(success=True, total_rows=38626)",
+      "note": "",
+      "pass_": true
+    },
+    {
+      "claim": "复现 B1 表 `S1-03` 的同 URL 响应：bytes == B1 记录值 且 total_rows == 0 ⇒ 该行是**空结果信封**（B1 却记 verdict=REACHABLE / missing_dimension=无）",
+      "id": "Z6",
+      "measured": "本轮 bytes=85 vs B1 表 bytes=85｜total_rows=0｜success=True",
+      "note": "B1 表**无 total_rows 列** ⇒ 「白名单过滤后行数」在该表里没有落点（§3 缺口）",
+      "pass_": true
+    },
+    {
+      "claim": "T5 语义锚：单实验整件 CSV 解析行数 == 计数查询行数（2574）",
+      "id": "Z7",
+      "measured": "解析=2574 vs 计数=2574",
+      "note": "",
+      "pass_": true
+    },
+    {
+      "claim": "重跑确定性（清单 §2.5 条件④）：同一 URL 两次取数 sha256 一致",
+      "id": "Z8",
+      "measured": "True｜3b882148a1d47a3a",
+      "note": "",
+      "pass_": true
+    },
+    {
+      "claim": "该端点**忽略 Range**：带 `-r 0-1023` 的请求实际返回**完整对象**（B1 落盘字节 == E1 无 Range 整件字节，sha256 逐字节一致）",
+      "id": "Z9",
+      "measured": "B1 nbytes=354941 vs E1 bytes=354941｜sha256 一致=True",
+      "note": "⇒ 清单第 579–582 行的 1 MiB Range 吞吐模板在 S1 上**口径不适用**",
+      "pass_": true
+    },
+    {
+      "claim": "大结果集**整件**请求：B2（is_injection=true, 342,475 行）⇒ **HTTP 504 @ TTFB 60.60 s**（服务端生成上限）；B3/B4 登记为**未测**（不重试：上一轮 B3 整件请求实测 936.2 s / 0 字节 = 本机**冻结型挂死**，按 M12-M-01/L24 排除出统计，**不得**读成「无数据」或「链路慢」）",
+      "id": "Z10",
+      "measured": "B2=504(ttfb=60.5s,bytes=132)｜B2/B3 504 判定｜上一轮 B3: 936.2 s/0 B/exit=28",
+      "note": "整件路径已证不行 ⇒ 必须走分页（Z11）",
+      "pass_": true
+    },
+    {
+      "claim": "**服务端分页语法** `rma::options[num_rows$eqN][start_row$eqM]`（每项一个方括号组）可用，且末尾页锚 `start_row = 总行数−500` **恰好返回 500 行**（start_row 语义 == 有序结果的**行偏移**，且与计数自洽）",
+      "id": "Z11",
+      "measured": "最大可取页=10000（实测=True）｜末尾页 parsed=500（期望 500）｜中段页=2000",
+      "note": "页数 × 实测单页墙钟 = 该端点上唯一有效的 ETA 口径",
+      "pass_": true
+    },
+    {
+      "claim": "`is_injection=true` 抽样行**同属一个 sds**，但其 structure_id **不构成单一祖先链**⇒ 「按 sds 取 is_injection=true 反推单一注射源区」**被证伪**",
+      "id": "Z12",
+      "measured": "sds=['170505811']｜structs=[8, 28, 60, 95, 111, 131, 163, 234, 247, 284]｜单链=False",
+      "note": "",
+      "pass_": true
+    },
+    {
+      "claim": "抽样实验的 `is_injection=true` 行数 == 0（且 `success=true`，为**真 0** 而非语法错）⇒ 该布尔列**不是**逐实验常量 ⇒ 源（行）维**未建立**",
+      "id": "Z13",
+      "measured": "same-exp count=0(success=True)｜全表 is_injection=true=342475",
+      "note": "",
+      "pass_": true
+    },
+    {
+      "claim": "实测吞吐（**有效页**上的多轮中位）可得；`bytes/row` 由整件实测得出",
+      "id": "Z14",
+      "measured": "中位=275148.0 B/s｜有效轮=[340954.0, 275148.0, 251157.0]｜bytes/row=137.895",
+      "note": "",
+      "pass_": true
+    },
+    {
+      "claim": "本工具**只用标准库**（无 torch / 无 MPS / 无 GPU；R34：既非引擎侧也非评估器侧）、且**零** `sys.executable` 用法（AST 级检查，非字符串匹配）",
+      "id": "Z15",
+      "measured": "imports=['argparse', 'ast', 'collections', 'csv', 'datetime', 'hashlib', 'json', 'os', 'subprocess', 'sys', 'time']｜sys.executable 出现次数=0",
+      "note": "MPS 由主 agent 的 M11 作业独占（本节点的硬约束）",
+      "pass_": true
+    },
+    {
+      "claim": "白名单预注册件**确定性可重生成**（重跑 sha256 一致）",
+      "id": "Z16",
+      "measured": "sha=3ae89b1d09c156e7",
+      "note": "",
+      "pass_": true
+    },
+    {
+      "claim": "产物表非空且 spec 无重复（主表每 spec 一行）",
+      "id": "Z17",
+      "measured": "reach=35｜syntax=9｜thru=4｜integ=13",
+      "note": "",
+      "pass_": true
+    },
+    {
+      "claim": "四态裁决由**预注册条件**推出（非自选），且触发条件可回读",
+      "id": "Z18",
+      "measured": "pass ← 第 460 行 pass 条件至少一支满足：实测吞吐 ≥ 200 KB/s(实测 275148.0)",
+      "note": "",
+      "pass_": true
+    }
+  ],
+  "n": 18,
+  "n_pass": 18,
+  "utc": "2026-10-14T01:21:40Z"
+}

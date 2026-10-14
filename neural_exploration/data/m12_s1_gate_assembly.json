@@ -1,0 +1,128 @@
+{
+  "ETA_1experiment_s": 1.2900002907526131,
+  "ETA_full_h": 2.2772131621852485,
+  "ETA_full_s": 8197.967383866895,
+  "T4_gate": [
+    {
+      "ETA_min": 2.619333333333333,
+      "limit_min": 30.0,
+      "obj": "最小族白名单对象（W_DEPTH_LE2，396,424 行；**分页口径**）",
+      "pass_": true,
+      "rule": "§2.3 T4 行 434：ETA_对象 > 30 min ⇒ unavailable（吞吐限制）"
+    },
+    {
+      "ETA_h": 2.2772131621852485,
+      "limit_h": 4.0,
+      "obj": "全表（**估计** 2.26 GB @ 实测中位吞吐）",
+      "pass_": true,
+      "rule": "§2.3 T4 行 434：ETA_总计 > 4 h ⇒ unavailable（吞吐限制）"
+    },
+    {
+      "ETA_min": 53.49988333333333,
+      "limit_min": 30.0,
+      "note": ">30 min ⇒ 按第 434 行需**主 agent 托管作业 + 断点续传**（不是 unavailable）",
+      "obj": "W_DEPTH_LE6（586 区）",
+      "pass_": false,
+      "rule": "§2.3 T4 行 434 的**档位依赖**：586 区白名单对象（8,162,198 行）分页 ETA"
+    }
+  ],
+  "bytes_per_row_csv": 137.8947163947164,
+  "clause_460": [
+    {
+      "cond": "白名单过滤后行数 ≤ 10^5",
+      "measured": 396424,
+      "satisfied": false
+    },
+    {
+      "cond": "实测吞吐 ≥ 200 KB/s",
+      "measured": 275148.0,
+      "satisfied": true
+    }
+  ],
+  "clause_460_unavailable": {
+    "both": false,
+    "measured_rows": 16357801,
+    "measured_speed": 275148.0,
+    "rows_ge_1e6": true,
+    "speed_le_16KBps": false
+  },
+  "degradation_paths": {
+    "p1_region_family": {
+      "note": "族白名单（depth≤2 的 24 个 / depth≤3 的 85 个）行数为实测",
+      "rows_W_DEPTH_LE2": 396424,
+      "rows_W_DEPTH_LE3": 1009176
+    },
+    "p2_seed_experiments": {
+      "bytes_per_experiment": 354941,
+      "experiments_measurable": true,
+      "note": "单实验整件 CSV 的字节数与行数为实测（B1/A8）",
+      "rows_per_experiment": 2574
+    },
+    "p3_literature": null,
+    "p4_distance_kernel": null
+  },
+  "estimated_bytes": {
+    "W_DEPTH_LE2_csv_bytes": 54664775,
+    "W_DEPTH_LE3_csv_bytes": 139160038,
+    "W_DEPTH_LE5_csv_bytes": 577158335,
+    "W_DEPTH_LE6_csv_bytes": 1125523978,
+    "full_table_csv_bytes": 2255654329
+  },
+  "four_state": {
+    "trigger": "第 460 行 pass 条件至少一支满足：实测吞吐 ≥ 200 KB/s(实测 275148.0)",
+    "verdict": "pass"
+  },
+  "obj_B1_bytes": 354941,
+  "obj_B1_rows": 2574,
+  "obj_B3_bytes": null,
+  "paged_ETA": {
+    "W_DEPTH_LE2": {
+      "ETA_min": 2.619333333333333,
+      "ETA_s": 157.16,
+      "T4_pass": true,
+      "needs_managed_job": false,
+      "page_wall_s": 3.929,
+      "pages": 40,
+      "rows": 396424
+    },
+    "W_DEPTH_LE3": {
+      "ETA_min": 6.613816666666667,
+      "ETA_s": 396.829,
+      "T4_pass": true,
+      "needs_managed_job": false,
+      "page_wall_s": 3.929,
+      "pages": 101,
+      "rows": 1009176
+    },
+    "W_DEPTH_LE5": {
+      "ETA_min": 27.437516666666667,
+      "ETA_s": 1646.251,
+      "T4_pass": true,
+      "needs_managed_job": false,
+      "page_wall_s": 3.929,
+      "pages": 419,
+      "rows": 4185500
+    },
+    "W_DEPTH_LE6": {
+      "ETA_min": 53.49988333333333,
+      "ETA_s": 3209.993,
+      "T4_pass": false,
+      "needs_managed_job": true,
+      "page_wall_s": 3.929,
+      "pages": 817,
+      "rows": 8162198
+    }
+  },
+  "paged_ETA_basis": "页数(40 = ceil(396424/10000)) × 实测最大单页墙钟(3.93 s) —— 因为该端点**忽略 Range** 且大结果集 **504**，「总字节 / 链路吞吐」在 S1 上**不适用**",
+  "rows": {
+    "W_DEPTH_LE2": 396424,
+    "W_DEPTH_LE3": 1009176,
+    "W_DEPTH_LE5": 4185500,
+    "W_DEPTH_LE6": 8162198,
+    "full": 16357801,
+    "rows_per_experiment": 2574,
+    "source_rows": 342475
+  },
+  "speed_Bps_median": 275148.0,
+  "utc": "2026-10-14T01:21:40Z"
+}

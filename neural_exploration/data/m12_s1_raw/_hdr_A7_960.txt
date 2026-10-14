@@ -1,0 +1,18 @@
+HTTP/2 200 
+date: Wed, 14 Oct 2026 00:32:22 GMT
+content-type: application/json; charset=utf-8
+set-cookie: AWSALB=fyYFja7PgQk9P/1PTWZFSV5YYjACjaFTOZDoQtHsskUIwRITTB0XxFfJ2VBZZIW3rOUi5mjAudxB/rpxh+3zco6DRLMY+dPJ1CXvcApFXZvdBdBJ/N/q1IjvABSg; Expires=Wed, 21 Oct 2026 00:32:22 GMT; Path=/
+set-cookie: AWSALBCORS=fyYFja7PgQk9P/1PTWZFSV5YYjACjaFTOZDoQtHsskUIwRITTB0XxFfJ2VBZZIW3rOUi5mjAudxB/rpxh+3zco6DRLMY+dPJ1CXvcApFXZvdBdBJ/N/q1IjvABSg; Expires=Wed, 21 Oct 2026 00:32:22 GMT; Path=/; SameSite=None; Secure
+server: Apache
+cache-control: max-age=0, private, must-revalidate
+access-control-allow-origin: *
+access-control-max-age: 1728000
+x-request-id: 07e494f435f7fb3fa0ae9ecec7db7dc5
+access-control-allow-methods: POST, GET, OPTIONS
+x-ua-compatible: IE=Edge,chrome=1
+x-runtime: 0.071480
+x-rack-cache: miss
+x-powered-by: Phusion Passenger 5.0.21
+etag: "74f8442ffd90f7d167cc9a119e6f9bfd"
+status: 200 OK
+

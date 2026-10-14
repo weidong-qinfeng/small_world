@@ -1,0 +1,1 @@
+{"success": false, "id": -1, "start_row": 0, "num_rows": 0, "total_rows": 0, "msg": "line 1, column 73: no viable alternative at input \"2\"\nmodel::ProjectionStructureUnionize,rma::criteria[structure_id$in[16997,1,2]],rma::options[count$eqtrue]\n-------------------------------------------------------------------------^"}
