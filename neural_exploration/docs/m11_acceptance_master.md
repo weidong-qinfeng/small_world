@@ -5764,3 +5764,27 @@ B-6 已把它列为「查无依据」，且指出「**M12 行连口径域（spik
 3. **`(b)` 的判定已收缩为"`rho` 落在哪个严格区"**，而唯一缺口是**指示剂的单脉冲 `DeltaF/F` 幅度**——**这是一个需要文献/实验证据的标量，不是需要跑仿真的问题**。
 
 **⇒ 本次未运行仿真、未用 MPS、未联网下载、未改任何已登记 sha 的文件**（只读 + 追加本裁决；把在途文档**留到节点完工后**才验收 —— 其 sha 在验收前由 `7cbab758…` 变为 `cf9c0fbd…`，**证明"不验收在途版本"这条纪律本次确实拦到了东西**）✓
+
+
+# 3gd. R192：`rho` 的决定性缺口 —— **文献路径本次失败（如实登记）** ⇒ **改走"从数据自身测 `A`"这条路**
+
+## ① 文献路径：**两次检索，均未取得可引用的数值**（如实登记，不得凭印象填）
+
+- 第 1 次（3 条查询：MICrONS 指示剂 / GCaMP6f 单脉冲 `DeltaF/F` 幅度 / 幅度-噪声检测阈）⇒ 返回 8 条来源链接，**均为 PDF 落地页，无可提取的数值文本**；
+- 第 2 次（MICrONS 功能成像指示剂 / GCaMP6s 单脉冲幅度与 `tau` / GCaMP6s vs 6f 单动作电位响应）⇒ 同样**只有链接**。命中了**正题论文**（[eLife 51675「Relationship between simultaneously recorded spiking activity and fluorescence signal in GCaMP6 transgenic mice」](https://journal.test.elifesciences.org/download/aHR0cHM6Ly9jZG4uZWxpZmVzY2llbmNlcy5vcmcvYXJ0aWNsZXMvNTE2NzUvZWxpZmUtNTE2NzUtdjEucGRmP2Nhbm9uaWNhbFVyaT1odHRwczovL2pvdXJuYWwudGVzdC5lbGlmZXNjaWVuY2VzLm9yZy9hcnRpY2xlcy81MTY3NQ--/elife-51675-v1.pdf?_hash=VGIFKhSskD8R1wFtpl3Pyq7Mw38DoUrwRuWoDTJFZwQ%3D)，其摘要级内容含「SNR 与单脉冲事件能否与零脉冲区分」；以及 [biorxiv 788802 同题](https://www.biorxiv.org/content/biorxiv/early/2019/10/01/788802.full.pdf?__cf_chl_tk=DLom1_OBvRcrtDBw7hC67ulg875fXZV5yYB1wQEt1Sk-1778299114-1.0.1.1-lCTBHShBDIs0aKJ62eJE7lsf3DXhUFB6tTiPjMjH4mU&_x_output_type_b6db407c4_=embedded_pdf#4#1)、[MICrONS 数据源](https://www.biorxiv.org/content/10.1101/2022.05.24.493230v4.full.pdf#4#3)）。
+- **⇒ 我**没有**取得任何一个可用于填 `A` 的数值** ⇒ 按本项目纪律（**不得凭印象、不得编造出处**），**`A` 仍只能标"仅工程默认 `0.15`"(M10)**，`(b)` 的 `rho` **不能靠文献填**。
+- **⇒ 纪律适用**：**检索"命中正题论文"≠"取得数值"**；**"找到了来源"不得写成"找到了依据"**（与"可达 ≠ 已取 ≠ 可用"同族）。
+
+## ② ⇒ 改走的数据路径：**`A` 可以在数据侧直接测**（这是本条的核心裁决）
+
+**关键观察**：`rho = thr / A` **不必跨口径**。数据侧**同时拥有**：
+- `thr` = **已在手**（`event_threshold_dff = 1.578470`，field4，出处 `data/m12_b5_roi_mask/m12_b5_roi_mask_audit.json`）；
+- `A` = **同一 dF/F 约定下**的"单脉冲等效事件幅度" ⇒ **可由数据本身估计**：在**孤立事件**（时间上与其它事件相隔 `>= 2 tau`）上取**峰幅值**分布 ⇒ 其**低分位/众数**即为 `A` 的估计。
+**⇒ ⇒ 于是 `rho_data = thr / A_data` 是**同一约定内的两个量之比**，绕开了 R191 的 A1"标度不可通约"** ✓
+**桥接假设（须显式登记）**：若桥按 R191 裁决 ② 的规则把仿真 dF/F 标定到数据侧统计量（`median 0.423285`/`MAD 0.385062`），则 **`rho_sim ≈ rho_data`** ⇒ 可用 `rho_data` 去查 R190 的决断地图。
+
+**⇒ 因此新任务（不需要文献、不需要仿真、不需要 MPS）**：在数据侧**预注册**一个 `A` 估计器并测之 ⇒ 得 `rho` 的**点估计与区间** ⇒ 直接落到决断地图的四区之一。
+
+**🔴 预注册纪律（本任务的头号风险）**：估计器（孤立事件的判据、`tau` 取值、取低分位还是众数、子窗与 ROI 集合）**必须在看结果之前冻结**；**严禁**为了让 `rho` 落进 `(4,5]` 而调估计器；**必须**报告对估计器选择与参数选择的**全部敏感性**。
+
+**⇒ 本次未运行仿真、未用 MPS、未下载任何文献全文（仅用检索工具，且未取到数值）、未改任何已登记 sha 的文件** ✓
