@@ -1,0 +1,242 @@
+{
+  "generated_by": "规划节点 node A（子agent）；清单 = docs/m11_caliber_bridge_checklist.md",
+  "generated_at": "2026-10-15",
+  "artifact": "m11_caliber_bridge_prereg",
+  "status": "draft_pending_mainagent_freeze",
+  "status_note": "★ 本文件是**草案**：主 agent 冻结后须把 status 改为 \"frozen\"、写入 frozen_at 与 frozen_sha256（自引用 sha 可由 `shasum -a 256` 在冻结后登记在**另一处**，不得写回本文件以免自指）。**冻结时间戳必须早于任何含桥输出值的产物**（清单 §2.6 R-3）。",
+  "purpose": "为 P5 (b)「钙域静默比例」与 spike 域统计量之间的**口径桥**预注册全部自由参数，使『把钙域的带套到 spike 域统计量上』这一跨口径比较（判据表 L100 已登记为禁令）被一条**有依据、有量级、可复算**的桥替代。",
+  "upstream": {
+    "R183": "docs/m11_acceptance_master.md L5273-5333（跨口径 + 仿真侧无钙域可观测量 = 正演缺件）",
+    "R184": "docs/m11_acceptance_master.md L5336-5386（包含关系下界 ≥，故 (b) = unavailable）",
+    "handoff": "docs/m11_g1_resume_v2.md L129-145（桥是主线；头号风险 = 事后拟合）",
+    "checklist": "docs/m11_caliber_bridge_checklist.md（本预注册的配套实施清单）"
+  },
+  "band_under_test": {
+    "keys": [
+      "silent_frac_calcium_band_lo",
+      "silent_frac_calcium_band_hi"
+    ],
+    "values": [
+      0.101852,
+      0.229885
+    ],
+    "csv_rows": "data/m11_p5_targets.csv L115/L116（final=1, evidence_level=measured；注意两行 value_kind 仍残留 'unavailable'，评估器不读该列，见 checklist §5 的登记提示）",
+    "band_caliber": "钙事件检测域：dF/F 越『中位 + 3·MAD』记 1 次事件，count==0 即静默",
+    "band_window_s": 317.46,
+    "band_window_source": "data/m11_calcium_silent.json L10-12（2000 帧 @ 6.300006 Hz）",
+    "band_origin": "真实 ROI 掩膜重算（field4 = 0.101852 = 44/432；field2 = 0.229885 = 20/87），docs/m12_b5_roi_mask.md L239"
+  },
+  "known_incomparabilities": {
+    "domain": "带 = 钙事件检测域；统计量 = 脉冲计数域。出处：tools/validate_p11_resting.py L369 vs L727/L735；禁令 = 判据表 L100；不可混比 = data/m11_calcium_silent.json L64。",
+    "window": "带 = 317.46 s 观测窗；统计量 = 协议窗 T = 10 s（判据表 L16）。已登记的限制：判据表 L99（『模型侧与数据侧的静默口径天然不同』）+ docs/m12_b5_roi_mask.md L242/§5.2(1)。⇒ 本预注册**不**用桥去『换窗』，而是并列要求数据侧在协议窗上重算带（清单 §4.2 / S2）。",
+    "observable": "仿真侧无钙域可观测量（R183 §②）；本桥产出它。"
+  },
+  "triage_state_frozen_by_this_prereg": {
+    "note": "四态：pass / fail / invalid / unavailable。‘未测 ≠ 未命中’、‘已测 ≠ 可判定’。",
+    "current_b_state_before_bridge": "unavailable",
+    "invalid_conditions": [
+      "检测器身份复现（S1）失败",
+      "尺度不变性自检失败",
+      "包含关系自检失败（silent_frac_calcium < silent_frac_zero_count）",
+      "窗长/时刻跨度自检失败",
+      "产物时间戳早于本预注册冻结时刻"
+    ]
+  },
+  "parameters": {
+    "L0_input": {
+      "value": "逐神经元脉冲时刻（spike times），协议窗 [0, T_ms) ms，T = 10000 ms（阶梯 20000 / 40000 ms 并列）",
+      "provenance": "有出处",
+      "source": "src/mouse_cortex_engine.py L551-556/L820-823（record=\"full\" 返回 (spike_steps, spike_idx)）；src/adult_engine.py L841-847（时间基 = t0_rel + r，step × dt_ms）；判据表 L16/L17",
+      "caveat": "★ 已落盘产物**不含**逐神经元时刻（tools/run_m11_p5_arms.py L755 用的是 record=\"counts\"）⇒ 必须 S3a（预注册替代时刻模型，零新仿真）或 S3b（record=\"full\" 重跑 6 臂，≈0.26 GPU-h / ≈17 min MPS）"
+    },
+    "L1_kernel": {
+      "primary": "单指数 h(t) = exp(-t/tau) * 1[t >= 0]，核尾 20*tau（与登记件逐字一致）",
+      "provenance": "有出处",
+      "source": "tools/validate_p10_equivalence.py L104（k = exp(-arange(0, 20*tau_s/dt_s)*dt_s/tau_s)）",
+      "normalization_convention": "max h = 1（使 A = 单脉冲峰 ΔF/F；见 scale_invariance）"
+    },
+    "L1b_tau_ca_s": {
+      "primary": 1.0,
+      "provenance": "有出处（仓内已登记，且先于本任务存在）",
+      "source": "tools/validate_p10_equivalence.py L32 FORWARD = dict(A=0.15, tau_ca_s=1.0)（自述 M10 §6.1 正向模型，与 M9 L42 同语义）；第二份副本 tools/build_m10_imaging_reference.py L51",
+      "caveat": "★ 该值是在 1.0943 Hz 成像口径/抽象默认下标定的；搬到这里（6.300006 Hz、小鼠皮层）**未核** ⇒ 必须扫（scan_grid.tau_ca_s）。判据表 L36 已把 τ_ca 登记为**未定稿**的口径项。",
+      "data_side_indicator": "查无依据（MICrONS functional 电影的 indicator 在仓内无声明；tools/build_m11_reference.py L451 的 GCaMP6f 属 Allen vc2p NWB，**不得挪用**）"
+    },
+    "L2_amplitude_A": {
+      "primary": 0.15,
+      "provenance": "有出处",
+      "source": "同 L1b_tau_ca_s",
+      "gauge": "★ 尺度规范：因检测阈值由同一批轨迹自洽算出（L5），CaSilent 与 A **无关**。⇒ A 不是自由参数；其数值不参与任何判定。"
+    },
+    "L3_coupling_nonlinearity": {
+      "primary": "线性、无饱和、无 Hill、无适应",
+      "provenance": "有出处",
+      "source": "tools/validate_p9_activity.py L8（『正向模型为理想化线性 GCaMP（无噪声、无运动伪影、无神经域污染）→ 结果登记为上限』）"
+    },
+    "L3b_saturation_scan_only": {
+      "primary": "无",
+      "scan_variants": [
+        "Hill: y = A * x^n / (x^n + Kd^n)，n=2, Kd=2A"
+      ],
+      "provenance": "查无依据（仅工程假设）",
+      "usage_rule": "只作敏感性对照；**不得**作为判定主档"
+    },
+    "L4_noise": {
+      "primary": "无噪声",
+      "provenance": "有出处（登记档自带『无噪声』）",
+      "source": "tools/validate_p9_activity.py L8",
+      "scan_variants": [
+        0.0,
+        0.05,
+        0.1,
+        0.2
+      ],
+      "scan_units": "sigma_noise / A",
+      "provenance_scan": "查无依据（仅工程假设；仓内无任何钙域噪声登记）",
+      "consequence_if_nonzero": "★ 加噪会**破坏**严格界：零脉冲单元可能被噪声抬过阈值 ⇒ 『检测器对真静默单元无误报』假设退化 ⇒ R184 §③ 的不等式与本文定理 1/2 只能写为近似（必须显式登记）。"
+    },
+    "L5_sampling": {
+      "frame_rate_hz": 6.300006,
+      "frame_interval_s": 0.15873,
+      "framing": "帧平均（不是点采样）",
+      "provenance": "有出处（measured）",
+      "source": "data/m11_calcium_silent.json L10-12；判据表 L98；帧化实现 tools/validate_p10_equivalence.py L109-113",
+      "note": "帧平均衰减因子 s(Δ) = (1 - e^{-Δ/τ})/(Δ/τ)；τ=1.0 s、Δ=0.15873 s ⇒ s = 0.92472（复算命令见 checklist 附录 B ④）"
+    },
+    "L6_baseline": {
+      "definition": "F0 = percentile(F, 20, axis = time)（逐单元）；dF/F = (F - F0)/F0；F0 <= 0 ⇒ NaN ⇒ 0",
+      "provenance": "有出处 / 同款",
+      "source": "tools/build_m11_calcium_silence.py L112-115；tools/m12_b5_roi_mask_audit.py L340-343"
+    },
+    "L7_event_detector": {
+      "definition": "thr = median(dF/F) + 3 * MAD(dF/F)，MAD = median(|x - median|)；count_i = #帧 满足 trace_i > thr（越阈帧数，**不做去重/合并**）；silent_i <=> count_i == 0；silent_frac = mean(silent)",
+      "provenance": "有出处 / 同款",
+      "source": "tools/build_m11_calcium_silence.py L116-117（EVENT_SIGMA=3.0 L63）、L125-126；tools/m12_b5_roi_mask_audit.py L344/L376；data/m11_calcium_silent.json L63/L80；判据表 L24",
+      "threshold_is_part_of_caliber": true
+    },
+    "L7b_pooling_scope": {
+      "decision_required": "池化域必须在冻结时写死：仿真侧把『逐像素池化』的对应物定为 **逐神经元轨迹池化**（thr 由『所有单元 × 所有帧』的单元级 dF/F 算出，施加于单元自身轨迹）",
+      "provenance": "同款口径选择（数据侧为 L6 口径：threshold from pixel-level dF/F, applied to unit trace）",
+      "source": "data/m11_calcium_silent.json L80；tools/m12_b5_roi_mask_audit.py L344 vs L376",
+      "warning": "★ 这是**口径选择**而非数值参数，但**必须先写死**，否则同一份脉冲可给出两个不同的静默比例。"
+    },
+    "L8_window": {
+      "primary_ms": 10000,
+      "ladder_ms": [
+        10000,
+        20000,
+        40000
+      ],
+      "provenance": "有出处",
+      "source": "判据表 L16（protocol_T_min_ms=10000）、L17（protocol_T_ladder_ratios=1|2|4）",
+      "aggregation": "逐 seed 算 → 逐臂取中位（与 tools/validate_p11_resting.py L720-726 同聚合方式）"
+    },
+    "L9_timing_model_surrogate": {
+      "primary_if_S3a": "需在冻结时写死：均匀 or 齐次泊松（固定种子），并要求在 S3a 的容差内复现 _poptrace 的时间统计",
+      "provenance": "仅工程假设（**必须**标 provisional）",
+      "adequacy_test": "三项：群体计数的 lag1 自相关、Fano 因子、零箱比例；相对差 <= 5%（容差**先写死**）",
+      "falsifier": "任一项超容差 ⇒ 替代时刻不可用 ⇒ 必须走 S3b；**不得**降低容差迁就"
+    }
+  },
+  "scale_invariance_assertion": {
+    "statement": "对无噪线性档（primary），CaSilent 与 A 无关（阈值由同一批轨迹自洽算出 ⇒ median/MAD/thr/轨迹同倍缩放）。",
+    "mandatory_check_0_1": "以 A=0.15 与 A=0.30 各跑一遍，逐单元 count 必须 np.array_equal ⇒ 否则判 invalid",
+    "source": "checklist §2.4"
+  },
+  "strict_results_to_be_checked_not_assumed": {
+    "definitions": {
+      "rho": "rho := thr / A（无量纲；A 被尺度规范消去 ⇒ 判定的真正自由量）",
+      "s_delta": "(1 - e^{-Delta/tau})/(Delta/tau)",
+      "K": "min{ k : 窗内恰好 k 个脉冲的单元产生 >= 1 次可检测事件 }（仅在计数顺序统计量口径下良定义）",
+      "precondition": "thr > 0（可数值核验）且非负核 max h = 1（⇒ 任何时刻 y_i(t) <= A * k_i）"
+    },
+    "T1_timing_free_lower_bound": "k_i < rho ⇒ 单元必静默 ⇒ CaSilent >= frac(c_i < rho)（严格；不需时刻模型）。rho=1 即退化为 R184 §③ 的 frac(c_i = 0)。",
+    "T2_equivalence": "若 rho_s := thr/(A*s_delta) <= 1，则任何 k_i >= 1 的单元必活跃 ⇒ CaSilent ≡ frac(c_i = 0)（两口径恒等；此处 rho_s <= 1 等价于 thr <= 0.92472*A 当 tau=1.0 s）。⇒ 此时 (b) 不需时刻模型即可判，取值 = spike 域零计数比例。",
+    "T3_strict_fail_upper": "rho > 5 ⇒ CaSilent >= frac(c_i < 6) = 0.453003（G1 工作点实测，三 seed 一致）> 带的上界 0.229885 ⇒ (b) 严格 fail（不需时刻模型）。",
+    "T4_strict_fail_lower": "rho <= s_delta（即 rho_s <= 1）⇒ CaSilent = 0.000122 << 带的下界 0.101852 ⇒ (b) 严格 fail。",
+    "undetermined_zone": "rho ∈ (0.925, 5] ⇒ 严格界不足以判定；必须有时刻模型实测。其中 rho ∈ (4,5] 的严格下界已落带（0.222412），距带上界仅 3.25% ⇒ 落带要求时刻抬升 <= 3.25%，窗口极窄。",
+    "usage_rule": "严格区（T3/T4）的 verdict **不因敏感性扫描而翻转**，报告中须与『模型判定的 fail』分列。",
+    "source": "checklist §3.2/§3.3/§3.4/§3.5；实测输入 = data/m11_p5_l4_0_runs/l4_g0.35_8192_T10000ms_d{0.0,1.0}_s{0,1,2}_counts.csv"
+  },
+  "scan_grid": {
+    "tau_ca_s": [
+      0.1,
+      0.15,
+      0.2,
+      0.5,
+      1.0,
+      2.0
+    ],
+    "tau_provenance": "1.0 = 有出处（仓内登记档）；0.1/0.15/0.2 = GCaMP6f 档 **literature_unverified（本节点未联网未核）**；0.5/2.0 = 内插/GCaMP6s 档 **literature_unverified**",
+    "noise_sigma_over_A": [
+      0.0,
+      0.05,
+      0.1,
+      0.2
+    ],
+    "noise_provenance": "0.0 = 有出处（登记档无噪）；其余 = 查无依据（仅工程假设）",
+    "kernel": [
+      "single_exp",
+      "double_exp(rise_tau=0.05s)"
+    ],
+    "kernel_provenance": "single_exp = 有出处；rise_tau = 查无依据（仅工程假设）",
+    "saturation": [
+      "none",
+      "hill(n=2,Kd=2A)"
+    ],
+    "saturation_provenance": "none = 有出处；hill = 查无依据（仅工程假设）",
+    "timing_model": [
+      "exact(S3b)",
+      "uniform(S3a)",
+      "poisson(S3a)"
+    ],
+    "T_ms": [
+      10000,
+      20000,
+      40000
+    ],
+    "seed": [
+      0,
+      1,
+      2
+    ],
+    "reporting": "★ 全格必报（行数 == 笛卡尔积）；报告 min/中位/max 与『落带格数 / 总格数』；**不得只报最好一格**"
+  },
+  "decision_rules": {
+    "R1": "唯 primary（登记档：single_exp + tau=1.0 + 无噪 + 无饱和 + pooling 同款 + T 阶梯）的 verdict 可作为 (b) 的『候选结论』；扫描档只用于稳健性。",
+    "R2": "若 primary 与全部扫描档方向一致（全落带 ⇒ pass；全不落带 ⇒ fail）⇒ 采信该结论。",
+    "R3": "若『能撞进带、也能撞出带』⇒ (b) 判 unavailable（口径不稳）；**不得**挑一个能通过的参数宣布通过。",
+    "R4": "若 primary 落带内但扫描有格落带外 ⇒ unavailable。",
+    "R5": "若 primary 落带外且全格落带外 ⇒ 这才是 (b) 的真失败（fail）。",
+    "R6": "严格区（T3/T4）命中 ⇒ 直接 fail，且该 fail 不因扫描翻转。",
+    "R7": "参数缺 / 产物缺 / 桥未建 / 跨口径或跨窗 ⇒ unavailable；实现自检失败 ⇒ invalid。",
+    "R8": "S3a 替代时刻路线的产物只标 provisional，不得进 (b) 的最终四态（除非 S3a 的适配性检验通过**且**主 agent 明确接受该假设）。"
+  },
+  "prohibitions": [
+    "禁止事后拟合：任何为使 (b) 落带而调整的参数（含 tau / 噪声 / 饱和 / pooling / 窗 / 时刻模型种子）不得用于判定，且必须显式标红。",
+    "禁止修改任何已登记 sha 的文件：data/m11_p5_targets.csv（sha 0991808242fd85481e8ea907e453ef3b7c8d7c0dedbfda288910ea9b644f3871）、data/m11_calcium_silent.json、data/m12_b5_roi_mask/*、任何 *plan*.json、任何 src/*.py、任何既有 tools/*.py、docs/m11_acceptance_master.md（只允许主 agent 追加）。需改 ⇒ 出建议件。",
+    "禁止用桥去『换窗』（即用 317.46 s 的桥输出与 317.46 s 的带比较来回避协议窗）；窗不齐必须用数据侧重算（S2）解决。",
+    "禁止把 A 当自由参数；禁止用未核常识（如『MICrONS 常用 GCaMP6s/f』）定 tau。",
+    "禁止提高背景驱动去命中判据（docs/m11_b3_g1_design.md L146）。",
+    "禁止只报敏感性扫描的最好一格；禁止隐藏 primary 与扫描档的分歧。",
+    "禁止运行仿真 / 触碰 MPS（除 S3b 经主 agent 授权并排队）；禁止联网。"
+  ],
+  "required_outputs": [
+    "neural_exploration/data/m11_caliber_bridge/s4_1_detector_identity.json",
+    "neural_exploration/data/m11_caliber_bridge/s4_2_window_recompute.json",
+    "neural_exploration/data/m11_caliber_bridge/proposed_p5b_window_rows.csv",
+    "neural_exploration/data/m11_caliber_bridge/s3a_timing_adequacy.json",
+    "neural_exploration/data/m11_caliber_bridge/strict_bounds.json",
+    "neural_exploration/data/m11_caliber_bridge/s6_sensitivity_grid.csv",
+    "neural_exploration/data/m11_caliber_bridge/s6_summary.json",
+    "neural_exploration/data/m11_caliber_bridge/proposed_p5b_verdict.json",
+    "neural_exploration/docs/m11_caliber_bridge_report.md"
+  ],
+  "did_not_do": [
+    "未运行任何仿真",
+    "未使用 MPS / GPU",
+    "未联网",
+    "未修改任何已有文件（本文件与 docs/m11_caliber_bridge_checklist.md 均为新建）",
+    "未计算、未记录任何『桥的输出值』（预注册纪律 R-7：防污染）"
+  ]
+}
