@@ -4183,3 +4183,23 @@ R139/R140 的结论是"**(a) 与 (c) 在 `bias` 轴上严格同向单调、方�
 **⇒ 🔴 关键：`protocol_drive_rate_hz` **在 `final=0` 行里**** —— 即 **R117 的教训（"决定判据取值的口径常数在 103 行里从未登记"）被作为**必须登记项**落实了** ✓✓
 （同批 `final=0` 还有 `protocol_T_main_s`/`settle_ms`/`bin_wide_ms`/`smooth_window_frames`/`drive_dose_grid`/`self_sustain_ratio_max`/`silent_frac_band`/`drive_elasticity_min`/`target_p5b_ratio_window`/`protocol_p6a_rho_min`/`protocol_acc_min` 等）
 **⇒ 仍待我逐条验收的**：三个闸门的**负向测试实测输出**、`final=0` 各行"会让哪个判据 `unavailable`"的对照、以及"清单有但表里没有"的清单（**哪怕为空也要明写**）。
+
+## 3ei. R145：✅ **L4 事前预注册的谱系与结构验收通过**（我方独立核对 sha 链）
+
+**① 谱系（我实测核对，非采信自述）**
+| 项 | 值 | 我的核对 |
+|---|---|---|
+| `amendment_id` | `M11-PREREG-AMD-L4-MECHANISM` | — |
+| **直接父件** | `data/m11_prereg_amend_r118_l3_grid_v2.json`，sha `942056b5f5b02d504069a704d3d65bead599b2975f6253e67c474987b0ca54e4` | ✓ **与实测一致** |
+| **祖父根件** | `data/m11_p5_lever_prereg.json`，sha `9c6f7c60073ee07e1f48aee787040f16d24aa0efaf67b4cf65f98d2e263c6644` | ✓ **与实测一致** |
+| `status` | "**事前登记**（L4 跑臂之前；本文件为**新增文件**，不修改任何父预注册；父/祖父文件**逐字节不变**，本文件只引用其 sha256）" | ✓ **符合 R118/R109 的 append-only 修订模式** |
+| 结构键 | `amendment_id / status / declared_at / declared_by / supersedes / companion_doc / parent_prereg / grandparent_prereg / frozen_references_not_modified / authority / why_amended / grid / measurement_definitions / falsifiers / unchanged / structural_dependencies` | ✓ 齐备 |
+**② 它自己做了独立复现（予采信）**：`why_amended.l3_failed_structurally` 声明它**从 `data/m11_p5_l3_report.csv` 亲算**，
+各格 `R = 0.295987 / unavailable / 0.238910 / 0.732202 / 0.909291`、`a_median_hz = 0.3 / 0.3 / 0.5 / 0.6 / 0.8`
+⇒ **与 R139 的表逐位一致** ⇒ **我的判定被第三方从原始产物复算确认** ✓
+**（这是本项目"验收 = 复跑/复核"的正确形态：不是采信节点的话，而是看它能不能从原始产物重算出同一个数。）**
+**③ 仍待我逐条验收的（登记，不要漏）**：
+- `falsifiers` 的**具体条目**（是否可判定、是否避免"构造上必然通过/必然失败"）；
+- `grid` 的**档位与臂数**、**按档取价的预算**（R112 §⑤）、**排序理由**；
+- `measurement_definitions` 里的 **`Sel`（选择比）定义**与 **`L4-0 天梯`** 的操作化；
+- **`structural_dependencies`** 是否含 **`(b)`/`tension` 那条**（G1 即便有工作点也可能因 `tension=unavailable` 而不可判 —— R140 §③ 遗留下来待裁决的问题）。

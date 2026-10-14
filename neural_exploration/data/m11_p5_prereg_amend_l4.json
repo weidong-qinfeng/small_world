@@ -1,0 +1,286 @@
+{
+  "amendment_id": "M11-PREREG-AMD-L4-MECHANISM",
+  "status": "**事前登记**（L4 跑臂之前；本文件为**新增文件**，不修改任何父预注册；父/祖父文件逐字节不变，本文件只引用其 sha256）",
+  "declared_at": "2026-10-14（M11 · L4 规划节点）",
+  "declared_by": "M11 · L4 规划节点（**只做 planning + 静态检查；未跑任何臂、未使用 MPS、未 kill 任何进程**）",
+  "supersedes": "**无** —— 本文件不取代 `M11-PREREG-AMD-R118-L3-GRID-V2`；L4 是 L3 失败（R139/R140）之后**新开的机制轴**。L3 网格与其判定结论**继续有效且逐字保留**。",
+  "companion_doc": {
+    "file": "neural_exploration/docs/m11_l4_mechanism_plan.md",
+    "note": "候选清单、逐条机制论证、直接/间接分量、读码行号、成本算式、未确认项、纪律自检全部在该文档内。本 JSON 只承载**可被机器读的预注册内容**。"
+  },
+
+  "parent_prereg": {
+    "file": "neural_exploration/data/m11_prereg_amend_r118_l3_grid_v2.json",
+    "sha256": "942056b5f5b02d504069a704d3d65bead599b2975f6253e67c474987b0ca54e4",
+    "note": "直接父件（L3 网格 v2 事前修订）。**本节点未修改它。**"
+  },
+  "grandparent_prereg": {
+    "file": "neural_exploration/data/m11_p5_lever_prereg.json",
+    "sha256": "9c6f7c60073ee07e1f48aee787040f16d24aa0efaf67b4cf65f98d2e263c6644",
+    "note": "杠杆预注册根件（R118 亦引用此哈希）。**本节点未修改它。**"
+  },
+  "frozen_references_not_modified": {
+    "l3_plan": {
+      "file": "neural_exploration/data/m11_p5_plan_l3.json",
+      "sha256": "4aab49b00177a22e21f65b884bd29d95a8e7333e76cb109ae8fcd8bb9bd94615"
+    },
+    "l3_report_csv": {
+      "file": "neural_exploration/data/m11_p5_l3_report.csv",
+      "sha256": "c0c407943bae7eb0de2f432effae5b04fe07a80975548ba954ec090d655ae87b"
+    },
+    "l3_report_json": {
+      "file": "neural_exploration/data/m11_p5_l3_report.json",
+      "sha256": "a3cf7453e6fb4477edc03042365e87393167ec8d699c407cdb92f3a889314656"
+    },
+    "producer": {
+      "file": "neural_exploration/tools/run_m11_p5_arms.py",
+      "sha256": "633a4c458e9c1dd58e5d6c4838a205819a9424fbd49df9da8827c8b7bd42285b",
+      "lines": 894
+    },
+    "evaluator": {
+      "file": "neural_exploration/tools/validate_p11_resting.py",
+      "sha256": "0d3c1d990dfe707720ec316b57ae2bb699181dae0d87042c920638ed9a4c48f3",
+      "lines": 1649
+    },
+    "targets_csv": {
+      "file": "neural_exploration/data/m11_p5_targets.csv",
+      "sha256": "8ed7f0e1aeee1a29a3b6516efc796a2a3bbffc7babc0491488f616a8ae7a9ba8"
+    },
+    "engine": {
+      "file": "neural_exploration/src/mouse_cortex_engine.py",
+      "sha256": "90c02b37d922d7ac9aefd78023c7db23a2fcd8a70147c1b226b5e9b7a7a9dc34"
+    },
+    "circuit": {
+      "file": "neural_exploration/src/mouse_cortex_circuit.py",
+      "sha256": "a78013aabedc5c10f450a8113584d3edcab6efb7fce5b490a1d75ef63a6880bd"
+    },
+    "stp_provider": {
+      "file": "neural_exploration/src/larval_zf_engine.py",
+      "sha256": "5cb7c456e9097a050799ef77ccac30d95d9093a50c96df5bba9b1eeab7a5044d"
+    },
+    "g1_design": {
+      "file": "neural_exploration/docs/m11_b3_g1_design.md",
+      "sha256": "44e937882620258ce23e5f2b974fcc0ec78955e4b6f066004ac914ebf83ae26b"
+    },
+    "l0_plan": {
+      "file": "neural_exploration/data/m11_p5_plan_l0.json",
+      "sha256": "011a7c797360a0bdcee1b03c2d7e73a18a676a51a8dfd255e0b7141f3506c821"
+    },
+    "acceptance_master": {
+      "file": "neural_exploration/docs/m11_acceptance_master.md",
+      "sha256": "4edc9ed6d3b8f8a8977cee7a5cf9a358b62d4d9b24b005d3f76a0d65816fb2d6",
+      "lines": 4138,
+      "note": "**该文件在本节点工作期间被并发追加**（读到时 4082 行 → 复读 4138 行；新增 `## 3ee. R141`、`## 3ef. R142`，全部追加在文件尾部）。本节点**未写入**该文件。本预注册引用的 §3cz–§3ed 行号在 4138 行修订下有效（尾部追加不产生位移）。"
+    }
+  },
+  "authority": [
+    "R139（docs/m11_acceptance_master.md §3ec）：L3 定案 —— 全网格失败，(a) 与 (c) 在 bias 轴上严格同向单调、方向相反、无交点",
+    "R140（§3ed）：G1 定稿 = 未通过（结构性原因）⇒ 必须引入改变「活动生成机制本身」的机制，不能只调参数",
+    "R130（§3du）：T=1 s 短窗把「点火延迟」误读为「被消除」（84×）⇒ 不得用 T≤1 s 推断任何率/比值/阈值",
+    "R115（§3df）：(c) 是窗口 pooled_zero_drive ∈ [300, 0.10×pooled_baseline]，不是极限；unavailable 陷阱",
+    "R114（§3de）：(a) 的自变量是 active_frac",
+    "R113（§3dd）/ R110（§3da）：C1 慢适应为纯抑制型 ⇒ 对 (a) 无直接正作用；C2 若试必须显式测「选择比」",
+    "R111（§3db）纪律第六十条：机制方向论证必须区分直接分量与间接分量",
+    "R124（§3do）：(e) 必须只在基准臂上判",
+    "R112（§3dc）§⑤：预算必须按档取价，不得用最低档单价外推",
+    "R142（§3ef）纪律第七十三条：「单调 ⇒ 无交点」是未经证明的推论"
+  ],
+
+  "why_amended": {
+    "l3_failed_structurally": "L3 定案（本节点从 data/m11_p5_l3_report.csv 亲算复现，与 R139 表逐位一致）：A0/C0/C1/C2/C3 的 R = 0.295987 / unavailable / 0.238910 / 0.732202 / 0.909291；a_median_hz = 0.3 / 0.3 / 0.5 / 0.6 / 0.8 ⇒ 5/5 格双目标零命中，ρ(a,R) = +1.0。",
+    "a_is_not_binding_at_the_working_cell": "**本节点对 R139/R140 的重述（不改变结论，改变目标函数）**：在 bias ≥ 1.30 上 (a) 侧已满足且饱和 —— C2/C3 的 cfg_a_active_frac = 1.000000（四亚型逐个 1.0000）。⇒ **工作点格上的绑定约束只有 (c) 一条**。",
+    "required_suppression_factor": "C2 格：Z/Z0 ≤ 0.10*B0/Z0 = 15752.2/115338 = 0.13657（≥7.3× 压制）；C3 格：20009.1/181941 = 0.1100（≥9.1× 压制）。同时只许损失中位率 0.6→0.5（−16.7%）⇒ 工作点阈值 Sel ≥ 5.2。",
+    "new_structural_fact_1_external_drive_bypasses_stp": "外部事件投递直接写环槽（mouse_cortex_engine.py L750–759 / L775–780），**不经** _deliver_step / _apply_stp_and_deliver（L877–890 / L936–949）；外部事件幅度为 rng.uniform(17,23)（run_m11_p5_arms.py L148），与任何权重缩放无关 ⇒ 「压递归、保驱动」的直接楔子在代码上结构性存在。",
+    "new_structural_fact_2_gmax_halfspace_unmeasured": "遍历 17 份 data/m11_p5_plan_*.json：gmax_scale 仅出现在 {1.0: 26, 2.0: 8, 4.0: 8}（均在 L0 计划）⇒ **gmax_scale < 1.0 从未被测**（R110 §③ 单侧扫描的第五个实例）。测得 >1 侧锚（T=10 s、4 实现、bias=1.0、σ=0.30、dose=0）：gmax=1.0 ⇒ 35,053；gmax=2.0 ⇒ 244,742 ⇒ **×6.98**。",
+    "new_structural_fact_3_gmax_gt1_baseline_missing": "gmax=2.0 的**基准臂在盘上不存在**（data/m11_p5_l0_runs/ 仅 4 个 g2.00 零驱动臂；g4.00 臂 0 个）⇒ gmax 轴 >1 侧的**选择性亦未测**。",
+    "new_structural_fact_4_type_specific_connectivity_absent": "mouse_cortex_circuit.py L99–105：每条边的类 cls 逐突触随机抽样，与突触前 s、突触后 post 的类型**均无关**；L94–96 突触前按层抽取、不看类型；L80 的 is_inh 计算后从未使用；三类抑制 e_rev 全为 −80 mV 且无符号翻转（mouse_cortex_engine.py L219–221）⇒ **VIP→SST 去抑制（清单 C-4）在当前夹具上构造上不可能实现** ⇒ 需新夹具（开发 + 全锚点重标定）。",
+    "new_structural_fact_5_fixture_levers_unreachable": "run_m11_p5_arms.py L123–124 的夹具白名单仅含 (indegree, gmax_scale, bias_scale, bias_log_mean, bias_log_sigma)，L134 以 **net_kw 装配 ⇒ gmax_band / inh_frac / sub_frac 在 P5 生产者链上**不可达**（grep tools/*.py 零命中）。⇒ docs/m11_b3_g1_design.md L140–141 登记的 L0 主杠杆「抑制权重 / 亚型比例 / E/I 相对强度」**一项都未被执行过**；而 gmax_scale 是**统一**缩放（circuit L114）⇒ **E/I 比逐位不变**，无法触及「E/I 相对强度」。",
+    "honesty_clause": "本预注册**不主张** gmax<1 满足 R140 的「换机制」字面要求。其定位 = ①R140 前提（「静态参数空间内无解」由 (bias,σ) 二维 5 个测点外推而来）在一个**从未测量的轴**上的实测检验（依 R142 纪律第七十三条）；②**递归靶向机制整类的天花板测量**（任何以递归增益为作用点的候选，其可达 Sel 都不可能超过该天梯的最优值）。"
+  },
+
+  "grid": {
+    "fixed": "N = 8192；T_ms = 10000；settle_ms = 500；dt_ms = 0.05 ⇒ n_steps = 210000（逐臂断言）；indegree = 20；delay_bins = [40,60,80]；subtypes = true；slow = true；tau_slow_ms = 1000.0；slow_inc = 6.0；drive_rate_hz = 8.0；device = mps；**不降规模、不用云 GPU**（用户明令）",
+    "working_cell": "bias_scale = 1.30、bias_log_sigma = 0.10（= L3 的 C2 格，实测 (a) 0.6 Hz ✓、(e) 2.5970 ✓、(c) R = 0.732202 ✗ ⇒ 唯一绑定约束是 (c)）",
+    "stages": [
+      {
+        "stage": "L4-0",
+        "candidate": "N2 = gmax_scale < 1.0（统一递归增益下调）",
+        "code_change": "**无**（已接线：run_m11_p5_arms.py L124 / L134 / L562–565 / L856；chunk 快路径不受影响）",
+        "levels": {"gmax_scale": [1.0, 0.7, 0.5, 0.35]},
+        "roles": ["baseline", "zero_drive"],
+        "implementations": 3,
+        "arms": 24,
+        "config_id_pattern": "p5_L4_g<gmax>_b1.30_s0.10",
+        "reuse_anchor_option": "允许复用 data/m11_p5_l3_runs/ 的 C2 格 6 臂作 gmax=1.00 锚（逐位可核）⇒ 18 臂；但**默认**重跑以保持计划自足（6 臂 ≈0.31 GPU-h 的确定性核对按 R95 §⑤ 标 h_determinism_not_evidence，不得当新证据）",
+        "gpu_h_mid": 1.2257,
+        "gpu_h_alt_reuse_anchor": 0.9193
+      },
+      {
+        "stage": "L4-1",
+        "candidate": "N1 = 类级抑制权重不对称（gmax_band 中 PV/SST/VIP 段单独上调，E 段不动）",
+        "code_change": "**需小幅改生产者**：把 gmax_band（或等价逐类乘子键）加入 L123–124 白名单 + _net_echo 回显 + 读回断言（写入值 == 夹具 meta 回显值）。**接口要求**：接受逐类乘子、内部构造整表（circuit L111 是整表替换，不得要求调用方手写整表）；必须写明 gmax_scale（统一、最外层，circuit L114）与逐类乘子的语义差异。",
+        "levels": {"inh_gain": [1.5, 2.5, 4.0]},
+        "roles": ["baseline", "zero_drive"],
+        "implementations": 3,
+        "arms": 18,
+        "config_id_pattern": "p5_L4_inhg<gain>_b1.30_s0.10",
+        "gpu_h_mid": 0.9193,
+        "go_no_go": "**仅在 L4-0 的 Sel_max ≥ 3.0 时才启动**（否则 F-1(ii) 已对同类机制构成否证）"
+      },
+      {
+        "stage": "L4-2",
+        "candidate": "N3 = C2 STP depress（larval_zf_engine.configure_stp）",
+        "code_change": "**需接线**：spec 键 + 调用 + **stp_readback 落盘** + 断言。强制：①mode=\"depress\" 显式写入 arm；②configure_stp(...) 的返回 dict 逐字落进臂 JSON 的 stp_readback；③二者不一致或 stp_readback 缺失 ⇒ invalid。理由：larval_zf_engine.py L78 的读回断言**只覆盖 u0 与 tau_rec_ms，不覆盖 mode** ⇒ 不加持久化则「已禁 facilitate」不可审计。",
+        "levels": {"tau_fac_ms": [50, 2000, 5000], "u0": 0.5, "tau_rec_ms": 500, "mode": "depress", "note": "**必须是三档**：P1（默认档 = 消融）用 50 判死；P2（窗口预测在 ~5000 ms）需要 2000 与 5000 两点才能判。**不许下调 tau_fac**（默认档已预测为消融）。**控制旋钮是 tau_fac_ms 而非 tau_rec_ms**（引擎投递取更新前的 u·x，u 按 tau_fac 衰减到 0）。"},
+        "roles": ["baseline", "zero_drive"],
+        "implementations": 3,
+        "arms": 18,
+        "config_id_pattern": "p5_L4_stp_tf<tau_fac_ms>_b1.30_s0.10",
+        "gpu_h_mid_range": [0.9193, 3.310],
+        "price_note": "STP 启用会强制放弃 chunk 快路径（mouse_cortex_engine.py L896–899）⇒ 单价未测；下界 = chunk 代理价、上界 = step 价（实测比 ×3.44–3.91，data/m11_p5_l0_pricing.json）。**启动前必须用 smoke 探针钉住单价**（R130 第六十七条允许探针定价）。",
+        "go_no_go": "**仅在 L4-0 的 Sel_max ≥ 3.0 时才启动**"
+      }
+    ],
+    "total_gpu_h_mid_range": [3.064, 5.455],
+    "total_gpu_h_alt_reuse_anchor": [2.758, 5.149],
+    "envelope": "M11 ≤10 GPU-h ⇒ **在包络内**（余量 ≥5.65）",
+    "price_derivation": "k = 210000/3.6e6 = 0.0583333 GPU-h per (ms/step)（量纲恒等式同 data/m11_p5_l0_pricing.json::dimension_self_check：210000 × 0.9482 = 0.0553116 == 表内 0.05531）。C2 格逐角色实测中位单价（data/m11_p5_l3_runs/，3 实现中位，delivery=chunk）：baseline 0.9887、zero_drive 0.7623 ms/step ⇒ 每格（2 角色 × 3 实现）= 3 × (0.9887+0.7623) × 0.0583333 = 0.30643 GPU-h。L4-0 = 4 格 × 0.30643 = 1.2257；L4-1 = 3 格 = 0.9193；L4-2 = 3 格 = 0.9193（chunk）～3.310（step ×3.6）。**按档取价，未用最低档外推**（R112 §⑤）。参考：L3 全量 30 臂实测总价 = 1.2181 GPU-h。",
+    "mandatory_control_arm": "计划**必须**含 mechanism = \"none\" 且 drive_mult = 1 的臂（消 R140 §③ 的 evaluator invalid：validate_p11_resting.py L1334–1336 / L1359–1360 的硬门⑤）。**不得**为迁就评估器而事后改写任何臂的 mechanism（R125 §③ 禁令）。",
+    "dose_points_requirement": "**新增（本节点发现）**：张力块要求该 (config,T,mechanism) 组有 ≥3 个剂量点（validate_p11_resting.py L1215–1219），否则即便 (b) 带定稿，tension 仍为 unavailable。⇒ 若 L4 的最终目标包含「使 tension 可判」，计划必须同时包含 drive_mult ∈ {0, 1, ≥2} 三个剂量点。本预注册**默认不包含**（L4 的判据是 (a)/(c)/(e)，与 tension 解耦），该条登记为可判定性前置 P-DEC 的第二个子项。"
+  },
+
+  "measurement_definitions": {
+    "a_median_hz": "基准臂（role=baseline, drive_mult=1.0）**逐神经元**中位率（Hz），对 3 个独立实现取中位数 ⇒ 报 cfg_a_median_hz。**必须并报** cfg_a_active_frac 与 cfg_a_pop_mean_hz（R109 ⑥ / R115 §④）。",
+    "c_R": "R = pooled_zero_drive / pooled_baseline，**必须并报 pooled_zero_drive 绝对值与 n_num/n_den**（R115 §②/R131 第六十八条）。窗口 W = [300, 0.10 × pooled_baseline]。",
+    "e_ei_ratio": "**只在基准臂上判**（R124）：基准臂 ei_ratio 的 3 实现中位数。**零驱动臂的 ei_ratio 不得进入该量**（零驱动下 i_exc_integral→0 ⇒ 比值爆炸）。引用必须带身份三元组 (config_id, role=baseline, estimator=ei_ratio)（R109 第五十七条 / R124 第六十四条）。评估器的 (e) 走「全部臂中位数」路径（validate_p11_resting.py L955–956）⇒ 在 L4 里仅作旁证，且必须标注为口径伪影。",
+    "selectivity_primary": "Sel = (1 − R/R0) / (1 − A/A0)（R110 §② 的字面形式：R 的相对下降 ÷ (a) 的相对下降）",
+    "selectivity_secondary": "Sel_B = (1 − Z/Z0) / (1 − B/B0)（分子分母均用合池绝对计数，避免 R 的比值伪影）",
+    "selectivity_degenerate": "Sel_Z = (1 − Z/Z0) / (1 − F/F0) —— **在工作点格上退化**：F0 = 1.0000 ⇒ 只要 F 不下降，分母为 0 ⇒ **该量在该格上构造性不可用，不得作为主判据，也不得报为无穷大**。",
+    "anchors_C2": {"Z0": 115338, "B0": 157522, "R0": 0.732202, "A0": 0.6, "F0": 1.0, "E0": 2.597024, "window_hi": 15752.2, "required_Z_ratio": 0.13657, "required_Sel_for_working_point": 5.2},
+    "anchors_C3_if_used": {"Z0": 181941, "B0": 200091, "R0": 0.909291, "A0": 0.8, "F0": 1.0, "E0": 2.939979, "required_Z_ratio": 0.11},
+    "sel_threshold_for_selective_mechanism": 3.0,
+    "sel_threshold_basis": "**设计选择（derived）**：唯一 T=10 s 实测的增益型杠杆锚 = L0 的 bias 1.00→0.70（data/m11_p5_l0_runs/，4 实现）：Z 35053→1007（−97.13%）、B 121060→34366（−71.61%）⇒ Sel = 0.97127/0.71612 = **1.356** ⇒ 要求 >2× ⇒ 阈值 3.0。**⚠️ 不得**用 σ↓ 探针的 4.5 作依据（那是 **T=1 s**，已被 R130 判为伪影并作废）。",
+    "units": "B/T_ms/settle_ms 为 millisecond；ms_per_step 为 millisecond per step；wall_s 为 second；drive_rate_hz 为 Hz per neuron；gpu_h = steps × ms_per_step / 3.6e6（R80 §⑥：跨接口的量必须带单位）"
+  },
+
+  "falsifiers": {
+    "F-0_decidability_preconditions": "任一不满足 ⇒ 该格判 unavailable（**不得判 pass 也不得判 fail**）：①n_steps = 210000 且 T_ms = 10000（逐臂断言）；②zero_drive 臂 0 < Z < 300 ⇒ (c) unavailable（R115 §② 陷阱）；③Z = 0 ⇒ 走 zero_activity 显式分支并落盘，判 (c) unavailable；④triviality_flag = True 或 F < 0.8 ⇒ 不得记为工作点命中（R118 §④4）；⑤**只许用 T=10 s 读数做率/比值/阈值判定**（R130 第六十七条），T≤1 s 仅可用于定价/稳定性。",
+    "F-1_gmax_ceiling": {
+      "statement": "(i) 若梯级中存在一点满足 A ∈ [0.5,2.0] ∧ Z ∈ W ∧ E ∈ [0.5,3.0] ∧ F ≥ 0.8 ⇒ 命中 ⇒ **R140 的前提（静态参数空间内无同时满足的工作点）在 gmax 轴上被推翻** ⇒ 结论句重述为「在 (bias,σ) 二维内无解；在递归增益轴上存在工作点」⇒ 扩网格确认 + 进 G1 定稿（挂 P-DEC）。",
+      "statement_ii": "(ii) 否则记 Sel_max = 天梯上 Sel 的最大值：若 Sel_max < 3.0 ⇒ 判「递归靶向类机制在当前工作点上不能提供所需选择性」—— 该判据**对 N1 / N3 / 慢适应 / C-4 全体同类机制构成否证**，L4 转夹具级改动；若 Sel_max ≥ 3.0 但无工作点 ⇒ 只否证「静态统一递归增益」这一个实现，不否证同类机制 ⇒ 继续 L4-1/L4-2。",
+      "statement_iii": "(iii) 若 Sel_max ≥ 5.2 且 A 已跌破 0.5 ⇒ 登记「选择性足够但余量不足」⇒ 允许把工作点迁移到 C3 格（A0 = 0.8，余量 1.6×）重测（预注册的允许迁移）。",
+      "non_constructive_check": "分支 (i) 未被实测排除（C2/C3 在 gmax=1.0 实测 R = 0.732/0.909，离窗口远）；分支 (ii) 亦未被排除（gmax↓ 有实测强方向 ×2 ⇒ ×6.98）。两个分支都活。"
+    },
+    "F-2_class_wise_inhibition": {
+      "hit": "(i) 存在一级使 A ∈ [0.5,2.0] ∧ Z ∈ W ∧ E ∈ [0.5,3.0] ∧ F ≥ 0.8 ⇒ 命中。",
+      "falsified": "(ii) 若每一级都 Sel ≤ 1.5 ⇒ 判该机制等价于全局增益型杠杆（与实测 gain 型 Sel = 1.356 同族）⇒ 类级抑制被否证。",
+      "overshoot": "(iii) 若 E < 0.5（抑制压过头 ⇒ (e) 出带下界）⇒ 判**过冲**（不是失败、不是命中）⇒ 回退上一级；**必须报 E 的逐级值**（本候选是唯一可能同时改善 (c) 与 (e) 的：(e) 在 C2 格偏高 2.597，带 [0.5,3.0]）。",
+      "attribution_limit": "(iv) 因 syn_class 是逐突触随机标签（circuit L99–105），**只允许**报「该随机类槽权重 ↑」，**不得**写成「PV 细胞介导」；subtype_* 四列必须并报但仅作描述。",
+      "non_constructive_check": "三个分支都是可发生的真实结局（C2 格 E0 = 2.597 距下界 0.5 有 5.2× 余量、距上界 3.0 只有 1.16× 余量）。"
+    },
+    "F-3_c2_stp": {
+      "self_correction_note": "**本节点对自己第一版估计的更正（必须随本预注册一起读）**：第一版用了教科书式 x_ss ≈ 1/(1 + r·tau_rec·u)，把 x（恢复池）当成限制通道 ⇒ 得 Z/Z0 ≈ 0.55、需 tau_rec ≈ 13 s。**那是错的。** 引擎的投递因子取的是「更新前」的 u·x（mouse_cortex_engine.py L943–946），而 u 在步间按 tau_fac 指数衰减到 0（larval_zf_engine.py L492），x 按 tau_rec 恢复到 1（L494）⇒ **限制通道是 u 的衰减，控制旋钮是 tau_fac_ms，不是 tau_rec_ms**。",
+      "P1_elasticity_independent_prediction": "引擎默认档（u0 = 0.5、tau_fac_ms = 50、tau_rec_ms = 500、mode = \"depress\"）在 C2 格——零驱动逐边平均 ISI = 1000 / r = 2130.8 ms，其中 r = (115338/3)/8192/10 = 0.4693 Hz——对引擎精确递推求不动点得 u_pre ≈ 1.7e-19、x_pre = 0.9929 ⇒ **投递因子 u·x ≈ 0.00000** ⇒ **预测 Z ≈ 0（< 300）⇒ (c) 判 `unavailable`，且基准臂 (a) 同时塌陷 ⇒ 该档命中「过压」，既不是命中工作点、也不是「机制太弱」**。**该预测与 2.80 弹性无关**（1.7e-19 与 2.80 无关）⇒ 这是本计划里最硬的一条预测。机制解释：1/tau_fac = 20 Hz ≫ 本网络 0.47 Hz 的率 ⇒ 逐边 u 在两次发放之间已完全衰减 ⇒ 投递因子≈0 ⇒ 等价于「递归隔离消融」（形态同 R110 §① 的 S3 档「机制过度生效 ⇒ 无法产出可判定臂」）。",
+      "P2_elasticity_dependent_prediction": "可用窗口预测落在 tau_fac ≈ 5000 ms（预测 R = 0.0934，恰好压线）；达标需 tau_fac ≳ 5200 ms = 引擎默认的 ~104×、生理易化时常数（~50–500 ms）之上 ≥10× ⇒ **预测「生理 STP 不足以实现该机制」**。稳态表（u0=0.5、tau_rec=500 ms、逐边平均 ISI=2130.8 ms）：「tau_fac=50 ⇒ 因子 ≈0 ⇒ R≈0（unavailable）」；「1000 ⇒ 0.0626 ⇒ Z/Z0 0.0004」；「2000 ⇒ 0.2064 ⇒ 0.0120」；「5000 ⇒ 0.4797 ⇒ 0.1275 ⇒ R 0.0934」；「10000 ⇒ 0.6699 ⇒ 0.3253 ⇒ R 0.2382」；「20000 ⇒ 0.8060 ⇒ 0.5462 ⇒ R 0.3999」。所需因子 = 0.13657^(1/2.8037) = 0.4916。",
+      "branches_for_P1": [
+        "若实测默认档 Z < 300（(c) unavailable）且基准 A 显著塌陷 ⇒ **P1 成立** ⇒ 判该档为过压（记 unavailable/invalid，**不得记为命中**）；**唯一**允许的继续方式 = 只上调 tau_fac（至 2000 与 5000）重测，**不许下调**。",
+        "若实测默认档 Z ≥ 300 且 R ≤ 0.10 ⇒ **P1 被证伪（良性：均值场估计过强）** ⇒ 直接以实测为准并扩网格。",
+        "若实测默认档 Z ≥ 300 但 R > 0.10 ⇒ **P1 部分证伪**（未消融到不可判定、也未命中）⇒ 用实测的 (tau_fac, R) 两点斜率外推到 P2 的窗口，并检查外推档落在哪一侧：tau_fac ≤ 2000 ms ⇒ 机制可用；tau_fac > 5000 ms ⇒ 判「需非生理参数 ⇒ C2 = no-go（附实测斜率）」，登记为「已实测排除，非未测」。"
+      ],
+      "branches_for_P2": "必须至少测 tau_fac ∈ {50, 2000, 5000} 三档才能判 P2（窗口预测在 5000 附近）⇒ 这就是 L4-2 为何定 18 臂而非 12 臂。",
+      "mandatory_terms": "mode ≠ \"depress\" 的臂 ⇒ invalid；stp_readback 缺失 ⇒ invalid；**必须报 Sel 与 Sel_B**（R110 §② 要求显式测选择比）；Sel_Z 在该格退化（F0 = 1.0 ⇒ 分母 0），不得作主判据。facilitate 方向会使 (c) 更差（larval_zf_engine.py L488–490）⇒ **显式禁止**。",
+      "honesty_boundary": "① 弹性 2.80 是 bias=1.0 处的 **2 点**描述性拟合；② 「STP 等效电导衰减因子 ⇒ gmax 等效值」的映射不严格（STP 只压已发放的边，gmax 压全部边；点火是阈值现象）；③ 稳态表用**逐边平均 ISI**，而实际 ISI 分布是重尾（bursty 边给更大因子、静默边给 0）⇒ **P2 是均值场估计（derived），不是测量**；④ **P1 不依赖 ①**，P2 依赖。",
+      "non_constructive_check": "P1 的三个分支都对应数值上可发生的结局（因子从 1.7e-19 到 0.81 连续可变；Z 的判定门 300 是硬门）；P2 的窗口位置依赖只有 2 个测点支撑的弹性 ⇒ 窗口可能整体移动。**两者都不会构造性恒真或恒假。**"
+    },
+    "F-4_stop_rules": [
+      "任一阶段 Sel_max < 3.0 且无命中 ⇒ **停该阶段**，不得自动扩网格。",
+      "任一级 Z < 300 ⇒ 该级 (c) unavailable，**不得**计入进展；**不得**为把 Z 推回窗口而提高驱动（R115 §③ 预注册禁止：docs/m11_b3_g1_design.md L146「禁」行）。",
+      "L4-2 的实测 ms/step > 2 × chunk 代理价 ⇒ 预算停点。",
+      "任何阶段都不得为迁就评估器而修改臂 JSON 的 mechanism（R125 §③）。"
+    ]
+  },
+
+  "unchanged": {
+    "core_falsifiable_assertion": "同 R115 §④：窗口口径 pooled_zero_drive ∈ [300, 0.10×pooled_baseline] 且 (a) 中位率 ∈ [0.5, 2.0] Hz（并在 L4 追加 e ∈ [0.5,3.0] 与 F ≥ 0.8）。",
+    "drive_ban": "同 R115 §③：**不得**提高背景驱动（drive_rate_hz / drive_mult）去命中 (a)；只能作剂量-响应诊断（docs/m11_b3_g1_design.md L146；判据表 protocol_drive_rate_hz 行）。",
+    "a_reporting": "同 R109 ⑥ + R115 §④：a_median_hz / a_active_frac / a_pop_mean_hz / pooled_zero_drive 四条并报；L4 追加逐亚型（E/PV/SST/VIP）中位率与活跃占比。",
+    "e_scope": "同 R124：(e) 只在基准臂上判。",
+    "short_window_ban": "同 R130 第六十七条：短窗探针只能用于单价/稳定性/是否可跑，**不得**用于任何率、比值或阈值。",
+    "prereg_immutability": "判据带与预注册内容一经登记不得事后修改；如需变更须另开事前修订文件（append-only），父件不改。"
+  },
+
+  "structural_dependencies": {
+    "b_band_and_tension": {
+      "verdict": "**YES —— 即便找到完美工作点（(c)=pass ∧ (e)=pass），G1 门仍无法判定为 pass；评估器将返回 verdict_G1 = \"unavailable\"（理由「G1 门条件中存在未测项」）。**",
+      "evidence_chain": [
+        "validate_p11_resting.py L125 / L129 / L130：GATE_CRITERIA = (c, e, i2)，i2 = p5_g1_tension_quantified ⇒ tension 是门条件的合取项",
+        "L1221：张力块把 (b) 的带硬编码为 silent_frac_calcium_band_lo / silent_frac_calcium_band_hi",
+        "L1228：status = \"ok\" 当且仅当 (a) 与 (b) 两条带都已定稿，否则 \"unavailable\"（reason 见 L1229–1230）",
+        "L185–194（L190–193）：已定稿 = final == \"1\" 且 evidence_level != \"unavailable\"",
+        "data/m11_p5_targets.csv L115–116：silent_frac_calcium_band_lo / _hi 的 value = unavailable、final = 0",
+        "L1271–1286（L1275–1276 pass 分支；L1281–1284 unavailable 分支）：_emit_tension_gate 的 pass 要求 rec.status == \"ok\"",
+        "L1352–1353：all(v == \"pass\") 永假（gate 含 i2）",
+        "L1356–1358：执行落入 else ⇒ g1 = \"unavailable\"，reason「G1 门条件中存在未测项…不得判 pass（未测 ≠ 未命中）」"
+      ],
+      "b_band_blocker": "唯一缺失维 = 真实 ROI 掩膜：data/m11_calcium_silent.json::four_state_verdict 的 real_roi_mask_unit = \"unavailable（掩膜未自证；仅此一维缺）\"，overall_b_caliber = \"partial（三口径 measured + 一维 unavailable）—— 不得写成整体 unavailable（R9/R18）\"；与 targets.csv L115–116 的 note「coverage = covered 7 / missing 1 (real ROI mask)」一致。",
+      "m12_dependency": "⇒ G1 的可判定性**还依赖 M12 侧的真实 ROI 掩膜**（主agent 记为 R138：M12 的 S1 数据门已 pass）。",
+      "caveat_on_R138": "**未确认**：本节点在 neural_exploration/docs/ 全文 grep -rn \"R138\" **只命中 docs/SESSION_CONTEXT.md L182**（即主agent 对本节点的任务陈述本身），**未能在任何 M12 文档或 m11_acceptance_master.md 中定位 R138 的原始裁决条目**。可核验的邻近事实：docs/m12_s1_gate_probe.md L250 记「S1 的 unavailable（吞吐限制）主假设当场被否证」，L259 记「24 族的最小行数仍 >10^5 ⇒ 第 460 行 pass 第一支在 S1 上不可达」（该探针文档本身未给出 S1 的 pass 结论）。⇒ **本预注册不对 R138 的内容背书；M12/S1 的准确状态以 M12 侧裁决为准。**"
+    },
+    "P-DEC_decidability_precondition": {
+      "item_1": "宣称 G1 = pass 之前必须先完成 silent_frac_calcium_band_lo/hi 定稿（append-only 新增行，父行不改），其唯一缺失维 = 真实 ROI 掩膜；该项归 M12 侧，**本计划不为其编列 GPU 预算**，但必须把「层 1 通过」标记为 pending_band_finalization，**且不得在任何对外结论里写成 G1 pass**。",
+      "item_2": "**本节点新增**：张力块要求该 (config,T,mechanism) 组有 ≥3 个剂量点（validate_p11_resting.py L1215–1219），否则即便 (b) 带定稿，tension 仍为 unavailable。⇒ 若最终目标包含「使 tension 可判」，计划必须含 drive_mult ∈ {0, 1, ≥2} 三个剂量点。",
+      "two_layer_verdict": "层 1（科学层）：(a)∧(c)∧(e) 在工作点格上是否同时成立 —— 判定依据 = tools/report_m11_l3.py 的四条报告量，**与 tension 无关**；层 2（门层）：G1 的工具判定 —— 在 (b) 带定稿前恒为 unavailable，**不得**读成 pass，也**不得**读成 fail。只有层 1 通过且 (b) 带定稿之后，才允许宣称「G1 = pass」。",
+      "distinct_from_L3_invalid": "L3 的 evaluator invalid 的成因是硬门⑤缺 mechanism == \"none\" 臂（L1334–1336 / L1359–1360；R125 §③ / R140 §③），**可用加对照臂修掉**；而 tension = unavailable 是**判据表缺陷，加多少臂都修不掉**。两者不得混读。"
+    }
+  },
+
+  "unmeasured_declaration": [
+    "U1：gmax_scale < 1.0 的任何 (a)/(c)/(e) 读数 —— 从未跑（17 份 plan 的全部臂扫描确认）。",
+    "U2：gmax 轴 >1 侧的选择性 —— gmax=2.0 的基准臂在盘上不存在（data/m11_p5_l0_runs/ 仅 4 个 g2.00 零驱动臂；g4.00 臂 0 个）。",
+    "U3：gmax 对 ms/step 的依赖 —— 未测 ⇒ L4-0/1 用 C2 格 gmax=1.0 的实测价作代理价，须由 L4-0 自身回填，不得外推。",
+    "U4：STP-enabled 的 ms/step —— 未测；理论区间 = chunk 价（≥×1）～ step 价（×3.44–3.91）。",
+    "U5：gmax_band / inh_frac / sub_frac 的任何效果 —— 生产者不可达（run_m11_p5_arms.py L123–124 白名单；L134 以 **net_kw 装配）。",
+    "U6：逐类（PV/SST/VIP）抑制增益的因果归属 —— syn_class 为逐突触随机标签（circuit L99–105）⇒ 归因对象不存在。",
+    "U7：tension 的定量化 / (b) 的带 —— targets.csv L115–116（value=unavailable、final=0）。",
+    "U8：亚型侧去抑制通道 —— 当前夹具无类型依赖连接（circuit L94–105；engine L219–221 三类抑制同为 −80 mV 且无符号翻转）⇒ 未测不具备对象。",
+    "U9：gmax<1 是否会把网络压到 Z < 300 —— 未知；按 F-0 条款判 unavailable，不得计为进展。",
+    "U10：机制对 (b)（静默比例）与 dwell 的影响 —— 本轮不判（(b) 带未定稿；dwell 属 S 门/P6，且按 R141 §①「G1 不过 ⇒ P6 不得启动」）。"
+  ],
+
+  "unconfirmed_items": [
+    "Q1：R138 的落盘位置 —— 未能在 M12 文档或 m11_acceptance_master.md 中定位（grep -rn R138 仅命中 SESSION_CONTEXT.md L182）⇒ 本预注册不对 R138 的内容背书。",
+    "Q2：L4 默认臂集只有 drive_mult ∈ {0,1} 两点 ⇒ 即便 (b) 带定稿，tension 仍会因「需 ≥3 个剂量点」（evaluator L1215–1219）而 unavailable ⇒ 已登记为 P-DEC item_2，但本预注册不把它写入机制证伪式。",
+    "Q3：A0 = 0.6 Hz 的 3 个实现值未展开核对（cfg_a_median_hz 是对实现取中位数；逐实现值在 data/m11_p5_l3_report.csv 的 cell_median_hz 列）⇒ Sel 的分母 (1 − A/A0) 须在执行节点补齐 3 个实现值后计算。",
+    "Q4：Z0 = 115338 的 n_num/n_den 未逐实现核对（应据 cfg_n_impl_baseline_with_counts / cfg_n_impl_zero_drive_with_counts 两列）。",
+    "Q5：docs/m11_acceptance_master.md 的并发写入者身份未确认（本节点工作期间 4082 → 4138 行；本节点未写入该文件）。后续引用必须以「行数 + sha256」锚定。"
+  ],
+
+  "candidate_dispositions": {
+    "N2_gmax_below_one": "**第一优先**（L4-0）。已接线、零改码、chunk 价、1.2257 GPU-h；同时是递归靶向机制整类的天花板测量。⚠️ 按字面**不是** R140 的「换机制」⇒ 定位为「R140 前提的实测检验 + 整类天花板」。",
+    "N1_class_wise_inhibition_gain": "**第二优先**（L4-1），**且仅在 L4-0 的 Sel_max ≥ 3.0 时启动**。唯一改变 **E/I 构成**（而非统一标量增益）的候选，可能同时改善 (c) 与 (e)；需小幅改生产者（白名单 + 回显 + 断言）。",
+    "N3_c2_stp_depress": "**第三优先**（L4-2），同样受 L4-0 的 go/no-go 门控。**附两条可被判死的预注册预测**：P1（不依赖弹性）= 引擎默认档 `tau_fac = 50 ms` 在 C2 格（逐边平均 ISI = 2131 ms）给出投递因子 ≈1.7e-19 ⇒ **预测 Z ≈ 0 ⇒ (c) unavailable ＋ (a) 塌陷 ⇒ 命中「过压」而非工作点**；P2（依赖弹性）= 可达窗口在 `tau_fac ≈ 5000 ms`、达标需 ≳5200 ms（默认的 ~104×、生理易化时常数之上 ≥10×）⇒ **预测「生理 STP 不足」**。⇒ C2 的价值在于把「C2 是首选机制候选」（R110 §②/R113 §④）变成**实测的 no-go 或实测的确认**，二者都有信息量；成本 0.92–3.31 GPU-h（18 臂，含默认/2000/5000 三档），且单价须先由 smoke 探针钉住。**控制旋钮是 tau_fac_ms，不是 tau_rec_ms**（本节点已更正自己第一版的错误估计）。",
+    "N4_vip_sst_disinhibition_C4": "**不予实施（构造上不可实现）**：当前夹具无类型依赖连接（circuit L94–105）、syn_class 是逐突触随机标签、三类抑制同为 −80 mV 且无符号翻转（engine L219–221）⇒ 需**新夹具**（开发 + 全锚点重标定，会作废 A0 R=0.295987 等跨计划锚点）⇒ 须主agent 单独立项，**本预注册不为其编列 GPU 预算**。**必须回报：R141 §②/§③ 关于 C-4 的「直接分量」论证建立在一个对当前实现为假的前提上（该回路在代码里不存在）。**",
+    "N5_activity_flattening_R109_3": "**已被覆盖 / 方向已证伪**：其目标（把 active_frac 推过 50%）在 C2/C3 格**实测已达成**（cfg_a_active_frac = 1.000000，四亚型逐个 1.0000）⇒ (a) 在工作点格上不是绑定约束；σ↓ 版本已在 T=10 s 证伪（R130）；活动历史依赖（homeostatic）版本引擎无挂点（唯一的活动历史机制 configure_slow 的直接分量是纯超极化钾电导，engine L151/L192/L347–348，对从不发放的神经元逐位无作用）。",
+    "N6_mechanism_restatement": "把 (c) 重述为「**把网络级点火阈值抬到协议时窗（10 s）之外，同时不抬外部驱动响应的阈值**」—— 这是 N2/N1/N3 共有的机制语言，也解释了为何「提高驱动」不算解（它同时降低两个阈值）。"
+  },
+
+  "requested_adjudications": [
+    "D1：是否批准 L4-0（零改码、1.2257 GPU-h）**先跑**，用其 Sel_max 决定 N1/N3 是否值得接线（本计划最大省钱点：若 Sel_max < 3.0 可省下 N1+N3 的 ~1.5–3.1 GPU-h）。",
+    "D2：是否批准对 tools/run_m11_p5_arms.py 做 N1 的小幅透传改动（逐类抑制增益键入 L123–124 白名单 + 回显 + 读回断言）与 N3 的 STP 接线（含 stp_readback 落盘与 mode 断言）—— 两者属 R46/R48 的工具改动协议范围。",
+    "D3：C-4 是否需要新夹具立项（代价性质 = 开发 + 全锚点重标定）—— **本节点不建议在 G1 未收口前做**。",
+    "D4：L4-0（机制轴）与 R142（bias ∈ (1.100, 1.125) 分辨率细化，12 臂）的**串行顺序** —— MPS 严格串行，建议 **R142 先**（它是 R140 前提在参数轴上的收口，且更便宜）。"
+  ],
+
+  "discipline_self_check": {
+    "no_mps": "启动时 pgrep -f run_m11_p5_arms ⇒ 空（exit=1）；全程未调用任何 MPS/引擎/跑臂命令；未 kill 任何进程。",
+    "planning_and_static_only": "全部证据来自 read/grep/python3 标准库读产物；未跑臂。",
+    "no_fabrication": "每条数值均给来源文件 + 字段/行号；无法确认的 5 项写入 unconfirmed_items。",
+    "no_existing_file_modified": "只新增 docs/m11_l4_mechanism_plan.md 与 data/m11_p5_prereg_amend_l4.json；父预注册与全部既有文件逐字节不变（本文件只引用其 sha256）。",
+    "no_silent_failure_masking": "生成本件所用命令无 2>/dev/null；一次 `ls …*.fail | wc -l` 曾把 ls 的报错行计成 1，已当场用 `ls | grep -c '\\.fail$'` 复测改正为 0，并在规划文档 §1.1 如实登记。",
+    "no_scale_reduction_no_cloud": "全部设计保持 N=8192、T=10 s、settle=500 ms、3 实现、本机 MPS。",
+    "tiered_pricing": "预算逐档取实测单价并给算式；未用最低档外推（R112 §⑤）。",
+    "unmeasured_explicit": "unmeasured_declaration 共 10 条。",
+    "direct_vs_indirect_component": "每候选逐条区分直接分量（给注入表达式与行号）与间接分量（一律「未测」）（纪律第六十条）。",
+    "self_correction_logged": "本节点在规划过程中对自己的一处技术估计做了更正并如实登记：第一版把 STP 的限制通道当成 x 的恢复（tau_rec），得 Z/Z0 ≈ 0.55、需 tau_rec ≈ 13 s；读码后确认引擎投递取「更新前」的 u·x 而 u 按 tau_fac 衰减到 0 ⇒ 限制通道是 u 的衰减、控制旋钮是 tau_fac_ms，且**默认档预测为「消融」而非「太弱」**。更正同时写入 docs/m11_l4_mechanism_plan.md §3 N3 ③ 与 §6 F-3，以及本文件的 F-3_c2_stp.self_correction_note（两处逐字一致）。"
+  }
+}
