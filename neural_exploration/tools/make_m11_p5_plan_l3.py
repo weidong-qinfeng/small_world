@@ -1,4 +1,4 @@
-"""构建 **L3 计划（网格 v2：σ 悬崖面扫描）** `data/m11_p5_plan_l3_replan.json`（P5 工作点搜索第三段的**重规划版**）。
+"""构建 **L3 计划（网格 v2：σ 悬崖面扫描）** `data/m11_p5_plan_l3_grid_v2_replan.json`（P5 工作点搜索第三段的**重规划版**）。
 
 **⚠️ 落盘路径纪律（本节点实付的学费 + R122 作废纪律，必须保留）**
 1. 仓库内**已存在** `data/m11_p5_plan_l3.json`（**tracked**，sha256 `4aab49b00177a22e21f65b884bd29d95a8e7333e76cb109ae8fcd8bb9bd94615`，30 臂 v2）
@@ -48,13 +48,15 @@
 与冻结计划 `m11_p5_plan_l3.json` **完全相同**（只改臂顺序，不改档位/实现/协议字段 ⇒ R118 修订的网格不受影响）。
 
 用法：
-    python3 -m neural_exploration.tools.make_m11_p5_plan_l3            # 生成（写 m11_p5_plan_l3_replan.json）
+    python3 -m neural_exploration.tools.make_m11_p5_plan_l3            # 生成（写 m11_p5_plan_l3_grid_v2_replan.json）
     python3 -m neural_exploration.tools.make_m11_p5_plan_l3 --check    # 只读校验（与磁盘逐字节比对 + 重跑全部断言）
     python3 -m neural_exploration.tools.make_m11_p5_plan_l3 --keys     # 只打印生产者键读取比对表
 """
 from __future__ import annotations
 
 import argparse
+import csv
+import glob
 import hashlib
 import json
 import os
@@ -85,10 +87,18 @@ FROZEN_L3_PLAN = os.path.join(DATA_DIR, "m11_p5_plan_l3.json")
 FROZEN_L3_SHA = "4aab49b00177a22e21f65b884bd29d95a8e7333e76cb109ae8fcd8bb9bd94615"
 OLD_REPLAN_SHA = "539325a13aa201cd5bc480d0b941768fb452ef2e36caccd3c90fba29ff1af98b"
 L3_RUN_DIR = os.path.join(DATA_DIR, "m11_p5_l3_runs")
-OUT_PATH = os.path.join(DATA_DIR, "m11_p5_plan_l3_replan.json")
+# **🔴 默认只写临时文件**（R126+：正式跑正在使用 data/m11_p5_plan_l3.json，
+#    任何对 data/ 下计划文件的写入都被硬禁止 ⇒ 本脚本默认不碰 data/）
+import tempfile
+OUT_PATH = os.path.join(tempfile.gettempdir(), "m11_p5_plan_l3_scratch.json")
+FROZEN_PLAN_FOR_RUN = os.path.join(DATA_DIR, "m11_p5_plan_l3.json")   # **只读**
 # **硬保护**：这两个路径属于既有的、正在被正式跑使用的计划 ⇒ 本脚本绝不写入（R119/本节点事故登记）
 FORBIDDEN_OUT_PATHS = (os.path.join(DATA_DIR, "m11_p5_plan_l3.json"),
-                      os.path.join(DATA_DIR, "m11_p5_plan_l3.frozen_for_run.json"))
+                      os.path.join(DATA_DIR, "m11_p5_plan_l3.frozen_for_run.json"),
+                      # 主 agent 已提交（commit 4b1507b）并配 `.SUPERSEDED` 标记件的 v1 计划
+                      # ⇒ **绝不复活/改写**（R122 §④ + 纪律第六十三条：作废状态必须保持自洽）
+                      os.path.join(DATA_DIR, "m11_p5_plan_l3_replan.json"),
+                      os.path.join(DATA_DIR, "m11_p5_plan_l3_replan.json.SUPERSEDED"))
 
 # ---- 协议常数（R80 §⑥：跨接口传递的量必须写明单位）----
 N = 8192
@@ -191,6 +201,21 @@ GPU_MS_PER_H = 3.6e6
 DUTY_CYCLE = 0.054             # R112 ⑥ 实测占空比（MPS 与 CPU 双重争用下）
 
 
+def refuse_data_write(path: str) -> None:
+    """**硬闸门（本次规则变更）**：任何 `neural_exploration/data/` 下的写入一律拒绝。
+
+    背景：`data/m11_p5_plan_l3.json` 正被运行中的正式作业使用，且与冻结副本、运行日志三方 sha 一致
+    （`4aab49b00177a22e21f65b884bd29d95a8e7333e76cb109ae8fcd8bb9bd94615`）⇒ **一旦覆写，作业与审计链即断**。
+    （本项目已有同类事故先例：`docs/m11_b2_notes.md` B2-L25.4 的 `g1_plan_units.json` 覆写风险。）
+    """
+    ap = os.path.abspath(path)
+    data_root = os.path.abspath(DATA_DIR) + os.sep
+    assert not ap.startswith(data_root), (
+        "**拒绝写入 data/ 下的任何文件**（本次规则变更）：%s\n"
+        "  计划文件必须写在临时目录（默认 %s）；如需比较冻结件请用 `--verify-frozen`（只读）。"
+        % (ap, OUT_PATH))
+
+
 def sha256_of(path: str) -> str:
     try:
         with open(path, "rb") as f:
@@ -199,9 +224,11 @@ def sha256_of(path: str) -> str:
         return "unavailable"
 
 
-def _rid(tag: str, dose: float, seed: int) -> str:
-    """**逐字对齐冻结计划**（R119）：`l3_<cell>_<N>_T<T>ms_d<dose>_s<seed>`（`d1.0`/`d0.0` 保一位小数）。"""
-    return "l3_%s_%d_T%dms_d%s_s%d" % (tag, N, int(T_MS), dose, seed)
+def _rid(cfg_id: str, dose: float, seed: int) -> str:
+    """**逐字对齐冻结计划**（R119）：`l3_<cell>_b<bias>_s<sigma>_<N>_T<T>ms_d<dose>_s<seed>`
+    （`d1.0`/`d0.0` 保一位小数；例：`l3_A0_b1.00_s0.30_8192_T10000ms_d0.0_s0`）。"""
+    tail = str(cfg_id).split("p5_L3_", 1)[1]
+    return "l3_%s_%d_T%dms_d%s_s%d" % (tail, N, int(T_MS), dose, seed)
 
 
 def _role_of(dose: float) -> str:
@@ -225,7 +252,7 @@ def build_arms():
             for sd in SEEDS:
                 ns, es = SEED_PAIRS[sd]
                 a = dict(
-                    run_id=_rid(tag, dose, sd), stage=STAGE, config_id=cell["config_id"],
+                    run_id=_rid(cell["config_id"], dose, sd), stage=STAGE, config_id=cell["config_id"],
                     T_ms=T_MS, drive_mult=dose, seed=sd, net_seed=ns, event_seed=es,
                     role=role, mechanism=MECHANISM, delivery=DELIVERY,
                     gmax_scale=1.0, bias_scale=cell["bias_scale"],
@@ -308,13 +335,13 @@ def _budget(arms) -> dict:
                     % (round(mid_ms / GPU_MS_PER_H, 4), DUTY_CYCLE,
                        round(mid_ms / GPU_MS_PER_H / DUTY_CYCLE, 1))),
         downgrade_plan_if_over=[
-            "**不降档**：24 臂 = 4 格 × 2 角色 × 3 实现，是预注册的最小可判结构（每格 (c) 需 ≥3 seed）。",
-            "若必须降：**先砍 B2**（窗口下沿搜索档，−6 臂 ⇒ −%.4f GPU-h mid），再砍 A1（对照档，−%.4f）；"
-            "**A0 与 B1 不得砍**（A0 = 跨计划锚，B1 = 主目标）。"
-            % (6 * EXPECTED_STEPS * (UNIT_PRICES[("b2", "baseline")][0] + UNIT_PRICES[("b2", "zero_drive")][0])
-               * 3 / 6 / GPU_MS_PER_H,
-               6 * EXPECTED_STEPS * (UNIT_PRICES[("a1", "baseline")][0] + UNIT_PRICES[("a1", "zero_drive")][0])
-               * 3 / 6 / GPU_MS_PER_H),
+            "**不降档**：30 臂 = 5 格 × 2 角色 × 3 独立实现，是预注册的最小可判结构（每格 (c) 需 ≥3 seed 才能判 CI）。",
+            "若必须降：**先砍 C3**（极端档，−6 臂 ⇒ −%.4f GPU-h mid），再砍 C1（−%.4f）；"
+            "**A0 锚与 C2（主目标）不得砍**。"
+            % (3 * EXPECTED_STEPS * (UNIT_PRICES[("C3", "baseline")][0] + UNIT_PRICES[("C3", "zero_drive")][0])
+               / GPU_MS_PER_H,
+               3 * EXPECTED_STEPS * (UNIT_PRICES[("C1", "baseline")][0] + UNIT_PRICES[("C1", "zero_drive")][0])
+               / GPU_MS_PER_H),
             "**禁止**用「减少 settle」或「缩短 T」降成本：会违反步数断言（R80）与 T_min 口径。",
         ],
     )
@@ -361,10 +388,24 @@ def _v2_blocks(plan: dict) -> dict:
                             % (C2_BASELINE_T10_MEASURED[0], C2_BASELINE_T10_MEASURED[1],
                                sum(C2_BASELINE_T10_MEASURED[:2]) / 2.0,
                                b["gpu_h_mid_T10_anchored"], b["gpu_h_mid"], b["gpu_h_mid_T10_anchored"]))
+    b["caveat_T10"] = ("**T=10 s 的稳态单价**：本网格 5 格 × 2 角色 = 10 个格-角色里，只有 **C2 baseline 已有正式 T=10 s 实测**"
+                       "（`data/m11_p5_l3_runs/…_d1.0_s0/s1` = 0.9318 / 0.9887 ms/step）⇒ 其余 9 个格-角色只有 T=1 s 探针价或代理价。"
+                       "**⇒ 必须实跑复探**：A0 锚（最便宜、且可与既有 L0 臂逐位核对）先跑，用其实测 `ms_per_step_steady` 对齐后"
+                       "再放行 C0/C1/C2/C3。**方向性证据**：C2 baseline 的 T=10 s 实测（0.93–0.99）**低于**其 T=1 s 探针价（1.4856）"
+                       "⇒ 本预算**偏保守**（同类现象在 A0 格也有：T=10 s 墙钟 0.7704/0.8399 vs T=1 s 1.1872）。")
+    b["wall_anchor_from_existing"] = dict(
+        a0_note=("A0 格在既有 L0 计划里已按同规格跑过（bias=1.00 × σ=0.30，T=10 s、settle=500 ms、chunk）⇒ 其**含 settle 的墙钟单价**"
+                 "可直接读出：`zero_drive` 0.7704 / 0.7708 / 0.7533、`baseline` 0.8399 / 0.8453 / 0.8447 ms/step"
+                 "（= `wall_s×1000/(200000+10000)`）⇒ A0 预算偏保守（A0 按墙钟锚只有 0.2818 GPU-h，是 mid 估计 0.4155 的 68%）。"),
+        c2_note=("C2 baseline 的**正式 T=10 s** 每臂 `wall_s` = 236.3 / 247.1 s（含 settle 的 step-delivery ≈50 s；"
+                 "`ms_per_step` 0.9318/0.9887 只覆盖测量窗）⇒ 30 臂≈2.0 h MPS-busy，其余取决于占空比。"),
+        settled_overhead=("生产者对 settle 用 `delivery=step`（L255）、测量窗用计划里的 `chunk`（L257–258）⇒ 每臂有**固定慢步开销**："
+                          "A0 `zero_drive` s0 实读 `wall_s`=161.79 s 而引擎测量窗单价 0.6487 ⇒ 测量窗 ≈129.7 s，"
+                          "**settle 10,000 步 ≈32.1 s（≈3.2 ms/step，比 chunk 慢 ≈4.9×）** ⇒ 30 臂 ≈16–25 min 固定开销。"))
     b["frozen_plan_comparison"] = dict(
         frozen_mid=2.275, frozen_upper=2.8,
         note="冻结计划 `m11_p5_plan_l3.json` 用**代表值** 1.30 ms/step（上界 1.60）估得 mid 2.275 / upper 2.8；"
-             "本版用**逐格实测价**（最小值 0.6434）⇒ mid/upper 更低（2.275 → " + str(b["gpu_h_mid「]) + 」）。"
+             "本版用**逐格实测价**（最小值 0.6434）⇒ mid/upper 更低（2.275 → " + str(b["gpu_h_mid"]) + "）。"
              "**两者都不含** settle 的 step-delivery 固定开销（正式跑实测每臂 wall≈236–247 s，含 settle ≈50 s）"
              "⇒ 30 臂纯计算 ≈2.0–2.1 h。")
     b["wall_clock"] = ("纯计算 %.4f GPU-h（本版逐格加权）或 %.4f（T=10 s 锚）⇒ 按占空比 0.054 ⇒ 墙钟 ≈%.1f–%.1f h；"
@@ -375,10 +416,17 @@ def _v2_blocks(plan: dict) -> dict:
 
     return dict(
         plan_id="p5_L3_sigma_cliff_bias_scan",
+        structure=("网格 v2（R118 事前修订）：**5 格 × 2 角色 × 3 独立实现 = %d 臂**；T=10 s / settle=500 ms ⇒ 210,000 步/臂；"
+                   "chunk 生产口径 / step 判据口径；臂顺序 = A0 锚 → C0 → C1 → C2 → C3（每格内 baseline 先、zero_drive 后）"
+                   % len(arms)),
         status=("**有效 —— 网格 v2（R118 事前修订；%d 臂 = 5 格 × 2 角色 × 3 独立实现）**。"
                 "本文件是 L3 的**可运行**计划；旧的 4 格 24 臂版本已按 R122 §④ 作废（见 `supersedes`）。" % len(arms)),
         supersedes=dict(
-            path="neural_exploration/data/m11_p5_plan_l3_replan.json（**本文件就地覆盖了它的旧内容**）",
+            path=("neural_exploration/data/m11_p5_plan_l3_replan.json（**保持其已提交的作废状态不变**："
+                  "该文件由主 agent 提交于 commit `4b1507b`，并配有显式标记件 "
+                  "`data/m11_p5_plan_l3_replan.json.SUPERSEDED`）"),
+            action=("本版**不改动那个作废文件**（生成器 `FORBIDDEN_OUT_PATHS` 含它与其标记件）⇒ "
+                    "v2 计划写在**新路径** `data/m11_p5_plan_l3_grid_v2_replan.json`，作废状态与可运行计划各自自洽。"),
             old_plan_id="l3_replan_bias_sigma_window_n8192", old_sha256=OLD_REPLAN_SHA,
             old_size_bytes=62781, old_cells=["(1.00,0.30)", "(1.30,0.30)", "(1.30,0.20)", "(1.30,0.15)"],
             verdict=("**R122 §④：不得运行**。探针已在同一角落实测 σ=0.30/0.20/0.15 的 R ≈ 0.30/0.879/0.881（全部 ≥0.10 ⇒ "
@@ -416,8 +464,8 @@ def _v2_blocks(plan: dict) -> dict:
                 supersedes="R115 §④ 所载的 L3 网格 `bias∈[1.20,1.40] × σ∈[0.15,0.25]`",
                 why=("实测悬崖：`bias=1.30` 下零驱动脉冲 σ=0.30/0.20/0.15 ⇒ 4,126/4,875/4,666，σ=0.10 ⇒ **46**"
                      "（0.15→0.10 落差 **101×**）⇒ 原网格整段**远在 (c) 窗口之外**；窗口只在 σ=0.10 处可达。"),
-                honesty_clause=("修订文件自记："σ=0.10 与 bias=1.15/1.45 **原在我自己登记的网格范围之外** ⇒ "
-                                "必须走事前修订，**不得事后追认为本来就在范围内**""),
+                honesty_clause=("修订文件自记：「σ=0.10 与 bias=1.15/1.45 **原在我自己登记的网格范围之外**」 ⇒ "
+                                "必须走事前修订，**不得事后追认为本来就在范围内**。"),
             ),
             amendments_other=dict(
                 r109_a_reporting=dict(path="neural_exploration/data/m11_p5_prereg_amend_r109_a_reporting.json",
@@ -603,7 +651,7 @@ def _v2_blocks(plan: dict) -> dict:
             h_determinism_not_evidence="照 **R95 §⑤**：跨计划逐位一致只证明**确定性**，**不得**当作新证据、不得计入 n_seeds、"
                                        "不得用于 (a)/(c) 的判定。",
             l3_arms={("baseline" if d == 1 else "zero_drive"): {
-                "l3": _rid("A0", float(d), s), "l0": "l0_g1.00_b1.00_8192_T10000ms_d%d_s%d" % (d, s)}
+                "l3": _rid("p5_L3_A0_b1.00_s0.30", float(d), s), "l0": "l0_g1.00_b1.00_8192_T10000ms_d%d_s%d" % (d, s)}
                 for d in (0, 1) for s in SEEDS},
             expected_l0_spikes=dict(note="来源：neural_exploration/data/m11_p5_l0_runs/*.json（本节点实读）",
                                     zero_drive={str(s): n for s, n in zip(SEEDS, (8591, 8585, 9802))},
@@ -624,16 +672,16 @@ def _v2_blocks(plan: dict) -> dict:
         selfcheck_map=dict(
             note="主 agent 条款 1–8 ⇒ 落在计划 JSON 的哪个键 + 自检报告的哪一节",
             items={
-                "1 unmeasured_side_declaration（含 by_measurement_excluded）「: 」计划键 `unmeasured_side_declaration`｜报告 §5",
-                "2 (a) 四条并报「: 」计划键 `a_reporting_four`（+ `reporting_contract`）｜报告 §5",
-                "3 亚型分解「: 」计划键 `subtype_reporting`｜报告 §5",
-                "4 同质化防线「: 」计划键 `homogenization_defense`｜报告 §6",
-                "5 producer_dependency「: 」计划键 `producer_dependency`｜报告 §2.9/§5",
-                "6 按档取价的预算「: 」计划键 `budget`｜报告 §7",
-                "7 停机规则「: 」计划键 `stop_rules`｜报告 §3/§5",
-                "8 cross_plan_anchor「: 」计划键 `cross_plan_anchor`｜报告 §5",
-                "＋ R122 作废纪律「: 」计划键 `status` / `supersedes`｜报告 §0",
-                "＋ 与冻结计划对齐「: 」计划键 `alignment_with_frozen_plan`｜报告 §4",
+                "1 unmeasured_side_declaration（含 by_measurement_excluded）": "计划键 `unmeasured_side_declaration`｜报告 §5",
+                "2 (a) 四条并报": "计划键 `a_reporting_four`（+ `reporting_contract`）｜报告 §5",
+                "3 亚型分解": "计划键 `subtype_reporting`｜报告 §5",
+                "4 同质化防线": "计划键 `homogenization_defense`｜报告 §6",
+                "5 producer_dependency": "计划键 `producer_dependency`｜报告 §2.9/§5",
+                "6 按档取价的预算": "计划键 `budget`｜报告 §7",
+                "7 停机规则": "计划键 `stop_rules`｜报告 §3/§5",
+                "8 cross_plan_anchor": "计划键 `cross_plan_anchor`｜报告 §5",
+                "＋ R122 作废纪律": "计划键 `status` / `supersedes`｜报告 §0",
+                "＋ 与冻结计划对齐": "计划键 `alignment_with_frozen_plan`｜报告 §4",
             },
         ),
     )
@@ -669,12 +717,12 @@ def build_plan() -> dict:
         units={"T_ms": "millisecond", "settle_ms": "millisecond", "dt_ms": "millisecond",
                "wall_s": "second", "ms_per_step": "millisecond per step",
                "drive_rate_hz": "Hz per neuron", "gpu_h": "GPU-hour (=3.6e6 ms)",
-               "bias_scale「: 」无量纲倍数（乘在偏置张量上）",
-               "gmax_scale「: 」无量纲倍数（乘在突触权重上）",
-               "bias_log_sigma「: 」无量纲（对数正态宽度；乘在标准正态分量上，不改 RNG 序列）",
-               "pooled_baseline「: 」脉冲数（3 个实现求和，非率）",
-               "pooled_zero_drive「: 」脉冲数（3 个实现求和，非率）",
-               "R「: 」无量纲比值 = pooled_zero_drive / pooled_baseline",
+               "bias_scale": "无量纲倍数（乘在偏置张量上）",
+               "gmax_scale": "无量纲倍数（乘在突触权重上）",
+               "bias_log_sigma": "无量纲（对数正态宽度；乘在标准正态分量上，不改 RNG 序列）",
+               "pooled_baseline": "脉冲数（3 个实现求和，非率）",
+               "pooled_zero_drive": "脉冲数（3 个实现求和，非率）",
+               "R": "无量纲比值 = pooled_zero_drive / pooled_baseline",
                "note": "R80 §⑥：跨接口传递的量必须在接口定义处写明单位；接收方写产物前必须做量纲自检"},
         n_neuron=N, settle_ms=SETTLE_MS, dt_ms=DT_MS, drive_rate_hz=DRIVE_RATE_HZ,
         device="mps", bin_ms=100.0, smooth_frames=5, estimator="per_neuron",
@@ -710,7 +758,7 @@ def build_plan() -> dict:
                                       "`zero_drive, bias=1.00, σ=0.05` ⇒ EXIT=0 且落盘 `zero_activity=true`、"
                                       "`ei.ei_ratio=null`）；**不得**为了让 L3 落盘而再改生产者（R48）",
             launch="`caffeinate -i ./.venv-m9/bin/python -m neural_exploration.tools.run_m11_p5_arms "
-                   "--plan neural_exploration/data/m11_p5_plan_l3_replan.json "
+                   "--plan neural_exploration/data/m11_p5_plan_l3_grid_v2_replan.json "
                    "--out-dir neural_exploration/data/m11_p5_runs_l3`（引擎侧解释器 = .venv-m9，R34 §12.2）",
             dimension_selfcheck="生成器内建 R80 家族断言（步数恒等式 + 期望步数 + ≥200,000 下限）⇒ "
                                 "`python3 -m neural_exploration.tools.make_m11_p5_plan_l3 --check`",
@@ -733,7 +781,7 @@ def build_plan() -> dict:
             h_determinism_not_evidence="照 **R95 §⑤**：跨计划逐位一致只证明**确定性**，"
                                        "**不得**当作新证据、不得计入 n_seeds、不得用于 (a)/(c) 的判定。",
             l3_arms={("baseline" if d == 1 else "zero_drive"): {
-                "l3": _rid("a0", float(d), s), "l0": "l0_g1.00_b1.00_8192_T10000ms_d%d_s%d" % (d, s)}
+                "l3": _rid("p5_L3_A0_b1.00_s0.30", float(d), s), "l0": "l0_g1.00_b1.00_8192_T10000ms_d%d_s%d" % (d, s)}
                 for d in (0, 1) for s in SEEDS},
             expected_l0_spikes=dict(  # 既有产物实测值（本节点实读，非估计）
                 note="来源：neural_exploration/data/m11_p5_l0_runs/*.json（本节点实读）",
@@ -924,7 +972,7 @@ def build_plan() -> dict:
              prohibition="**预注册禁止作为标定手段**（`docs/m11_b3_g1_design.md` **L146**）",
              reason="提高 λ 同时抬高零驱动臂（若事件表泄漏）、压低静默 ⇒ 必然触发张力；"
                     "M10 A4 已付过同一学费（L137：抬高驱动去命中 (a) 会同时把静默压出带）",
-             allowed_only_as="剂量-响应诊断（**不在本计划内**；本计划 24 臂的 `drive_mult` 只有 0.0/1.0）"),
+             allowed_only_as="剂量-响应诊断（**不在本计划内**；本计划 30 臂的 `drive_mult` 只有 0.0/1.0）"),
         dict(lever="用「减少 settle」或「缩短 T」降成本",
              prohibition="禁（会违反 R80 步数断言与 T_min 口径）",
              reason="settle=500 ms ⇒ 210,000 步是预注册口径；缩短即失去与既有 L0/L1 臂的可比性",
@@ -1062,17 +1110,20 @@ def build_plan() -> dict:
     plan["selfcheck_map"] = dict(
         note="主 agent 清单第 1–8 条 ⇒ 落在计划 JSON 的哪个键 + 自检报告的哪一节",
         items={
-            "1 unmeasured_side_declaration「: 」计划键 `unmeasured_side_declaration`｜报告 §5",
-            "2 (a) 四条并报「: 」计划键 `a_reporting_four`（+ `reporting_contract`）｜报告 §5",
-            "3 亚型分解「: 」计划键 `subtype_reporting`｜报告 §5",
-            "4 同质化防线「: 」计划键 `homogenization_defense`｜报告 §5",
-            "5 producer_dependency「: 」计划键 `producer_dependency`（+ `prerequisites.producer_frozen`）｜报告 §4/§5",
-            "6 按档取价的预算「: 」计划键 `budget`｜报告 §7",
-            "7 停机规则「: 」计划键 `stop_rules`｜报告 §5",
-            "8 cross_plan_anchor「: 」计划键 `cross_plan_anchor`（+ `prerequisites.preflight_replication`）｜报告 §5",
+            "1 unmeasured_side_declaration": "计划键 `unmeasured_side_declaration`｜报告 §5",
+            "2 (a) 四条并报": "计划键 `a_reporting_four`（+ `reporting_contract`）｜报告 §5",
+            "3 亚型分解": "计划键 `subtype_reporting`｜报告 §5",
+            "4 同质化防线": "计划键 `homogenization_defense`｜报告 §5",
+            "5 producer_dependency": "计划键 `producer_dependency`（+ `prerequisites.producer_frozen`）｜报告 §4/§5",
+            "6 按档取价的预算": "计划键 `budget`｜报告 §7",
+            "7 停机规则": "计划键 `stop_rules`｜报告 §5",
+            "8 cross_plan_anchor": "计划键 `cross_plan_anchor`（+ `prerequisites.preflight_replication`）｜报告 §5",
         },
     )
     plan.update(_v2_blocks(plan))          # **网格 v2 覆盖块**（R118）
+    # **键顺序**：把"状态/作废/与冻结计划对齐"提到最前（R122：状态必须显式且**一眼可见**）
+    _prio = ["status", "supersedes", "alignment_with_frozen_plan", "plan_id", "structure"]
+    plan = {k: plan[k] for k in _prio if k in plan} | {k: v for k, v in plan.items() if k not in _prio}
     return plan
 
 
@@ -1094,7 +1145,7 @@ def run_assertions(plan: dict) -> dict:
     facts["steps_per_arm"] = steps
 
     # ② 臂数 / 唯一性
-    assert len(arms) == 24, "臂数必须为 24，实为 %d" % len(arms)
+    assert len(arms) == 30, "臂数必须为 30（5 格 × 2 角色 × 3 实现），实为 %d" % len(arms)
     rids = [a["run_id"] for a in arms]
     assert len(set(rids)) == len(rids), "run_id 必须唯一"
     tri = [(a["config_id"], a["role"], a["seed"]) for a in arms]
@@ -1140,11 +1191,12 @@ def run_assertions(plan: dict) -> dict:
                float(lv["bias_log_sigma"]) == cell["bias_log_sigma"], lv
         m = CFG_RE.match(cell["config_id"])
         assert m, cell["config_id"]
-        assert abs(float(m.group(1)) - cell["bias_scale"]) < 1e-9, cell
-        assert abs(float(m.group(2)) - cell["bias_log_sigma"]) < 1e-9, cell
+        assert m.group(1) == cell["tag"], ("config_id 内的格名与 CELLS 不一致：%s" % cell["config_id"])
+        assert abs(float(m.group(2)) - cell["bias_scale"]) < 1e-9, cell
+        assert abs(float(m.group(3)) - cell["bias_log_sigma"]) < 1e-9, cell
     kept = {l["config_id"]: [l["bias_scale"], l["bias_log_sigma"]] for l in plan["levels"]}
     facts["levels"] = kept
-    assert len(kept) == 4, kept
+    assert len(kept) == len(CELLS) == 5, kept
     for a in arms:
         exp = kept[a["config_id"]]
         assert float(a["bias_scale"]) == exp[0] and float(a["bias_log_sigma"]) == exp[1], a["run_id"]
@@ -1158,7 +1210,7 @@ def run_assertions(plan: dict) -> dict:
     assert plan["drive_rate_hz"] == DRIVE_RATE_HZ, plan["drive_rate_hz"]
     for a in arms:
         assert float(a["drive_mult"]) in (0.0, 1.0), ("drive_mult 只允许 0.0/1.0：%s" % a["run_id"])
-        assert "drive_rate_hz「 not in a, ("臂不得覆盖 drive_rate_hz（禁驱动抬升）：%s" % a["run_id"])
+        assert "drive_rate_hz" not in a , ("臂不得覆盖 drive_rate_hz（禁驱动抬升）：%s" % a["run_id"])
     for l in plan["levels"]:
         assert "drive_rate_hz" not in l and "drive_mult" not in l, l["config_id"]
     facts["drive_rate_hz"] = plan["drive_rate_hz"]
@@ -1181,11 +1233,28 @@ def run_assertions(plan: dict) -> dict:
     facts["producer_key_reads"] = producer_key_report()
     facts["decorative_keys"] = list(DECORATIVE_KEYS)
 
+    # ⑧b **drop-in 断言**：与冻结计划的 (run_id, config_id, role, seed) 集合完全相同
+    assert sha256_of(FROZEN_L3_PLAN) == FROZEN_L3_SHA, \
+        ("冻结计划 sha 变了（R48/R119 的引用会失效）：%s" % sha256_of(FROZEN_L3_PLAN))
+    with open(FROZEN_L3_PLAN) as f:
+        _frozen = json.load(f)
+    key = lambda a: (a["run_id"], a["config_id"], a["role"], int(a["seed"]))
+    mine, frozen = {key(a) for a in arms}, {key(a) for a in _frozen["arms"]}
+    assert mine == frozen, ("与冻结计划臂集合不一致：只多 %r / 只少 %r（必须**只改顺序**）"
+                            % (sorted(mine - frozen)[:3], sorted(frozen - mine)[:3]))
+    assert [key(a) for a in arms] != [key(a) for a in _frozen["arms"]], \
+        "臂顺序必须与冻结计划不同（本版按主 agent v2 派工重排：A0 → C0 → C1 → C2 → C3）"
+    facts["drop_in_vs_frozen"] = dict(n_arms=len(mine), frozen_sha=sha256_of(FROZEN_L3_PLAN),
+                                      same_set=True, order_differs=True,
+                                      my_order=[a["config_id"] for a in arms][:6],
+                                      frozen_order=[a["config_id"] for a in _frozen["arms"]][:6])
+
     # ⑨ 预算自洽（逐格加权，不得单点外推）
     b = plan["budget"]
     assert b["gpu_h_mid"] < b["gpu_h_upper"], b
-    assert abs(b["gpu_h_mid"] - 1.7937) < 5e-4, b["gpu_h_mid"]
-    assert abs(b["gpu_h_upper"] - 2.1036) < 5e-4, b["gpu_h_upper"]
+    assert abs(b["gpu_h_mid"] - 1.7983) < 5e-4, b["gpu_h_mid"]
+    assert abs(b["gpu_h_upper"] - 2.5998) < 5e-4, b["gpu_h_upper"]
+    assert abs(b["gpu_h_mid_T10_anchored"] - 1.7064) < 5e-4, b["gpu_h_mid_T10_anchored"]
     facts["gpu_h_mid"] = b["gpu_h_mid"]
     facts["gpu_h_upper"] = b["gpu_h_upper"]
     facts["gpu_h_per_cell"] = {k: v["gpu_h_mid"] for k, v in b["per_cell"].items()}
@@ -1196,14 +1265,288 @@ def _serialize(plan: dict) -> bytes:
     return json.dumps(plan, indent=1, ensure_ascii=False).encode("utf-8")
 
 
+
+
+# =====================================================================================
+# **只读复核模式**（本次规则变更的主角）：对正式跑的冻结计划做全部断言 + 与自报数字对账
+# =====================================================================================
+CELL_EXPECT = {("C2", 1.30, 0.10), ("A0", 1.00, 0.30), ("C1", 1.15, 0.10),
+               ("C3", 1.45, 0.10), ("C0", 1.00, 0.10)}
+ORDER_EXPECT = ["C2", "A0", "C1", "C3", "C0"]
+FROZEN_CELL_CFG = {"p5_L3_C2_b1.30_s0.10", "p5_L3_A0_b1.00_s0.30", "p5_L3_C1_b1.15_s0.10",
+                   "p5_L3_C3_b1.45_s0.10", "p5_L3_C0_b1.00_s0.10"}
+CFG_FROZEN_RE = re.compile(r"^p5_L3_([A-Z]\d)_b(\d+\.\d\d)_s(\d+\.\d\d)$")
+FROZEN_SELF_REPORTED = dict(
+    n_arms=30, n_cells=5, steps=210000,
+    budget_gpu_h_mid=2.275, budget_gpu_h_upper=2.8,      # 计划 `budget` 自报（代表值 1.30/1.60）
+    wall_per_arm_h_claim=1.75,                            # 主 agent 本次消息：“每臂约 1.75 h 墙钟，整轮约 68 h”
+    wall_total_h_claim=68.0,
+)
+
+
+def _median(xs):
+    ys = sorted(xs)
+    n = len(ys)
+    if n == 0:
+        return None
+    return float(ys[n // 2]) if n % 2 else 0.5 * (ys[n // 2 - 1] + ys[n // 2])
+
+
+def recompute_arm_facts(run_dir: str) -> dict:
+    """**从产物独立重算**运行中作业已完成臂的读数（不依赖任何自报值）。
+
+    只用标准库：`<run_id>_counts.csv`（`neuron_id,count,cell_type`）+ `<run_id>.json` 的聚合量。
+    给出：`n_spikes`（counts 求和，作为 `spikes_total` 的**第二估计器**）、`pop_mean_hz`、
+    `median_rate_hz`（= median(count)/T_s）、`active_frac`（count>0 占比）、逐亚型中位率/活跃占比。
+    """
+    out = {}
+    if not os.path.isdir(run_dir):
+        return out
+    for csv_path in sorted(glob.glob(os.path.join(run_dir, "*_counts.csv"))):
+        rid = os.path.basename(csv_path)[:-len("_counts.csv")]
+        jpath = os.path.join(run_dir, rid + ".json")
+        if not os.path.exists(jpath):
+            continue
+        with open(jpath) as f:
+            j = json.load(f)
+        counts, types = [], []
+        with open(csv_path) as f:
+            rd = csv.DictReader(f)
+            for row in rd:
+                counts.append(int(row["count"]))
+                types.append(row["cell_type"])
+        T_s = float(j["T_ms"]) / 1000.0
+        n = len(counts)
+        sub = {}
+        for ct in ("E", "PV", "SST", "VIP"):
+            c = [v for v, t in zip(counts, types) if t == ct]
+            if c:
+                sub[ct] = dict(n=len(c), median_hz=_median(c) / T_s,
+                               active_frac=sum(1 for v in c if v > 0) / len(c))
+        out[rid] = dict(
+            role=j.get("role"), seed=j.get("seed"), T_ms=j.get("T_ms"),
+            spikes_total_reported=j.get("spikes_total"), spikes_total_from_counts=sum(counts),
+            n_neuron=n, pop_mean_hz=sum(counts) / (n * T_s),
+            median_rate_hz=_median(counts) / T_s,
+            active_frac=sum(1 for v in counts if v > 0) / n,
+            ei_ratio=(j.get("ei") or {}).get("ei_ratio"),
+            ms_per_step=j.get("ms_per_step_steady"), wall_s=j.get("wall_s"),
+            zero_activity=j.get("zero_activity"), subtype=sub,
+            dual_estimator_ok=(int(j.get("spikes_total", -1)) == sum(counts)),
+        )
+    return out
+
+
+def verify_frozen_plan(args) -> int:
+    """**对冻结计划 `data/m11_p5_plan_l3.json` 做只读全量复核**（本函数**不写 data/**）。"""
+    sha = sha256_of(FROZEN_PLAN_FOR_RUN)
+    with open(FROZEN_PLAN_FOR_RUN) as f:
+        plan = json.load(f)
+    arms, levels = plan["arms"], plan["levels"]
+    fails, rows = [], []
+
+    def chk(name, ok, detail):
+        rows.append((name, "PASS" if ok else "FAIL", detail))
+        if not ok:
+            fails.append("%s ⇒ %s" % (name, str(detail)[:200]))
+
+    # A1 臂数 / 格数
+    chk("A1 臂数=30", len(arms) == 30, "n_arms=%d" % len(arms))
+    chk("A1b 格数=5", len(levels) == 5, "config_ids=%r" % sorted({a["config_id"] for a in arms}))
+    per_cell = {}
+    for a in arms:
+        per_cell.setdefault(a["config_id"], []).append(a)
+    chk("A1c 每格 6 臂（2 角色×3 实现）", all(len(v) == 6 for v in per_cell.values()),
+        "每格臂数=%r" % {k: len(v) for k, v in per_cell.items()})
+
+    # A2 格位与顺序
+    got_cells, order = set(), []
+    for lv in levels:
+        got_cells.add((lv["cell"], float(lv["bias_scale"]), float(lv["bias_log_sigma"])))
+    chk("A2 格位集合 == R118 修订", got_cells == CELL_EXPECT,
+        "差集=%r" % sorted(got_cells ^ CELL_EXPECT))
+    for a in arms:                                  # 首次出现顺序（= 运行顺序）
+        if a["config_id"] not in order:
+            order.append(a["config_id"])
+    order_cells = [CFG_FROZEN_RE.match(c).group(1) for c in order]
+    chk("A2b 运行顺序 == C2→A0→C1→C3→C0", order_cells == ORDER_EXPECT, "实测=%r" % order_cells)
+    oar = str(plan.get("ordering_and_its_reason", ""))
+    chk("A2c 计划内 `ordering_and_its_reason` 与臂顺序一致",
+        all(c in oar for c in ORDER_EXPECT) and oar.index("C2") < oar.index("A0"),
+        "文本前 80 字=%r" % oar[:80])
+
+    # A3 时长/步数
+    chk("A3 T_ms==10000.0（逐臂 30/30）", all(float(a["T_ms"]) == T_MS for a in arms),
+        "取值集合=%r" % sorted({float(a["T_ms"]) for a in arms}))
+    chk("A3b settle_ms==500.0（计划级）", float(plan["settle_ms"]) == SETTLE_MS, plan["settle_ms"])
+    chk("A3c settle_ms==500.0（逐臂 30/30）", all(float(a.get("settle_ms", plan["settle_ms"])) == SETTLE_MS
+                                                  for a in arms), "缺键数=%d" % sum(1 for a in arms if "settle_ms" not in a))
+    steps = int(round((float(plan["settle_ms"]) + T_MS) / float(plan["dt_ms"])))
+    chk("A3d 步数=（500+10000)/0.05=210000", steps == 210000 and steps >= 200000, "steps=%d" % steps)
+    chk("A3e dt_ms==0.05", float(plan["dt_ms"]) == DT_MS, plan["dt_ms"])
+
+    # A4 复刻轴
+    bad_pairs, n_pairs = [], {}
+    for cfg, lst in per_cell.items():
+        for role in ("baseline", "zero_drive"):
+            grp = [a for a in lst if a["role"] == role]
+            pairs = [(a["net_seed"], a["event_seed"]) for a in grp]
+            n_pairs["%s|%s" % (cfg, role)] = len(set(pairs))
+            if len(grp) != 3 or len(set(pairs)) != 3:
+                bad_pairs.append((cfg, role, pairs))
+            for a in grp:
+                if (a["net_seed"], a["event_seed"]) != (a["seed"], 11 + a["seed"]):
+                    bad_pairs.append((a["run_id"], "seed_pair_mismatch", pairs))
+    chk("A4 每格每角色 3 个 (net,event) 两两互异且=预注册对", not bad_pairs,
+        "异常=%r；组数=%d" % (bad_pairs[:2], len(n_pairs)))
+
+    # A5 三元组唯一
+    tri = [(a["config_id"], a["role"], a["seed"]) for a in arms]
+    chk("A5 (config_id,role,seed) 唯一", len(set(tri)) == len(tri) == 30, "n_unique=%d" % len(set(tri)))
+    chk("A5b run_id 唯一", len({a["run_id"] for a in arms}) == 30, "n_unique=%d" % len({a["run_id"] for a in arms}))
+
+    # A6 键集合对齐 L1
+    with open(L1_PLAN) as f:
+        l1 = json.load(f)
+    miss = sorted(set(l1.keys()) - set(plan.keys()))
+    chk("A6 L1 顶层键 ⊆ 冻结计划（差集空）", not miss, "缺失=%r；L1=%d 键，冻结=%d 键，多出=%r"
+        % (miss, len(l1), len(plan), [k for k in plan if k not in l1]))
+
+    # A7 生产者键读取
+    kr = producer_key_report()
+    chk("A7 生产者键读取点（22 实读 / 2 装饰性）",
+        len([1 for k, ln, _ in kr if ln is not None]) == 22, "实读=%d，装饰性=%r"
+        % (len([1 for k, ln, _ in kr if ln is not None]), [k for k, ln, _ in kr if ln is None]))
+
+    # A8 驱动侧
+    boosts = [a["run_id"] for a in arms if float(a["drive_mult"]) not in (0.0, 1.0)]
+    chk("A8 drive_mult∈{0,1}（无驱动抬升档）", not boosts, "越界臂=%r" % boosts)
+    chk("A8b 计划级 drive_rate_hz==8.0", float(plan["drive_rate_hz"]) == DRIVE_RATE_HZ, plan["drive_rate_hz"])
+    covers = [a["run_id"] for a in arms if "drive_rate_hz" in a]
+    chk("A8c 无臂覆盖 drive_rate_hz", not covers, "覆盖臂=%r" % covers)
+    lv_cov = [lv["cell"] for lv in levels if "drive_rate_hz" in lv or "drive_mult" in lv]
+    chk("A8d levels 内无驱动键", not lv_cov, "越界格=%r" % lv_cov)
+
+    # A9 臂键集合
+    arm_keys = {tuple(sorted(a.keys())) for a in arms}
+    chk("A9 每臂恰好 24 必需键（单一键集合）", len(arm_keys) == 1 and len(arm_keys.pop()) == 24,
+        "key_set 数=%d" % len({tuple(sorted(a.keys())) for a in arms}))
+
+    # A10 角色/格位一致性
+    rbad = [a["run_id"] for a in arms
+            if (a["role"] == "zero_drive" and float(a["drive_mult"]) != 0.0)
+            or (a["role"] == "baseline" and float(a["drive_mult"]) != 1.0)]
+    chk("A10 role↔drive_mult 一致", not rbad, "异常=%r" % rbad)
+    cbad = []
+    for a in arms:
+        m = CFG_FROZEN_RE.match(a["config_id"])
+        if not m or abs(float(m.group(2)) - float(a["bias_scale"])) > 1e-9 \
+                or abs(float(m.group(3)) - float(a["bias_log_sigma"])) > 1e-9:
+            cbad.append(a["run_id"])
+    chk("A10b config_id↔(bias,σ) 一致", not cbad, "异常=%r" % cbad)
+
+    # A11 A0 锚：与既有 L0 产物核对（计划自报 vs 盘上实测）
+    a0 = {}
+    for s_ in SEEDS:
+        for d, role in ((0, "zero_drive"), (1, "baseline")):
+            pth = os.path.join(DATA_DIR, "m11_p5_l0_runs",
+                               "l0_g1.00_b1.00_8192_T10000ms_d%d_s%d.json" % (d, s_))
+            if os.path.exists(pth):
+                with open(pth) as f:
+                    j = json.load(f)
+                a0["%s_s%d" % (role, s_)] = dict(spikes=j["spikes_total"], sha=j["sha256_of_trace"][:16])
+    chk("A11 A0 锚既有 L0 产物可读（6/6 臂）", len(a0) == 6, "读到=%d" % len(a0))
+
+    # A12 条款块存在
+    chk("A12 stop_rules 8 条", isinstance(plan.get("stop_rules"), list) and len(plan["stop_rules"]) == 8,
+        "n=%s" % (len(plan["stop_rules"]) if isinstance(plan.get("stop_rules"), list) else None))
+    chk("A12b a_reporting 含四条（含 pooled_zero_drive）",
+        all(k in json.dumps(plan.get("a_reporting", ""), ensure_ascii=False)
+            for k in ("a_active_frac", "a_pop_mean_hz", "pooled_zero_drive")), "a_reporting=%s"
+        % json.dumps(plan.get("a_reporting", ""), ensure_ascii=False)[:120])
+    chk("A12c unmeasured_side_declaration 含 by_measurement_excluded",
+        isinstance(plan.get("unmeasured_side_declaration"), dict)
+        and plan["unmeasured_side_declaration"].get("by_measurement_excluded") is not None,
+        json.dumps(plan.get("unmeasured_side_declaration", {}), ensure_ascii=False)[:120])
+    chk("A12d 窗口口径（300 / 0.10）在计划内", ("300" in json.dumps(plan.get("lever_prereg_falsifier", ""), ensure_ascii=False)
+                                                or "300" in json.dumps(plan.get("a_reporting", ""), ensure_ascii=False)),
+        "falsifier=%s" % json.dumps(plan.get("lever_prereg_falsifier", ""), ensure_ascii=False)[:100])
+
+    # A13 与生成器内存版比对（只改顺序？）
+    mine = build_plan()
+    keyf = lambda x: (x["run_id"], x["config_id"], x["role"], int(x["seed"]))
+    ms_, fs_ = {keyf(a) for a in mine["arms"]}, {keyf(a) for a in arms}
+    chk("A13 生成器版与冻结计划臂集合相同", ms_ == fs_,
+        "只多=%r 只少=%r" % (sorted(ms_ - fs_)[:2], sorted(fs_ - ms_)[:2]))
+    order_mine = [a["config_id"] for a in mine["arms"]][:5]
+    order_froz = [a["config_id"] for a in arms][:5]
+    chk("A13b 两者臂顺序不同（本版 A0 先 / 冻结版 C2 先）", order_mine != order_froz,
+        "mine=%r frozen=%r" % (order_mine, order_froz))
+
+    # A14 预算对账（逐格加权 vs 计划自报）
+    prices = {("A0", "baseline"): 1.1872, ("A0", "zero_drive"): 1.1872,
+              ("C0", "baseline"): 1.0760, ("C0", "zero_drive"): 0.6434,
+              ("C1", "baseline"): 1.2808, ("C1", "zero_drive"): 0.6434,
+              ("C2", "baseline"): 1.4856, ("C2", "zero_drive"): 0.6434,
+              ("C3", "baseline"): 1.4856, ("C3", "zero_drive"): 0.6434}
+    per_cell_h, tot = {}, 0.0
+    for a in arms:
+        cell = CFG_FROZEN_RE.match(a["config_id"]).group(1)
+        h = 210000 * prices[(cell, a["role"])] / 3.6e6
+        per_cell_h.setdefault(a["config_id"], 0.0)
+        per_cell_h[a["config_id"]] += h
+        tot += h
+    rec = dict(mine_gpu_h_mid=round(tot, 4), their_gpu_h_mid=FROZEN_SELF_REPORTED["budget_gpu_h_mid"],
+               mine_gpu_h_upper=round(30 * 210000 * 1.4856 / 3.6e6, 4),
+               their_gpu_h_upper=FROZEN_SELF_REPORTED["budget_gpu_h_upper"],
+               per_cell={k: round(v, 4) for k, v in per_cell_h.items()},
+               plan_self_reported=plan.get("budget"))
+
+    facts = dict(frozen_sha256=sha, n_arms=len(arms), order=order_cells, per_cell_arms={k: len(v) for k, v in per_cell.items()},
+                 steps=steps, assertions=rows, fails=fails, a0_l0_anchor=a0, budget_reconcile=rec,
+                 producer_key_reads=kr, plan_self_reported=FROZEN_SELF_REPORTED,
+                 run_dir_facts=recompute_arm_facts(os.path.join(DATA_DIR, "m11_p5_l3_runs")))
+    print("== 冻结计划只读复核：%s ==" % FROZEN_PLAN_FOR_RUN)
+    print("sha256 = %s（期望 %s）⇒ %s" % (sha, FROZEN_L3_SHA, "一致" if sha == FROZEN_L3_SHA else "🔴 不一致"))
+    for name, st, detail in rows:
+        print("  [%s] %-46s %s" % (st, name, str(detail)[:110]))
+    print("== 预算对账 ==")
+    print("  逐格加权 mid=%.4f / upper=%.4f ｜ 计划自报 mid=%s / upper=%s"
+          % (rec["mine_gpu_h_mid"], rec["mine_gpu_h_upper"],
+             rec["their_gpu_h_mid"], rec["their_gpu_h_upper"]))
+    for k, v in sorted(rec["per_cell"].items()):
+        print("    %-24s %.4f GPU-h" % (k, v))
+    print("== 运行中作业已完成臂（本节点从产物独立重算）==")
+    for rid, v in sorted(facts["run_dir_facts"].items()):
+        print("  %-46s spk=%s(counts=%s) median=%.4f Hz active=%.4f ei=%s ms/step=%s wall=%ss"
+              % (rid, v["spikes_total_reported"], v["spikes_total_from_counts"], v["median_rate_hz"],
+                 v["active_frac"], v["ei_ratio"], v["ms_per_step"], v["wall_s"]))
+    if fails:
+        print("**FAIL %d 条**：" % len(fails))
+        for x in fails:
+            print("   -", x)
+    refuse_data_write(args.facts_out)
+    with open(args.facts_out, "w") as f:
+        json.dump(facts, f, indent=1, ensure_ascii=False)
+    print("facts -> %s" % args.facts_out)
+    return 0 if not fails else 1
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=OUT_PATH)
     ap.add_argument("--check", action="store_true", help="不写盘；与磁盘文件逐字节比对 + 重跑全部断言")
     ap.add_argument("--keys", action="store_true", help="只打印生产者键读取比对表")
+    ap.add_argument("--verify-frozen", action="store_true",
+                    help="**只读**：对正式跑的冻结计划 data/m11_p5_plan_l3.json 做全部断言 + 与生成器内存版比对")
+    ap.add_argument("--facts-out", default=os.path.join(tempfile.gettempdir(), "m11_p5_plan_l3_verify_facts.json"),
+                    help="--verify-frozen 的事实输出（默认临时目录；**不得**指向 data/）")
     args = ap.parse_args(argv)
     assert os.path.abspath(args.out) not in [os.path.abspath(x) for x in FORBIDDEN_OUT_PATHS], (
         "**拒绝写入**：%s 是既有的、正在被正式跑使用的计划（R119/本节点事故登记）⇒ 换路径" % args.out)
+
+    if args.verify_frozen:                       # **只读模式**：不写任何文件（除 --facts-out）
+        return verify_frozen_plan(args)
 
     if args.keys:
         for k, ln, snip in producer_key_report():
@@ -1221,6 +1564,7 @@ def main(argv=None) -> int:
                               % (len(disk), len(blob)))
         print("--check 通过：%s 与生成器逐字节一致（%d B）" % (args.out, len(blob)))
     else:
+        refuse_data_write(args.out)              # **硬闸门**
         with open(args.out, "wb") as f:
             f.write(blob)
         print("plan(%d arms) -> %s（%d B）" % (len(plan["arms"]), args.out, len(blob)))
