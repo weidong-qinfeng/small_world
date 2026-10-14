@@ -1,0 +1,1975 @@
+{
+ "status": "**有效 —— 网格 v2（R118 事前修订；30 臂 = 5 格 × 2 角色 × 3 独立实现）**。本文件是 L3 的**可运行**计划；旧的 4 格 24 臂版本已按 R122 §④ 作废（见 `supersedes`）。",
+ "supersedes": {
+  "path": "neural_exploration/data/m11_p5_plan_l3_replan.json（**保持其已提交的作废状态不变**：该文件由主 agent 提交于 commit `4b1507b`，并配有显式标记件 `data/m11_p5_plan_l3_replan.json.SUPERSEDED`）",
+  "action": "本版**不改动那个作废文件**（生成器 `FORBIDDEN_OUT_PATHS` 含它与其标记件）⇒ v2 计划写在**新路径** `data/m11_p5_plan_l3_grid_v2_replan.json`，作废状态与可运行计划各自自洽。",
+  "old_plan_id": "l3_replan_bias_sigma_window_n8192",
+  "old_sha256": "539325a13aa201cd5bc480d0b941768fb452ef2e36caccd3c90fba29ff1af98b",
+  "old_size_bytes": 62781,
+  "old_cells": [
+   "(1.00,0.30)",
+   "(1.30,0.30)",
+   "(1.30,0.20)",
+   "(1.30,0.15)"
+  ],
+  "verdict": "**R122 §④：不得运行**。探针已在同一角落实测 σ=0.30/0.20/0.15 的 R ≈ 0.30/0.879/0.881（全部 ≥0.10 ⇒ (c) fail），零驱动 pooled 远超窗口上界 ⇒ 跑它 = 花 24 臂重测一个已测结论。",
+  "discipline": "**纪律第六十三条**：被取代的计划不得原样留在可执行位置 ⇒ 本脚本**就地覆盖**该路径，并在本文件顶部写死 `status` + `supersedes`（含旧 sha）⇒ 盘上**不再存在**那个过期计划，且「过期」这一事实**不依赖任何人的记忆**。",
+  "traceability": "旧内容 sha256 = `539325a13aa201cd5bc480d0b941768fb452ef2e36caccd3c90fba29ff1af98b`（62,781 B，1638 行）；本节点上一轮的自检报告 §0 亦留有该 sha 与差异说明。"
+ },
+ "alignment_with_frozen_plan": {
+  "frozen_plan": {
+   "path": "neural_exploration/data/m11_p5_plan_l3.json",
+   "sha256": "4aab49b00177a22e21f65b884bd29d95a8e7333e76cb109ae8fcd8bb9bd94615"
+  },
+  "same_namespace": "本计划与冻结计划**共用** `plan_id` / 逐臂 `config_id` / 逐臂 `run_id`（R119 §① 已固化的命名），**只改臂顺序**、不改任何档位/实现/协议字段 ⇒ ① 已完成的臂会被 `[SKIP]` 复用（生产者 L553–557），② 评估/报告命令（含 R120 §② 的协议文件名 `m11_p5_protocol_p5_L3_sigma_cliff_bias_scan.json`）**不必改写**。**⇒ 两个计划只应运行其中一个**（同时跑会争用 MPS，R119 §① 的 6× 退化已实测）。",
+  "drop_in_assertion": "生成器断言：本计划与冻结计划的 `(run_id, config_id, role, seed)` 集合**完全相同**（见 §自检）。",
+  "already_done_arms": "截止本节点实读，正式跑已产出 **2 个 `.done`**：`l3_C2_b1.30_s0.10_…_d1.0_s0`（spk=52,601、`ms/step`=0.9318、`ei_ratio`=2.5970）与 `…_s1`（spk=52,572、0.9887、2.6034）⇒ **C2 baseline 已有 2 个实现的正式读数**；本计划若跑进同一 `--out-dir`，这两臂将被复用。"
+ },
+ "plan_id": "p5_L3_sigma_cliff_bias_scan",
+ "structure": "网格 v2（R118 事前修订）：**5 格 × 2 角色 × 3 独立实现 = 30 臂**；T=10 s / settle=500 ms ⇒ 210,000 步/臂；chunk 生产口径 / step 判据口径；臂顺序 = A0 锚 → C0 → C1 → C2 → C3（每格内 baseline 先、zero_drive 后）",
+ "parent_prereg": {
+  "path": "neural_exploration/data/m11_p5_lever_prereg.json",
+  "sha256_full": "9c6f7c60073ee07e1f48aee787040f16d24aa0efaf67b4cf65f98d2e263c6644",
+  "cited": {
+   "lever": "L3 二维角落：`bias_scale`↑（抬 active_frac/中位率）× `bias_log_sigma` = 0.10（削上尾 ⇒ 压自发活动）",
+   "design": "**R118 事前修订网格 v2**：σ=0.10（悬崖面附近唯一可达窗口值）× `bias ∈ {1.00, 1.15, 1.30, 1.45}`；锚点格 (1.00, σ=0.30) = 既有 L0/L1 同配置点",
+   "hypothesis": "σ↓ 削掉播种自发活动的上尾（尾部选择性，R113/R118），bias↑ 把 active_frac 推过 50% 并抬高中位率（R114）⇒ 二者分工互补，第一次可能**同时**满足 (a) 与 (c)",
+   "stop_rules": "见本计划 `stop_rules`（8 条，按 v2 改写自 `L2_design.stop_rules`）"
+  },
+  "amendment": {
+   "path": "neural_exploration/data/m11_prereg_amend_r118_l3_grid_v2.json",
+   "sha256": "942056b5f5b02d504069a704d3d65bead599b2975f6253e67c474987b0ca54e4",
+   "sha256_expected": "942056b5f5b02d504069a704d3d65bead599b2975f6253e67c474987b0ca54e4",
+   "authority": "R118（docs/m11_acceptance_master.md §3di）",
+   "supersedes": "R115 §④ 所载的 L3 网格 `bias∈[1.20,1.40] × σ∈[0.15,0.25]`",
+   "why": "实测悬崖：`bias=1.30` 下零驱动脉冲 σ=0.30/0.20/0.15 ⇒ 4,126/4,875/4,666，σ=0.10 ⇒ **46**（0.15→0.10 落差 **101×**）⇒ 原网格整段**远在 (c) 窗口之外**；窗口只在 σ=0.10 处可达。",
+   "honesty_clause": "修订文件自记：「σ=0.10 与 bias=1.15/1.45 **原在我自己登记的网格范围之外**」 ⇒ 必须走事前修订，**不得事后追认为本来就在范围内**。"
+  },
+  "amendments_other": {
+   "r109_a_reporting": {
+    "path": "neural_exploration/data/m11_p5_prereg_amend_r109_a_reporting.json",
+    "sha256": "aa039f67403d1ba6ba1873143a6c6eb6ffbb50ebe4ab6d4b6800af8ac0b89fb8",
+    "scope": "(a) 三条并报（不改频带、不改 pass/fail）；本计划追加第 4 条 `pooled_zero_drive` 绝对值"
+   },
+   "l1_plan_reference": {
+    "path": "neural_exploration/data/m11_p5_plan_l1.json",
+    "sha256": "8b58577222038ff91d4550a94101b09fcaa4a6d1bdfaac4d9f3451d8b36366cf",
+    "scope": "**键集合模板**（本计划顶层键集 ⊇ L1 键集，差集空）"
+   }
+  }
+ },
+ "units": {
+  "T_ms": "millisecond",
+  "settle_ms": "millisecond",
+  "dt_ms": "millisecond",
+  "wall_s": "second",
+  "ms_per_step": "millisecond per step",
+  "drive_rate_hz": "Hz per neuron",
+  "gpu_h": "GPU-hour (=3.6e6 ms)",
+  "bias_scale": "无量纲倍数（乘在偏置张量上）",
+  "gmax_scale": "无量纲倍数（乘在突触权重上）",
+  "bias_log_sigma": "无量纲（对数正态宽度；乘在标准正态分量上，不改 RNG 序列）",
+  "pooled_baseline": "脉冲数（3 个实现求和，非率）",
+  "pooled_zero_drive": "脉冲数（3 个实现求和，非率）",
+  "R": "无量纲比值 = pooled_zero_drive / pooled_baseline",
+  "note": "R80 §⑥：跨接口传递的量必须在接口定义处写明单位；接收方写产物前必须做量纲自检"
+ },
+ "n_neuron": 8192,
+ "settle_ms": 500.0,
+ "dt_ms": 0.05,
+ "drive_rate_hz": 8.0,
+ "device": "mps",
+ "bin_ms": 100.0,
+ "smooth_frames": 5,
+ "estimator": "per_neuron",
+ "indegree": 20,
+ "gmax_scale": 1.0,
+ "bias_scale": 1.0,
+ "bias_log_sigma": 0.3,
+ "delay_bins": [
+  40,
+  60,
+  80
+ ],
+ "seed_policy": {
+  "net_seed": "**每臂显式**（0/1/2，照 R93 与 L0/L1 的 SEED_PAIRS 约定）",
+  "event_seed": "**每臂显式**（11/12/13 = 11+seed）",
+  "reset_seed": "=seed（由生产者在 L252 用 reset_seed=spec['seed'] 驱动）",
+  "per_arm_explicit": true,
+  "net_event_pairs": {
+   "0": [
+    0,
+    11
+   ],
+   "1": [
+    1,
+    12
+   ],
+   "2": [
+    2,
+    13
+   ]
+  },
+  "rationale": "R93 第 43 条：复刻轴三源分别声明；**不设计划级 net_seed**（恒定注入会让 seed 无法驱动网络）。注意：同一 (net,event) 对在**不同格之间刻意复用**（跨格可比性 + A0 锚的逐位可复现性）⇒ 三元组在计划级**必然重复**，去重口径是**按 (config_id, role) 分组**（生产者 L466–490）"
+ },
+ "subtypes": true,
+ "slow": true,
+ "tau_slow_ms": 1000.0,
+ "slow_inc": 6.0,
+ "production_delivery": "chunk",
+ "criterion_delivery": "step",
+ "launch_prefix": "caffeinate -i",
+ "judged_units": [
+  {
+   "config_id": "p5_L3_A0_b1.00_s0.30",
+   "T_ms": 10000.0,
+   "mechanism": "lever_l3",
+   "zero_drive_seeds": [
+    0,
+    1,
+    2
+   ],
+   "baseline_seeds": [
+    0,
+    1,
+    2
+   ],
+   "bias_scale": 1.0,
+   "bias_log_sigma": 0.3,
+   "net_event_pairs": {
+    "0": [
+     0,
+     11
+    ],
+    "1": [
+     1,
+     12
+    ],
+    "2": [
+     2,
+     13
+    ]
+   },
+   "note": "评估器逐 (config_id,T,mechanism) 单元复核 (a)(b)(c)(e)；本计划 mechanism='lever_l3'（≠ 'none'）⇒ 硬门⑤「无机制基线臂登记」对该单元不可用（见 cross_tool_notes）；**L3 判定以 tools/report_m11_l3.py 为主、评估器为辅**（R120 §③）"
+  },
+  {
+   "config_id": "p5_L3_C0_b1.00_s0.10",
+   "T_ms": 10000.0,
+   "mechanism": "lever_l3",
+   "zero_drive_seeds": [
+    0,
+    1,
+    2
+   ],
+   "baseline_seeds": [
+    0,
+    1,
+    2
+   ],
+   "bias_scale": 1.0,
+   "bias_log_sigma": 0.1,
+   "net_event_pairs": {
+    "0": [
+     0,
+     11
+    ],
+    "1": [
+     1,
+     12
+    ],
+    "2": [
+     2,
+     13
+    ]
+   },
+   "note": "评估器逐 (config_id,T,mechanism) 单元复核 (a)(b)(c)(e)；本计划 mechanism='lever_l3'（≠ 'none'）⇒ 硬门⑤「无机制基线臂登记」对该单元不可用（见 cross_tool_notes）；**L3 判定以 tools/report_m11_l3.py 为主、评估器为辅**（R120 §③）"
+  },
+  {
+   "config_id": "p5_L3_C1_b1.15_s0.10",
+   "T_ms": 10000.0,
+   "mechanism": "lever_l3",
+   "zero_drive_seeds": [
+    0,
+    1,
+    2
+   ],
+   "baseline_seeds": [
+    0,
+    1,
+    2
+   ],
+   "bias_scale": 1.15,
+   "bias_log_sigma": 0.1,
+   "net_event_pairs": {
+    "0": [
+     0,
+     11
+    ],
+    "1": [
+     1,
+     12
+    ],
+    "2": [
+     2,
+     13
+    ]
+   },
+   "note": "评估器逐 (config_id,T,mechanism) 单元复核 (a)(b)(c)(e)；本计划 mechanism='lever_l3'（≠ 'none'）⇒ 硬门⑤「无机制基线臂登记」对该单元不可用（见 cross_tool_notes）；**L3 判定以 tools/report_m11_l3.py 为主、评估器为辅**（R120 §③）"
+  },
+  {
+   "config_id": "p5_L3_C2_b1.30_s0.10",
+   "T_ms": 10000.0,
+   "mechanism": "lever_l3",
+   "zero_drive_seeds": [
+    0,
+    1,
+    2
+   ],
+   "baseline_seeds": [
+    0,
+    1,
+    2
+   ],
+   "bias_scale": 1.3,
+   "bias_log_sigma": 0.1,
+   "net_event_pairs": {
+    "0": [
+     0,
+     11
+    ],
+    "1": [
+     1,
+     12
+    ],
+    "2": [
+     2,
+     13
+    ]
+   },
+   "note": "评估器逐 (config_id,T,mechanism) 单元复核 (a)(b)(c)(e)；本计划 mechanism='lever_l3'（≠ 'none'）⇒ 硬门⑤「无机制基线臂登记」对该单元不可用（见 cross_tool_notes）；**L3 判定以 tools/report_m11_l3.py 为主、评估器为辅**（R120 §③）"
+  },
+  {
+   "config_id": "p5_L3_C3_b1.45_s0.10",
+   "T_ms": 10000.0,
+   "mechanism": "lever_l3",
+   "zero_drive_seeds": [
+    0,
+    1,
+    2
+   ],
+   "baseline_seeds": [
+    0,
+    1,
+    2
+   ],
+   "bias_scale": 1.45,
+   "bias_log_sigma": 0.1,
+   "net_event_pairs": {
+    "0": [
+     0,
+     11
+    ],
+    "1": [
+     1,
+     12
+    ],
+    "2": [
+     2,
+     13
+    ]
+   },
+   "note": "评估器逐 (config_id,T,mechanism) 单元复核 (a)(b)(c)(e)；本计划 mechanism='lever_l3'（≠ 'none'）⇒ 硬门⑤「无机制基线臂登记」对该单元不可用（见 cross_tool_notes）；**L3 判定以 tools/report_m11_l3.py 为主、评估器为辅**（R120 §③）"
+  }
+ ],
+ "prerequisites": {
+  "producer_frozen": "**必须**：`tools/run_m11_p5_arms.py` sha256 = 633a4c458e9c1dd5（R116 验收后的版本，含零活动分支）；R48：跑前不得再改生产者",
+  "positive_control_required": "跑前必须确认 **零活动分支已被验收**（R116 §④ 的 Z1 臂：`zero_drive, bias=1.00, σ=0.05` ⇒ EXIT=0 且落盘 `zero_activity=true`、`ei.ei_ratio=null`）；**不得**为了让 L3 落盘而再改生产者（R48）",
+  "launch": "`caffeinate -i ./.venv-m9/bin/python -m neural_exploration.tools.run_m11_p5_arms --plan neural_exploration/data/m11_p5_plan_l3_grid_v2_replan.json --out-dir neural_exploration/data/m11_p5_runs_l3`（引擎侧解释器 = .venv-m9，R34 §12.2）",
+  "dimension_selfcheck": "生成器内建 R80 家族断言（步数恒等式 + 期望步数 + ≥200,000 下限）⇒ `python3 -m neural_exploration.tools.make_m11_p5_plan_l3 --check`",
+  "preflight_replication": "生产者 `--plan` 模式在**跑任何臂之前**执行 `assert_plan_replication(plan)`（L548）⇒ 复刻轴失效时**整轮零臂**（不是跑到一半才发现）",
+  "order_rule": "**按 `arms` 的书写顺序跑**：A0 锚最先；每格内 baseline 先于 zero_drive。生产者按 `plan['arms']` 顺序逐臂 spawn（L550）"
+ },
+ "lever_prereg_falsifier": "**主断言**：在 `bias_scale ∈ {1.00, 1.15, 1.30, 1.45} × bias_log_sigma = 0.10`（+ 锚点格 (1.00,0.30)）上，存在使 **(a) 逐神经元中位率 ∈ [0.5,2.0] Hz** 且 **(c) `pooled_zero_drive ∈ [300, 0.10×pooled_baseline]`** 同时成立的点。**证伪式**：若每一格都出现 (i) `pooled_zero_drive < 300`（(c) `unavailable`）或 (ii) `R > 0.10`（(c) fail）或 (iii) 中位率 < 0.5 Hz（(a) fail）⇒ 判 **L3 失败 ⇒ 第四维结构对立确认 ⇒ 必须换机制（不再改参数）**。",
+ "frozen_tool": {
+  "path": "neural_exploration/tools/run_m11_p5_arms.py",
+  "sha256_prefix": "633a4c458e9c1dd5",
+  "sha256_full": "633a4c458e9c1dd58e5d6c4838a205819a9424fbd49df9da8827c8b7bd42285b",
+  "n_lines": 894,
+  "n_bytes": 52659,
+  "rule": "R48：本计划跑前不得再改生产者；改动即作废本冻结记录"
+ },
+ "cross_plan_anchor": {
+  "rule": "A0 格（bias=1.00 × σ=0.30）的 6 臂在**既有 L0 计划里已按同规格跑过**（N=8192/T=10 s/settle=500 ms/dose∈{0,1}/seed∈{0,1,2}/gmax=1.0/bias=1.0/chunk）⇒ **本计划的 A0 6 臂应与既有 L0 臂 `sha256_of_trace` 逐位相同**；不同即说明键名/默认值/口径被改过。",
+  "h_determinism_not_evidence": "照 **R95 §⑤**：跨计划逐位一致只证明**确定性**，**不得**当作新证据、不得计入 n_seeds、不得用于 (a)/(c) 的判定。",
+  "l3_arms": {
+   "zero_drive": {
+    "l3": "l3_A0_b1.00_s0.30_8192_T10000ms_d0.0_s2",
+    "l0": "l0_g1.00_b1.00_8192_T10000ms_d0_s2"
+   },
+   "baseline": {
+    "l3": "l3_A0_b1.00_s0.30_8192_T10000ms_d1.0_s2",
+    "l0": "l0_g1.00_b1.00_8192_T10000ms_d1_s2"
+   }
+  },
+  "expected_l0_spikes": {
+   "note": "来源：neural_exploration/data/m11_p5_l0_runs/*.json（本节点实读）",
+   "zero_drive": {
+    "0": 8591,
+    "1": 8585,
+    "2": 9802
+   },
+   "baseline": {
+    "0": 30662,
+    "1": 30574,
+    "2": 29910
+   }
+  },
+  "expected_l0_eval": {
+   "file": "neural_exploration/data/m11_p5_resting_eval_repl.json",
+   "pooled_baseline": 91146.0,
+   "pooled_zero_drive": 26978.0,
+   "R": 0.295987,
+   "note": "既有评估器实测（R115 记 0.296）⇒ 本计划 A0 的 (c) 应与之同量级；**这是口径核对，不是新证据**"
+  },
+  "sigma_key_inertness_precedent": {
+   "claim": "显式 `bias_log_sigma=0.30` ≡ 不带该键（对逐位结果惰性）",
+   "evidence": "本节点实读：L0 `l0_g1.00_b0.70_*`（不带 σ 键）与 L1 `l1_b0.70_g1.00_s0.30_*`（显式 0.30）6/6 臂 `sha256_of_trace` 逐位相同",
+   "consequence": "⇒ A0 锚的逐位一致性**有依据**"
+  },
+  "c2_in_progress_anchor": {
+   "note": "C2 baseline 的 s0/s1 已由正式跑产出（`data/m11_p5_l3_runs/`）⇒ 本计划同 run_id 的臂将被 `[SKIP]` 复用；其读数（52,601 / 52,572 脉冲、中位率 0.6000 Hz、`active_frac` 1.0000、`ei_ratio` 2.5970/2.6034）**属于同一命名空间** ⇒ 正式判定的 (a) 侧已有 2 个实现的证据，**仍待** zero_drive 侧给出 (c)。"
+  }
+ },
+ "levels": [
+  {
+   "config_id": "p5_L3_A0_b1.00_s0.30",
+   "stage": "l3_grid",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.0,
+   "bias_log_sigma": 0.3,
+   "lever": "L3 格 A0: 锚点 = 既有 L0/L1 同配置点（确定性核对，照 R95 §⑤ 标 h_determinism_not_evidence）",
+   "n_seeds": 3,
+   "seeds": [
+    0,
+    1,
+    2
+   ],
+   "net_event_pairs": {
+    "0": [
+     0,
+     11
+    ],
+    "1": [
+     1,
+     12
+    ],
+    "2": [
+     2,
+     13
+    ]
+   },
+   "elasticity_arm": false,
+   "run_ids": [
+    "l3_A0_b1.00_s0.30_8192_T10000ms_d1.0_s0",
+    "l3_A0_b1.00_s0.30_8192_T10000ms_d1.0_s1",
+    "l3_A0_b1.00_s0.30_8192_T10000ms_d1.0_s2",
+    "l3_A0_b1.00_s0.30_8192_T10000ms_d0.0_s0",
+    "l3_A0_b1.00_s0.30_8192_T10000ms_d0.0_s1",
+    "l3_A0_b1.00_s0.30_8192_T10000ms_d0.0_s2"
+   ],
+   "run_ids_baseline": [
+    "l3_A0_b1.00_s0.30_8192_T10000ms_d1.0_s0",
+    "l3_A0_b1.00_s0.30_8192_T10000ms_d1.0_s1",
+    "l3_A0_b1.00_s0.30_8192_T10000ms_d1.0_s2"
+   ],
+   "run_ids_zero_drive": [
+    "l3_A0_b1.00_s0.30_8192_T10000ms_d0.0_s0",
+    "l3_A0_b1.00_s0.30_8192_T10000ms_d0.0_s1",
+    "l3_A0_b1.00_s0.30_8192_T10000ms_d0.0_s2"
+   ],
+   "cell_cn": "A0（锚）"
+  },
+  {
+   "config_id": "p5_L3_C0_b1.00_s0.10",
+   "stage": "l3_grid",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.0,
+   "bias_log_sigma": 0.1,
+   "lever": "L3 格 C0: 沿 σ=0.10 的最低 bias（已知 (a) 失败、零驱动=0 ⇒ (c) 预期 unavailable）",
+   "n_seeds": 3,
+   "seeds": [
+    0,
+    1,
+    2
+   ],
+   "net_event_pairs": {
+    "0": [
+     0,
+     11
+    ],
+    "1": [
+     1,
+     12
+    ],
+    "2": [
+     2,
+     13
+    ]
+   },
+   "elasticity_arm": false,
+   "run_ids": [
+    "l3_C0_b1.00_s0.10_8192_T10000ms_d1.0_s0",
+    "l3_C0_b1.00_s0.10_8192_T10000ms_d1.0_s1",
+    "l3_C0_b1.00_s0.10_8192_T10000ms_d1.0_s2",
+    "l3_C0_b1.00_s0.10_8192_T10000ms_d0.0_s0",
+    "l3_C0_b1.00_s0.10_8192_T10000ms_d0.0_s1",
+    "l3_C0_b1.00_s0.10_8192_T10000ms_d0.0_s2"
+   ],
+   "run_ids_baseline": [
+    "l3_C0_b1.00_s0.10_8192_T10000ms_d1.0_s0",
+    "l3_C0_b1.00_s0.10_8192_T10000ms_d1.0_s1",
+    "l3_C0_b1.00_s0.10_8192_T10000ms_d1.0_s2"
+   ],
+   "run_ids_zero_drive": [
+    "l3_C0_b1.00_s0.10_8192_T10000ms_d0.0_s0",
+    "l3_C0_b1.00_s0.10_8192_T10000ms_d0.0_s1",
+    "l3_C0_b1.00_s0.10_8192_T10000ms_d0.0_s2"
+   ],
+   "cell_cn": "C0"
+  },
+  {
+   "config_id": "p5_L3_C1_b1.15_s0.10",
+   "stage": "l3_grid",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.15,
+   "bias_log_sigma": 0.1,
+   "lever": "L3 格 C1: σ=0.10 偏置扫描 1（bias=1.15）",
+   "n_seeds": 3,
+   "seeds": [
+    0,
+    1,
+    2
+   ],
+   "net_event_pairs": {
+    "0": [
+     0,
+     11
+    ],
+    "1": [
+     1,
+     12
+    ],
+    "2": [
+     2,
+     13
+    ]
+   },
+   "elasticity_arm": false,
+   "run_ids": [
+    "l3_C1_b1.15_s0.10_8192_T10000ms_d1.0_s0",
+    "l3_C1_b1.15_s0.10_8192_T10000ms_d1.0_s1",
+    "l3_C1_b1.15_s0.10_8192_T10000ms_d1.0_s2",
+    "l3_C1_b1.15_s0.10_8192_T10000ms_d0.0_s0",
+    "l3_C1_b1.15_s0.10_8192_T10000ms_d0.0_s1",
+    "l3_C1_b1.15_s0.10_8192_T10000ms_d0.0_s2"
+   ],
+   "run_ids_baseline": [
+    "l3_C1_b1.15_s0.10_8192_T10000ms_d1.0_s0",
+    "l3_C1_b1.15_s0.10_8192_T10000ms_d1.0_s1",
+    "l3_C1_b1.15_s0.10_8192_T10000ms_d1.0_s2"
+   ],
+   "run_ids_zero_drive": [
+    "l3_C1_b1.15_s0.10_8192_T10000ms_d0.0_s0",
+    "l3_C1_b1.15_s0.10_8192_T10000ms_d0.0_s1",
+    "l3_C1_b1.15_s0.10_8192_T10000ms_d0.0_s2"
+   ],
+   "cell_cn": "C1"
+  },
+  {
+   "config_id": "p5_L3_C2_b1.30_s0.10",
+   "stage": "l3_grid",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.3,
+   "bias_log_sigma": 0.1,
+   "lever": "L3 格 C2: ★主目标格：探针暂定同落 (a)/(c)/(e) 三带（R118 §③）",
+   "n_seeds": 3,
+   "seeds": [
+    0,
+    1,
+    2
+   ],
+   "net_event_pairs": {
+    "0": [
+     0,
+     11
+    ],
+    "1": [
+     1,
+     12
+    ],
+    "2": [
+     2,
+     13
+    ]
+   },
+   "elasticity_arm": false,
+   "run_ids": [
+    "l3_C2_b1.30_s0.10_8192_T10000ms_d1.0_s0",
+    "l3_C2_b1.30_s0.10_8192_T10000ms_d1.0_s1",
+    "l3_C2_b1.30_s0.10_8192_T10000ms_d1.0_s2",
+    "l3_C2_b1.30_s0.10_8192_T10000ms_d0.0_s0",
+    "l3_C2_b1.30_s0.10_8192_T10000ms_d0.0_s1",
+    "l3_C2_b1.30_s0.10_8192_T10000ms_d0.0_s2"
+   ],
+   "run_ids_baseline": [
+    "l3_C2_b1.30_s0.10_8192_T10000ms_d1.0_s0",
+    "l3_C2_b1.30_s0.10_8192_T10000ms_d1.0_s1",
+    "l3_C2_b1.30_s0.10_8192_T10000ms_d1.0_s2"
+   ],
+   "run_ids_zero_drive": [
+    "l3_C2_b1.30_s0.10_8192_T10000ms_d0.0_s0",
+    "l3_C2_b1.30_s0.10_8192_T10000ms_d0.0_s1",
+    "l3_C2_b1.30_s0.10_8192_T10000ms_d0.0_s2"
+   ],
+   "cell_cn": "C2（主目标）"
+  },
+  {
+   "config_id": "p5_L3_C3_b1.45_s0.10",
+   "stage": "l3_grid",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.45,
+   "bias_log_sigma": 0.1,
+   "lever": "L3 格 C3: σ=0.10 偏上界（极端档，爆炸风险 ⇒ 最后跑）",
+   "n_seeds": 3,
+   "seeds": [
+    0,
+    1,
+    2
+   ],
+   "net_event_pairs": {
+    "0": [
+     0,
+     11
+    ],
+    "1": [
+     1,
+     12
+    ],
+    "2": [
+     2,
+     13
+    ]
+   },
+   "elasticity_arm": false,
+   "run_ids": [
+    "l3_C3_b1.45_s0.10_8192_T10000ms_d1.0_s0",
+    "l3_C3_b1.45_s0.10_8192_T10000ms_d1.0_s1",
+    "l3_C3_b1.45_s0.10_8192_T10000ms_d1.0_s2",
+    "l3_C3_b1.45_s0.10_8192_T10000ms_d0.0_s0",
+    "l3_C3_b1.45_s0.10_8192_T10000ms_d0.0_s1",
+    "l3_C3_b1.45_s0.10_8192_T10000ms_d0.0_s2"
+   ],
+   "run_ids_baseline": [
+    "l3_C3_b1.45_s0.10_8192_T10000ms_d1.0_s0",
+    "l3_C3_b1.45_s0.10_8192_T10000ms_d1.0_s1",
+    "l3_C3_b1.45_s0.10_8192_T10000ms_d1.0_s2"
+   ],
+   "run_ids_zero_drive": [
+    "l3_C3_b1.45_s0.10_8192_T10000ms_d0.0_s0",
+    "l3_C3_b1.45_s0.10_8192_T10000ms_d0.0_s1",
+    "l3_C3_b1.45_s0.10_8192_T10000ms_d0.0_s2"
+   ],
+   "cell_cn": "C3（极端档）"
+  }
+ ],
+ "arms": [
+  {
+   "run_id": "l3_C1_b1.15_s0.10_8192_T10000ms_d0.0_s0",
+   "stage": "l3_grid",
+   "config_id": "p5_L3_C1_b1.15_s0.10",
+   "T_ms": 10000.0,
+   "drive_mult": 0.0,
+   "seed": 0,
+   "net_seed": 0,
+   "event_seed": 11,
+   "role": "zero_drive",
+   "mechanism": "lever_l3",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.15,
+   "bias_log_sigma": 0.1,
+   "slow": true,
+   "tau_slow_ms": 1000.0,
+   "slow_inc": 6.0,
+   "n_neuron": 8192,
+   "settle_ms": 500.0,
+   "indegree": 20,
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "subtypes": true,
+   "device": "mps",
+   "lever": "L3 格 C1: σ=0.10 偏置扫描 1（bias=1.15）"
+  },
+  {
+   "run_id": "l3_C1_b1.15_s0.10_8192_T10000ms_d0.0_s1",
+   "stage": "l3_grid",
+   "config_id": "p5_L3_C1_b1.15_s0.10",
+   "T_ms": 10000.0,
+   "drive_mult": 0.0,
+   "seed": 1,
+   "net_seed": 1,
+   "event_seed": 12,
+   "role": "zero_drive",
+   "mechanism": "lever_l3",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.15,
+   "bias_log_sigma": 0.1,
+   "slow": true,
+   "tau_slow_ms": 1000.0,
+   "slow_inc": 6.0,
+   "n_neuron": 8192,
+   "settle_ms": 500.0,
+   "indegree": 20,
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "subtypes": true,
+   "device": "mps",
+   "lever": "L3 格 C1: σ=0.10 偏置扫描 1（bias=1.15）"
+  },
+  {
+   "run_id": "l3_C1_b1.15_s0.10_8192_T10000ms_d0.0_s2",
+   "stage": "l3_grid",
+   "config_id": "p5_L3_C1_b1.15_s0.10",
+   "T_ms": 10000.0,
+   "drive_mult": 0.0,
+   "seed": 2,
+   "net_seed": 2,
+   "event_seed": 13,
+   "role": "zero_drive",
+   "mechanism": "lever_l3",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.15,
+   "bias_log_sigma": 0.1,
+   "slow": true,
+   "tau_slow_ms": 1000.0,
+   "slow_inc": 6.0,
+   "n_neuron": 8192,
+   "settle_ms": 500.0,
+   "indegree": 20,
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "subtypes": true,
+   "device": "mps",
+   "lever": "L3 格 C1: σ=0.10 偏置扫描 1（bias=1.15）"
+  },
+  {
+   "run_id": "l3_C1_b1.15_s0.10_8192_T10000ms_d1.0_s0",
+   "stage": "l3_grid",
+   "config_id": "p5_L3_C1_b1.15_s0.10",
+   "T_ms": 10000.0,
+   "drive_mult": 1.0,
+   "seed": 0,
+   "net_seed": 0,
+   "event_seed": 11,
+   "role": "baseline",
+   "mechanism": "lever_l3",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.15,
+   "bias_log_sigma": 0.1,
+   "slow": true,
+   "tau_slow_ms": 1000.0,
+   "slow_inc": 6.0,
+   "n_neuron": 8192,
+   "settle_ms": 500.0,
+   "indegree": 20,
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "subtypes": true,
+   "device": "mps",
+   "lever": "L3 格 C1: σ=0.10 偏置扫描 1（bias=1.15）"
+  },
+  {
+   "run_id": "l3_C1_b1.15_s0.10_8192_T10000ms_d1.0_s1",
+   "stage": "l3_grid",
+   "config_id": "p5_L3_C1_b1.15_s0.10",
+   "T_ms": 10000.0,
+   "drive_mult": 1.0,
+   "seed": 1,
+   "net_seed": 1,
+   "event_seed": 12,
+   "role": "baseline",
+   "mechanism": "lever_l3",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.15,
+   "bias_log_sigma": 0.1,
+   "slow": true,
+   "tau_slow_ms": 1000.0,
+   "slow_inc": 6.0,
+   "n_neuron": 8192,
+   "settle_ms": 500.0,
+   "indegree": 20,
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "subtypes": true,
+   "device": "mps",
+   "lever": "L3 格 C1: σ=0.10 偏置扫描 1（bias=1.15）"
+  },
+  {
+   "run_id": "l3_C1_b1.15_s0.10_8192_T10000ms_d1.0_s2",
+   "stage": "l3_grid",
+   "config_id": "p5_L3_C1_b1.15_s0.10",
+   "T_ms": 10000.0,
+   "drive_mult": 1.0,
+   "seed": 2,
+   "net_seed": 2,
+   "event_seed": 13,
+   "role": "baseline",
+   "mechanism": "lever_l3",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.15,
+   "bias_log_sigma": 0.1,
+   "slow": true,
+   "tau_slow_ms": 1000.0,
+   "slow_inc": 6.0,
+   "n_neuron": 8192,
+   "settle_ms": 500.0,
+   "indegree": 20,
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "subtypes": true,
+   "device": "mps",
+   "lever": "L3 格 C1: σ=0.10 偏置扫描 1（bias=1.15）"
+  },
+  {
+   "run_id": "l3_C0_b1.00_s0.10_8192_T10000ms_d0.0_s0",
+   "stage": "l3_grid",
+   "config_id": "p5_L3_C0_b1.00_s0.10",
+   "T_ms": 10000.0,
+   "drive_mult": 0.0,
+   "seed": 0,
+   "net_seed": 0,
+   "event_seed": 11,
+   "role": "zero_drive",
+   "mechanism": "lever_l3",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.0,
+   "bias_log_sigma": 0.1,
+   "slow": true,
+   "tau_slow_ms": 1000.0,
+   "slow_inc": 6.0,
+   "n_neuron": 8192,
+   "settle_ms": 500.0,
+   "indegree": 20,
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "subtypes": true,
+   "device": "mps",
+   "lever": "L3 格 C0: 沿 σ=0.10 的最低 bias（已知 (a) 失败、零驱动=0 ⇒ (c) 预期 unavailable）"
+  },
+  {
+   "run_id": "l3_C0_b1.00_s0.10_8192_T10000ms_d0.0_s1",
+   "stage": "l3_grid",
+   "config_id": "p5_L3_C0_b1.00_s0.10",
+   "T_ms": 10000.0,
+   "drive_mult": 0.0,
+   "seed": 1,
+   "net_seed": 1,
+   "event_seed": 12,
+   "role": "zero_drive",
+   "mechanism": "lever_l3",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.0,
+   "bias_log_sigma": 0.1,
+   "slow": true,
+   "tau_slow_ms": 1000.0,
+   "slow_inc": 6.0,
+   "n_neuron": 8192,
+   "settle_ms": 500.0,
+   "indegree": 20,
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "subtypes": true,
+   "device": "mps",
+   "lever": "L3 格 C0: 沿 σ=0.10 的最低 bias（已知 (a) 失败、零驱动=0 ⇒ (c) 预期 unavailable）"
+  },
+  {
+   "run_id": "l3_C0_b1.00_s0.10_8192_T10000ms_d0.0_s2",
+   "stage": "l3_grid",
+   "config_id": "p5_L3_C0_b1.00_s0.10",
+   "T_ms": 10000.0,
+   "drive_mult": 0.0,
+   "seed": 2,
+   "net_seed": 2,
+   "event_seed": 13,
+   "role": "zero_drive",
+   "mechanism": "lever_l3",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.0,
+   "bias_log_sigma": 0.1,
+   "slow": true,
+   "tau_slow_ms": 1000.0,
+   "slow_inc": 6.0,
+   "n_neuron": 8192,
+   "settle_ms": 500.0,
+   "indegree": 20,
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "subtypes": true,
+   "device": "mps",
+   "lever": "L3 格 C0: 沿 σ=0.10 的最低 bias（已知 (a) 失败、零驱动=0 ⇒ (c) 预期 unavailable）"
+  },
+  {
+   "run_id": "l3_C0_b1.00_s0.10_8192_T10000ms_d1.0_s0",
+   "stage": "l3_grid",
+   "config_id": "p5_L3_C0_b1.00_s0.10",
+   "T_ms": 10000.0,
+   "drive_mult": 1.0,
+   "seed": 0,
+   "net_seed": 0,
+   "event_seed": 11,
+   "role": "baseline",
+   "mechanism": "lever_l3",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.0,
+   "bias_log_sigma": 0.1,
+   "slow": true,
+   "tau_slow_ms": 1000.0,
+   "slow_inc": 6.0,
+   "n_neuron": 8192,
+   "settle_ms": 500.0,
+   "indegree": 20,
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "subtypes": true,
+   "device": "mps",
+   "lever": "L3 格 C0: 沿 σ=0.10 的最低 bias（已知 (a) 失败、零驱动=0 ⇒ (c) 预期 unavailable）"
+  },
+  {
+   "run_id": "l3_C0_b1.00_s0.10_8192_T10000ms_d1.0_s1",
+   "stage": "l3_grid",
+   "config_id": "p5_L3_C0_b1.00_s0.10",
+   "T_ms": 10000.0,
+   "drive_mult": 1.0,
+   "seed": 1,
+   "net_seed": 1,
+   "event_seed": 12,
+   "role": "baseline",
+   "mechanism": "lever_l3",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.0,
+   "bias_log_sigma": 0.1,
+   "slow": true,
+   "tau_slow_ms": 1000.0,
+   "slow_inc": 6.0,
+   "n_neuron": 8192,
+   "settle_ms": 500.0,
+   "indegree": 20,
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "subtypes": true,
+   "device": "mps",
+   "lever": "L3 格 C0: 沿 σ=0.10 的最低 bias（已知 (a) 失败、零驱动=0 ⇒ (c) 预期 unavailable）"
+  },
+  {
+   "run_id": "l3_C0_b1.00_s0.10_8192_T10000ms_d1.0_s2",
+   "stage": "l3_grid",
+   "config_id": "p5_L3_C0_b1.00_s0.10",
+   "T_ms": 10000.0,
+   "drive_mult": 1.0,
+   "seed": 2,
+   "net_seed": 2,
+   "event_seed": 13,
+   "role": "baseline",
+   "mechanism": "lever_l3",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.0,
+   "bias_log_sigma": 0.1,
+   "slow": true,
+   "tau_slow_ms": 1000.0,
+   "slow_inc": 6.0,
+   "n_neuron": 8192,
+   "settle_ms": 500.0,
+   "indegree": 20,
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "subtypes": true,
+   "device": "mps",
+   "lever": "L3 格 C0: 沿 σ=0.10 的最低 bias（已知 (a) 失败、零驱动=0 ⇒ (c) 预期 unavailable）"
+  },
+  {
+   "run_id": "l3_A0_b1.00_s0.30_8192_T10000ms_d0.0_s0",
+   "stage": "l3_grid",
+   "config_id": "p5_L3_A0_b1.00_s0.30",
+   "T_ms": 10000.0,
+   "drive_mult": 0.0,
+   "seed": 0,
+   "net_seed": 0,
+   "event_seed": 11,
+   "role": "zero_drive",
+   "mechanism": "lever_l3",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.0,
+   "bias_log_sigma": 0.3,
+   "slow": true,
+   "tau_slow_ms": 1000.0,
+   "slow_inc": 6.0,
+   "n_neuron": 8192,
+   "settle_ms": 500.0,
+   "indegree": 20,
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "subtypes": true,
+   "device": "mps",
+   "lever": "L3 格 A0: 锚点 = 既有 L0/L1 同配置点（确定性核对，照 R95 §⑤ 标 h_determinism_not_evidence）"
+  },
+  {
+   "run_id": "l3_A0_b1.00_s0.30_8192_T10000ms_d0.0_s1",
+   "stage": "l3_grid",
+   "config_id": "p5_L3_A0_b1.00_s0.30",
+   "T_ms": 10000.0,
+   "drive_mult": 0.0,
+   "seed": 1,
+   "net_seed": 1,
+   "event_seed": 12,
+   "role": "zero_drive",
+   "mechanism": "lever_l3",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.0,
+   "bias_log_sigma": 0.3,
+   "slow": true,
+   "tau_slow_ms": 1000.0,
+   "slow_inc": 6.0,
+   "n_neuron": 8192,
+   "settle_ms": 500.0,
+   "indegree": 20,
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "subtypes": true,
+   "device": "mps",
+   "lever": "L3 格 A0: 锚点 = 既有 L0/L1 同配置点（确定性核对，照 R95 §⑤ 标 h_determinism_not_evidence）"
+  },
+  {
+   "run_id": "l3_A0_b1.00_s0.30_8192_T10000ms_d0.0_s2",
+   "stage": "l3_grid",
+   "config_id": "p5_L3_A0_b1.00_s0.30",
+   "T_ms": 10000.0,
+   "drive_mult": 0.0,
+   "seed": 2,
+   "net_seed": 2,
+   "event_seed": 13,
+   "role": "zero_drive",
+   "mechanism": "lever_l3",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.0,
+   "bias_log_sigma": 0.3,
+   "slow": true,
+   "tau_slow_ms": 1000.0,
+   "slow_inc": 6.0,
+   "n_neuron": 8192,
+   "settle_ms": 500.0,
+   "indegree": 20,
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "subtypes": true,
+   "device": "mps",
+   "lever": "L3 格 A0: 锚点 = 既有 L0/L1 同配置点（确定性核对，照 R95 §⑤ 标 h_determinism_not_evidence）"
+  },
+  {
+   "run_id": "l3_A0_b1.00_s0.30_8192_T10000ms_d1.0_s0",
+   "stage": "l3_grid",
+   "config_id": "p5_L3_A0_b1.00_s0.30",
+   "T_ms": 10000.0,
+   "drive_mult": 1.0,
+   "seed": 0,
+   "net_seed": 0,
+   "event_seed": 11,
+   "role": "baseline",
+   "mechanism": "lever_l3",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.0,
+   "bias_log_sigma": 0.3,
+   "slow": true,
+   "tau_slow_ms": 1000.0,
+   "slow_inc": 6.0,
+   "n_neuron": 8192,
+   "settle_ms": 500.0,
+   "indegree": 20,
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "subtypes": true,
+   "device": "mps",
+   "lever": "L3 格 A0: 锚点 = 既有 L0/L1 同配置点（确定性核对，照 R95 §⑤ 标 h_determinism_not_evidence）"
+  },
+  {
+   "run_id": "l3_A0_b1.00_s0.30_8192_T10000ms_d1.0_s1",
+   "stage": "l3_grid",
+   "config_id": "p5_L3_A0_b1.00_s0.30",
+   "T_ms": 10000.0,
+   "drive_mult": 1.0,
+   "seed": 1,
+   "net_seed": 1,
+   "event_seed": 12,
+   "role": "baseline",
+   "mechanism": "lever_l3",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.0,
+   "bias_log_sigma": 0.3,
+   "slow": true,
+   "tau_slow_ms": 1000.0,
+   "slow_inc": 6.0,
+   "n_neuron": 8192,
+   "settle_ms": 500.0,
+   "indegree": 20,
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "subtypes": true,
+   "device": "mps",
+   "lever": "L3 格 A0: 锚点 = 既有 L0/L1 同配置点（确定性核对，照 R95 §⑤ 标 h_determinism_not_evidence）"
+  },
+  {
+   "run_id": "l3_A0_b1.00_s0.30_8192_T10000ms_d1.0_s2",
+   "stage": "l3_grid",
+   "config_id": "p5_L3_A0_b1.00_s0.30",
+   "T_ms": 10000.0,
+   "drive_mult": 1.0,
+   "seed": 2,
+   "net_seed": 2,
+   "event_seed": 13,
+   "role": "baseline",
+   "mechanism": "lever_l3",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.0,
+   "bias_log_sigma": 0.3,
+   "slow": true,
+   "tau_slow_ms": 1000.0,
+   "slow_inc": 6.0,
+   "n_neuron": 8192,
+   "settle_ms": 500.0,
+   "indegree": 20,
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "subtypes": true,
+   "device": "mps",
+   "lever": "L3 格 A0: 锚点 = 既有 L0/L1 同配置点（确定性核对，照 R95 §⑤ 标 h_determinism_not_evidence）"
+  },
+  {
+   "run_id": "l3_C2_b1.30_s0.10_8192_T10000ms_d0.0_s0",
+   "stage": "l3_grid",
+   "config_id": "p5_L3_C2_b1.30_s0.10",
+   "T_ms": 10000.0,
+   "drive_mult": 0.0,
+   "seed": 0,
+   "net_seed": 0,
+   "event_seed": 11,
+   "role": "zero_drive",
+   "mechanism": "lever_l3",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.3,
+   "bias_log_sigma": 0.1,
+   "slow": true,
+   "tau_slow_ms": 1000.0,
+   "slow_inc": 6.0,
+   "n_neuron": 8192,
+   "settle_ms": 500.0,
+   "indegree": 20,
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "subtypes": true,
+   "device": "mps",
+   "lever": "L3 格 C2: ★主目标格：探针暂定同落 (a)/(c)/(e) 三带（R118 §③）"
+  },
+  {
+   "run_id": "l3_C2_b1.30_s0.10_8192_T10000ms_d0.0_s1",
+   "stage": "l3_grid",
+   "config_id": "p5_L3_C2_b1.30_s0.10",
+   "T_ms": 10000.0,
+   "drive_mult": 0.0,
+   "seed": 1,
+   "net_seed": 1,
+   "event_seed": 12,
+   "role": "zero_drive",
+   "mechanism": "lever_l3",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.3,
+   "bias_log_sigma": 0.1,
+   "slow": true,
+   "tau_slow_ms": 1000.0,
+   "slow_inc": 6.0,
+   "n_neuron": 8192,
+   "settle_ms": 500.0,
+   "indegree": 20,
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "subtypes": true,
+   "device": "mps",
+   "lever": "L3 格 C2: ★主目标格：探针暂定同落 (a)/(c)/(e) 三带（R118 §③）"
+  },
+  {
+   "run_id": "l3_C2_b1.30_s0.10_8192_T10000ms_d0.0_s2",
+   "stage": "l3_grid",
+   "config_id": "p5_L3_C2_b1.30_s0.10",
+   "T_ms": 10000.0,
+   "drive_mult": 0.0,
+   "seed": 2,
+   "net_seed": 2,
+   "event_seed": 13,
+   "role": "zero_drive",
+   "mechanism": "lever_l3",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.3,
+   "bias_log_sigma": 0.1,
+   "slow": true,
+   "tau_slow_ms": 1000.0,
+   "slow_inc": 6.0,
+   "n_neuron": 8192,
+   "settle_ms": 500.0,
+   "indegree": 20,
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "subtypes": true,
+   "device": "mps",
+   "lever": "L3 格 C2: ★主目标格：探针暂定同落 (a)/(c)/(e) 三带（R118 §③）"
+  },
+  {
+   "run_id": "l3_C2_b1.30_s0.10_8192_T10000ms_d1.0_s0",
+   "stage": "l3_grid",
+   "config_id": "p5_L3_C2_b1.30_s0.10",
+   "T_ms": 10000.0,
+   "drive_mult": 1.0,
+   "seed": 0,
+   "net_seed": 0,
+   "event_seed": 11,
+   "role": "baseline",
+   "mechanism": "lever_l3",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.3,
+   "bias_log_sigma": 0.1,
+   "slow": true,
+   "tau_slow_ms": 1000.0,
+   "slow_inc": 6.0,
+   "n_neuron": 8192,
+   "settle_ms": 500.0,
+   "indegree": 20,
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "subtypes": true,
+   "device": "mps",
+   "lever": "L3 格 C2: ★主目标格：探针暂定同落 (a)/(c)/(e) 三带（R118 §③）"
+  },
+  {
+   "run_id": "l3_C2_b1.30_s0.10_8192_T10000ms_d1.0_s1",
+   "stage": "l3_grid",
+   "config_id": "p5_L3_C2_b1.30_s0.10",
+   "T_ms": 10000.0,
+   "drive_mult": 1.0,
+   "seed": 1,
+   "net_seed": 1,
+   "event_seed": 12,
+   "role": "baseline",
+   "mechanism": "lever_l3",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.3,
+   "bias_log_sigma": 0.1,
+   "slow": true,
+   "tau_slow_ms": 1000.0,
+   "slow_inc": 6.0,
+   "n_neuron": 8192,
+   "settle_ms": 500.0,
+   "indegree": 20,
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "subtypes": true,
+   "device": "mps",
+   "lever": "L3 格 C2: ★主目标格：探针暂定同落 (a)/(c)/(e) 三带（R118 §③）"
+  },
+  {
+   "run_id": "l3_C2_b1.30_s0.10_8192_T10000ms_d1.0_s2",
+   "stage": "l3_grid",
+   "config_id": "p5_L3_C2_b1.30_s0.10",
+   "T_ms": 10000.0,
+   "drive_mult": 1.0,
+   "seed": 2,
+   "net_seed": 2,
+   "event_seed": 13,
+   "role": "baseline",
+   "mechanism": "lever_l3",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.3,
+   "bias_log_sigma": 0.1,
+   "slow": true,
+   "tau_slow_ms": 1000.0,
+   "slow_inc": 6.0,
+   "n_neuron": 8192,
+   "settle_ms": 500.0,
+   "indegree": 20,
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "subtypes": true,
+   "device": "mps",
+   "lever": "L3 格 C2: ★主目标格：探针暂定同落 (a)/(c)/(e) 三带（R118 §③）"
+  },
+  {
+   "run_id": "l3_C3_b1.45_s0.10_8192_T10000ms_d0.0_s0",
+   "stage": "l3_grid",
+   "config_id": "p5_L3_C3_b1.45_s0.10",
+   "T_ms": 10000.0,
+   "drive_mult": 0.0,
+   "seed": 0,
+   "net_seed": 0,
+   "event_seed": 11,
+   "role": "zero_drive",
+   "mechanism": "lever_l3",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.45,
+   "bias_log_sigma": 0.1,
+   "slow": true,
+   "tau_slow_ms": 1000.0,
+   "slow_inc": 6.0,
+   "n_neuron": 8192,
+   "settle_ms": 500.0,
+   "indegree": 20,
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "subtypes": true,
+   "device": "mps",
+   "lever": "L3 格 C3: σ=0.10 偏上界（极端档，爆炸风险 ⇒ 最后跑）"
+  },
+  {
+   "run_id": "l3_C3_b1.45_s0.10_8192_T10000ms_d0.0_s1",
+   "stage": "l3_grid",
+   "config_id": "p5_L3_C3_b1.45_s0.10",
+   "T_ms": 10000.0,
+   "drive_mult": 0.0,
+   "seed": 1,
+   "net_seed": 1,
+   "event_seed": 12,
+   "role": "zero_drive",
+   "mechanism": "lever_l3",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.45,
+   "bias_log_sigma": 0.1,
+   "slow": true,
+   "tau_slow_ms": 1000.0,
+   "slow_inc": 6.0,
+   "n_neuron": 8192,
+   "settle_ms": 500.0,
+   "indegree": 20,
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "subtypes": true,
+   "device": "mps",
+   "lever": "L3 格 C3: σ=0.10 偏上界（极端档，爆炸风险 ⇒ 最后跑）"
+  },
+  {
+   "run_id": "l3_C3_b1.45_s0.10_8192_T10000ms_d0.0_s2",
+   "stage": "l3_grid",
+   "config_id": "p5_L3_C3_b1.45_s0.10",
+   "T_ms": 10000.0,
+   "drive_mult": 0.0,
+   "seed": 2,
+   "net_seed": 2,
+   "event_seed": 13,
+   "role": "zero_drive",
+   "mechanism": "lever_l3",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.45,
+   "bias_log_sigma": 0.1,
+   "slow": true,
+   "tau_slow_ms": 1000.0,
+   "slow_inc": 6.0,
+   "n_neuron": 8192,
+   "settle_ms": 500.0,
+   "indegree": 20,
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "subtypes": true,
+   "device": "mps",
+   "lever": "L3 格 C3: σ=0.10 偏上界（极端档，爆炸风险 ⇒ 最后跑）"
+  },
+  {
+   "run_id": "l3_C3_b1.45_s0.10_8192_T10000ms_d1.0_s0",
+   "stage": "l3_grid",
+   "config_id": "p5_L3_C3_b1.45_s0.10",
+   "T_ms": 10000.0,
+   "drive_mult": 1.0,
+   "seed": 0,
+   "net_seed": 0,
+   "event_seed": 11,
+   "role": "baseline",
+   "mechanism": "lever_l3",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.45,
+   "bias_log_sigma": 0.1,
+   "slow": true,
+   "tau_slow_ms": 1000.0,
+   "slow_inc": 6.0,
+   "n_neuron": 8192,
+   "settle_ms": 500.0,
+   "indegree": 20,
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "subtypes": true,
+   "device": "mps",
+   "lever": "L3 格 C3: σ=0.10 偏上界（极端档，爆炸风险 ⇒ 最后跑）"
+  },
+  {
+   "run_id": "l3_C3_b1.45_s0.10_8192_T10000ms_d1.0_s1",
+   "stage": "l3_grid",
+   "config_id": "p5_L3_C3_b1.45_s0.10",
+   "T_ms": 10000.0,
+   "drive_mult": 1.0,
+   "seed": 1,
+   "net_seed": 1,
+   "event_seed": 12,
+   "role": "baseline",
+   "mechanism": "lever_l3",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.45,
+   "bias_log_sigma": 0.1,
+   "slow": true,
+   "tau_slow_ms": 1000.0,
+   "slow_inc": 6.0,
+   "n_neuron": 8192,
+   "settle_ms": 500.0,
+   "indegree": 20,
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "subtypes": true,
+   "device": "mps",
+   "lever": "L3 格 C3: σ=0.10 偏上界（极端档，爆炸风险 ⇒ 最后跑）"
+  },
+  {
+   "run_id": "l3_C3_b1.45_s0.10_8192_T10000ms_d1.0_s2",
+   "stage": "l3_grid",
+   "config_id": "p5_L3_C3_b1.45_s0.10",
+   "T_ms": 10000.0,
+   "drive_mult": 1.0,
+   "seed": 2,
+   "net_seed": 2,
+   "event_seed": 13,
+   "role": "baseline",
+   "mechanism": "lever_l3",
+   "delivery": "chunk",
+   "gmax_scale": 1.0,
+   "bias_scale": 1.45,
+   "bias_log_sigma": 0.1,
+   "slow": true,
+   "tau_slow_ms": 1000.0,
+   "slow_inc": 6.0,
+   "n_neuron": 8192,
+   "settle_ms": 500.0,
+   "indegree": 20,
+   "delay_bins": [
+    40,
+    60,
+    80
+   ],
+   "subtypes": true,
+   "device": "mps",
+   "lever": "L3 格 C3: σ=0.10 偏上界（极端档，爆炸风险 ⇒ 最后跑）"
+  }
+ ],
+ "core_falsifiable_assertion": {
+  "statement": "**在 `bias_scale ∈ {1.00, 1.15, 1.30, 1.45} × bias_log_sigma = 0.10` 的偏置扫描上（含锚点格 (1.00, 0.30)），存在同时满足 (a) 与 (c) 的点。**（**网格已于 R118 事前修订**：R115 §④ 的 `bias∈[1.20,1.40] × σ∈[0.15,0.25]` 被取代 —— **不是未测，是已测且远超上界**。）",
+  "a_definition": "**(a)**（主判口径，频带 `[0.5, 2.0] Hz` **逐字不变**）：基准臂 `per_neuron` **逐神经元中位率**",
+  "c_definition": "**(c)**：`R = pooled_zero_drive / pooled_baseline ≤ 0.10`，**且** `pooled_zero_drive ≥ 300`（**硬门①**）",
+  "window": "**目标是一个窗口，不是一个极限**（R115 §②）：`pooled_zero_drive ∈ [300, 0.10 × pooled_baseline]`。下界 = 硬门①（`m11_p5_targets.csv` L48）；上界 = `selfsustain_ratio_max = 0.10`（同表 L46）。**R 太小（零驱动被打干净）会让 (c) 变 `unavailable` 而不是 `pass`** ⇒ 每档必须报 `pooled_zero_drive` 绝对值。",
+  "why_self_consistent": "(b) 现为 `unavailable`（真实 ROI 掩膜维缺失）⇒ 不进任何门断言；(a)/(c) 均为 `final=1` 的已定稿判定带 ⇒ 双目标可判且有判别力。",
+  "falsifiers": [
+   "① **主证伪式**：每一格都命中 (i) `pooled_zero_drive < 300` 或 (ii) `R > 0.10` 或 (iii) 中位率 < 0.5 Hz ⇒ 判 **L3 失败 ⇒ 第四维结构对立确认 ⇒ 必须换机制（不再改参数）**",
+   "② **机制专属证伪**：若 σ=0.10 时**基准臂** `a_active_frac` 也大幅塌陷（R118 §④4 的反平凡性条款；探针实测 0.6063、正式 T=10 s 实测 **1.0000**）⇒ 该杠杆是**全局性**的、「尾部选择性」被证伪 ⇒ 如实登记，不得改判据",
+   "③ **不可判定 ≠ 失败**：某格 (c) 判 `unavailable`（`pooled_zero_drive < 300`，或两 CI 法不一致 ⇒ `invalid`）时**不得记为 fail，也不得记 pass**（M10 D1 家族；L1 已有 `two_ci_methods_disagree` 先例）"
+  ],
+  "positive_outcome": "某格 (a) ∧ (c) 同时成立（含窗口与 CI 条件）⇒ 进入定稿确认，并**只**得结论「(a) 与 (c) 在 σ=0.10 悬崖面上可同时满足」；**不得**外推到未测侧（见 `unmeasured_side_declaration`）。"
+ },
+ "window_definition": {
+  "lower_bound_pooled_zero_drive": 300,
+  "lower_bound_source": "neural_exploration/data/m11_p5_targets.csv L48 `selfsustain_zero_drive_min_spikes`（硬门①）",
+  "upper_bound_formula": "0.10 × pooled_baseline（同一 (config_id,T) 的 3 个实现求和）",
+  "upper_bound_source": "neural_exploration/data/m11_p5_targets.csv L46 `selfsustain_ratio_max = 0.10`",
+  "c2_provisional": {
+   "cell": "C2 (bias=1.30, σ=0.10)",
+   "h_determinism_note": "**provisional（探针外推）**",
+   "pooled_zero_drive_extrapolated": 1380,
+   "upper_bound_extrapolated": 15400,
+   "source": "R118 §②（T=1 s 单实现 × 10 × 3 的外推）；**正式值由本计划 30 臂给出**"
+  },
+  "a0_numeric_example": {
+   "pooled_baseline_3impl": 91146.0,
+   "pooled_zero_drive_3impl": 26978.0,
+   "window_pooled_zero_drive": [
+    300,
+    9114.6
+   ],
+   "R_measured": 0.295987,
+   "verdict": "A0 的 `pooled_zero_drive` 26,978 **高于**上界 9,114.6 ⇒ (c) 预期 fail（R=0.296 > 0.10）",
+   "source": "neural_exploration/data/m11_p5_resting_eval_repl.json（本节点实读）"
+  },
+  "requirement": "**每档必须报 `pooled_zero_drive` 的绝对值**，不得只报 R（R115 §②）"
+ },
+ "a_reporting_four": {
+  "primary_unchanged": {
+   "estimator": "per_neuron（逐神经元计数/T 的中位数）",
+   "band_hz": [
+    0.5,
+    2.0
+   ],
+   "role": "**(a) 的主判口径，频带与判定规则逐字不变**"
+  },
+  "required": [
+   {
+    "id": "a_median_hz",
+    "definition": "逐神经元计数/T 的中位数（Hz）",
+    "note": "= 主口径，照旧报出（R109 修订 ①）"
+   },
+   {
+    "id": "a_active_frac",
+    "definition": "测量窗 T 内 **≥1 个脉冲**的神经元占比（0–1）",
+    "note": "R109 修订 ②：摊平程度的直接度量；**σ↓ 是否有「选择性」全看它**（R113 ④ 的可证伪预言）"
+   },
+   {
+    "id": "a_pop_mean_hz",
+    "definition": "群体均值率 = 总脉冲/(N·T)（Hz）",
+    "note": "R109 修订 ③：总量口径"
+   },
+   {
+    "id": "pooled_zero_drive",
+    "definition": "零驱动臂 3 个实现的脉冲数**之和**（绝对量，非比值）",
+    "note": "**本计划新增的第 4 条**（R115 ②）：窗口判定的唯一依据；`unavailable` 与 `pass` 全靠它区分"
+   }
+  ],
+  "ban": "**不得**用 `a_active_frac` 代替中位率判 (a)（R109 修订 `no_gate_change`/`ban` 逐字保留）",
+  "source": "neural_exploration/data/m11_p5_prereg_amend_r109_a_reporting.json（sha aa039f67403d1ba6）"
+ },
+ "subtype_reporting": {
+  "requirement": "按 **E/PV/SST/VIP** 分别报**中位率**与**活跃占比（≥1 脉冲）**（R111 ② / R114 ③）",
+  "source_column": "臂产物 `<run_id>_counts.csv` 的 `cell_type` 列（生产者 L306–311 写入 E/PV/SST/VIP）",
+  "why": "(a) 的文献带本身是**类级**的（`rate_median_hz_exc_lo/hi` = 0.5/1.0；`inh_lo/hi` = 1.5/2.0，见 targets.csv L30–L33）⇒ 只报全群中位数会掩盖「E 类不达标但 I 类达标」的混合情形",
+  "not_a_gate": "类级分解为**描述性**；本计划的判定仍只用全群 `estimator=per_neuron` 中位率（不得改口径）"
+ },
+ "homogenization_defense": {
+  "risk": "σ↓ 可能「用同质化换取中位率」（R112 ④ / R110 ④ 的伪解警告）⇒ 必须报同质化指标",
+  "required_metrics": [
+   {
+    "id": "frac_nonzero_slow_var",
+    "source": "臂 JSON `slow_trace_stats.readback.frac_nonzero`（引擎 `slow_readback()` 暴露；引擎 src/mouse_cortex_engine.py L1073）",
+    "definition": "慢变量 t_slow 中 >0 的神经元占比（逐神经元状态的稀疏度）",
+    "note": "**引擎已实测并落盘** ⇒ 可直接复算，不是自造量"
+   },
+   {
+    "id": "frac_nonzero_spikes",
+    "source": "臂产物 `<run_id>_counts.csv`（`count > 0` 的行数 / N）",
+    "definition": "测量窗内 ≥1 脉冲的神经元占比 —— **与 `a_active_frac` 是同一个量**，报告时只算一次并显式声明二者同源（防「两个指标」的虚假多重确认）"
+   },
+   {
+    "id": "count_dispersion",
+    "source": "同 `<run_id>_counts.csv` 的 `count` 列",
+    "definition": "逐神经元计数的离散度：median/p90/IQR/CV（**可从产物逐位复算**）",
+    "note": "σ↓ 若真为「尾部选择性」，则上尾（p90/最大值）应被削而中位数/活跃占比保持；若 IQR/CV 同时塌缩 ⇒ 同质化伪解"
+   }
+  ],
+  "engine_synchrony_metric": "**引擎无可用同步性/规则性指标**：`src/mouse_cortex_engine.py` 内无任何同步/规则性读出（`grep` 命中的 `ei_sync_every` 只是**每 1000 步把 E/I 张量同步回 Python 的间隔**，与神经元同步性无关）⇒ **不报同步性指标，登记为未确认项**；**禁止自造无法复算的量**",
+  "unconfirmed": [
+   "跨神经元同步性 / 发放规则性（CV_ISI / Fano）**不可从现有产物计算**（引擎不导出逐神经元脉冲时刻，只导出逐神经元计数）⇒ 登记为未确认项，不得用计数离散度冒充"
+  ]
+ },
+ "unmeasured_side_declaration": {
+  "discipline": "**纪律第五十八条**：未测侧必须显式登记 —— **未测 ≠ 已排除**；同时**已测且排除的侧也必须写清**（本版新增）",
+  "by_measurement_excluded": [
+   {
+    "side": "`σ ∈ [0.15, 0.25]` 于 `bias ≥ 1.20`（含原 R115 §④ 网格的整段）",
+    "status": "**不是未测，是已测且远超 (c) 上界**",
+    "evidence": "`bias=1.30` 零驱动探针：σ=0.20 ⇒ 4,875 脉冲；σ=0.15 ⇒ 4,666（T=1 s、单实现）⇒ 换算正式口径 pooled ≈1.4×10⁵ ≫ 窗口上界 ≈1.5×10⁴；单实现 R ≈ 0.879 / 0.881（均 ≥0.10）",
+    "source": "R118 §①；data/m11_p5_l3_feasibility/l3win_b130_s020_zd_*.json、l3win_b130_s015_zd_*.json",
+    "consequence": "**不得**再把 `σ∈[0.15,0.25]` 当作「可能可达」的区间（R122 §② 已据此判旧网格作废）"
+   }
+  ],
+  "still_unmeasured": [
+   {
+    "side": "`σ ∈ (0.10, 0.15)`（**悬崖面内部**）",
+    "note": "**该区间是否存在可达窗口尚未知**：σ=0.15 ⇒ R≈0.881、σ=0.10 ⇒ R≈0.0089，但 0.10 处 pooled≈1,380 仅比硬门① 的 300 高 4.6× ⇒ **窗口在 σ 轴上的宽度未测**；本计划**不含**这些档"
+   },
+   {
+    "side": "`bias_scale > 1.45`",
+    "note": "未测（σ=0.10 与 σ=0.30 两侧都未测；R112 的 bias=1.60 探针是 T=1 s 单实现 ⇒ 不作判据）"
+   },
+   {
+    "side": "`bias_scale < 1.00` 且 `σ = 0.10`",
+    "note": "未测（本计划 C0 正是该侧的最低点 bias=1.00；更低 bias 无档）"
+   },
+   {
+    "side": "`σ > 0.30`（与 `bias ≥ 1.15` 的组合）",
+    "note": "未测（L1 只在 bias=0.70 处扫过 σ=0.45/0.60/0.90）"
+   },
+   {
+    "side": "`drive_rate_hz` 的抬升",
+    "note": "**预注册禁止作为标定手段**（docs/m11_b3_g1_design.md L146）；本计划不含任何驱动抬升档"
+   },
+   {
+    "side": "慢适应/STP 与 (bias,σ) 的组合",
+    "note": "`slow_inc`/`tau_slow_ms` 全部固定默认档（6.0/1000）；L2 的慢适应放大档未跑（R110 判 L2 事前失败）"
+   },
+   {
+    "side": "外部驱动侧",
+    "note": "事件表构造、事件表泄漏、`event_seed` 与驱动的交互未测"
+   },
+   {
+    "side": "亚型选择性杠杆与其它引擎自由度",
+    "note": "PV/SST/VIP 权重与比例、层流比例、`indegree`、`gmax_scale`、`delay_bins` 全部固定在基线"
+   },
+   {
+    "side": "T 维度（时长依赖性）",
+    "note": "本计划只有 T=10 s ⇒ 评估器硬门④（{1,2,4}×T_min 阶梯）为 `unavailable`；(d) 未测"
+   }
+  ],
+  "statement": "以上方向**未测 ≠ 已排除**；L3 的任何结论**只**覆盖 `bias ∈ {1.00,1.15,1.30,1.45} × σ = 0.10` 与锚点格 (1.00,0.30)，且每格只覆盖 `drive_mult ∈ {0,1}`、T=10 s、slow 默认档。"
+ },
+ "producer_dependency": {
+  "requirement": "本计划**要求**生产者已含零活动分支（R113 ⑤ 的硬前置；R116 已验收）",
+  "sha256_full": "633a4c458e9c1dd58e5d6c4838a205819a9424fbd49df9da8827c8b7bd42285b",
+  "sha256_prefix": "633a4c458e9c1dd5",
+  "n_lines": 894,
+  "n_bytes": 52659,
+  "behaviour": "零驱动臂 0 脉冲 ⇒ **不是硬失败**：正常落盘并写 `zero_activity=true`、`spikes_total=0`、`ei.ei_ratio=null`（显式缺席）；`role=baseline` 的 0 脉冲**仍是硬失败**（EXIT=1）",
+  "interface_contract": {
+   "zero_activity": "**顶层**键 `arm[\"zero_activity\"]`（引擎 `run_one` L352；仅该分支出现 ⇒ 既有臂 JSON 逐字节不变；键缺失 ≠ false，与 `true` 可区分）",
+   "zero_activity_criterion": "**顶层**键 `arm[\"zero_activity_criterion\"]`（L353–359，人类可读理由）",
+   "ei_ratio": "**在 `ei` 子字典内**：`arm[\"ei\"][\"ei_ratio\"]`（L324）；零活动路径 ⇒ JSON `null`（≠ 0.0；「缺席」与「测得 0」可区分）",
+   "spots": "读键方**必须**用 `arm[\"ei\"][\"ei_ratio\"]`，**不得**写 `arm[\"ei_ratio\"]`（会静默拿到 None）",
+   "stdout": "`[DONE]` 行对零活动臂追加 `ZERO_ACTIVITY=1`（L439–440）；非零活动臂该行逐字节不变"
+  },
+  "line_refs": {
+   "zero_activity_branch": "L285–300（`_zero_drive_expected` 取「语义轴 ∨ 数值轴」）",
+   "unconditional_assert_kept": "L289–291（非零驱动臂原断言逐字保留）",
+   "done_line": "L434–442",
+   "interface_note": "L348–359"
+  },
+  "caveats": "R116 ⑥ 登记的两处 caveat 依旧有效：① `zero_activity == false` 分支（零驱动臂 E 积分为 0 但脉冲数 >0）**有代码无覆盖**；② 键位契约见上（顶层 vs `ei` 子字典）。R116 ⑥3 另记：**不得**跑 `--self-test-sigma`（会覆写仓库产物 `data/m11_lever_sigma_selftest.json`）。"
+ },
+ "stop_rules": [
+  "① 某格使**主断言成立** ⇒ **不自动早停**（本计划是**扫描**：30 臂全跑完再判，与冻结计划同款；理由：早停会丢掉「该点是否稳健」与复刻轴证据）；但**立即上报**该格读数给主 agent 以便提前决策。**【谁在何时执行】主 agent，在该格 6 臂产物到齐后**",
+  "② 某格零驱动臂 0 脉冲（`zero_activity=true`）⇒ 该格 (c) 判 **`unavailable`**（既非 fail 亦非 pass；**硬门①的 300 脉冲下界在此生效**）；**该格 baseline 若也 0 脉冲 ⇒ 硬失败**（驱动侧零响应 = 网络真坏）⇒ 停并查口径。**【谁在何时执行】评估器/报告工具判 unavailable（validate_p11_resting.py L814）；主 agent 读 `[DONE]` 的 `ZERO_ACTIVITY=1` 后决定是否停**",
+  "③ 连续 **2 格**既未使中位率向 `[0.5,2.0]` 靠近、也未使 R 下降 ⇒ **停**，报「无改善」。**【谁在何时执行】主 agent，在第 2 格 6 臂产物到齐后**",
+  "④ 任一格基准臂 `active_frac` 塌陷（R118 §④4 反平凡性条款的判别值 ≈0.27 量级）**且**零驱动 ≈0 ⇒ 该格 **`invalid`**（**不得**记为机制有效）；任一格 `hard_failures` 非空（慢变量读回断言、双估计器不一致、轨迹长度⟺(T,dt) 口径等）⇒ 该格 `invalid`；**≥2 格**如此 ⇒ **停并查口径**（**不得**记为「机制无效」，M10 D1 家族）。**【谁在何时执行】评估器/报告工具；主 agent 在其输出后**",
+  "⑤ 任一格的 `(net_seed, event_seed)` 对重复（计划级断言违反）⇒ **跑前整轮停**。**【谁在何时执行】生产者 `assert_plan_replication`，在 `--plan` 模式**跑任何臂之前**（L548，失败即 `SystemExit(3)`）**",
+  "⑥ 触及预算包络（`gpu_h_mid` 1.7983 / `upper` 2.5998 GPU-h，或墙钟超出包络）⇒ **停**，**不得静默超支**。**【谁在何时执行】主 agent，逐臂比对累计 `wall_s` 与预算**",
+  "⑦ **预注册禁止**：任何以**驱动抬升**为标定手段的档**不得进 L3**（`docs/m11_b3_g1_design.md` **L146**；`wrong_usage_consequence` 亦登记在 `m11_p5_targets.csv` L119 `protocol_drive_rate_hz` 行）⇒ 出现即**计划作废**。**【谁在何时执行】本计划**跑前**（生成器断言 `drive_mult ∈ {0.0,1.0}`、无 `drive_rate_hz` 覆盖）+ 主 agent 交办复核**",
+  "⑧ σ=0.10 的**全部** bias 档失败且非反向 ⇒ 报『**悬崖不可达窗口**』⇒ 判 **L3 失败 ⇒ 第四维结构对立确认 ⇒ 必须换机制（不再改参数）**；若失败只是采样/口径问题（`hard_failures` 非空）⇒ **先修口径重跑**；若某格仅 (c) 判 `unavailable` ⇒ **先按窗口判据补测**，不得直接判失败。**【谁在何时执行】主 agent，在 5 格报告齐备后**"
+ ],
+ "budget": {
+  "unit_prices": "**按档取价（逐格加权）；单价来源 = T=1 s 短跑实测（ms/step）**。R112 ⑤（我的第 30 次公开更正）：**不得用最低档单价（0.6415）外推全网格**。",
+  "price_table": {
+   "p5_L3_A0_b1.00_s0.30|baseline": {
+    "ms_per_step": 1.1872,
+    "source": "实测 data/m11_p5_l3_feasibility/l3pb_b1.00s0.30_8192_T1000ms_d1_s0.json",
+    "measured": true
+   },
+   "p5_L3_A0_b1.00_s0.30|zero_drive": {
+    "ms_per_step": 1.1872,
+    "source": "**代理**（同格 baseline；本格 zero_drive 无 T=1 s 实测；另有 T=10 s 墙钟锚 0.7704）",
+    "measured": false
+   },
+   "p5_L3_C0_b1.00_s0.10|baseline": {
+    "ms_per_step": 1.076,
+    "source": "实测 data/m11_p5_l3_feasibility/l3pb_b1.00s0.10_8192_T1000ms_d1_s0.json",
+    "measured": true
+   },
+   "p5_L3_C0_b1.00_s0.10|zero_drive": {
+    "ms_per_step": 0.6434,
+    "source": "**代理**（「空转地板」：本格零驱动探针实测 0 脉冲 ⇒ 取同 bias 家族低活动格实测 data/m11_p5_l3_feasibility/l3win_b130_s010_zd_8192_T1000ms_zero_drive_s0.json = 0.6434）",
+    "measured": false
+   },
+   "p5_L3_C1_b1.15_s0.10|baseline": {
+    "ms_per_step": 1.2808,
+    "source": "**代理**（σ=0.10 家族**线性内插**：1.0760 + (1.4856−1.0760)×(1.15−1.00)/(1.30−1.00) = 1.2808）",
+    "measured": false
+   },
+   "p5_L3_C1_b1.15_s0.10|zero_drive": {
+    "ms_per_step": 0.6434,
+    "source": "**代理**（同「空转地板」；本格无实测）",
+    "measured": false
+   },
+   "p5_L3_C2_b1.30_s0.10|baseline": {
+    "ms_per_step": 1.4856,
+    "source": "实测（T=1 s）data/m11_p5_l3_feasibility/l3pb_b1.30s0.10_8192_T1000ms_d1_s0.json",
+    "measured": true
+   },
+   "p5_L3_C2_b1.30_s0.10|zero_drive": {
+    "ms_per_step": 0.6434,
+    "source": "实测（T=1 s，零驱动 46 脉冲）data/m11_p5_l3_feasibility/l3win_b130_s010_zd_8192_T1000ms_zero_drive_s0.json",
+    "measured": true
+   },
+   "p5_L3_C3_b1.45_s0.10|baseline": {
+    "ms_per_step": 1.4856,
+    "source": "**代理**（σ=0.10 家族上界：取 C2 的 T=1 s 实测 1.4856；bias=1.45 更高活动 ⇒ 可能**低估**）",
+    "measured": false
+   },
+   "p5_L3_C3_b1.45_s0.10|zero_drive": {
+    "ms_per_step": 0.6434,
+    "source": "**代理**（同「空转地板」；bias=1.45 处悬崖可能位移 ⇒ 该代理**不确定性最大**）",
+    "measured": false
+   }
+  },
+  "proxies": [
+   {
+    "cell": "p5_L3_A0_b1.00_s0.30",
+    "role": "zero_drive",
+    "price_ms_per_step": 1.1872,
+    "source": "**代理**（同格 baseline；本格 zero_drive 无 T=1 s 实测；另有 T=10 s 墙钟锚 0.7704）"
+   },
+   {
+    "cell": "p5_L3_C0_b1.00_s0.10",
+    "role": "zero_drive",
+    "price_ms_per_step": 0.6434,
+    "source": "**代理**（「空转地板」：本格零驱动探针实测 0 脉冲 ⇒ 取同 bias 家族低活动格实测 data/m11_p5_l3_feasibility/l3win_b130_s010_zd_8192_T1000ms_zero_drive_s0.json = 0.6434）"
+   },
+   {
+    "cell": "p5_L3_C1_b1.15_s0.10",
+    "role": "baseline",
+    "price_ms_per_step": 1.2808,
+    "source": "**代理**（σ=0.10 家族**线性内插**：1.0760 + (1.4856−1.0760)×(1.15−1.00)/(1.30−1.00) = 1.2808）"
+   },
+   {
+    "cell": "p5_L3_C1_b1.15_s0.10",
+    "role": "zero_drive",
+    "price_ms_per_step": 0.6434,
+    "source": "**代理**（同「空转地板」；本格无实测）"
+   },
+   {
+    "cell": "p5_L3_C3_b1.45_s0.10",
+    "role": "baseline",
+    "price_ms_per_step": 1.4856,
+    "source": "**代理**（σ=0.10 家族上界：取 C2 的 T=1 s 实测 1.4856；bias=1.45 更高活动 ⇒ 可能**低估**）"
+   },
+   {
+    "cell": "p5_L3_C3_b1.45_s0.10",
+    "role": "zero_drive",
+    "price_ms_per_step": 0.6434,
+    "source": "**代理**（同「空转地板」；bias=1.45 处悬崖可能位移 ⇒ 该代理**不确定性最大**）"
+   }
+  ],
+  "steps_per_run_incl_settle": 210000,
+  "formula": "gpu_h = Σ_arm (210000 步 × 该(格,角色)单价 ms/step) / 3.6e6 ms",
+  "per_cell": {
+   "p5_L3_A0_b1.00_s0.30": {
+    "bias_scale": 1.0,
+    "bias_log_sigma": 0.3,
+    "n_arms": 6,
+    "steps": 1260000,
+    "price_baseline_ms_per_step": 1.1872,
+    "price_zero_drive_ms_per_step": 1.1872,
+    "gpu_h_mid": 0.4155
+   },
+   "p5_L3_C0_b1.00_s0.10": {
+    "bias_scale": 1.0,
+    "bias_log_sigma": 0.1,
+    "n_arms": 6,
+    "steps": 1260000,
+    "price_baseline_ms_per_step": 1.076,
+    "price_zero_drive_ms_per_step": 0.6434,
+    "gpu_h_mid": 0.3009
+   },
+   "p5_L3_C1_b1.15_s0.10": {
+    "bias_scale": 1.15,
+    "bias_log_sigma": 0.1,
+    "n_arms": 6,
+    "steps": 1260000,
+    "price_baseline_ms_per_step": 1.2808,
+    "price_zero_drive_ms_per_step": 0.6434,
+    "gpu_h_mid": 0.3367
+   },
+   "p5_L3_C2_b1.30_s0.10": {
+    "bias_scale": 1.3,
+    "bias_log_sigma": 0.1,
+    "n_arms": 6,
+    "steps": 1260000,
+    "price_baseline_ms_per_step": 1.4856,
+    "price_zero_drive_ms_per_step": 0.6434,
+    "gpu_h_mid": 0.3726
+   },
+   "p5_L3_C3_b1.45_s0.10": {
+    "bias_scale": 1.45,
+    "bias_log_sigma": 0.1,
+    "n_arms": 6,
+    "steps": 1260000,
+    "price_baseline_ms_per_step": 1.4856,
+    "price_zero_drive_ms_per_step": 0.6434,
+    "gpu_h_mid": 0.3726
+   }
+  },
+  "gpu_h_mid": 1.7983,
+  "gpu_h_upper": 2.5998,
+  "upper_rule": "上界 = 全 30 臂一律按**本网格内 T=1 s 实测最大值** 1.4856 ms/step（C2 baseline）",
+  "caveat_T10": "**T=10 s 的稳态单价**：本网格 5 格 × 2 角色 = 10 个格-角色里，只有 **C2 baseline 已有正式 T=10 s 实测**（`data/m11_p5_l3_runs/…_d1.0_s0/s1` = 0.9318 / 0.9887 ms/step）⇒ 其余 9 个格-角色只有 T=1 s 探针价或代理价。**⇒ 必须实跑复探**：A0 锚（最便宜、且可与既有 L0 臂逐位核对）先跑，用其实测 `ms_per_step_steady` 对齐后再放行 C0/C1/C2/C3。**方向性证据**：C2 baseline 的 T=10 s 实测（0.93–0.99）**低于**其 T=1 s 探针价（1.4856）⇒ 本预算**偏保守**（同类现象在 A0 格也有：T=10 s 墙钟 0.7704/0.8399 vs T=1 s 1.1872）。",
+  "wall_anchor_from_existing": {
+   "a0_note": "A0 格在既有 L0 计划里已按同规格跑过（bias=1.00 × σ=0.30，T=10 s、settle=500 ms、chunk）⇒ 其**含 settle 的墙钟单价**可直接读出：`zero_drive` 0.7704 / 0.7708 / 0.7533、`baseline` 0.8399 / 0.8453 / 0.8447 ms/step（= `wall_s×1000/(200000+10000)`）⇒ A0 预算偏保守（A0 按墙钟锚只有 0.2818 GPU-h，是 mid 估计 0.4155 的 68%）。",
+   "c2_note": "C2 baseline 的**正式 T=10 s** 每臂 `wall_s` = 236.3 / 247.1 s（含 settle 的 step-delivery ≈50 s；`ms_per_step` 0.9318/0.9887 只覆盖测量窗）⇒ 30 臂≈2.0 h MPS-busy，其余取决于占空比。",
+   "settled_overhead": "生产者对 settle 用 `delivery=step`（L255）、测量窗用计划里的 `chunk`（L257–258）⇒ 每臂有**固定慢步开销**：A0 `zero_drive` s0 实读 `wall_s`=161.79 s 而引擎测量窗单价 0.6487 ⇒ 测量窗 ≈129.7 s，**settle 10,000 步 ≈32.1 s（≈3.2 ms/step，比 chunk 慢 ≈4.9×）** ⇒ 30 臂 ≈16–25 min 固定开销。"
+  },
+  "comparison_with_L2": {
+   "L2_scan_ref": "L2_design.budget.segments['L2_slow_scan(5 档 × 2 角色 × 3 实现, T=10 s)']= 30 run / 6,300,000 步 / gpu_h_mid 1.394 / upper 1.701（折合 0.7966 / 0.9720 ms/step）",
+   "L3_per_step_mid_ms": 1.0276,
+   "ratio_L3_over_L2": 1.29,
+   "note": "L3 单价高于 L2 的原因：L3 全部落在 bias=1.00–1.30（活动量高 ⇒ 单价高），而 L2 基线是 bias=0.70。**两者不可互相外推。**"
+  },
+  "wall_clock": "纯计算 1.7983 GPU-h（本版逐格加权）或 1.7064（T=10 s 锚）⇒ 按占空比 0.054 ⇒ 墙钟 ≈33.3–31.6 h；但正式跑实测每臂 wall≈236–247 s（含 settle 的 step-delivery ≈50 s）⇒ 30 臂 ≈2.0 h MPS-busy，墙钟 = 2.0 h ÷ 占空比 ⇒ **must be 托管 + resume-safe**（`[SKIP]` 已完成的臂）。",
+  "downgrade_plan_if_over": [
+   "**不降档**：30 臂 = 5 格 × 2 角色 × 3 独立实现，是预注册的最小可判结构（每格 (c) 需 ≥3 seed 才能判 CI）。",
+   "若必须降：**先砍 C3**（极端档，−6 臂 ⇒ −0.3726 GPU-h mid），再砍 C1（−0.3367）；**A0 锚与 C2（主目标）不得砍**。",
+   "**禁止**用「减少 settle」或「缩短 T」降成本：会违反步数断言（R80）与 T_min 口径。"
+  ],
+  "gpu_h_mid_T10_anchored": 1.7064,
+  "T10_anchor_note": "**正式口径（T=10 s）实测锚**（本节点实读 `data/m11_p5_l3_runs/`）：C2 baseline 的 s0/s1 两实现 `ms_per_step_steady` = 0.9318 / 0.9887（均值 0.9603，wall_s 236.3 / 247.1）⇒ 用该均值替换 C2 baseline 的 T=1 s 代理价后 `gpu_h_mid = 1.7064`。**两个口径都给出**：以 T=1 s 为统一口径可得 同 caliber 的 1.7983；以 T=10 s 实测锚替 C2 得更贴近现实的 1.7064。",
+  "frozen_plan_comparison": {
+   "frozen_mid": 2.275,
+   "frozen_upper": 2.8,
+   "note": "冻结计划 `m11_p5_plan_l3.json` 用**代表值** 1.30 ms/step（上界 1.60）估得 mid 2.275 / upper 2.8；本版用**逐格实测价**（最小值 0.6434）⇒ mid/upper 更低（2.275 → 1.7983）。**两者都不含** settle 的 step-delivery 固定开销（正式跑实测每臂 wall≈236–247 s，含 settle ≈50 s）⇒ 30 臂纯计算 ≈2.0–2.1 h。"
+  }
+ },
+ "b_reporting_form": "**沿用 R101/L1 的 R57 四条**：(b) 一律**描述性并列、不作 gate**（代理口径 zero_count / 无真实 ROI 掩膜、样本 thin 单 field×2,000 帧 ≈317 s、**不引用 0.48–0.49 窄带** ⇒ 以对 0.49 的比值/上界报告、不判 pass/fail）。本计划**不**启用 0.48–0.49 窄带，**不**改 (b) 的 `unavailable` 状态（`m11_p5_prereg_amend_r109_a_reporting.json::b_unchanged` 逐字保留）。",
+ "forbidden_levers": [
+  {
+   "lever": "提高背景驱动 λ（`drive_rate_hz` / `drive_mult > 1`）",
+   "prohibition": "**预注册禁止作为标定手段**（`docs/m11_b3_g1_design.md` **L146**）",
+   "reason": "提高 λ 同时抬高零驱动臂（若事件表泄漏）、压低静默 ⇒ 必然触发张力；M10 A4 已付过同一学费（L137：抬高驱动去命中 (a) 会同时把静默压出带）",
+   "allowed_only_as": "剂量-响应诊断（**不在本计划内**；本计划 30 臂的 `drive_mult` 只有 0.0/1.0）"
+  },
+  {
+   "lever": "用「减少 settle」或「缩短 T」降成本",
+   "prohibition": "禁（会违反 R80 步数断言与 T_min 口径）",
+   "reason": "settle=500 ms ⇒ 210,000 步是预注册口径；缩短即失去与既有 L0/L1 臂的可比性",
+   "allowed_only_as": "—"
+  }
+ ],
+ "prior_probe_evidence": {
+  "discipline": "**以下全部是 T=1 s、单实现、未预注册的探针（R112/R113/R115/R118）⇒ 只作方向性支持，不作判据、不进任何门**；正式判定只由本计划 30 臂（T=10 s × 3 实现）给出",
+  "cliff_at_bias_1_30": [
+   {
+    "sigma": 0.3,
+    "zero_drive_spk": 4126,
+    "ms_per_step": 1.4379,
+    "ei_ratio_zero": 6.0406
+   },
+   {
+    "sigma": 0.2,
+    "zero_drive_spk": 4875,
+    "baseline_spk": 5546,
+    "R_single_impl": 0.879,
+    "ms_per_step": 1.0371,
+    "ei_ratio_baseline": 2.7059
+   },
+   {
+    "sigma": 0.15,
+    "zero_drive_spk": 4666,
+    "baseline_spk": 5295,
+    "R_single_impl": 0.8812,
+    "ms_per_step": 0.9693,
+    "ei_ratio_baseline": 2.6482
+   },
+   {
+    "sigma": 0.1,
+    "zero_drive_spk": 46,
+    "baseline_spk": 5149,
+    "R_single_impl": 0.0089,
+    "ms_per_step": 0.6434,
+    "ei_ratio_zero": 127.0544,
+    "ei_ratio_baseline": 2.5767,
+    "warn": "零驱动臂 `ei_ratio=127.05` 是**异常值**（i_exc 极小 ⇒ 比值爆炸）⇒ **不得与基准臂的 (e) 混用**"
+   }
+  ],
+  "formal_T10_measurements": {
+   "source": "data/m11_p5_l3_runs/（正式跑产物，本节点实读）",
+   "arms": [
+    {
+     "run_id": "l3_C2_b1.30_s0.10_8192_T10000ms_d1.0_s0",
+     "role": "baseline",
+     "seed": 0,
+     "spikes_total": 52601,
+     "ms_per_step": 0.9318,
+     "wall_s": 236.3,
+     "ei_ratio": 2.597,
+     "note": "R121 ①：中位率 **0.6000 Hz** ∈ [0.5,2.0] ✓、`active_frac` **1.0000** ✓"
+    },
+    {
+     "run_id": "l3_C2_b1.30_s0.10_8192_T10000ms_d1.0_s1",
+     "role": "baseline",
+     "seed": 1,
+     "spikes_total": 52572,
+     "ms_per_step": 0.9887,
+     "wall_s": 247.1,
+     "ei_ratio": 2.6034
+    }
+   ],
+   "caution": "这些是**单臂读数**（(c) 的 `zero_drive` 侧尚未完成 ⇒ `pooled_zero_drive`/`R` 未知）⇒ **不得**据此判 (c) 通过；且 `(e)` 的跨工具口径冲突已由 R123/R124 登记为**待复核**（见 cross_tool_notes）。"
+  },
+  "resolution_correction": {
+   "claim": "短时窗（T=1 s）的中位率因**计数粗量化**而系统性偏高",
+   "evidence": "探针外推 ≈1.0 Hz vs 正式 T=10 s 实测 **0.6000 Hz**（高估 1.67×）⇒ R118 §④3 的警告成立",
+   "consequence": "**任何「中位率进带」的结论必须用协议时窗（T=10 s）确认，不得用短窗外推**（R121 §③）"
+  },
+  "not_judged": "以上**不得**用于判 (a)/(c)，**不得**用于免除实跑，**不得**计入任何 n_seeds"
+ },
+ "reporting_contract": {
+  "per_arm_required": [
+   "臂 JSON（生产者自动落盘）：`spikes_total`、`agg.spk_total`、`ei.ei_ratio`、`ei.i_exc_integral`、`wall_s`、`ms_per_step_steady`、`sha256_of_trace`、`seeds.triple`、`n_steps_meas/n_steps_settle`",
+   "逐神经元计数表 `<run_id>_counts.csv`（`neuron_id,count,cell_type`）⇒ 中位率 / `a_active_frac` / `a_pop_mean_hz` / 亚型分解 / `count_dispersion` 的**唯一可复算来源**",
+   "群体轨迹 `<run_id>_poptrace.npy`（float32 逐步脉冲数）⇒ 双估计器一致性（硬门③）"
+  ],
+  "derived_required": [
+   "`pooled_zero_drive` 绝对值（3 实现求和）+ 窗口判定",
+   "`R` 及其 CI（评估器 `p5_c_selfsustain`，两 CI 法并列）",
+   "`frac_nonzero_slow_var`（引擎读回）与 `count_dispersion`（counts 复算）"
+  ],
+  "ban": [
+   "不得只报 R 而不报 `pooled_zero_drive` 绝对值（R115 ②）",
+   "不得用 `a_active_frac` 代替中位率判 (a)（R109 修订）",
+   "不得把 `unavailable`/`invalid` 记为 fail 或 pass（M10 D1 家族）",
+   "不得把跨计划逐位一致当成新证据（R95 ⑤）"
+  ]
+ },
+ "cross_tool_notes": {
+  "evaluator_mechanism_gap": "`mechanism='lever_l3'` ⇒ 评估器按 `(config_id,T_ms,mechanism)` 建单元（validate_p11_resting.py L625–627）⇒ (a)/(c)/(e) 会被正常计算；**但**硬门⑤（L660–670）要求同 (config_id,T_ms) 有 `mechanism=='none'` 且 `drive_mult==1.0` 的臂 ⇒ 本计划**不满足** ⇒ (a)/(b) 行 `discriminative=None`、G1 至多 `unavailable`（L1360）。**只登记，不改评估器**。",
+  "report_tool_is_primary": "**R120 §③**：该评估器对「杠杆扫描计划」有结构性错配 ⇒ **L3 判定必须以 `tools/report_m11_l3.py`（四条报告量 + `c_judgeable` + `triviality_flag`）为主、评估器为辅**。",
+  "protocol_filename": "生产者跑完自动写 `data/m11_p5_protocol_<plan_id>.json`（L507–536）⇒ 本计划 plan_id = `p5_L3_sigma_cliff_bias_scan` ⇒ 文件为 `data/m11_p5_protocol_p5_L3_sigma_cliff_bias_scan.json`（`p5_` 重复一次是代码决定的）。**R120 §①**：评估器没有 `--runs`/`--protocol`，只有 `--protocol-json`。",
+  "e_criterion_under_review": "**R123 §① / R124**：跨工具 (e) 口径冲突已被精确确证 ⇒ **R109 ①② 的「(c)↔(e) 对立」撤回**，该条标**待复核** ⇒ 本计划**不**把 (e) 用作 L3 的判定依据（(a)/(c) 不受影响）。",
+  "duration_ladder": "本计划只有 T=10 s ⇒ 硬门④ 阶梯为 `unavailable`（与 L0/L1 相同，非 invalid）",
+  "two_ci_disagreement": "L1 先例：`b0.70 σ0.30` 的 (c) 行因两 CI 法上界相对差 0.371 > 0.25 判 `invalid` ⇒ L3 若有同情形，**先对齐 CI 口径**再判",
+  "targets_csv_gap_closed": "R115 §⑤ 的判据表缺口已由 append-only 行补齐：`m11_p5_targets.csv` **L119** `protocol_drive_rate_hz = 8.0`（本节点实读）",
+  "doc_approximation_discrepancy": "**如实登记**：`docs/m11_acceptance_master.md` R115 §②/① 写「零驱动 ≈9,076 脉冲/实现 @T=10 s」，既有产物实读为 **8,591 / 8,585 / 9,802**（`data/m11_p5_l0_runs/l0_g1.00_b1.00_…_d0_s{0,1,2}.json`），3 实现合计 **26,978**，`R` = **0.295987**（文档 0.296 ⇒ 逐位一致）⇒ **以产物为准**。"
+ },
+ "execution_order": {
+  "rationale": "**R135 调度决定**（纪律第六十九条）：R133/R134 已把问题变成良定义 —— 点火阈值在 bias∈(1.00,1.30)，唯一可能有解的区域是该过渡带，需要 pooled_zero_drive∈[300, 0.10×baseline] **且** (a)∈[0.5,2.0]。⇒ **C1(bias=1.15) 是唯一已排定的夹逼点**，其零驱动臂是当前 M11 最有价值的一次测量 ⇒ **提到最前**。C0(bias=1.00) 的 (c) 已由两个零驱动实现（5 与 0 ⇒ pooled≈5）判为 `unavailable` ⇒ 其余 5 臂价值较低，后置。",
+  "drop_in": "与冻结计划 `m11_p5_plan_l3.json` 的臂集合完全相同（仅顺序不同）⇒ 已完成臂 `[SKIP]` 复用、**零返工**",
+  "order": "C1零 → C1基 → C0零 → C0基 → A0 → C2 → C3"
+ },
+ "selfcheck_map": {
+  "note": "主 agent 条款 1–8 ⇒ 落在计划 JSON 的哪个键 + 自检报告的哪一节",
+  "items": {
+   "1 unmeasured_side_declaration（含 by_measurement_excluded）": "计划键 `unmeasured_side_declaration`｜报告 §5",
+   "2 (a) 四条并报": "计划键 `a_reporting_four`（+ `reporting_contract`）｜报告 §5",
+   "3 亚型分解": "计划键 `subtype_reporting`｜报告 §5",
+   "4 同质化防线": "计划键 `homogenization_defense`｜报告 §6",
+   "5 producer_dependency": "计划键 `producer_dependency`｜报告 §2.9/§5",
+   "6 按档取价的预算": "计划键 `budget`｜报告 §7",
+   "7 停机规则": "计划键 `stop_rules`｜报告 §3/§5",
+   "8 cross_plan_anchor": "计划键 `cross_plan_anchor`｜报告 §5",
+   "＋ R122 作废纪律": "计划键 `status` / `supersedes`｜报告 §0",
+   "＋ 与冻结计划对齐": "计划键 `alignment_with_frozen_plan`｜报告 §4"
+  }
+ }
+}
