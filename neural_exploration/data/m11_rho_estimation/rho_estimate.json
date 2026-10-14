@@ -1,0 +1,588 @@
+{
+ "generated_by": "/tmp/m11_rho_est/{rho_est.py,compose.py}（驱动脚本，**非仓内件**；逐字备份见 docs/m11_rho_estimation.md 附录 A）",
+ "generated_at": "2026-10-14T18:23:19Z",
+ "evidence_level": "measured",
+ "task": "在**真实钙成像数据**（field4 真实 ROI 掩膜，2000 帧 @6.300006 Hz）上估计单脉冲等效事件幅度 A，给出 rho = thr / A 的点估计与区间，并映射到 (b) 的决断地图四区",
+ "meta": {
+  "prereg_freeze_integrity": {
+   "frozen_doc_sha256": "d68a4afe0ab9698eb6a54c4fa50cdbd778700a8191887c3bd4be85547fb01660",
+   "reconstruction_match": true,
+   "prereg_body_0_0_to_0_7_sha256": "e5a0cb9f131d8b59d802e1c512138cc6417bc0a7c38783c3e8543e2bc3bf6e3d",
+   "current_doc_sha256_at_compose": "add2062fc40994e547082be477e5e656d740d4c3c67b21d1aba135e3b2d1fd0d",
+   "frozen_tail_sha256": "40122d0e0118f7c7fe212eb73080f2b54352006a5904dcd101e12c8818790eb4",
+   "method": "用当前文件**回推**冻结版（把 §0.8 的登记行换回占位行、把 §1–§5 换回占位块）⇒ sha256 与冻结记录 d68a4afe…1660 **逐位相同** ⇒ 证明 §0.0–§0.7 逐字未变",
+   "proof": "reconstruction_match=True 即为该证明"
+  },
+  "prereg_doc": "neural_exploration/docs/m11_rho_estimation.md §0",
+  "prereg_doc_sha256_at_freeze": "d68a4afe0ab9698eb6a54c4fa50cdbd778700a8191887c3bd4be85547fb01660",
+  "prereg_frozen_at_utc": "2026-10-14T18:17:08Z",
+  "driver_sha256_rho_est": "26999f4e2338cc82bf346624d4438043895f4d1a7aa3aecc04850e79c53f665e",
+  "driver_sha256_posthoc": "5a05e5e294368d37662048853752b30b75f76c35c96171644ff1f2627430f7da",
+  "prereg_body_unchanged": true,
+  "prereg_change_log": "§0.0–§0.7（估计器定义 / 孤立判据 / 峰定义 / 子窗与单元 / 敏感性轴 / 预测与判定标准）**逐字未变**；§0.8 是 §0 自身规定的变更登记表，**追加 1 行**：后验诊断轴（POSTHOC_*）—— 在看到主档结果（rho=3.2847, Z1）**之后**追加，**仅诊断、不改主档**；§1–§5 为冻结后填入。⇒ **主档与全部预注册档未被事后调整**（无「为凑 (4,5] 而调参」）",
+  "note": "§0 预注册先于全部计算；本次唯一新增轴为**未预注册**的后验诊断轴（已显式标注）"
+ },
+ "caliber": {
+  "field4": {
+   "rule": "逐像素 F0=20 分位；dF/F=(F-F0)/F0；事件阈值 = 中位 + 3·MAD（承 M11 J2 同源）",
+   "dff_median": 0.423285,
+   "dff_mad": 0.385062,
+   "event_threshold_dff": 1.57847,
+   "unit": "真实 ROI 掩膜（等权像素均值；Mask.weights 未使用）",
+   "n_rois_field_total": 1388,
+   "n_rois_fully_in_movie_window": 432,
+   "n_frames": 2000,
+   "window": [
+    200,
+    200
+   ],
+   "duration_s": 317.46
+  },
+  "field2": {
+   "rule": "逐像素 F0=20 分位；dF/F=(F-F0)/F0；事件阈值 = 中位 + 3·MAD（承 M11 J2 同源）",
+   "dff_median": 0.606383,
+   "dff_mad": 0.567295,
+   "event_threshold_dff": 2.308268,
+   "unit": "真实 ROI 掩膜（等权像素均值；Mask.weights 未使用）",
+   "n_rois_field_total": 1413,
+   "n_rois_fully_in_movie_window": 87,
+   "n_frames": 2000,
+   "window": [
+    100,
+    100
+   ],
+   "duration_s": 317.46
+  },
+  "thr_source": "event_threshold_dff（field4=1.578470）—— 数据侧**已在手**，出处 data/m12_b5_roi_mask/m12_b5_roi_mask_audit.json::fields.field4.calcium_event_caliber",
+  "same_caliber": true,
+  "note": "thr 与 A **同为该审计 JSON 登记的 dF/F 事件检测口径**（逐像素 F0=20 分位；dF/F=(F−F0)/F0；阈值=中位+3·MAD）⇒ rho 是同一约定内两量之比"
+ },
+ "selfcheck": {
+  "field4": {
+   "silent_frac_zero_count_real_roi": 0.101852,
+   "silent_frac_expected": 0.101852,
+   "n_rois_fully_in_movie_window": 432,
+   "n_zero_events": 44,
+   "zero_events_is_44_of_432": true,
+   "event_threshold_dff": 1.57847,
+   "thr_expected": 1.57847,
+   "thr_match": true,
+   "median_events_per_roi": 46.5,
+   "median_events_expected": 46.5,
+   "median_events_match": true,
+   "silent_match": true,
+   "selfcheck_3of3_pass": true
+  },
+  "field2": {
+   "silent_frac_zero_count_real_roi": 0.229885,
+   "silent_frac_expected": 0.229885,
+   "n_rois_fully_in_movie_window": 87,
+   "n_zero_events": 20,
+   "zero_events_is_44_of_432": null,
+   "event_threshold_dff": 2.308268,
+   "thr_expected": 2.308268,
+   "thr_match": true,
+   "median_events_per_roi": 8.0,
+   "median_events_expected": 8.0,
+   "median_events_match": true,
+   "silent_match": true,
+   "selfcheck_3of3_pass": true
+  },
+  "verdict": "PASS（field4 3/3 + field2 3/3；field4 逐值：0.101852=44/432、thr 1.578470、median_events 46.5）⇒ 实现与 B-5/审计同款",
+  "command": "cd /Users/weidong/ai/small_world && PYTHONHASHSEED=0 MPLBACKEND=Agg /Users/weidong/ai/small_world/.venv-m11/bin/python /tmp/m11_rho_est/selfcheck.py"
+ },
+ "primary": {
+  "field": "field4",
+  "peak_def": "bl_local",
+  "stat": "p10",
+  "tau_s": 1.0,
+  "gap_frames": 13,
+  "agg": "pooled",
+  "unit_set": "432_all",
+  "window": "full2000",
+  "edge_rule": "edge_clean",
+  "n_rois": 432,
+  "n_events_total": 38580,
+  "n_runs": 7355,
+  "n_iso": 1005,
+  "n_iso_raw": 1010,
+  "n_dropped_shortbase": 5,
+  "n_rois_with_iso": 337,
+  "A": 0.48054778575897217,
+  "A_over_thr": 0.3044388941626342,
+  "thr": 1.5784704089164734,
+  "rho": 3.2847314163011982,
+  "zone": "Z1_undetermined(0.92472<rho<=4)",
+  "boot95": {
+   "lo": 0.450746576488018,
+   "hi": 0.5010359814763069,
+   "n_eff": 1000,
+   "seed": 20261015,
+   "B": 1000,
+   "rho_lo": 3.150413278235021,
+   "rho_hi": 3.5019021580043725
+  },
+  "A_definition": "孤立事件峰幅值分布的 p10；峰幅值 =（越阈段内 trace 最大值）−（段起点前 G 帧静默窗的中位数）；孤立 = 前后间隔均 ≥ G = round(2·τ·6.300006) 帧，τ=1.0 s"
+ },
+ "A_estimates": {
+  "point": 0.48054778575897217,
+  "intervals": {
+   "statistical_bootstrap": {
+    "A": 0.48054778575897217,
+    "A_lo": 0.450746576488018,
+    "A_hi": 0.5010359814763069,
+    "source": "ROI 自助 95%（B=1000）",
+    "rho": 3.2847314163011982,
+    "rho_lo": 3.150413278235021,
+    "rho_hi": 3.5019021580043725
+   },
+   "subwindow_dispersion": {
+    "A_min": 0.3270784854888916,
+    "A_max": 0.7749723434448242,
+    "rho_min": 2.03680869681107,
+    "rho_max": 4.825968319368661
+   },
+   "definitional_all_tiers": {
+    "A_min": 0.359603,
+    "A_max": 1.601506,
+    "rho_min": 0.9856162942358463,
+    "rho_max": 4.389480646480906,
+    "note": "全部敏感性档（不含主档本身与块汇总）的 min–max；**定义不确定度，不是概率区间**"
+   },
+   "definitional_incl_primary_and_blocks": {
+    "A_min": 0.327078,
+    "A_max": 1.601506,
+    "rho_min": 0.9856162942358463,
+    "rho_max": 4.825975482656961
+   },
+   "post_hoc_fair_baseline_events": {
+    "A_min": 1.1325359225273133,
+    "A_max": 1.3068543821573257,
+    "rho_min": 1.2078395500428825,
+    "rho_max": 1.3937486463069833,
+    "note": "**未预注册**，仅诊断；剔除近阈几何效应最重的事件后的 A（偏大 ⇒ rho 偏小）"
+   }
+  },
+  "interval_sources_note": "统计区间 = ROI 自助 95%（B=1000, seed=20261015）；跨子窗离散度 = 31×63 帧块（=10.0 s）；定义性区间 = 全部敏感性档 min–max（**定义不确定度，非概率区间**）"
+ },
+ "rho": {
+  "point": 3.2847314163011982,
+  "thr": 1.5784704089164734,
+  "statistical_interval": [
+   3.150413278235021,
+   3.5019021580043725
+  ],
+  "sensitivity_interval_no_blocks": [
+   0.9856162942358463,
+   4.389480646480906
+  ],
+  "crossings_no_blocks": {
+   "A_lo": 0.359603,
+   "A_hi": 1.601506,
+   "rho_lo": 0.9856162942358463,
+   "rho_hi": 4.389480646480906,
+   "zones_covered": [
+    "Z1_undetermined(0.92472<rho<=4)",
+    "Z2_narrow_pass_window(4<rho<=5)"
+   ],
+   "crosses_boundary": true
+  },
+  "delivered_interval": [
+   0.327078,
+   1.601506
+  ],
+  "delivered_interval_rho": [
+   0.9856162942358463,
+   4.825975482656961
+  ],
+  "delivered_interval_zone": {
+   "zones_covered": [
+    "Z1_undetermined(0.92472<rho<=4)",
+    "Z2_narrow_pass_window(4<rho<=5)"
+   ],
+   "crosses_boundary": true
+  },
+  "note": "delivered_interval = **本任务交付的区间**（含主档 + 全部预注册档 + 全部 63 帧块；不含 DIAGNOSTIC 行、不含未预注册的 POSTHOC 行）"
+ },
+ "sensitivity_summary": {
+  "n_rows": 113,
+  "n_unavailable": 49,
+  "field4": {
+   "n_tiers": 42,
+   "A_min": 0.327078,
+   "A_max": 1.601506,
+   "rho_min": 0.9856162942358463,
+   "rho_max": 4.825975482656961,
+   "best_case_for_Z0": {
+    "tier": "abs（**退化档**）",
+    "A": 1.601506,
+    "rho": 0.985616
+   },
+   "best_case_for_Z3": {
+    "tier": "block63_03（63 帧块）",
+    "A": 0.327078,
+    "rho": 4.825968,
+    "note": "仍 <= 5 ⇒ field4 **无任何档位**进入 Z3"
+   },
+   "zone_counts": {
+    "Z1_undetermined(0.92472<rho<=4)": {
+     "n": 35,
+     "examples": [
+      [
+       "PRIMARY/full2000",
+       3.284731
+      ],
+      [
+       "SENS_stat/full2000",
+       3.965783
+      ],
+      [
+       "SENS_stat/full2000",
+       2.410785
+      ],
+      [
+       "SENS_stat/full2000",
+       1.670798
+      ]
+     ]
+    },
+    "Z2_narrow_pass_window(4<rho<=5)": {
+     "n": 7,
+     "examples": [
+      [
+       "SENS_peakdef/full2000",
+       4.268264
+      ],
+      [
+       "SENS_tau/full2000",
+       4.389482
+      ],
+      [
+       "SENS_block63/block63_02",
+       4.339426
+      ],
+      [
+       "SENS_block63/block63_03",
+       4.825968
+      ]
+     ]
+    }
+   }
+  },
+  "field2": {
+   "n_tiers": 51,
+   "zone_counts": {
+    "Z1_undetermined(0.92472<rho<=4)": {
+     "n": 17,
+     "examples": [
+      [
+       "PRIMARY/full2000",
+       3.565091
+      ],
+      [
+       "SENS_stat/full2000",
+       2.800669
+      ],
+      [
+       "SENS_stat/full2000",
+       2.166588
+      ],
+      [
+       "SENS_stat/full2000",
+       2.261148
+      ]
+     ]
+    },
+    "Z2_narrow_pass_window(4<rho<=5)": {
+     "n": 2,
+     "examples": [
+      [
+       "SENS_stat/full2000",
+       4.242536
+      ],
+      [
+       "SENS_tau/full2000",
+       4.497498
+      ]
+     ]
+    },
+    "Z3_strict_fail(rho>5)": {
+     "n": 1,
+     "examples": [
+      [
+       "SENS_peakdef/full2000",
+       5.245886
+      ]
+     ]
+    }
+   }
+  },
+  "stability": "**不稳定**：field4 全档 rho ∈ [0.9856, 4.8260] 跨 Z1↔Z2（4.0 边界）；field2 旁证的 `pre5` 档 rho=5.246 落 Z3 ⇒ 「能落进 (4,5] 也能落出去（甚至 >5）」，按预注册纪律**必须标不稳定**"
+ },
+ "decision_map": {
+  "zones": [
+   {
+    "id": "Z0",
+    "rule": "rho <= 0.92472",
+    "meaning": "严格 fail：钙域静默 = frac(c_i=0) = 0.000122 < 带下界 0.101852"
+   },
+   {
+    "id": "Z1",
+    "rule": "0.92472 < rho <= 4",
+    "meaning": "未定：严格下界 <= frac(c_i<4)=0.076294 < 带下界（要落带须靠时刻结构抬升）"
+   },
+   {
+    "id": "Z2",
+    "rule": "4 < rho <= 5",
+    "meaning": "唯一可能 pass 的窄窗：下界 frac(c_i<5)=0.222412 已在带内，余量仅 3.25%"
+   },
+   {
+    "id": "Z3",
+    "rule": "rho > 5",
+    "meaning": "严格 fail：静默 >= frac(c_i<6)=0.453003 > 带上界 0.229885"
+   }
+  ],
+  "source": "docs/m11_acceptance_master.md L5658-L5668 / L5684-L5691（R190）+ L5762（R191 §⑥）",
+  "rho_primary": 3.2847314163011982,
+  "zone_primary": "Z1_undetermined(0.92472<rho<=4)"
+ },
+ "post_hoc_diagnostics": {
+  "registration": "🔴 **未预注册**：在看到主档结果（rho=3.2847, Z1）之后追加，**仅作诊断、不改主档**；见 docs/m11_rho_estimation.md §0.8",
+  "field4": {
+   "n_iso": 1005,
+   "thr": 1.5784704089164734,
+   "dff_mad": 0.38506174087524414,
+   "dff_median": 0.42328518629074097,
+   "n_rois_with_iso": 337,
+   "A_primary": 0.48054778575897217,
+   "rise_quantiles": {
+    "1": 0.2865771532058716,
+    "5": 0.3980223894119263,
+    "10": 0.48054778575897217,
+    "25": 0.6547538042068481,
+    "50": 0.9447406530380249,
+    "75": 1.3454564213752747,
+    "90": 1.9088576793670655
+   },
+   "rise_over_mad": {
+    "5": 1.033658624477266,
+    "10": 1.2479759341104326,
+    "25": 1.7003865476704976,
+    "50": 2.4534783717817104
+   },
+   "frac_rise_below_1mad": 0.03980099502487562,
+   "frac_rise_below_2mad": 0.3592039800995025,
+   "pre_baseline_quantiles": {
+    "5": 0.2611717879772187,
+    "10": 0.4128832519054413,
+    "25": 0.6398208737373352,
+    "50": 0.8801279067993164,
+    "75": 1.0709377527236938,
+    "90": 1.2165362119674683
+   },
+   "corr_prebaseline_vs_rise_pearson": -0.580894981998312,
+   "corr_prebaseline_vs_rise_spearman": -0.7631151782295464,
+   "corr_roi_p20_vs_rise_spearman": -0.24345024578106672,
+   "D1a_low_baseline_rois": {
+    "rule": "ROI 层 p20（pctl0）≤ 全体中位 0.1676",
+    "n_rois": 216,
+    "n_iso": 603,
+    "A": 0.5204228401184082
+   },
+   "D1a_high_baseline_rois": {
+    "n_rois": 216,
+    "n_iso": 402,
+    "A": 0.44043248891830444
+   },
+   "D1b_unshifted_baseline_events": {
+    "rule": "事件前局部基线 ≤ 该 ROI pctl0 + 0.5·MAD",
+    "n_iso": 76,
+    "A": 1.3068543821573257
+   },
+   "D1b_unshifted_baseline_events_1mad": {
+    "rule": "事件前局部基线 ≤ 该 ROI pctl0 + 1.0·MAD",
+    "n_iso": 173,
+    "A": 1.1325359225273133
+   },
+   "per_roi_p10_distribution": {
+    "n": 337,
+    "p05": 0.38149089336395264,
+    "p25": 0.5242900252342224,
+    "median": 0.6863552331924438,
+    "p75": 0.9326060771942138,
+    "p95": 1.4540128499269485
+   }
+  },
+  "key_reading": "① 事件前局部基线中位 = 0.880，而与上升量的 Spearman = **-0.763** ⇒ 「拍幅 = thr − 事件前基线」这一**固定全局阈值几何**是低尾的主因；② 4.0% 的上升量 < 1×MAD、35.9% < 2×MAD；③ 剔除基线已抬升的事件后 A = 1.1325-1.3069 ⇒ rho = 1.208-1.394（Z1 中部）",
+  "interpretation": "⇒ 主档 A 的**下尾**部分由「检出时刻基线恰高」的几何效应贡献 ⇒ A 被压低 ⇒ rho 被抬高；剔除该效应后 rho 反而**更小**（更深入 Z1）。故 `(4,5]` 内的档位主要来自**最受该几何效应污染**的档（pre5 / τ=0.5 / 部分 63 帧块）。"
+ },
+ "subwindow_blocks63": {
+  "n_blocks": 31,
+  "block_frames": 63,
+  "seconds": 10.0,
+  "n_blocks_eligible": 14,
+  "n_blocks_unavailable": 17,
+  "A_median": 0.4384923577308655,
+  "A_min": 0.3270784854888916,
+  "A_max": 0.7749723434448242,
+  "A_per_block": [
+   0.774972,
+   0.363751,
+   0.327078,
+   0.43466,
+   0.828839,
+   0.423377,
+   0.47848,
+   0.431483,
+   0.423629,
+   0.847933,
+   0.81941,
+   0.741388,
+   0.59829,
+   0.378026,
+   0.682076,
+   0.478776,
+   0.442325,
+   0.562362,
+   0.539113,
+   0.420463,
+   0.386848,
+   0.741891,
+   0.557988,
+   0.605965,
+   0.53174,
+   0.716732,
+   0.979885,
+   0.626652,
+   0.770528,
+   0.477937,
+   0.513643
+  ],
+  "n_iso_per_block": [
+   57,
+   76,
+   79,
+   37,
+   29,
+   41,
+   19,
+   20,
+   20,
+   20,
+   12,
+   23,
+   68,
+   68,
+   59,
+   12,
+   63,
+   17,
+   45,
+   61,
+   43,
+   21,
+   20,
+   22,
+   24,
+   20,
+   11,
+   17,
+   24,
+   58,
+   99
+  ],
+  "halves": {
+   "half_first1000": 0.452163,
+   "half_second1000": 0.498954
+  }
+ },
+ "thr_aux_probe": {
+  "prereg_trigger": "主档给出 A_prim > thr 且 rho_prim < 1（§0.7 #2）",
+  "trigger_fired": false,
+  "note": "改变 thr 即改变口径 ⇒ **只作补充诊断、不作主档**；**触发条件未满足 ⇒ 按预注册不跑**"
+ },
+ "field2_side_evidence": {
+  "role": "旁证（**非主口径**）；两条**已登记弱点**必须随行出现",
+  "registered_weaknesses": [
+   "① **配准锚仅部分通过**：语义锚 verdict = 「FAIL／部分不通过 —— 见 per_metric（不得当作已配准）」（rank 1/25、领先 0.9%；另两指标 3/25、6/25）⇒ field2 **不得**当作「已配准」（出处 data/m12_b5_roi_mask/m12_b5_roi_mask_audit.json::fields.field2.semantic_anchor.verdict；data/m11_p5_targets.csv L116 note）",
+   "② **其带（上界 0.229885）只建立在 87 个 ROI 上**（field4 为 432）（出处 data/m11_p5_targets.csv L116 + 审计 JSON fields.field2.real_roi_silence）"
+  ],
+  "primary": {
+   "peak_def": "bl_local",
+   "stat": "p10",
+   "tau_s": 1.0,
+   "gap_frames": 13,
+   "agg": "pooled",
+   "unit_set": "432_all",
+   "window": "full2000",
+   "edge_rule": "edge_clean",
+   "n_rois": 87,
+   "n_events_total": 2754,
+   "n_runs": 1068,
+   "n_iso": 135,
+   "n_iso_raw": 135,
+   "n_dropped_shortbase": 0,
+   "n_rois_with_iso": 56,
+   "A": 0.6474639177322388,
+   "A_over_thr": 0.2804977215619634,
+   "thr": 2.3082680106163025,
+   "rho": 3.5650913470222068,
+   "zone": "Z1_undetermined(0.92472<rho<=4)",
+   "boot95": {
+    "lo": 0.5572501420974731,
+    "hi": 0.7270395106077194,
+    "n_eff": 1000,
+    "seed": 20261015,
+    "B": 1000,
+    "rho_lo": 3.1748866147410095,
+    "rho_hi": 4.142247504734677
+   }
+  },
+  "selfcheck": {
+   "silent_frac_zero_count_real_roi": 0.229885,
+   "silent_frac_expected": 0.229885,
+   "n_rois_fully_in_movie_window": 87,
+   "n_zero_events": 20,
+   "zero_events_is_44_of_432": null,
+   "event_threshold_dff": 2.308268,
+   "thr_expected": 2.308268,
+   "thr_match": true,
+   "median_events_per_roi": 8.0,
+   "median_events_expected": 8.0,
+   "median_events_match": true,
+   "silent_match": true,
+   "selfcheck_3of3_pass": true
+  },
+  "sensibility_note": "field2 的 31 个 63 帧块**全部** n_iso<30 ⇒ 全部 `unavailable`（87 ROI 不足以支撑 10 s 窗）",
+  "cross_field": {
+   "rho_field4": 3.2847314163011982,
+   "rho_field2": 3.5650913470222068,
+   "ratio": 1.0853524672762165
+  }
+ },
+ "limitations": [
+  "① **真值脉冲不可得**（only-in-DB，R1/R2/R3）⇒ 无法用真值脉冲标定 A；A 是**事件幅度口径**的量，**不是**「单 spike 的 dF/F」实测。",
+  "② **检出截断（censoring）**：凡 thr 上检出者，绝对峰必 > thr（实测 min=1.578701, ratio=1.00015）⇒ 绝对峰档 rho<1 **恒成立**（伪影）；主档（减基线）单侧偏大 ⇒ **rho_est <= rho_sim（弱下界性质）**⇒ **本路线给出的小 rho 不能排除 rho_sim > 5**。",
+  "③ **固定全局阈值的几何效应**（后验诊断）：A 的 p10 与「检出时刻的基线抬升」强负相关（Spearman -0.763）⇒ 下尾部分是阈几何而非生理单脉冲幅度。",
+  "④ **τ 无仓内实测依据**：主档 τ=1.0 s 出处是口径桥的**工程档**（m11_acceptance_master.md L5727），不是钙指示剂动力学；仓内实测 8.003-9.015 s / 29.68-30.48 s 是**群体状态 dwell**（S 门），只作扫描档 ⇒ τ 档一次变动即把 rho 从 4.39（0.5 s）带到 1.81（8.0 s）。",
+  "⑤ **未改变检出阈值** ⇒ 低于 thr 的事件在本口径下不可观测；主档 A 条件于被检出。",
+  "⑥ **神经域反演未做**（未反演的 dF/F，同 B-5 限制）。",
+  "⑦ **掩膜↔数据库 Mask 表身份链未确认**；`Mask.weights` 未使用 ⇒ 等权均值（同 B-5 限制）。",
+  "⑧ **样本范围**：单 field（session4_scan7_field4）× 2000 帧 = 317.46 s、432 完全落窗 ROI ⇒ 外推范围受限（`data/m11_p5_targets.csv` L113 的过度泛化纪律）。",
+  "⑨ **桥接假设未验证**：`rho_sim ≈ rho_data` 依赖口径桥按 R191 裁决②标定，本节点**未跑仿真、未验证**。",
+  "⑩ **10 s 子窗档的样本门**：field4 有 17/31 个 63 帧块 n_iso<30 ⇒ 标 `unavailable`（**未测 ≠ 未命中**；不得当作 0 或「无孤立事件」）。"
+ ],
+ "not_done": {
+  "ran_simulation": false,
+  "used_mps_or_gpu": false,
+  "used_network": false,
+  "downloaded_papers": false,
+  "modified_any_existing_file": false,
+  "new_files": [
+   "neural_exploration/docs/m11_rho_estimation.md",
+   "neural_exploration/data/m11_rho_estimation/rho_estimate.json",
+   "neural_exploration/data/m11_rho_estimation/rho_estimate.csv"
+  ],
+  "no_b_verdict": "**不替主 agent 下 (b) 的裁决**：本文件只报事实与算术（四态用词已区分）"
+ }
+}

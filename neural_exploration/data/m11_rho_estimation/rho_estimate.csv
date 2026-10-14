@@ -1,0 +1,115 @@
+# M11 rho=thr/A 数据侧估计 · 逐敏感性档（field4=主口径 / field2=旁证；POSTHOC_* 行**未预注册**、仅诊断，见 docs/m11_rho_estimation.md §0.8/§3）
+section,field,window,unit_set,tau_s,gap_frames,peak_def,stat,agg,edge_rule,n_rois,n_events,n_iso,A,A_over_thr,rho,zone,n_iso_ok,note,reason
+PRIMARY,field4,full2000,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,38580,1005,0.480548,0.3044,3.284731,Z1_undetermined(0.92472<rho<=4),True,主档,
+SENS_stat,field4,full2000,432_all,1.0,13,bl_local,p05,pooled,edge_clean,432,38580,1005,0.398022,0.2522,3.965783,Z1_undetermined(0.92472<rho<=4),True,统计量档,
+SENS_stat,field4,full2000,432_all,1.0,13,bl_local,p25,pooled,edge_clean,432,38580,1005,0.654754,0.4148,2.410785,Z1_undetermined(0.92472<rho<=4),True,统计量档,
+SENS_stat,field4,full2000,432_all,1.0,13,bl_local,median,pooled,edge_clean,432,38580,1005,0.944741,0.5985,1.670798,Z1_undetermined(0.92472<rho<=4),True,统计量档,
+SENS_stat,field4,full2000,432_all,1.0,13,bl_local,mode,pooled,edge_clean,432,38580,1005,0.76338,0.4836,2.067738,Z1_undetermined(0.92472<rho<=4),True,统计量档,
+SENS_stat,field4,full2000,432_all,1.0,13,bl_local,mean,pooled,edge_clean,432,38580,1005,1.112961,0.7051,1.418262,Z1_undetermined(0.92472<rho<=4),True,统计量档,
+SENS_peakdef,field4,full2000,432_all,1.0,13,pre5,p10,pooled,edge_clean,432,38580,1005,0.369816,0.2343,4.268264,Z2_narrow_pass_window(4<rho<=5),True,峰定义档,
+SENS_peakdef,field4,full2000,432_all,1.0,13,pctl0,p10,pooled,edge_clean,432,38580,1010,1.394653,0.8835,1.131801,Z1_undetermined(0.92472<rho<=4),True,峰定义档,
+SENS_peakdef,field4,full2000,432_all,1.0,13,abs,p10,pooled,edge_clean,432,38580,1010,1.601506,1.0146,0.985616,Z1_undetermined(0.92472<rho<=4),True,峰定义档,
+SENS_tau,field4,full2000,432_all,0.5,6,bl_local,p10,pooled,edge_clean,432,38580,1514,0.359603,0.2278,4.389482,Z2_narrow_pass_window(4<rho<=5),True,τ 档,
+SENS_tau,field4,full2000,432_all,2.0,25,bl_local,p10,pooled,edge_clean,432,38580,708,0.614889,0.3895,2.567081,Z1_undetermined(0.92472<rho<=4),True,τ 档,
+SENS_tau,field4,full2000,432_all,3.0,38,bl_local,p10,pooled,edge_clean,432,38580,555,0.701553,0.4445,2.249965,Z1_undetermined(0.92472<rho<=4),True,τ 档,
+SENS_tau,field4,full2000,432_all,5.0,63,bl_local,p10,pooled,edge_clean,432,38580,409,0.805956,0.5106,1.958507,Z1_undetermined(0.92472<rho<=4),True,τ 档,
+SENS_tau,field4,full2000,432_all,8.0,101,bl_local,p10,pooled,edge_clean,432,38580,299,0.873886,0.5536,1.806266,Z1_undetermined(0.92472<rho<=4),True,τ 档,
+SENS_units,field4,full2000,area>=10,1.0,13,bl_local,p10,pooled,edge_clean,428,37491,990,0.477054,0.3022,3.30879,Z1_undetermined(0.92472<rho<=4),True,单元集合档,
+SENS_units,field4,full2000,area>=20,1.0,13,bl_local,p10,pooled,edge_clean,364,28464,817,0.473761,0.3001,3.33179,Z1_undetermined(0.92472<rho<=4),True,单元集合档,
+SENS_agg,field4,full2000,432_all,1.0,13,bl_local,p10,per_roi_median,edge_clean,432,38580,1005,0.686355,0.4348,2.299786,Z1_undetermined(0.92472<rho<=4),True,逐 ROI 取 p10 后跨 ROI 中位,
+SENS_edge,field4,full2000,432_all,1.0,13,bl_local,p10,pooled,edge_margin_G,432,38580,990,0.482098,0.3054,3.274166,Z1_undetermined(0.92472<rho<=4),True,要求距窗边 ≥G 帧,
+SENS_window,field4,half_first1000,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,495,0.452163,0.2865,3.490929,Z1_undetermined(0.92472<rho<=4),True,半窗（1000 帧）,
+SENS_window,field4,half_second1000,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,516,0.498954,0.3161,3.163557,Z1_undetermined(0.92472<rho<=4),True,半窗（1000 帧）,
+SENS_block63,field4,block63_01,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,57,0.774972,0.491,2.036809,Z1_undetermined(0.92472<rho<=4),True,"非重叠 63 帧块（=10.0 s） frames=[0,63)",
+SENS_block63,field4,block63_02,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,76,0.363751,0.2304,4.339426,Z2_narrow_pass_window(4<rho<=5),True,"非重叠 63 帧块（=10.0 s） frames=[63,126)",
+SENS_block63,field4,block63_03,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,79,0.327078,0.2072,4.825968,Z2_narrow_pass_window(4<rho<=5),True,"非重叠 63 帧块（=10.0 s） frames=[126,189)",
+SENS_block63,field4,block63_04,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,37,0.43466,0.2754,3.631509,Z1_undetermined(0.92472<rho<=4),True,"非重叠 63 帧块（=10.0 s） frames=[189,252)",
+SENS_block63,field4,block63_05,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,29,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[252,315)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field4,block63_06,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,41,0.423377,0.2682,3.728283,Z1_undetermined(0.92472<rho<=4),True,"非重叠 63 帧块（=10.0 s） frames=[315,378)",
+SENS_block63,field4,block63_07,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,19,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[378,441)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field4,block63_08,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,20,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[441,504)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field4,block63_09,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,20,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[504,567)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field4,block63_10,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,20,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[567,630)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field4,block63_11,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,12,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[630,693)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field4,block63_12,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,23,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[693,756)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field4,block63_13,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,68,0.59829,0.379,2.638305,Z1_undetermined(0.92472<rho<=4),True,"非重叠 63 帧块（=10.0 s） frames=[756,819)",
+SENS_block63,field4,block63_14,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,68,0.378026,0.2395,4.175556,Z2_narrow_pass_window(4<rho<=5),True,"非重叠 63 帧块（=10.0 s） frames=[819,882)",
+SENS_block63,field4,block63_15,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,59,0.682076,0.4321,2.314216,Z1_undetermined(0.92472<rho<=4),True,"非重叠 63 帧块（=10.0 s） frames=[882,945)",
+SENS_block63,field4,block63_16,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,12,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[945,1008)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field4,block63_17,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,63,0.442325,0.2802,3.568575,Z1_undetermined(0.92472<rho<=4),True,"非重叠 63 帧块（=10.0 s） frames=[1008,1071)",
+SENS_block63,field4,block63_18,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,17,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[1071,1134)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field4,block63_19,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,45,0.539113,0.3415,2.927902,Z1_undetermined(0.92472<rho<=4),True,"非重叠 63 帧块（=10.0 s） frames=[1134,1197)",
+SENS_block63,field4,block63_20,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,61,0.420463,0.2664,3.754123,Z1_undetermined(0.92472<rho<=4),True,"非重叠 63 帧块（=10.0 s） frames=[1197,1260)",
+SENS_block63,field4,block63_21,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,43,0.386848,0.2451,4.080335,Z2_narrow_pass_window(4<rho<=5),True,"非重叠 63 帧块（=10.0 s） frames=[1260,1323)",
+SENS_block63,field4,block63_22,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,21,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[1323,1386)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field4,block63_23,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,20,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[1386,1449)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field4,block63_24,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,22,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[1449,1512)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field4,block63_25,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,24,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[1512,1575)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field4,block63_26,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,20,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[1575,1638)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field4,block63_27,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,11,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[1638,1701)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field4,block63_28,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,17,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[1701,1764)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field4,block63_29,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,24,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[1764,1827)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field4,block63_30,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,58,0.477937,0.3028,3.302677,Z1_undetermined(0.92472<rho<=4),True,"非重叠 63 帧块（=10.0 s） frames=[1827,1890)",
+SENS_block63,field4,block63_31,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,99,0.513643,0.3254,3.073089,Z1_undetermined(0.92472<rho<=4),True,"非重叠 63 帧块（=10.0 s） frames=[1890,1953)",
+SENS_block63_summary,field4,blocks63_summary,432_all,1.0,13,bl_local,p10,pooled,edge_clean,432,,1185,0.438492,0.2778,3.599767,Z1_undetermined(0.92472<rho<=4),True,31 块中的合格块（n_iso>=30）中位数；合格 14/31,
+PRIMARY,field2,full2000,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,2754,135,0.647464,0.2805,3.565091,Z1_undetermined(0.92472<rho<=4),True,主档,
+SENS_stat,field2,full2000,432_all,1.0,13,bl_local,p05,pooled,edge_clean,87,2754,135,0.544077,0.2357,4.242536,Z2_narrow_pass_window(4<rho<=5),True,统计量档,
+SENS_stat,field2,full2000,432_all,1.0,13,bl_local,p25,pooled,edge_clean,87,2754,135,0.824185,0.3571,2.800669,Z1_undetermined(0.92472<rho<=4),True,统计量档,
+SENS_stat,field2,full2000,432_all,1.0,13,bl_local,median,pooled,edge_clean,87,2754,135,1.065393,0.4616,2.166588,Z1_undetermined(0.92472<rho<=4),True,统计量档,
+SENS_stat,field2,full2000,432_all,1.0,13,bl_local,mode,pooled,edge_clean,87,2754,135,1.020839,0.4423,2.261148,Z1_undetermined(0.92472<rho<=4),True,统计量档,
+SENS_stat,field2,full2000,432_all,1.0,13,bl_local,mean,pooled,edge_clean,87,2754,135,1.167001,0.5056,1.977948,Z1_undetermined(0.92472<rho<=4),True,统计量档,
+SENS_peakdef,field2,full2000,432_all,1.0,13,pre5,p10,pooled,edge_clean,87,2754,135,0.440015,0.1906,5.245886,Z3_strict_fail(rho>5),True,峰定义档,
+SENS_peakdef,field2,full2000,432_all,1.0,13,pctl0,p10,pooled,edge_clean,87,2754,135,1.229143,0.5325,1.877949,Z1_undetermined(0.92472<rho<=4),True,峰定义档,
+SENS_peakdef,field2,full2000,432_all,1.0,13,abs,p10,pooled,edge_clean,87,2754,135,2.331717,1.0102,0.989944,Z1_undetermined(0.92472<rho<=4),True,峰定义档,
+SENS_tau,field2,full2000,432_all,0.5,6,bl_local,p10,pooled,edge_clean,87,2754,216,0.513234,0.2223,4.497498,Z2_narrow_pass_window(4<rho<=5),True,τ 档,
+SENS_tau,field2,full2000,432_all,2.0,25,bl_local,p10,pooled,edge_clean,87,2754,102,0.813431,0.3524,2.837694,Z1_undetermined(0.92472<rho<=4),True,τ 档,
+SENS_tau,field2,full2000,432_all,3.0,38,bl_local,p10,pooled,edge_clean,87,2754,85,0.923563,0.4001,2.499308,Z1_undetermined(0.92472<rho<=4),True,τ 档,
+SENS_tau,field2,full2000,432_all,5.0,63,bl_local,p10,pooled,edge_clean,87,2754,76,1.170502,0.5071,1.972032,Z1_undetermined(0.92472<rho<=4),True,τ 档,
+SENS_tau,field2,full2000,432_all,8.0,101,bl_local,p10,pooled,edge_clean,87,2754,68,1.422136,0.6161,1.623099,Z1_undetermined(0.92472<rho<=4),True,τ 档,
+SENS_units,field2,full2000,area>=10,1.0,13,bl_local,p10,pooled,edge_clean,87,2754,135,0.647464,0.2805,3.565091,Z1_undetermined(0.92472<rho<=4),True,单元集合档,
+SENS_units,field2,full2000,area>=20,1.0,13,bl_local,p10,pooled,edge_clean,82,2572,122,0.625031,0.2708,3.693045,Z1_undetermined(0.92472<rho<=4),True,单元集合档,
+SENS_agg,field2,full2000,432_all,1.0,13,bl_local,p10,per_roi_median,edge_clean,87,2754,135,0.888603,0.385,2.597636,Z1_undetermined(0.92472<rho<=4),True,逐 ROI 取 p10 后跨 ROI 中位,
+SENS_edge,field2,full2000,432_all,1.0,13,bl_local,p10,pooled,edge_margin_G,87,2754,127,0.653711,0.2832,3.53102,Z1_undetermined(0.92472<rho<=4),True,要求距窗边 ≥G 帧,
+SENS_window,field2,half_first1000,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,38,0.864491,0.3745,2.670089,Z1_undetermined(0.92472<rho<=4),True,半窗（1000 帧）,
+SENS_window,field2,half_second1000,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,97,0.610381,0.2644,3.781685,Z1_undetermined(0.92472<rho<=4),True,半窗（1000 帧）,
+SENS_block63,field2,block63_01,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,7,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[0,63)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field2,block63_02,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,1,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[63,126)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field2,block63_03,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,2,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[126,189)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field2,block63_04,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,1,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[189,252)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field2,block63_05,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,3,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[252,315)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field2,block63_06,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,2,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[315,378)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field2,block63_07,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,7,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[378,441)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field2,block63_08,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,1,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[441,504)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field2,block63_09,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,4,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[504,567)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field2,block63_10,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,3,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[567,630)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field2,block63_11,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,0,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[630,693)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field2,block63_12,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,3,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[693,756)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field2,block63_13,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,1,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[756,819)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field2,block63_14,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,1,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[819,882)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field2,block63_15,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,3,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[882,945)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field2,block63_16,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,3,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[945,1008)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field2,block63_17,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,5,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[1008,1071)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field2,block63_18,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,2,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[1071,1134)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field2,block63_19,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,5,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[1134,1197)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field2,block63_20,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,1,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[1197,1260)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field2,block63_21,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,6,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[1260,1323)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field2,block63_22,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,11,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[1323,1386)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field2,block63_23,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,9,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[1386,1449)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field2,block63_24,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,6,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[1449,1512)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field2,block63_25,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,2,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[1512,1575)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field2,block63_26,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,5,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[1575,1638)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field2,block63_27,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,25,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[1638,1701)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field2,block63_28,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,1,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[1701,1764)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field2,block63_29,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,4,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[1764,1827)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field2,block63_30,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,1,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[1827,1890)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63,field2,block63_31,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,19,,,,unavailable,False,"非重叠 63 帧块（=10.0 s） frames=[1890,1953)",n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+SENS_block63_summary,field2,blocks63_summary,432_all,1.0,13,bl_local,p10,pooled,edge_clean,87,,144,,,,unavailable,False,31 块中的合格块（n_iso>=30）中位数；合格 0/31,n_iso<30 ⇒ 按 §0.5 标 unavailable（不得当 0/未命中）
+POSTHOC_D1a,field4,full2000,sub: low_baseline_ROIs(pctl0<=0.1676),1.0,13,bl_local,p10,pooled,edge_clean,432,,603,0.520423,0.3297,3.033054,Z1_undetermined(0.92472<rho<=4),True,**未预注册**（看结果后追加，仅诊断）：限定 ROI 层 p20 下半区,
+POSTHOC_D1a,field4,full2000,sub: high_baseline_ROIs(pctl0>0.1676),1.0,13,bl_local,p10,pooled,edge_clean,432,,402,0.440432,0.279,3.58391,Z1_undetermined(0.92472<rho<=4),True,**未预注册**：限定 ROI 层 p20 上半区,
+POSTHOC_D1b,field4,full2000,sub: events_prebaseline<=pctl0+0.5MAD,1.0,13,bl_local,p10,pooled,edge_clean,432,,76,1.306854,0.8279,1.20784,Z1_undetermined(0.92472<rho<=4),True,**未预注册**：剔除「事件前局部基线已抬升」的事件（近阈几何效应最重者）,
+POSTHOC_D1b,field4,full2000,sub: events_prebaseline<=pctl0+1.0MAD,1.0,13,bl_local,p10,pooled,edge_clean,432,,173,1.132536,0.7175,1.393749,Z1_undetermined(0.92472<rho<=4),True,**未预注册**：同上，1.0·MAD 档,
+POSTHOC_perroi,field4,full2000,sub: per_ROI_p10_p05,1.0,13,bl_local,p10,pooled,edge_clean,432,,337,0.381491,0.2417,4.137636,Z2_narrow_pass_window(4<rho<=5),True,**未预注册**：逐 ROI p10 的跨 ROI 分布下缘,
+POSTHOC_perroi,field4,full2000,sub: per_ROI_p10_p50,1.0,13,bl_local,p10,pooled,edge_clean,432,,337,0.686355,0.4348,2.299786,Z1_undetermined(0.92472<rho<=4),True,**未预注册**：逐 ROI p10 的跨 ROI 中位,
+POSTHOC_perroi,field4,full2000,sub: per_ROI_p10_p95,1.0,13,bl_local,p10,pooled,edge_clean,432,,337,1.454013,0.9212,1.085596,Z1_undetermined(0.92472<rho<=4),True,**未预注册**：逐 ROI p10 的跨 ROI 分布上缘,
+DIAGNOSTIC,field4,full2000,sub: abs_peak_min_over_all_isolated_events(检出截断定理),1.0,13,bl_local,p10,pooled,edge_clean,432,,1010,1.578701,1.0001,0.999854,Z1_undetermined(0.92472<rho<=4),True,凡 thr 上检出者绝对峰必 > thr ⇒ 该行 A_over_thr=1.00015 **证** `abs` 档退化,
+DIAGNOSTIC,field4,full2000,sub: rise_p10_in_units_of_pooled_MAD(0.385062),1.0,13,bl_local,p10,pooled,edge_clean,432,,1005,0.480548,0.3044,3.284731,Z1_undetermined(0.92472<rho<=4),True,主档 A = 1.25×MAD（池化噪声尺度）⇒ 低尾贴近噪声/阈几何,
