@@ -36,6 +36,25 @@ PYTHONHASHSEED=0`；**逐臂新进程**（`subprocess` spawn，显式 `.venv-m9`
   # ③ 单臂模式（主agent 逐档放行）
   ./.venv-m9/bin/python -m neural_exploration.tools.run_m11_p5_arms --arm <arm_spec.json> \\
       --out-dir neural_exploration/data/m11_p5_runs
+  # ④ L4 机制键（R153 §⑤ D2：N2 → C-8 → N1 → N3）
+  ./.venv-m9/bin/python -m neural_exploration.tools.run_m11_p5_arms --device cpu --n 1000 \\
+      --mod --tau-mod-ms 2000 --gain-lo 1.3 --gain-hi 0.8 --rate-ref-hz 5.0        # C-8 慢增益
+  ./.venv-m9/bin/python -m neural_exploration.tools.run_m11_p5_arms --device cpu --n 1000 \\
+      --inh-gain 2.5                                                               # N1 类级抑制
+  ./.venv-m9/bin/python -m neural_exploration.tools.run_m11_p5_arms --device cpu --n 1000 \\
+      --stp --u0 0.5 --tau-fac-ms 5000 --tau-rec-ms 500 --stp-mode depress         # N3 STP
+
+**L4 机制键（本段为接口契约；三族各自独立，互不影响）**
+| 族 | spec 键 | 产物新键 | 跑前闸门 |
+|---|---|---|---|
+| **C-8 慢增益**（N2 之后第 2 优先）| `mod` / `mod_ablation` / `tau_mod_ms` / `gain_lo` / `gain_hi` / `rate_ref_hz` | `mod_enabled` / `mod_readback` / `mod_trace_stats` / `mod_rate_lag_corr` / `mod_params_ignored` / `mod_semantics` | **参数已给而 `mod` 未启用 ⇒ 拒跑 EXIT=101**（M10 M-4：静态增益 = 机制未实施；清单 L63）|
+| **N1 类级抑制** | `inh_gain`（标量，乘 PV/SST/VIP） / `gmax_band_gain`（dict） | `net.inh_gain` / `net.gmax_band_gain` / `gmax_band_readback` / `gmax_band_applied` / `gmax_semantics` | 逐类乘子非法 ⇒ 拒跑 EXIT=103；读回不达带 ⇒ 断言失败 |
+| **N3 STP depress** | `stp` / `u0` / `tau_fac_ms` / `tau_rec_ms` / `stp_mode` | `stp_enabled` / `stp_readback` / `stp_mode_asserted` / `stp_verdict` / `stp_params_ignored` / `stp_semantics` | **`mode != "depress"` 且 `stp` 开 ⇒ 拒跑 EXIT=102**（预注册 F-3：该臂 invalid）|
+
+🔴 **字节不变契约**：三族的键**一律只在 spec 显式给出时才进入代码路径**（不调 `configure_mod`/
+`configure_stp`、不给 `net_kw` 加键、不写新 JSON 键）⇒ **未给新键的既有臂产物逐字节不变**。
+🔴 **拒跑语义**：`ArmRefused`（101/102/103）写 `.fail`（本文件规范：不计入分母、四态 `invalid`）
+并以该码退出 ⇒ "**跑了也不算数**"与"**跑失败**"在盘上**可区分**。
 """
 from __future__ import annotations
 
@@ -114,20 +133,74 @@ def _ver(mod):
         return "unknown"
 
 
-def build_engine(n: int, spec: dict, device: str = "mps"):
-    """按 spec 装配 M11 内核（四亚型槽 + 层流 + 慢变量可关）。"""
+def build_engine(n: int, spec: dict, device: str = "mps", mech: dict = None):
+    """按 spec 装配 M11 内核（四亚型槽 + 层流 + 慢变量可关 + **L4 的 C-8/N1/N3**）。
+
+    `mech`：由 `_mechanism_preflight(spec)` 得到的解析结果（`run_one` 传入；缺省则内部现算）。
+    **本函数在 `mech` 的三族键全不出现时与接线前逐字等价**（不调 `configure_mod`/
+    `configure_stp`、不给 `net_kw` 加键、`_net_echo` 也不多写键 ⇒ 产物字节不变）。
+    """
     import torch
     from neural_exploration.src.mouse_cortex_circuit import (attach_to_engine,
                                                              build_laminar_probe_column)
     from neural_exploration.src.mouse_cortex_engine import REF_FROZEN, MouseCortexEngine
+    if mech is None:
+        mech = _mechanism_preflight(spec)
     net_kw = {k: v for k, v in spec.items()
               if k in ("indegree", "gmax_scale", "bias_scale", "bias_log_mean", "bias_log_sigma")}
+    # ---- N1：逐类乘子 ⇒ 整表。**None ⇒ 不传 `gmax_band`** ⇒ 夹具走 DEFAULT_GMAX_BAND
+    #      （签名默认），与接线前逐位一致 ----
+    band, band_echo = _resolve_gmax_band(spec)
+    if band is not None:
+        net_kw["gmax_band"] = band
     bins = tuple(spec.get("delay_bins") or NET_DEFAULTS["delay_bins"])
     eng = MouseCortexEngine(n, device=device, use_compile=False, verbose=False)
     eng.configure_subtypes(bool(spec.get("subtypes", True)))
     if spec.get("slow", True):
         eng.configure_slow(True, tau_slow_ms=float(spec.get("tau_slow_ms", 1000.0)),
                            inc_per_spike=float(spec.get("slow_inc", 6.0)))
+    # ---- C-8（慢增益变量 / E3）：**显式 slow=True**（M10 M-4 的防线；清单 L63）----
+    if mech["mod_on"]:
+        mp = mech["mod_params"]
+        rb_mod = dict(eng.configure_mod(g_mod=1.0, slow=True,
+                                        tau_mod_ms=mp["tau_mod_ms"], gain_hi=mp["gain_hi"],
+                                        gain_lo=mp["gain_lo"], rate_ref_hz=mp["rate_ref_hz"]))
+        # **读回断言**：引擎自带断言只覆盖 g_mod / mod_slow / tau_mod_ms
+        # （larval_zf_engine.py **L100–102**）⇒ gain_hi / gain_lo / rate_ref_hz / slow 四项由本工具补：
+        assert rb_mod["g_mod"] == 1.0, "mod 读回：g_mod=%r ≠ 1.0" % rb_mod["g_mod"]
+        assert rb_mod["slow"] is True, ("mod 读回：slow=%r ⇒ 慢变量未接线（退化为静态增益 = "
+                                        "机制未实施；M10 M-4 同族）" % rb_mod["slow"])
+        assert rb_mod["tau_mod_ms"] == mp["tau_mod_ms"], "mod 读回：tau_mod_ms 不一致"
+        assert rb_mod["gain_hi"] == mp["gain_hi"], "mod 读回：gain_hi 不一致"
+        assert rb_mod["gain_lo"] == mp["gain_lo"], "mod 读回：gain_lo 不一致"
+        assert rb_mod["rate_ref_hz"] == mp["rate_ref_hz"], "mod 读回：rate_ref_hz 不一致"
+        assert bool(getattr(eng, "mod_slow", False)) is True, "mod 读回：引擎实例 mod_slow != True"
+        assert getattr(eng, "t_mmod", None) is not None or not getattr(eng, "_built", False), \
+            "mod 读回：慢变量张量 t_mmod 未分配（finalize 前允许为空，finalize 后必须存在）"
+        mech["readback"]["mod"] = dict(rb_mod, explicit_slow_passed=True,
+                                       call="configure_mod(g_mod=1.0, slow=True, tau_mod_ms, gain_hi, "
+                                            "gain_lo, rate_ref_hz)")
+    # ---- N3（STP depress）：接线 + **补 mode 回显/断言** ----
+    if mech["stp_on"]:
+        sp = mech["stp_params"]
+        rb_stp = dict(eng.configure_stp(True, u0=sp["u0"], tau_fac_ms=sp["tau_fac_ms"],
+                                        tau_rec_ms=sp["tau_rec_ms"], mode=str(mech["stp_mode"])))
+        # 🔴 **补断言**：引擎 `configure_stp` 的读回断言**只覆盖 u0 与 tau_rec_ms**
+        #    （larval_zf_engine.py **L78**）⇒ `mode` / `tau_fac_ms` / `enabled` **不在其中**
+        #    ⇒ 若不同时回显，则"facilitate 已被显式禁止"在审计上不可核验（R153 §§预注册 §2.2）。
+        assert rb_stp.get("mode") == str(mech["stp_mode"]), \
+            "stp 读回：mode=%r ≠ 写入值 %r（引擎 L78 的断言不覆盖 mode ⇒ 本工具补）" % (
+                rb_stp.get("mode"), str(mech["stp_mode"]))
+        assert rb_stp.get("tau_fac_ms") == sp["tau_fac_ms"], \
+            "stp 读回：tau_fac_ms=%r ≠ 写入值 %r（L78 亦不覆盖）" % (
+                rb_stp.get("tau_fac_ms"), sp["tau_fac_ms"])
+        assert rb_stp.get("u0") == sp["u0"], "stp 读回：u0 不一致"
+        assert rb_stp.get("tau_rec_ms") == sp["tau_rec_ms"], "stp 读回：tau_rec_ms 不一致"
+        assert rb_stp.get("enabled") is True, "stp 读回：enabled != True"
+        assert str(eng.stp.get("mode")) == "depress", \
+            ("stp 引擎**实装状态** mode=%r != 'depress' ⇒ invalid（预注册 F-3；"
+             "跑前闸门只管 spec，这一条管引擎真实状态）" % (eng.stp.get("mode"),))
+        mech["readback"]["stp"] = rb_stp
     if spec.get("refractory_form") == "m10_frozen":
         # 冻结档只在 n_ch=2（E1b 关）下有意义；P5 正式臂一律 REF_FIX（默认）
         raise SystemExit("P5 正式臂禁用 REF_FROZEN（缺陷档）")
@@ -136,7 +209,22 @@ def build_engine(n: int, spec: dict, device: str = "mps"):
         cls = np.where(net["syn_class"] > 0, 1, 0).astype(np.int8)
         net = dict(net, syn_class=cls, inhibitory=(cls > 0))
     eng.configure_layers(net["layer_of"], delay_bins=bins)
-    attach_to_engine(eng, net)
+    attach_to_engine(eng, net)          # ← 内含 finalize()：mod 慢变量张量在此被分配
+    if mech["mod_on"]:
+        # **finalize 之后的第二道读回**（装前那道只能证明"我们传了 slow=True"，这道证明
+        # "引擎真的分配了慢变量状态"：larval_zf_engine.py **L125–126** ⇒ `t_mmod is not None`）
+        assert getattr(eng, "t_mmod", None) is not None, \
+            ("mod 已启用但 finalize 后 t_mmod 仍为 None ⇒ 慢变量状态未分配 ⇒ "
+             "`MouseCortexEngine.run` 的 `mod_slow = bool(self.mod_slow) and "
+             "getattr(self,'t_mmod',None) is not None`（L629）会退化为 False ⇒ "
+             "静态增益 = 机制未实施（M10 M-4 同族）")
+        assert bool(getattr(eng, "mod_slow", False)) is True, "finalize 后 mod_slow != True"
+    # ---- N1 读回断言（必须在 net 装配之后：需要实装权重向量 net["gmax"]）----
+    if band is not None:
+        rb_band = _gmax_band_readback(net, band_echo, spec)
+        _assert_gmax_band_readback(rb_band, spec)
+        mech["readback"]["gmax_band"] = rb_band
+        mech["readback"]["gmax_band_echo"] = band_echo
     return eng, net, torch
 
 
@@ -177,7 +265,413 @@ def _net_echo(spec: dict, net: dict, seeds: dict) -> dict:
              net_seed=int(seeds["net_seed"]), n_edge=int(net["meta"]["n_edge"]))
     if "bias_log_sigma" in spec:
         d["bias_log_sigma"] = float(spec["bias_log_sigma"])
+    # ---- L4 / N1：逐类乘子的**回显**（同样**只在 spec 显式带上时才写入** ⇒ 既有臂 JSON 逐字节不变）----
+    if "inh_gain" in spec:
+        d["inh_gain"] = float(spec["inh_gain"])
+    if "gmax_band_gain" in spec:
+        d["gmax_band_gain"] = {str(k).upper(): float(v) for k, v in
+                               dict(spec["gmax_band_gain"]).items()}
     return d
+
+
+# ======================================================================
+# L4 机制接线（R153 §⑤ **D2 批准的顺序 = N2 → C-8 → N1 → N3**；N2 已接线，本段新增后三者）
+# 依据：`docs/m11_l4_mechanism_plan.md` §13.3（C-8 判定）/§3 N1/§3 N3/§14（F-5/F-6）、
+#       预注册 `data/m11_p5_prereg_amend_l4.json` 的 `candidate_dispositions`/`falsifiers_addendum`。
+# ======================================================================
+# 🔴 **三条共同纪律（每条都由一次既有失效逼出来）**：
+#   ① **只在 spec 显式给了该机制的键时才进入代码路径** ⇒ 未给新键的既有臂**永不进入**任何新分支
+#      ⇒ 产物与接线前**逐字节相同**（同 R116 §③ 的"逻辑证明 + 字节比对"验收法；同 `_net_echo`
+#      对 `bias_log_sigma` 的既有约定）。
+#   ② **"机制未实施"必须是可区分的显式状态，不得静默**（M10 D1 家族）：调质参数已给而机制未启用
+#      ⇒ **硬拒绝**（`ArmRefused` 101）—— 绝不退化成"静态增益"（清单 **L63** 的 M-4 原样重演）。
+#   ③ 落盘的读回**只写统计量 + 单位 + 来源**，不写整条轨迹（同 `_slow_trace_stats`）。
+MOD_PARAM_KEYS = ("tau_mod_ms", "gain_lo", "gain_hi", "rate_ref_hz")
+MOD_FAMILY_KEYS = ("mod", "mod_ablation") + MOD_PARAM_KEYS
+GMAX_BAND_KEYS = ("inh_gain", "gmax_band_gain")
+STP_PARAM_KEYS = ("u0", "tau_fac_ms", "tau_rec_ms", "stp_mode")
+STP_FAMILY_KEYS = ("stp",) + STP_PARAM_KEYS
+MOD_SAMPLE_MS = 50.0            # 引擎侧 `mod_trace` 采样周期（来源见 `_mod_sample_every`）
+
+
+class ArmRefused(RuntimeError):
+    """**拒绝产出该臂**（≠"跑失败"）：用于两类"跑了也不算数"的臂。
+
+      - **code 101**：**调质（C-8）参数已给但机制未启用**（`mod`/`slow` 未开）⇒ 只会得到
+        **静态增益**，即 M10 M-4 的"**慢变量根本没接线 ⇒ 机制未实施（而非机制无效）**"
+        （清单 **L63**；R153 §② 的强制条款）；
+      - **code 102**：`stp_mode != "depress"`（预注册 **F-3** 强制条款："若出现 `mode != depress`
+        的臂 ⇒ 整批判 `invalid`，不进判定"）；
+      - **code 103**：逐类乘子非法（非有限/非正）。
+
+    由 `run_arm_main` 写成 `.fail`（本文件产物规范：**不计入分母、四态 `invalid`**）并以本码退出
+    ⇒ "跑了也不算数"与"跑失败"在盘上**可区分**。
+    """
+
+    def __init__(self, code: int, message: str):
+        super().__init__(message)
+        self.code = int(code)
+
+
+def _mod_sample_every(dt_ms: float) -> int:
+    """引擎侧 `mod_trace` 的采样周期（步）。
+
+    ⚠️ **来源说明（不得当成"读回值"）**：引擎**没有**把该量暴露成属性 —— `mod_sample_every`
+    在 `mouse_cortex_engine.py` **L636** 与 `larval_zf_engine.py` **L311** 都是 `run()` 内的
+    **局部变量** `max(1, int(round(50.0 / dt_ms)))`（对比 `slow_sample_every` 是实例属性，
+    `mouse_cortex_engine.py` **L238/L352**）⇒ 本工具**重算同一个式子**，并在产物里标注
+    `sample_every_source`。
+    """
+    return max(1, int(round(MOD_SAMPLE_MS / max(float(dt_ms), 1e-9))))
+
+
+def _mechanism_preflight(spec: dict) -> dict:
+    """L4 机制的**跑前口径闸门**（纯 spec 判定，不碰引擎 ⇒ 对既有臂零影响）。
+
+    做三件事：① 执行"参数已给而机制未启用 ⇒ 拒绝"（M10 M-4 的防线）；② 执行
+    "`stp_mode != depress` ⇒ invalid"（预注册 F-3）；③ 把"该臂是否声明了各机制的键"解析出来，
+    供 `run_one` 决定是否写新 JSON 键（**门控 = 字节不变的关键**）。
+    """
+    mod_keys = [k for k in MOD_PARAM_KEYS if k in spec]
+    mod_on = bool(spec.get("mod", False))
+    mod_ablation = bool(spec.get("mod_ablation", False))
+    if mod_keys and not mod_on and not mod_ablation:
+        raise ArmRefused(101, (
+            "调质（C-8）参数 %s 已提供，但机制未启用（spec['mod']=%r）⇒ 只会得到**静态增益 g_mod**，"
+            "即 M10 M-4 的『慢变量根本没接线 ⇒ 机制未实施』而非『机制无效』（清单 L63 / R153 §②）"
+            "⇒ 拒绝该臂。修法三选一：① 加 --mod（显式 slow=True）；② 把调质参数从该臂移除；"
+            "③ 若确为**消融臂**，显式写 mod_ablation=true（会落盘 mod_params_ignored，仍不接线）。"
+            % (mod_keys, spec.get("mod", None))))
+
+    stp_keys = [k for k in STP_PARAM_KEYS if k in spec]
+    stp_on = bool(spec.get("stp", False))
+    stp_mode = str(spec.get("stp_mode", "depress"))
+    if stp_on and stp_mode != "depress":
+        raise ArmRefused(102, (
+            "stp_mode=%r != 'depress'（预注册 F-3 强制条款：`mode != \"depress\"` 的臂 ⇒ **invalid**，"
+            "不进判定；`facilitate` 方向使 `u` 向 u0 松弛 ⇒ 有效电导更高 ⇒ `(c)` 只会更差，"
+            "larval_zf_engine.py **L488–490**）⇒ 拒绝该臂（EXIT=102）。"
+            % (stp_mode,)))
+
+    return dict(
+        mod_family=any(k in spec for k in MOD_FAMILY_KEYS),
+        mod_on=mod_on, mod_ablation=mod_ablation,
+        mod_params_ignored=(list(mod_keys) if not mod_on else []),
+        mod_params=dict(tau_mod_ms=float(spec.get("tau_mod_ms", 2000.0)),
+                        gain_lo=float(spec.get("gain_lo", 0.8)),
+                        gain_hi=float(spec.get("gain_hi", 1.3)),
+                        rate_ref_hz=float(spec.get("rate_ref_hz", 5.0))),
+        gmax_band_family=any(k in spec for k in GMAX_BAND_KEYS),
+        stp_family=any(k in spec for k in STP_FAMILY_KEYS),
+        stp_on=stp_on, stp_mode=stp_mode,
+        stp_params_ignored=(list(stp_keys) if not stp_on else []),
+        stp_params=dict(u0=float(spec.get("u0", 0.5)),
+                        tau_fac_ms=float(spec.get("tau_fac_ms", 50.0)),
+                        tau_rec_ms=float(spec.get("tau_rec_ms", 500.0))),
+        readback=dict(mod=None, stp=None, gmax_band=None))
+
+
+def _resolve_gmax_band(spec: dict) -> "tuple[dict, dict] | tuple[None, None]":
+    """**逐类乘子 ⇒ 整表**（N1；接口要求：调用方给**乘子**，整表在内部构造）。
+
+    🔴 **为什么只接受乘子、不接受整表**：`gmax_band` 在夹具里是**整表替换**
+    （`mouse_cortex_circuit.py` **L111**：`dict(DEFAULT_GMAX_BAND if gmax_band is None else gmax_band)`）
+    ⇒ 要求调用方手写整表会让**默认带一改就静默漂移**。故整表由 `DEFAULT_GMAX_BAND`
+    （`circuit.py` **L30**）在内部构造后乘上逐类乘子。
+
+    **两个旋钮的语义差异（必须随产物落盘，见 `gmax_semantics`）**：
+      - `gmax_scale`（`circuit.py` **L43/L114**）：**统一**乘在**全部类**的权重上、**最外层**
+        ⇒ **E/I 比逐位不变**（§2.5：它触及不到"E/I 相对强度"这一维）；
+      - 逐类乘子（本函数）：只乘**指定的类** ⇒ E 段不动 ⇒ **改变 E/I 构成**（N1 的全部价值）。
+
+    键：`inh_gain`（标量，乘 PV/SST/VIP 三类，E 段恒 1.0）与 `gmax_band_gain`
+    （dict，任意子集，逐类优先于 `inh_gain`）。
+    """
+    has_scalar = "inh_gain" in spec
+    has_dict = "gmax_band_gain" in spec
+    if not (has_scalar or has_dict):
+        return None, None
+    from neural_exploration.src.mouse_cortex_circuit import DEFAULT_GMAX_BAND
+    names = ("E", "PV", "SST", "VIP")
+    mult = {nm: 1.0 for nm in names}
+    if has_scalar:
+        g = float(spec["inh_gain"])
+        for nm in ("PV", "SST", "VIP"):
+            mult[nm] = g
+    if has_dict:
+        for k, v in dict(spec["gmax_band_gain"]).items():
+            k = str(k).upper()
+            if k not in mult:
+                raise ArmRefused(103, "gmax_band_gain 的类名 %r 不在 %r 中" % (k, names))
+            mult[k] = float(v)
+    for nm in names:
+        if not np.isfinite(mult[nm]) or mult[nm] <= 0.0:
+            raise ArmRefused(103, "逐类乘子必须有限且 >0：%s=%r" % (nm, mult[nm]))
+    band = {nm: (float(DEFAULT_GMAX_BAND[nm][0]) * mult[nm],
+                 float(DEFAULT_GMAX_BAND[nm][1]) * mult[nm]) for nm in names}
+    echo = dict(multipliers={nm: float(mult[nm]) for nm in names},
+                requested_band={nm: [float(band[nm][0]), float(band[nm][1])] for nm in names},
+                source="DEFAULT_GMAX_BAND(circuit.py L30) × 逐类乘子（本工具内部构造整表）",
+                inh_gain=(float(spec["inh_gain"]) if has_scalar else None),
+                gmax_band_gain=({str(k).upper(): float(v) for k, v in dict(spec["gmax_band_gain"]).items()}
+                                if has_dict else None))
+    return band, echo
+
+
+def _gmax_band_readback(net: dict, resolved: dict, spec: dict, min_edges: int = 200) -> dict:
+    """**N1 的读回断言**：写入值 == 夹具实装值（逐类）。
+
+    🔴 **必须先登记的接口事实（否则会把"没做"说成"做了"）**：夹具的 `meta`
+    （`mouse_cortex_circuit.py` **L121–131**）**不回显 `gmax_band`** —— 全仓
+    `grep -n gmax_band` 只有 **2 处命中**（**L42** 函数签名 / **L111** 整表替换），`meta` 里只有
+    `gmax_scale` / `class_edge_counts` / `type_counts` 等。⇒ **任务书要求的"写入值 == 夹具 meta
+    回显值"这一字面比对在 `gmax_band` 上不可得**（见未确认项 U-N1-1）。
+    **替代读回（可核且更强）**：`meta` 回显的 `gmax_scale` 逐位比对 **＋** 用**实装权重向量**
+    `net["gmax"]` 按 `syn_class` 分组取 min/max，断言其落在**请求带** `[lo,hi]` 的
+    ±`tol_rel` 之内（`gmax = (lo + (hi−lo)·u)·gmax_scale`，`u~U[0,1)` ⇒ min→lo、max→hi）。
+    边数 < `min_edges` 时（抽样覆盖不足，min/max 达不到带端点）**不断言**，只落 `insufficient_edges`。
+    """
+    g = np.asarray(net["gmax"], dtype=np.float64)
+    cls = np.asarray(net["syn_class"], dtype=np.int64)
+    names = ("E", "PV", "SST", "VIP")
+    tol_rel = 0.02
+    want_scale = float(spec.get("gmax_scale", 1.0))
+    out = dict(requested_band=resolved["requested_band"], multipliers=resolved["multipliers"],
+               applied_via="build_laminar_probe_column(gmax_band=<内部构造的整表>)（circuit.py L42/L111）",
+               meta_echo_gmax_scale=float(net["meta"]["gmax_scale"]),
+               meta_echo_gmax_scale_expected=want_scale,
+               meta_echo_matches=bool(float(net["meta"]["gmax_scale"]) == want_scale),
+               tol_rel=tol_rel, observed={}, n_edge_per_class={},
+               meta_has_gmax_band=("gmax_band" in net["meta"]))
+    for c, nm in enumerate(names):
+        m = (cls == c)
+        out["n_edge_per_class"][nm] = int(m.sum())
+        if not m.any():
+            out["observed"][nm] = None
+            continue
+        lo, hi = float(resolved["requested_band"][nm][0]), float(resolved["requested_band"][nm][1])
+        o_min, o_max = float(g[m].min()), float(g[m].max())
+        tol = tol_rel * (hi - lo) + 1e-6
+        rec = dict(min=o_min, max=o_max, lo_expected=lo, hi_expected=hi,
+                   min_ok=bool(abs(o_min - lo) <= tol), max_ok=bool(abs(o_max - hi) <= tol))
+        if int(m.sum()) < int(min_edges):
+            rec["insufficient_edges"] = ("边数 %d < %d ⇒ min/max 达不到带端点，本类**不断言**"
+                                         "（抽样覆盖不足，非机制未实施）" % (int(m.sum()), int(min_edges)))
+        out["observed"][nm] = rec
+    out["all_classes_in_band"] = all(
+        (v is None) or bool(v.get("insufficient_edges")) or (v["min_ok"] and v["max_ok"])
+        for v in out["observed"].values())
+    return out
+
+
+def _assert_gmax_band_readback(rb: dict, spec: dict) -> None:
+    assert rb["meta_echo_matches"], (
+        "N1 读回断言失败：夹具 meta.gmax_scale=%r != 写入值 %r（写入未到达夹具）"
+        % (rb["meta_echo_gmax_scale"], rb["meta_echo_gmax_scale_expected"]))
+    assert rb["all_classes_in_band"], (
+        "N1 读回断言失败：实装权重带（net['gmax'] 按 syn_class 分组的 min/max）不在请求带内 "
+        "⇒ 逐类乘子未生效（这是『机制未实施』，不得静默通过）：%r"
+        % {k: v for k, v in rb["observed"].items() if v and not v.get("insufficient_edges")
+           and not (v["min_ok"] and v["max_ok"])})
+    if rb["multipliers"]["E"] != 1.0:
+        pass          # E 段乘子允许显式给出（通用接口），默认 1.0（N1 要求 E 段不动）
+
+
+def _mod_trace_stats(eng, spec: dict, res: dict, mech: dict, n_settle: int, n_meas: int) -> dict:
+    """**慢增益变量（C-8/E3）机制读回**（PC-3 硬前置；M10 M-4 的防线）。
+
+    🔴 **结构性事实（本节点读码 + 实测确认，必须登记）**：任务书说的 `res["mod_trace"]`
+    （`larval_zf_engine.py` **L447–449**）在**本工具实际使用的 `MouseCortexEngine` 上不存在** ——
+    该类的 `run()`（`mouse_cortex_engine.py` **L551–867**）**整体覆写**父类 `run()`，只写
+    `res["slow_trace"]`（**L858–864**），**没有** `res["mod_trace"]` 这一段。
+    ⇒ 本工具改用**引擎实例属性** `eng.mod_trace`（`mouse_cortex_engine.py` **L744** 每 50 ms
+    `self.mod_trace.append(...)`）作为采样序列，并把 `res_mod_trace_key_present` 一并落盘
+    ⇒ **"缺的那个键"本身成为可核对的证据**，而不是被静默绕过。
+    """
+    raw = list(getattr(eng, "mod_trace", []) or [])
+    dt = float(eng.point.dt_ms)
+    every = _mod_sample_every(dt)
+    mod_dict = dict(getattr(eng, "mod", {}) or {})
+    rb = dict(g_mod=float(getattr(eng, "g_mod", 1.0)),
+              mod_slow=bool(getattr(eng, "mod_slow", False)),
+              t_mmod_present=bool(getattr(eng, "t_mmod", None) is not None),
+              tau_mod_ms=mod_dict.get("tau_mod_ms"),
+              gain_hi=mod_dict.get("gain_hi"), gain_lo=mod_dict.get("gain_lo"),
+              rate_ref_hz=mod_dict.get("rate_ref_hz"))
+    _ghi = rb.get("gain_hi")
+    _glo = rb.get("gain_lo")
+    out = dict(enabled=bool(mech["mod_on"]), n=len(raw), readback=rb,
+               n_settle_samples=int(n_settle) // every,
+               n_meas_samples=max(0, len(raw) - int(n_settle) // every),
+               sample_every_steps=every,
+               sample_every_source=("本工具重算 max(1, round(50/dt_ms))（引擎把它放在 run() 局部变量里，"
+                                    "未暴露为属性：mouse_cortex_engine.py L636 / larval_zf_engine.py L311）"),
+               res_mod_trace_key_present=bool(isinstance(res, dict) and "mod_trace" in res),
+               res_mod_trace_gap=("MouseCortexEngine.run() 覆写父类且不写 res['mod_trace']"
+                                  "（mouse_cortex_engine.py L551–867；只写 slow_trace L858–864）"
+                                  "⇒ 采样序列改由引擎实例属性 eng.mod_trace 读出（L744）"),
+               alive_criterion="std > 1e-3（与引擎 res['mod_trace'].alive 同阈值，larval_zf_engine.py L455）")
+    if raw:
+        arr = np.asarray(raw, dtype=float)
+        k = int(np.argmax(arr))
+        out.update(mean=float(arr.mean()), std=float(arr.std()), min=float(arr.min()),
+                   max=float(arr.max()), dynamic_range=float(arr.max() - arr.min()),
+                   argmax_sample_index=k, argmax_step=int(k * every),
+                   argmax_t_ms=float(k * every * dt),
+                   alive=bool(float(arr.std()) > 1e-3))
+        if (_ghi is not None) and (_glo is not None):
+            out["gain_range"] = [float(_glo + (_ghi - _glo) * float(arr.min())),
+                                 float(_glo + (_ghi - _glo) * float(arr.max()))]
+        _tmm = getattr(eng, "t_mmod", None)
+        if _tmm is not None:
+            out["final_m"] = float(_tmm.detach().cpu().reshape(-1)[0].item())
+            out["final_gain"] = (float(_glo + (_ghi - _glo) * out["final_m"])
+                                 if (_ghi is not None and _glo is not None) else None)
+    else:
+        out.update(mean=None, std=None, min=None, max=None, dynamic_range=None,
+                   argmax_sample_index=None, argmax_step=None, argmax_t_ms=None, alive=False,
+                   empty_reason=("引擎未产生采样序列：mod 未启用（enabled=False）"
+                                 if not mech["mod_on"] else
+                                 "mod 已启用但表步数 < sample_every(%d) ⇒ 未触发采样（极短诊断臂）" % every))
+    out["units"] = dict(argmax_step="engine step（原点 = 本次 run() 调用的表起点）",
+                        argmax_t_ms="millisecond", sample_every_steps="step",
+                        mean_std_min_max="无量纲（m 是 target=rate/rate_ref_hz 的低通 ⇒ O(1)）",
+                        gain_range="增益倍数（gain_lo + (gain_hi−gain_lo)·m）")
+    return out
+
+
+def _mod_rate_lag_corr(eng, res: dict, mech: dict, n_settle: int, n_meas: int,
+                       lag_max: int = 3) -> dict:
+    """**`mod_trace` 与群体率的 lag 相关**（F-5(i) 的第三项硬前置；R153 §② 强制）。
+
+    **定义（逐字；含单位、原点与"为什么这样切分"）**
+      - `m_j` = 引擎侧慢增益样本序列 `eng.mod_trace`（**不是** `res["mod_trace"]` —— 该键在
+        `MouseCortexEngine` 上不存在，见 `_mod_trace_stats` 的登记）。采样周期
+        `every = max(1, round(50 ms / dt_ms))` **步**；第 j 个样本在处理完**局部步号
+        `j·every − 1`** 之后追加（`mouse_cortex_engine.py` **L737–744**）⇒ 它反映的正是**该
+        50 ms 箱内**的活动。
+      - 🔴 **切分（关键，不是启发式对齐）**：`mod_trace` 跨**两次 `run()` 调用**累积 —— settle 段
+        （`n_settle` 步，其 `pop_trace` **被丢弃**）贡献 `n_settle // every` 个样本，测量段贡献
+        `n_meas // every` 个；且每次 `run()` 内部的 `_mstep` 都从 0 起算（`mouse_cortex_engine.py`
+        L637）⇒ **按 `n_settle // every` 精确丢弃前缀**即得"与测量窗逐箱对齐"的序列。
+      - `r_b` = **测量窗内**第 b 个 50 ms 箱的**群体发放率**（Hz）= `pop[(b)·every : (b+1)·every]`
+        的均值 / `(every · dt_ms · 1e-3)`；`pop` = `res["pop"]`（**逐步群体脉冲数**，float32，
+        原点 = 测量窗起点）。
+      - **lag 相关**：`ρ(k) = Pearson(m_b, r_{b+k})`，配对 b 需两侧都有定义；`k` 的**单位 = 样本
+        = `every·dt_ms` ms**（落盘 `lag_ms`），`k>0` ⇒ **率滞后于 m**（`k<0` ⇒ m 滞后于率）。
+        落盘 `ρ(0)`、`ρ(k)` 全表、`|ρ|` 最大者及其 lag。
+      - 样本量门：`K = n_meas // every`；`K < 2·(lag_max+1)` ⇒ **判"不可得"并写明原因**，
+        不得用极短序列自造相关。
+    """
+    dt = float(eng.point.dt_ms)
+    every = _mod_sample_every(dt)
+    pop = res.get("pop")
+    base = dict(n_settle=n_settle, n_meas=n_meas, sample_every_steps=every,
+                sample_every_ms=float(every) * dt, lag_unit="sample(=%g ms)" % (every * dt),
+                definition=("rho(k)=Pearson(m_b, r_{b+k})；m=eng.mod_trace 的测量段样本（每 %d 步一个），"
+                            "r=测量窗每 %d 步箱的群体率(Hz)=箱内 pop 计数均值/(%d·dt_s)；"
+                            "k>0 ⇒ 率滞后于 m" % (every, every, every)),
+                source="eng.mod_trace（引擎实例属性，mouse_cortex_engine.py L744）+ res['pop']")
+    if not bool(mech["mod_on"]):
+        base.update(computable=False, reason="mod 未启用（enabled=False）⇒ 无 m 序列")
+        return base
+    if pop is None:
+        base.update(computable=False, reason="res['pop'] 为 None（未请求 pop_trace）")
+        return base
+    raw = list(getattr(eng, "mod_trace", []) or [])
+    pop = np.asarray(pop, dtype=float)
+    K = int(n_meas) // every
+    base["n_bins_meas"] = K
+    if K < 2 * (int(lag_max) + 1):
+        base.update(computable=False,
+                    reason=("测量窗箱数 K=%d < 2·(lag_max+1)=%d ⇒ 样本量不足以给 ±%d 样本的 lag 相关"
+                            "（不得自造）" % (K, 2 * (int(lag_max) + 1), int(lag_max))))
+        return base
+    drop = int(n_settle) // every
+    m = np.asarray(raw[drop:drop + K], dtype=float)
+    if m.size != K:
+        base.update(computable=False,
+                    reason=("切分失败：eng.mod_trace 长度 %d，按 drop=%d 取测量段只得 %d ≠ K=%d "
+                            "⇒ 拒绝给出相关（宁可'不可得'，不得自造对齐）" % (len(raw), drop, m.size, K)))
+        return base
+    rate = pop[:K * every].reshape(K, every).mean(axis=1) / (every * dt * 1e-3)
+    base.update(m_mean=float(m.mean()), m_std=float(m.std()),
+                rate_mean_hz=float(rate.mean()), rate_std_hz=float(rate.std()))
+    if float(m.std()) == 0.0 or float(rate.std()) == 0.0:
+        base.update(computable=False,
+                    reason=("序列常值（m.std=%r, rate.std=%r）⇒ Pearson 无定义"
+                            % (float(m.std()), float(rate.std()))))
+        return base
+    lags, rho, n_pairs = [], [], []
+    for k in range(-int(lag_max), int(lag_max) + 1):
+        b0, b1 = max(0, -k), min(K, K - k)
+        if b1 - b0 < 3:
+            lags.append(k); rho.append(None); n_pairs.append(int(b1 - b0)); continue
+        a, c = m[b0:b1], rate[(b0 + k):(b1 + k)]
+        if float(a.std()) == 0.0 or float(c.std()) == 0.0:
+            lags.append(k); rho.append(None); n_pairs.append(int(b1 - b0)); continue
+        lags.append(k)
+        rho.append(float(np.corrcoef(a, c)[0, 1]))
+        n_pairs.append(int(b1 - b0))
+    fin = [(abs(v), i) for i, v in enumerate(rho) if v is not None]
+    best_i = max(fin)[1] if fin else None
+    base.update(computable=True, lags=lags, rho=rho, n_pairs=n_pairs,
+                lag_ms=[int(k * every * dt) for k in lags],
+                rho_lag0=(rho[lags.index(0)] if 0 in lags else None),
+                best_lag=(lags[best_i] if best_i is not None else None),
+                best_rho=(rho[best_i] if best_i is not None else None),
+                best_abs_rho=(abs(rho[best_i]) if best_i is not None else None),
+                n_meas_samples_used=int(m.size))
+    return base
+
+
+def _stp_state_stats(eng, mech: dict) -> dict:
+    """**STP 投递因子 `u·x` 的直接读回**（引擎侧 `t_u`/`t_x` 的终态统计）。
+
+    > 计划 §3 N3 的读回量原文说"`u`/`x` 的统计量**引擎当前未导出** ⇒ 本计划不要求新增该导出"。
+    > **本工具在生产者侧补上这个读回**（不改引擎）：`t_u` / `t_x` 是**实例属性**
+    > （`larval_zf_engine.py` **L132–136**）⇒ `run_one` 在 `run()` 之后可直接读。
+
+    ⚠️ **口径（不得混读）**：读的是**测量窗结束时刻**的值 ⇒ 对**最后一批发放的边**它是
+    **投递后**（post-update）的值 ⇒ 它是投递因子（引擎取**更新前**的 `u·x`，
+    `mouse_cortex_engine.py` **L943–944**）的**后验均值场**，不是逐时刻精确前值。
+    🔴 **dtype = float32**（`self.dtype`）⇒ `u` 的几何衰减（mode='depress'：`u ← u·exp(−dt/τ_fac)`，
+    `larval_zf_engine.py` **L492**）在长时间静默后**下溢为精确 0.0** ⇒
+    "投递因子测到 0" 是**真读数**而非缺失（这正是 F-3/P1 说的"递归隔离消融"）。
+    """
+    out = dict(enabled=bool(mech["stp_on"]), dtype=str(getattr(eng, "dtype", "")))
+    if not mech["stp_on"]:
+        out["note"] = "stp 未启用 ⇒ 无 u/x 状态（显式缺席，非键丢失）"
+        return out
+    tu, tx = getattr(eng, "t_u", None), getattr(eng, "t_x", None)
+    if tu is None or tx is None:
+        out["note"] = "引擎未分配 t_u/t_x（stp_enabled=True 但 _init_stp_state 未执行）"
+        out["missing_state"] = True
+        return out
+    u = tu.detach().cpu().numpy().astype(np.float64)
+    x = tx.detach().cpu().numpy().astype(np.float64)
+    fx = u * x
+    eps = 1e-6
+    out.update(n_edge=int(u.size),
+               u_mean=float(u.mean()), u_min=float(u.min()), u_max=float(u.max()),
+               x_mean=float(x.mean()), x_min=float(x.min()), x_max=float(x.max()),
+               delivery_factor_mean_u_times_x=float(fx.mean()),
+               delivery_factor_median=float(np.median(fx)),
+               delivery_factor_max=float(fx.max()),
+               frac_edges_factor_below_eps=float((fx < eps).mean()),
+               frac_edges_u_exactly_zero=float((u == 0.0).mean()),
+               eps=eps,
+               units=dict(u="无量纲（利用度）", x="无量纲（恢复池，0..1）",
+                          delivery_factor="无量纲（投递电导的乘子，1 = 无 STP）"),
+               caliber=("测量窗**结束时刻**的逐边状态（投递后）；引擎投递取**更新前** u·x "
+                        "⇒ 这是后验均值场，不是逐时刻精确前值"),
+               tau_fac_ms=float(eng.stp.get("tau_fac_ms", float("nan"))),
+               tau_rec_ms=float(eng.stp.get("tau_rec_ms", float("nan"))),
+               u0=float(eng.stp.get("u0", float("nan"))),
+               mode=str(eng.stp.get("mode")),
+               readback_note=("t_u/t_x 未参与 res 字典 ⇒ 本工具从引擎实例属性直读"
+                              "（larval_zf_engine.py L132–136 分配）"))
+    return out
 
 
 def _slow_trace_stats(eng, spec: dict, res: dict):
@@ -244,9 +738,12 @@ def run_one(spec: dict, out_dir: str) -> dict:
     _seeds = effective_seeds(spec)
     event_seed = _seeds["event_seed"]
     device = str(spec.get("device", "mps"))
+    # ---- L4 机制跑前闸门（**先于任何产物写入**）：调质参数未启用 ⇒ 拒跑（101）；stp mode 非
+    #      depress ⇒ invalid（102）。对不含新键的既有臂**纯只读**（三族键全不出现 ⇒ 全 False）----
+    mech = _mechanism_preflight(spec)
 
     spec = dict(spec, net_seed=_seeds["net_seed"])      # ← 派生后的网络种子显式传下去
-    eng, net, torch = build_engine(n, spec, device=device)
+    eng, net, torch = build_engine(n, spec, device=device, mech=mech)
     st, ne, gg = make_events(n, T_table, rate0 * dose, event_seed)
     eng.set_external_events(st, ne, gg, n_steps=T_table)
     eng.reset(seed=_seeds["reset_seed"])
@@ -371,6 +868,72 @@ def run_one(spec: dict, out_dir: str) -> dict:
             _st["insufficient_steps_to_sample"] = True
             _st["note"] = ("表步数 %d < sample_every(%d) ⇒ 未采样（**极短诊断臂**的显式状态，"
                            "不是字段丢失）" % (n_settle + n_meas, _every))
+    # ==================================================================
+    # L4 机制的新键（**三族各自门控：spec 不含该族任何键 ⇒ 一个键都不写**）
+    #   ⇒ 既有臂（无新键）的 JSON 与 trace **逐字节不变**（R116 §③ 的逻辑证明同族）。
+    #   反向保证（"机制未实施"不可能静默）：只要 spec **声明过**该族的键，
+    #   ① 若机制启用 ⇒ `*_enabled=True` + 完整读回 + 硬断言；
+    #   ② 若机制未启用 ⇒ 调质族**硬拒跑**（101），STP 族写 `*_enabled=False` +
+    #      `*_params_ignored`（显式列出被忽略的键，不静默）。
+    # ==================================================================
+    if mech["mod_family"]:
+        arm["mod_enabled"] = bool(mech["mod_on"])
+        arm["mod_readback"] = mech["readback"]["mod"]        # None ⇒ 显式"未启用"（非"键丢了"）
+        arm["mod_params_ignored"] = list(mech["mod_params_ignored"])
+        arm["mod_ablation"] = bool(mech["mod_ablation"])
+        arm["mod_trace_stats"] = _mod_trace_stats(eng, spec, res, mech, n_settle, n_meas)
+        arm["mod_rate_lag_corr"] = _mod_rate_lag_corr(eng, res, mech, n_settle, n_meas)
+        arm["mod_semantics"] = (
+            "C-8（稳定/稳态可塑性，抽象为慢增益变量；PC-6/清单 L141）。更新方程 "
+            "m ← m + (dt/τ)·(target − m)、target = 瞬时群体发放率/rate_ref_hz（活动依赖）；"
+            "增益 = gain_lo + (gain_hi−gain_lo)·m；作用点 = 突触电导（mouse_cortex_engine.py "
+            "L938–940）**与外部事件幅度**（L759/L780）—— 不是只调背景率。"
+            "gain_hi<gain_lo ⇒ 负反馈（服务 (c)）；gain_hi>gain_lo ⇒ 正反馈（服务 dwell）。")
+    if mech["gmax_band_family"]:
+        arm["gmax_band_readback"] = mech["readback"]["gmax_band"]
+        arm["gmax_band_applied"] = mech["readback"]["gmax_band_echo"]   # 乘子 + 解析后的整表 + 来源
+        arm["gmax_semantics"] = (
+            "**两个旋钮语义不同，不得混读**：`gmax_scale`（net.gmax_scale，circuit.py L43/L114）"
+            "**统一**乘在**全部类**的权重上、最外层 ⇒ **E/I 比逐位不变**；逐类乘子"
+            "（`inh_gain` / `gmax_band_gain`，本工具内部把它乘到 DEFAULT_GMAX_BAND（circuit.py L30）"
+            "上构造整表后传给夹具）**只乘指定的类** ⇒ E 段不动 ⇒ **改变 E/I 构成**（N1 的全部价值）。"
+            "⚠️ 归因限制（F-2(iv)）：`syn_class` 是**逐突触随机标签**（circuit.py L99–105），"
+            "与突触前/后细胞类型均无关 ⇒ **只许报『该随机类槽权重 ↑』，不得写成『PV 细胞介导』**。")
+    if mech["stp_family"]:
+        arm["stp_enabled"] = bool(mech["stp_on"])
+        arm["stp_readback"] = mech["readback"]["stp"]        # configure_stp 返回 dict **逐字**落盘
+        arm["stp_params_ignored"] = list(mech["stp_params_ignored"])
+        arm["stp_mode_asserted"] = str(mech["stp_mode"])
+        arm["stp_state_stats"] = _stp_state_stats(eng, mech)
+        arm["stp_verdict"] = ("pass_structure" if mech["stp_on"] else "disabled")
+        arm["stp_semantics"] = (
+            "N3 = C2 STP depress（Tsodyks–Markram）。投递因子取**更新前**的 u·x"
+            "（mouse_cortex_engine.py L943–944），`u` 在 mode='depress' 下按 tau_fac 指数衰减到 0"
+            "（larval_zf_engine.py L492）⇒ **逐边 ISI ≫ tau_fac 时投递因子 → 0 = 递归隔离消融**"
+            "（§2.7；F-3 的 P1）。⇒ 控制旋钮是 **tau_fac_ms 而非 tau_rec_ms**；"
+            "`mode != 'depress'` ⇒ 该臂 invalid（F-3，跑前即拒，EXIT=102）。"
+            "⚠️ 启用 STP 会**强制放弃 chunk 快路径**（mouse_cortex_engine.py L896–900）⇒ 单价必高于 L3。")
+        if mech["stp_on"]:
+            _st = arm["stp_readback"] or {}
+            assert _st.get("mode") == "depress", \
+                ("stp_readback.mode=%r ⇒ 该臂 invalid（预注册 F-3：mode != 'depress' 的臂整批 invalid）"
+                 % (_st.get("mode"),))
+    if mech["mod_family"] and mech["mod_on"]:
+        # **读回断言（强制条款 (c)，R153 §②）**：`mod_trace.n > 0` 且 `std > 0`
+        _mt = arm["mod_trace_stats"] or {}
+        _every = int(_mt.get("sample_every_steps") or _mod_sample_every(float(eng.point.dt_ms)))
+        if (n_settle + n_meas) >= 2 * _every:
+            assert (_mt.get("n") or 0) > 0, (
+                "mod=True 且步数足以采样（%d 步 ≥ 2×sample_every=%d），但 mod_trace_stats.n == 0 "
+                "⇒ 慢增益变量**静默失效**（M10 M-4 同族）⇒ 不得静默通过"
+                % (n_settle + n_meas, 2 * _every))
+            assert float(_mt.get("std") or 0.0) > 0.0, (
+                "mod=True 但 mod_trace.std == 0（m 恒定）⇒ 增益是**静态**的 ⇒ 机制未实施"
+                "（这正是 M10 M-4 的形态）⇒ 不得静默通过；stats=%r" % (_mt,))
+        else:
+            _mt["insufficient_steps_to_sample"] = True
+            _mt["note"] = ("表步数 %d < 2×sample_every(%d) ⇒ 采样不足以给 std>0 断言"
+                           "（**极短诊断臂**的显式状态，不是字段丢失）" % (n_settle + n_meas, 2 * _every))
     jpath = os.path.join(out_dir, f"{run_id}.json")
     with open(jpath, "w") as f:
         json.dump(arm, f, indent=1, ensure_ascii=False)
@@ -399,7 +962,45 @@ def arm_spec_from_cli(args, run_id: str) -> dict:
         sp["tau_slow_ms"] = float(args.tau_slow_ms)
     if getattr(args, "slow_inc", None) is not None:            # L2 杠杆：仅显式时出现（缺键 ⇒ 默认 6.0）
         sp["slow_inc"] = float(args.slow_inc)
+    # ---- L4 机制键（C-8 / N1 / N3）：**一律只在显式给出时才进 spec**（缺键 ⇒ 走原路径）----
+    if getattr(args, "mod", None) is not None:                 # C-8：--mod / --no-mod
+        sp["mod"] = bool(args.mod)
+    if getattr(args, "mod_ablation", False):                   # C-8 消融臂显式标记（免被 101 拒跑）
+        sp["mod_ablation"] = True
+    for _k in ("tau_mod_ms", "gain_lo", "gain_hi", "rate_ref_hz"):
+        if getattr(args, _k, None) is not None:
+            sp[_k] = float(getattr(args, _k))
+    if getattr(args, "inh_gain", None) is not None:            # N1：逐类乘子（标量版，PV/SST/VIP）
+        sp["inh_gain"] = float(args.inh_gain)
+    if getattr(args, "gmax_band_gain", None):                  # N1：逐类乘子（dict 版）
+        sp["gmax_band_gain"] = _parse_band_gain(args.gmax_band_gain)
+    if getattr(args, "stp", None) is not None:                 # N3：--stp / --no-stp
+        sp["stp"] = bool(args.stp)
+    for _k in ("u0", "tau_fac_ms", "tau_rec_ms"):
+        if getattr(args, _k, None) is not None:
+            sp[_k] = float(getattr(args, _k))
+    if getattr(args, "stp_mode", None) is not None:
+        sp["stp_mode"] = str(args.stp_mode)
     return sp
+
+
+def _parse_band_gain(txt) -> dict:
+    """解析 `--gmax-band-gain`：接受 JSON dict 或 `PV=2.5,SST=2.5,VIP=2.5` 形式。"""
+    if isinstance(txt, dict):
+        return {str(k).upper(): float(v) for k, v in txt.items()}
+    s = str(txt).strip()
+    if s.startswith("{"):
+        return {str(k).upper(): float(v) for k, v in json.loads(s).items()}
+    out = {}
+    for part in s.split(","):
+        part = part.strip()
+        if not part:
+            continue
+        if "=" not in part:
+            raise SystemExit("--gmax-band-gain 需形如 PV=2.5,SST=2.5,VIP=2.5 或 JSON dict：%r" % txt)
+        k, v = part.split("=", 1)
+        out[k.strip().upper()] = float(v)
+    return out
 
 
 def run_arm_main(args) -> int:
@@ -422,6 +1023,15 @@ def run_arm_main(args) -> int:
             os.remove(p)
     try:
         arm = run_one(spec, out_dir)
+    except ArmRefused as ex:
+        # **"跑了也不算数"**：`.fail` 是本文件产物规范里"不计入分母、四态 invalid"的载体
+        # ⇒ 拒跑臂与"跑失败"在盘上**可区分**（前者带 code=101/102/103 一行）。
+        import traceback
+        with open(fail, "w") as f:
+            f.write("run_id=%s\nREFUSED code=%d\n%s\n%s\n"
+                    % (run_id, ex.code, ex, traceback.format_exc()[-2000:]))
+        print("[INVALID] %s  REFUSED code=%d: %s" % (run_id, ex.code, ex), flush=True)
+        return int(ex.code)
     except Exception as ex:  # noqa: BLE001
         import traceback
         with open(fail, "w") as f:
@@ -560,7 +1170,11 @@ def run_plan_main(args) -> int:
         spec.setdefault("drive_rate_hz", plan.get("drive_rate_hz", 8.0))
         spec.setdefault("device", plan.get("device", "mps"))
         for k in ("indegree", "gmax_scale", "bias_scale", "bias_log_sigma", "bias_log_mean",
-                  "net_seed", "delay_bins", "subtypes", "slow", "tau_slow_ms", "slow_inc"):
+                  "net_seed", "delay_bins", "subtypes", "slow", "tau_slow_ms", "slow_inc",
+                  # ---- L4 机制键（计划级继承；`if k in plan and k not in spec` ⇒ 计划不含则零影响）----
+                  "mod", "mod_ablation", "tau_mod_ms", "gain_lo", "gain_hi", "rate_ref_hz",
+                  "inh_gain", "gmax_band_gain",
+                  "stp", "u0", "tau_fac_ms", "tau_rec_ms", "stp_mode"):
             if k in plan and k not in spec:
                 spec[k] = plan[k]
         spec["n_neuron"] = int(spec.get("n_neuron", plan["n_neuron"]))
@@ -876,6 +1490,35 @@ def main(argv=None) -> int:
     ap.add_argument("--slow-inc", type=float, default=None,
                     help="L2 每 spike 的慢电导增量。**不显式给 ⇒ 沿用既有默认 6.0**")
     ap.add_argument("--force", action="store_true", help="plan 模式：忽略已有 .done 重跑")
+    # ---------- L4 机制键（R153 §⑤ D2 批准：C-8 → N1 → N3；全部**不显式给就不进 spec**）----------
+    ap.add_argument("--mod", dest="mod", action="store_true", default=None,
+                    help="C-8 慢增益变量**启用**（显式传 `slow=True`，M10 M-4 的防线）。"
+                         "**不给则该键不进 spec**（既有臂字节不变）")
+    ap.add_argument("--no-mod", dest="mod", action="store_false", default=None,
+                    help="C-8 显式关闭（消融臂 S-11）；给参数而关机制会被拒跑（EXIT=101）")
+    ap.add_argument("--mod-ablation", action="store_true",
+                    help="显式承认该臂是 C-8 **消融臂**（允许同时携带调质参数而不接线；"
+                         "落盘 mod_params_ignored）")
+    ap.add_argument("--tau-mod-ms", type=float, default=None, help="C-8 慢增益时间常数（ms）")
+    ap.add_argument("--gain-lo", type=float, default=None, help="C-8 m=0 端增益；gain_hi<gain_lo ⇒ 负反馈")
+    ap.add_argument("--gain-hi", type=float, default=None, help="C-8 m=1 端增益；gain_hi>gain_lo ⇒ 正反馈")
+    ap.add_argument("--rate-ref-hz", type=float, default=None,
+                    help="C-8 归一化参考率（Hz）：target = 瞬时群体率 / rate_ref_hz")
+    ap.add_argument("--inh-gain", type=float, default=None,
+                    help="N1 类级抑制增益（逐类乘子标量版：乘 PV/SST/VIP，E 段不动）")
+    ap.add_argument("--gmax-band-gain", default=None,
+                    help="N1 逐类乘子（dict 版）：`PV=2.5,SST=2.5,VIP=2.5` 或 JSON dict")
+    ap.add_argument("--stp", dest="stp", action="store_true", default=None,
+                    help="N3 STP 启用（**只有 mode='depress' 被接受**，否则拒跑 EXIT=102）")
+    ap.add_argument("--no-stp", dest="stp", action="store_false", default=None,
+                    help="N3 显式关闭（消融臂；会落盘 stp_enabled=false + stp_params_ignored）")
+    ap.add_argument("--u0", type=float, default=None, help="N3 STP 初始利用度（引擎默认 0.5）")
+    ap.add_argument("--tau-fac-ms", type=float, default=None,
+                    help="N3 STP 易化时常数（ms）。🔴 **不许下调**：默认 50 ms 在 M11 低率区间"
+                         "预测 ≈ 递归隔离消融（F-3/P1）⇒ 只许上调到 {2000, 5000} 档")
+    ap.add_argument("--tau-rec-ms", type=float, default=None, help="N3 STP 恢复时常数（ms，默认 500）")
+    ap.add_argument("--stp-mode", default=None, choices=(None, "depress", "facilitate"),
+                    help="N3 STP 工作模式。**预注册 F-3：mode != 'depress' ⇒ invalid**（拒跑 EXIT=102）")
     ap.add_argument("--self-test-replication", action="store_true",
                     help="复刻轴微测试（R93）：N=1000/T=100ms/seed∈{0,1,2} ⇒ 三 sha256 必须互不相同")
     args = ap.parse_args(argv)
