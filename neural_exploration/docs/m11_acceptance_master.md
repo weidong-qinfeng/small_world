@@ -4203,3 +4203,35 @@ R139/R140 的结论是"**(a) 与 (c) 在 `bias` 轴上严格同向单调、方�
 - `grid` 的**档位与臂数**、**按档取价的预算**（R112 §⑤）、**排序理由**；
 - `measurement_definitions` 里的 **`Sel`（选择比）定义**与 **`L4-0 天梯`** 的操作化；
 - **`structural_dependencies`** 是否含 **`(b)`/`tension` 那条**（G1 即便有工作点也可能因 `tension=unavailable` 而不可判 —— R140 §③ 遗留下来待裁决的问题）。
+
+## 3ej. R146：🔴🔴🔴 **G1 是**双重**受阻 —— 即便存在完美工作点，G1 也**不可判 pass****（`tension` 是门条件的合取项，而 `(b)` 的带 `final=0`）⇒ **G1 的可判定性依赖 M12 侧的真实 ROI 掩膜**
+
+**① 裁决（L4 节点给出，**证据链带行号**，我逐条采信）**
+> **YES —— 即便找到完美工作点（`(c)=pass ∧ (e)=pass`），G1 门仍无法判定为 pass；评估器将返回 `verdict_G1 = "unavailable"`（理由「G1 门条件中存在未测项」）。**
+
+**证据链（逐条）**
+| # | 依据 | 内容 |
+|---|---|---|
+| 1 | `validate_p11_resting.py` **L125 / L129 / L130** | `GATE_CRITERIA = (c, e, i2)`，`i2 = p5_g1_tension_quantified` ⇒ **`tension` 是门条件的**合取项**** |
+| 2 | **L1221** | 张力块把 `(b)` 的带**硬编码**为 `silent_frac_calcium_band_lo / _hi` |
+| 3 | **L1228** | `status = "ok"` **当且仅当** `(a)` **与** `(b)` 两条带**都已定稿**，否则 `unavailable` |
+| 4 | **L185–194** | "已定稿" = `final == "1"` 且 `evidence_level != "unavailable"` |
+| 5 | **`data/m11_p5_targets.csv` L115–116** | 上述两行的 `value = unavailable`、`final = 0` |
+| 6 | **L1271–1286** | `_emit_tension_gate` 的 pass 要求 `rec.status == "ok"` |
+| 7 | **L1352–1353** | 🔴 **`all(v == "pass")` **永假****（因为门含 `i2`）|
+| 8 | **L1356–1358** | 落入 `else` ⇒ `g1 = "unavailable"`，理由"G1 门条件中存在未测项…**不得判 pass（未测 ≠ 未命中）**" |
+**② ⇒ 因此 G1 的阻塞是**双重**的（这一条改变了里程碑的表述）**
+- **(i) 科学侧**：**(a) ∧ (c) 在 `(bias, σ)` 参数空间内不可同时满足**（**R139/R140/R143**，全部正式口径实测支持）；
+- **(ii) 结构侧**：**`tension` 是门条件的合取项，而它 `unavailable`** ⇒ **即便 (i) 被解决，G1 也只能是 `unavailable`，不能是 `pass`**（**L1352–1353 的 `all(...)` 永假**）。
+**⇒ ⇒ 因此正确表述是**："G1 未通过（科学侧不可满足）**且**在 `(b)` 定稿之前**不可判 pass**（结构侧）"。
+**③ 唯一缺失维与它的归属（关键的路由图含义）**
+- **唯一缺失维 = 真实 ROI 掩膜**：`data/m11_calcium_silent.json::four_state_verdict` 记
+  `real_roi_mask_unit = "unavailable（掩膜未自证；**仅此一维缺**）"`、
+  `overall_b_caliber = "partial（三口径 measured + 一维 unavailable）—— **不得写成整体 unavailable**（R9/R18）"`；
+  与 `targets.csv` L115–116 的 note「`coverage = covered 7 / missing 1 (real ROI mask)`」一致 ✓
+- **⇒ ⇒ 因此 G1 的可判定性**依赖 M12 侧的真实 ROI 掩膜**（**这是 M11 ↔ M12 的一条**硬依赖**，且它**不在** M12 清单原有的 B-1～B-4 清单里**）
+  ⇒ **必须补登进 M12 的等待清单**（M12 的 S1 数据门已 `pass`，见 **R138**）✓
+**④ 与 R140 的关系（不是推翻，是补全）**：R140 说的是"**科学上无工作点**"（我实测支持）；
+R146 补上的是"**结构上即便有工作点也不可判 pass**"。**两条独立、都成立** ✓
+**⑤ 登记为待办（节点如实标注的未确认项，我保留）**：`caveat_on_R138` —— 该节点在 `docs/` 全文 grep 未能确认
+R138 的某处细节（**保持为"未确认"，不得当成已核实**）。
