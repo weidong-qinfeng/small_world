@@ -21,6 +21,11 @@ ls data/m11_p5_l3_runs/*.done 2>/dev/null | wc -l      # 完成臂数（期望�
 ls data/m11_p5_l3_runs/*.fail 2>/dev/null | wc -l      # 失败臂数（期望 0）
 grep -E "DONE|FAIL|SKIP|完成|ALL_DONE" /tmp/ma_l3.log | tail -20
 ```
+🔴 **重要（实测，R129）**：**`/tmp/ma_l3.log` 里看不到 per-arm 的 `[DONE]`/`[FAIL]` 行**
+—— 驱动器用 `sys.stdout.write(p.stdout)`（`run_m11_p5_arms.py` **L575**）转发子进程输出，
+重定向到文件时是**块缓冲** ⇒ **要到整轮结束（或缓冲写满）才刷新**。
+**⇒ 因此进度必须以 `data/m11_p5_l3_runs/` 下的 `.done` / `.fail` 为准**（上面的前两条命令），
+**不要因为日志"看起来没动"就判断作业卡住**；判断作业是否在跑用 `pgrep -f run_m11_p5_arms` + `ps -o etime,time`（看累计 CPU/墙钟之比）。
 **判断长作业进度必须看"累计 CPU 时间 / 墙钟"之比，不能看 `ps` 的 `%CPU`**（纪律 L46，见 `docs/SESSION_CONTEXT.md`）；
 本机实测占空比 ≈5%（Chrome ~145% + `node`/dsh web ~84% 争用）⇒ **把 GUI 浏览器标签关掉/最小化是唯一有效加速手段（约 10×）**。
 
