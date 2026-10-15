@@ -1,0 +1,339 @@
+{
+ "run_id": "l4_g0.35_8192_T10000ms_d0.0_s2",
+ "role": "zero_drive",
+ "drive_mult": 0.0,
+ "status": "ok",
+ "finished_at": "2026-10-15T10:23:40",
+ "spk_total": 2895,
+ "n_steps": 200000,
+ "wall_s": 172.311659458,
+ "sha256": "81ef0f10bb8860462c7694e5920cbd11a8675b135cfdaf75fb0ab6b6f73b5194",
+ "dt_ms": 0.05,
+ "t_ms_first": 21.35,
+ "t_ms_last": 9999.35,
+ "t0_ms": 0.0,
+ "time_origin": "测量窗起点（settle 之后 reset_counts() 那一刻）；绝对仿真时刻 = settle_ms + t_ms",
+ "settle_ms": 500.0,
+ "n_steps_settle": 10000,
+ "delivery": "chunk",
+ "device": "mps",
+ "wall_s_protocol_source": "生产者 run_one 的 wall_s（含 settle，与已落盘 JSON wall_s 同口径）",
+ "wall_s_child_total": 173.20124075,
+ "seeds": {
+  "reset_seed": 2,
+  "net_seed": 2,
+  "event_seed": 13,
+  "derived_net_seed": false,
+  "derived_event_seed": false,
+  "policy": "explicit/partial",
+  "triple": "net2|ev13|reset2"
+ },
+ "n_events": 0,
+ "npz": {
+  "path": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_spiketimes/l4_g0.35_8192_T10000ms_d0.0_s2_spiketimes.npz",
+  "rel": "neural_exploration/data/m11_p5_spiketimes/l4_g0.35_8192_T10000ms_d0.0_s2_spiketimes.npz",
+  "bytes": 60816,
+  "sha256": "81ef0f10bb8860462c7694e5920cbd11a8675b135cfdaf75fb0ab6b6f73b5194",
+  "keys": [
+   "neuron_id",
+   "step",
+   "t_ms",
+   "dt_ms",
+   "n_steps",
+   "spk_total",
+   "t0_ms",
+   "run_id",
+   "record_mode",
+   "producer_sha256"
+  ],
+  "dtypes": {
+   "neuron_id": "int32",
+   "step": "int64",
+   "t_ms": "float64",
+   "dt_ms": "float64(标量)",
+   "n_steps": "int64(标量)",
+   "spk_total": "int64(标量)"
+  }
+ },
+ "spikes": {
+  "n_events": 2895,
+  "sha256_neuron_id": "2c3d722eecf95dbd13ea14c5921b6f0148dbf860c0dab84f6d5a1de2beea1f82",
+  "sha256_step": "92ae64f372d224295efab2259dd63343dfa59c807f5c2759542a3f9f4952cd3c",
+  "sorted_by_step": true,
+  "step_min": 427,
+  "step_max": 199987,
+  "n_unique_neurons": 1110,
+  "idx_in_range": true,
+  "steps_in_range": true
+ },
+ "spec": {
+  "run_id": "l4_g0.35_8192_T10000ms_d0.0_s2",
+  "stage": "l4_0",
+  "config_id": "p5_L4_g0.35_b1.30_s0.10",
+  "T_ms": 10000.0,
+  "drive_mult": 0.0,
+  "seed": 2,
+  "net_seed": 2,
+  "event_seed": 13,
+  "role": "zero_drive",
+  "mechanism": "lever_l4",
+  "delivery": "chunk",
+  "gmax_scale": 0.35,
+  "bias_scale": 1.3,
+  "bias_log_sigma": 0.1,
+  "slow": true,
+  "tau_slow_ms": 1000.0,
+  "slow_inc": 6.0,
+  "n_neuron": 8192,
+  "settle_ms": 500.0,
+  "indegree": 20,
+  "delay_bins": [
+   40,
+   60,
+   80
+  ],
+  "subtypes": true,
+  "device": "mps",
+  "lever": "L4-0 N2: gmax_scale=0.35（统一递归增益下调；工作格 bias=1.30,σ=0.10）",
+  "drive_rate_hz": 8.0
+ },
+ "spec_file": {
+  "path": "/Users/weidong/ai/small_world/neural_exploration/data/m11_p5_l4_0_runs/l4_g0.35_8192_T10000ms_d0.0_s2.spec.json",
+  "rel": "neural_exploration/data/m11_p5_l4_0_runs/l4_g0.35_8192_T10000ms_d0.0_s2.spec.json",
+  "sha256": "c1f11e5001e9ca0b072743af093951c8484e520fe65133593d3b3bb5e24a95fa",
+  "bytes": 683,
+  "pin": "c1f11e5001e9ca0b072743af093951c8484e520fe65133593d3b3bb5e24a95fa",
+  "pin_ok": true
+ },
+ "producer": {
+  "path": "/Users/weidong/ai/small_world/neural_exploration/tools/run_m11_p5_arms.py",
+  "rel": "neural_exploration/tools/run_m11_p5_arms.py",
+  "sha256": "26292f7b0078aad275ea2d9d21324f6ad47ea5da53e3323479dbe1ad56972b27",
+  "pin": "26292f7b0078aad275ea2d9d21324f6ad47ea5da53e3323479dbe1ad56972b27"
+ },
+ "engine": {
+  "path": "/Users/weidong/ai/small_world/neural_exploration/src/mouse_cortex_engine.py",
+  "rel": "neural_exploration/src/mouse_cortex_engine.py",
+  "sha256": "90c02b37d922d7ac9aefd78023c7db23a2fcd8a70147c1b226b5e9b7a7a9dc34",
+  "pin": "90c02b37d922d7ac9aefd78023c7db23a2fcd8a70147c1b226b5e9b7a7a9dc34"
+ },
+ "fixture_identity": {
+  "claim": "本工具不重写夹具：网络/事件/settle/测量窗**全部由生产者自己的代码对象**执行；唯一改动 = 引擎登记形参 `record` 的取值（counts → full）。",
+  "producer": {
+   "path": "/Users/weidong/ai/small_world/neural_exploration/tools/run_m11_p5_arms.py",
+   "rel": "neural_exploration/tools/run_m11_p5_arms.py",
+   "sha256": "26292f7b0078aad275ea2d9d21324f6ad47ea5da53e3323479dbe1ad56972b27",
+   "pin": "26292f7b0078aad275ea2d9d21324f6ad47ea5da53e3323479dbe1ad56972b27"
+  },
+  "engine": {
+   "path": "/Users/weidong/ai/small_world/neural_exploration/src/mouse_cortex_engine.py",
+   "rel": "neural_exploration/src/mouse_cortex_engine.py",
+   "sha256": "90c02b37d922d7ac9aefd78023c7db23a2fcd8a70147c1b226b5e9b7a7a9dc34",
+   "pin": "90c02b37d922d7ac9aefd78023c7db23a2fcd8a70147c1b226b5e9b7a7a9dc34"
+  },
+  "producer_sha_ok": true,
+  "engine_sha_ok": true,
+  "producer_functions": {
+   "build_engine": {
+    "code_filename": "/Users/weidong/ai/small_world/neural_exploration/tools/run_m11_p5_arms.py",
+    "code_firstlineno": 136,
+    "code_sha256": "6adc0f5bbba4458b3fd828a84c9f1561957f5363d884166bfe6ae1275494e43c",
+    "qualname": "build_engine",
+    "module": "run_m11_p5_arms",
+    "globals_is_producer_module": true,
+    "source_sha256": "d5fed689f89f04d728e6cd062e6718b5e432b0602d2d97e0f0698871c81f2ce7"
+   },
+   "make_events": {
+    "code_filename": "/Users/weidong/ai/small_world/neural_exploration/tools/run_m11_p5_arms.py",
+    "code_firstlineno": 231,
+    "code_sha256": "39cb97ae4e7f742607a857b71cc1866f29c45cb0426dbfc86a2b12421aeb3eec",
+    "qualname": "make_events",
+    "module": "run_m11_p5_arms",
+    "globals_is_producer_module": true,
+    "source_sha256": "eeb095d60fad0ab6878e8aa3aa3d08ec04245c701915eb9bcd3c2d29fdd444a8"
+   },
+   "effective_seeds": {
+    "code_filename": "/Users/weidong/ai/small_world/neural_exploration/tools/run_m11_p5_arms.py",
+    "code_firstlineno": 240,
+    "code_sha256": "d9a23fc14d0f579e2e34122366b68f3136f777507a225929e44aa7971c2884ed",
+    "qualname": "effective_seeds",
+    "module": "run_m11_p5_arms",
+    "globals_is_producer_module": true,
+    "source_sha256": "d9109753f96291b2764b1c841b6c361ee10f9a9525ef6be6f935ee4a01be5563"
+   },
+   "_mechanism_preflight": {
+    "code_filename": "/Users/weidong/ai/small_world/neural_exploration/tools/run_m11_p5_arms.py",
+    "code_firstlineno": 328,
+    "code_sha256": "789f1abf2fae63e07ed678b88b314fa63768c1225ea12eb7f53f654c012b9c46",
+    "qualname": "_mechanism_preflight",
+    "module": "run_m11_p5_arms",
+    "globals_is_producer_module": true,
+    "source_sha256": "cd7611a4f35e1765b5a97ccbcaf1932eae33e2bd1122ba485253c1e4b5a53898"
+   },
+   "run_one": {
+    "code_filename": "/Users/weidong/ai/small_world/neural_exploration/tools/run_m11_p5_arms.py",
+    "code_firstlineno": 728,
+    "code_sha256": "cf9723383f53a5619b9cae97ea29a62191cc2a0409f487d9efd09b248e5e4264",
+    "qualname": "run_one",
+    "module": "run_m11_p5_arms",
+    "globals_is_producer_module": true,
+    "source_sha256": "8455d721946d75adadda89e1111136aa48c4bc8f947719398357d596c529ae63"
+   },
+   "_net_echo": {
+    "code_filename": "/Users/weidong/ai/small_world/neural_exploration/tools/run_m11_p5_arms.py",
+    "code_firstlineno": 258,
+    "code_sha256": "3bd660da0acc08abc5769f93472aeb74585236caa51c95b961bcb04e3dbe6d5b",
+    "qualname": "_net_echo",
+    "module": "run_m11_p5_arms",
+    "globals_is_producer_module": true,
+    "source_sha256": "4da0e3a51965b95646058bcf60e493cb52a8380b9805bc315eaf66c095211d43"
+   }
+  },
+  "run_one_def_line": 728,
+  "producer_record_counts_lines": [
+   752,
+   755
+  ],
+  "producer_record_full_lines": [],
+  "producer_record_counts_line_pins": [
+   752,
+   755
+  ],
+  "engine_record_param_lines": [
+   551
+  ],
+  "engine_record_full_lines": [
+   581,
+   766,
+   787,
+   803,
+   823
+  ],
+  "engine_spikes_key_lines": [
+   822
+  ],
+  "intercept_target": {
+   "qualname": "MouseCortexEngine.run",
+   "code_filename": "/Users/weidong/ai/small_world/neural_exploration/src/mouse_cortex_engine.py",
+   "code_sha256": "fef9635adebf1c9a77f0b1ed1f81915090a010247671cec3dbd89a41fcf92353"
+  },
+  "ok": true,
+  "fails": []
+ },
+ "record_override": {
+  "rationale": "生产者 L752/L755 **硬编码** record=\"counts\"，无参数入口 ⇒ 不改该文件，改为对引擎登记形参 record（mouse_cortex_engine.py L551）作**运行时取值替换**；判据 = pop_trace is True ∧ ei_integrals is True ∧ record == \"counts\" ⇒ 只命中 L755",
+  "hardcoded_lines": [
+   752,
+   755
+  ],
+  "forced_calls": [
+   {
+    "call": "passthrough",
+    "n_steps": 10000,
+    "record": "counts",
+    "pop_trace": false,
+    "ei_integrals": false,
+    "delivery": "step"
+   },
+   {
+    "call": "forced_full",
+    "n_steps": 200000,
+    "record": "full(forced)",
+    "record_kwarg_seen": "counts",
+    "pop_trace": true,
+    "ei_integrals": true,
+    "delivery": "chunk",
+    "n_spikes": 2895
+   }
+  ]
+ },
+ "interpreter": {
+  "executable": "/Users/weidong/ai/small_world/.venv-m9/bin/python",
+  "realpath_exe": "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/bin/python3.9",
+  "sys_prefix": "/Users/weidong/ai/small_world/.venv-m9",
+  "python": "3.9.6",
+  "numpy": "1.26.4"
+ },
+ "mps_guard": {
+  "patterns": [
+   "run_m11_p5",
+   "run_m11_p5_spiketimes"
+  ],
+  "n_busy": 0,
+  "self_pid": 82610,
+  "self_pgid": 82488,
+  "ancestors": [
+   1546,
+   50145,
+   50146,
+   53993,
+   82488,
+   82499
+  ],
+  "descendants": [
+   82611
+  ],
+  "n_excluded": 2,
+  "excluded": [
+   {
+    "pattern": "run_m11_p5",
+    "pid": 82500,
+    "ppid": 82499,
+    "pgid": 82488,
+    "command": "caffeinate -i -s /Users/weidong/ai/small_world/.venv-m9/bin/python -u /Users/weidong/ai/small_world/neural_exploration/tools/run_m11_p5_spiketimes.py --out-dir /Users/weidong/ai/small_world/neural_exploration/data/m11_p5_spiketimes",
+    "why": "same-process-group(同一条启动链)"
+   },
+   {
+    "pattern": "run_m11_p5_spiketimes",
+    "pid": 82500,
+    "ppid": 82499,
+    "pgid": 82488,
+    "command": "caffeinate -i -s /Users/weidong/ai/small_world/.venv-m9/bin/python -u /Users/weidong/ai/small_world/neural_exploration/tools/run_m11_p5_spiketimes.py --out-dir /Users/weidong/ai/small_world/neural_exploration/data/m11_p5_spiketimes",
+    "why": "same-process-group(同一条启动链)"
+   }
+  ]
+ },
+ "crosscheck": {
+  "pass_criteria": "逐神经元 count 逐位相同 ∧ spk_total 相同 ∧ bincount(spikes)==counts ∧ poptrace 逐字节相同",
+  "counts_csv_new": "neural_exploration/data/m11_p5_spiketimes/_producer_echo/l4_g0.35_8192_T10000ms_d0.0_s2_counts.csv",
+  "counts_csv_new_sha256": "0568d6d7294f9ec8083ea852b400404e12e315e288436a0e290a66299a00414e",
+  "counts_csv_ref": "neural_exploration/data/m11_p5_l4_0_runs/l4_g0.35_8192_T10000ms_d0.0_s2_counts.csv",
+  "counts_csv_ref_sha256": "0568d6d7294f9ec8083ea852b400404e12e315e288436a0e290a66299a00414e",
+  "counts_ref_sha256_pin": "0568d6d7294f9ec8083ea852b400404e12e315e288436a0e290a66299a00414e",
+  "counts_ref_pin_ok": true,
+  "counts_bitwise_identical": true,
+  "counts_mismatch_neurons": 0,
+  "counts_max_abs_diff": 0,
+  "counts_new_spk_total": 2895,
+  "counts_ref_spk_total": 2895,
+  "reference_spk_total_pinned": 2895,
+  "reference_spk_total_pin_ok": true,
+  "spk_total_new_vs_ref_equal": true,
+  "poptrace_new": "neural_exploration/data/m11_p5_spiketimes/_producer_echo/l4_g0.35_8192_T10000ms_d0.0_s2_poptrace.npy",
+  "poptrace_new_sha256": "af3dbf1590c762ab60e1cd934ef369bf340101f02fe724d23b7f817f89c6eab8",
+  "poptrace_ref": "neural_exploration/data/m11_p5_l4_0_runs/l4_g0.35_8192_T10000ms_d0.0_s2_poptrace.npy",
+  "poptrace_ref_sha256": "af3dbf1590c762ab60e1cd934ef369bf340101f02fe724d23b7f817f89c6eab8",
+  "poptrace_ref_sha256_pin": "af3dbf1590c762ab60e1cd934ef369bf340101f02fe724d23b7f817f89c6eab8",
+  "poptrace_bitwise_identical": true,
+  "spikes_bincount_equals_counts": true,
+  "spikes_n_events_equals_spk_total": true,
+  "res_json_spk_total": 2895,
+  "producer_json_new": "neural_exploration/data/m11_p5_spiketimes/_producer_echo/l4_g0.35_8192_T10000ms_d0.0_s2.json",
+  "producer_json_ref": "neural_exploration/data/m11_p5_l4_0_runs/l4_g0.35_8192_T10000ms_d0.0_s2.json",
+  "producer_json_fieldwise_differing": [
+   "counts",
+   "finished_at",
+   "interpreter",
+   "ms_per_step",
+   "ms_per_step_steady",
+   "pid",
+   "pop_trace",
+   "rss_mb",
+   "wall_s"
+  ],
+  "producer_json_only_new": [],
+  "producer_json_only_ref": [],
+  "baseline_spk_anchor_expected": null,
+  "baseline_spk_anchor_ok": null
+ }
+}
