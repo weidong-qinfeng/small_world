@@ -3,6 +3,33 @@
 《生物仿真M11实施清单》§4.5（P5 判据 (a)–(i)）+ §0.7（判据可测性预注册）+ §7 P5 行
 + 《docs/m11_list_review_master.md》RF-M11-3 + 《docs/m11_acceptance_master.md》A4/A8/A12。
 
+================================================================================
+**文件版本与变更说明（v2；本文件原为冻结登记版）**
+================================================================================
+  原版 sha256：`0d3c1d990dfe707720ec316b57ae2bb699181dae0d87042c920638ed9a4c48f3`
+  原文备份（逐字节保留）：`neural_exploration/tools/_archive/validate_p11_resting.0d3c1d990dfe.py`
+  变更依据：`docs/m11_acceptance_master.md` **§3gl = R200 §③**（工具级两处成因定位）＋ **§3do = R124**
+            （(e) 口径缺陷：(e) 必须只在基准臂上判）＋ `data/m12_targets.csv::rule_e_baseline_arm_only`。
+  **本版只修下面两处缺陷，其余一律不动**（前后逐字段对照见 `docs/m11_evaluator_fix_A_B.md`）：
+
+  - **缺陷 A —— `(e)` 的口径伪影（R124／R200 §③1）**：原 `(e)` 取「**该格全部臂**（baseline+zero_drive
+    +dose）的 `ei_ratio` 中位数」⇒ 零驱动臂（`i_exc→0` ⇒ `ei_ratio`≈7.49–8.00）混入后把中位数抬到
+    ≈4.51 ⇒ 判 `fail`（**口径伪影，非生理结论**）。
+    **改为**：`(e)` 只取 **`role=="baseline"` 且 `drive_mult==1.0`** 的臂（口径 `baseline_arm_only`）；
+    所用的臂与被排除的臂（含原因）写入该行 `reason` 及输出 JSON 的 `ei_scope` 字段（**可核对、不静默丢弃**）。
+    ⇒ 副作用（应当如实登记）：只有 `dose` 臂的格不再有 `(e)` 值 ⇒ 该行 `unavailable`（此前是混合口径值）。
+  - **缺陷 B —— 门条件被「缺臂的辅助格」污染（R200 §③2）**：门条件原读「**全部格**的判据级聚合状态」
+    ⇒ 只有 `dose` 臂的辅助格（缺 `baseline`/`zero_drive`）把 `p5_c_selfsustain` 拉成 `unavailable`
+    （而同一 run 的 4 个实格 `(c)` 全部 `pass`）。
+    **改为**：门条件只由「**格条件齐备**（同时提供 `baseline` 与 `zero_drive` 的臂）的格」贡献；
+    被排除的格与其原因登记进输出 JSON 的 `gate_aggregation_scope` 并由 `print_summary` **显式打印**。
+    原 `criterion_status`（**全量**行的判据级状态）**保持原语义不变** ⇒ 任何格都不会被静默丢弃，
+    门聚合另给 `gate_criterion_status`（新键）。
+  - **未改动项（硬约束）**：判据 id／阈值／带来源（仍只读 `data/m11_p5_targets.csv`）、`estimator` 语义、
+    其余判据（a)(b)(c)(d)(f)(g)(h)(i) 与时长阶梯/张力/不变量）的口径、CSV 列集合、
+    硬门①②③④⑤⑥ 的判定规则（含硬门⑤「`mechanism=="none"` 的基线臂」这一既有语义）**均未改动**。
+================================================================================
+
 **为什么需要这个工具（主agent 对 M10 的裁定，本工具的三类堵漏对象）**
   1. **门 1（自持比）不是统计可判**：M10 同配置 3 seed = 0.0987/0.1056/0.1005、合并 R=0.1015、
      CI95 [0.0945,0.1091] ⇒ **跨门限**；且零驱动臂只有 **60 个脉冲**（相对不确定度 13%）。
@@ -540,6 +567,10 @@ class Evaluator:
         self.gate_composition: Dict[str, Any] = {}
         self.seed_effectiveness_check: str = "not_run"
         self.guard_failures: List[str] = []
+        # 【v2/R200-A】(e) 口径作用域登记（逐格：所用基准臂 + 被排除臂及其原因）
+        self.ei_scope: Dict[str, Any] = {}
+        # 【v2/R200-B】门条件聚合作用域登记（齐备格/被排除格及其原因）
+        self.gate_aggregation_scope: Dict[str, Any] = {}
 
     # ---------------- 协议前缀（口径字段，逐行携带） ----------------
     def _proto_fields(self, arm: Optional[Arm], T_ms: Optional[float] = None) -> Dict[str, Any]:
@@ -632,6 +663,8 @@ class Evaluator:
         self._apply_duration_flip()
         # 门组成与判据表声明一致性（防"代码与清单漂移"）
         self.gate_composition = self._assert_gate_composition()
+        # 【v2/R200-B】门条件的聚合作用域（齐备格/被排除格，含原因）——必须在 _verdict 之前算
+        self.gate_aggregation_scope = self._gate_aggregation_scope()
         # 硬断言（违反即 raise）：口径标注 / 未定稿带不得判 pass / 子判据不得静默丢失
         self.invariants = self._assert_output_invariants(self.rows)
         return self._verdict()
@@ -655,6 +688,71 @@ class Evaluator:
         if role is not None:
             out = [a for a in out if a.role == role]
         return out
+
+    # ---- 评估单元键（与 _tension 的键格式一致）与 (e) 的口径作用域（R200-A） ----
+    @staticmethod
+    def _unit_key_str(u: Tuple[str, float, str]) -> str:
+        return f"{u[0]}@{u[1]:g}ms|mech={u[2]}"
+
+    @staticmethod
+    def _ei_scope_arms(arms: Sequence[Arm]) -> Tuple[List[Arm], List[Dict[str, Any]]]:
+        """**(e) 的口径 = `baseline_arm_only`（R124 / R200 §③1 / 缺陷 A）**。
+
+        只取 `role=="baseline"` **且** `drive_mult==1.0` 的臂（既有的基准臂约定）；
+        返回 `(所用的臂, 被排除的臂[{arm_id, role, drive_mult, reason}])` —— **被排除者必须可核对**，
+        不得静默丢弃。**禁止**混入 `zero_drive`（`i_exc→0` ⇒ 比值爆炸）与 `dose` 臂。
+        """
+        used: List[Arm] = []
+        excluded: List[Dict[str, Any]] = []
+        for a in arms:
+            if a.role != "baseline":
+                excluded.append({"arm_id": a.arm_id, "role": a.role, "drive_mult": a.drive_mult,
+                                 "reason": f"role={a.role}：非基准臂 ⇒ (e) 不得混入（R124/R200-A）"})
+            elif abs(a.drive_mult - 1.0) >= 1e-9:
+                excluded.append({"arm_id": a.arm_id, "role": a.role, "drive_mult": a.drive_mult,
+                                 "reason": f"drive_mult={a.drive_mult} ≠ 1.0：非基准臂约定 ⇒ (e) 不得混入"})
+            else:
+                used.append(a)
+        return used, excluded
+
+    def _gate_aggregation_scope(self) -> Dict[str, Any]:
+        """**门条件的聚合作用域（R200 §③2 / 缺陷 B）**。
+
+        门条件（(c) ∧ (e) ∧ 张力已定量）只能由「**格条件齐备**」的格贡献；
+        **齐备 = 该 `(config_id, T_ms, mechanism)` 格同时提供 `role=="baseline"` 与 `role=="zero_drive"`
+        的臂**（这正是 (c)（零驱动/基准群率比）与 (e)（基准臂口径）的**作用域前提**）。
+        缺角色的格（例如只有 `dose` 臂的辅助格）：其行**照常输出**（不静默丢弃，`criterion_status` 仍按全量算），
+        但**不得**把门条件拉成 `unavailable`/`fail`；被排除的格与其原因在此显式登记并由 `print_summary` 打印。
+        """
+        inv: Dict[Tuple[str, float, str], set] = {}
+        for a in self.arms:
+            inv.setdefault((a.config_id, a.T_ms, a.mechanism), set()).add(a.role)
+        keys = sorted({(r["config_id"], r["T_ms"], r["mechanism"]) for r in self.rows},
+                      key=lambda t: (t[0], t[1], t[2]))
+        used, excluded = [], []
+        for k in keys:
+            roles = inv.get(k, set())
+            missing = [r for r in ("baseline", "zero_drive") if r not in roles]
+            rec = {"unit": self._unit_key_str(k), "config_id": k[0], "T_ms": k[1], "mechanism": k[2],
+                   "roles_present": sorted(roles), "missing_roles": missing}
+            if not roles:
+                rec["reason"] = ("no_arms_with_this_unit_key（该格在臂清单中不存在 ⇒ 其角色齐备性不可判）"
+                                 "⇒ 不参与门条件")
+                excluded.append(rec)
+            elif missing:
+                rec["reason"] = (f"unit_incomplete(缺角色={missing})：该格的行照常输出，但门条件的作用域前提"
+                                 f"（同时提供 baseline 与 zero_drive）不满足 ⇒ 不得贡献门条件（R200 §③2）")
+                excluded.append(rec)
+            else:
+                used.append(self._unit_key_str(k))
+        return {"rule": ("门条件只由**格条件齐备**的格贡献：齐备 = 该 (config_id,T_ms,mechanism) 格"
+                         "同时提供 role=baseline 与 role=zero_drive 的臂；缺角色的格其行照常输出"
+                         "（criterion_status 仍按全量算）但不参与门条件的判据级聚合（R200 §③2 / 缺陷 B）"),
+                "unit_key_format": "config_id@T_ms|mech=<mechanism>",
+                "units_used": used, "units_excluded": excluded,
+                "n_units_used": len(used), "n_units_excluded": len(excluded),
+                "note": ("被排除的格**不静默丢弃**：其逐行四态仍在 rows/CSV 中原样保留，"
+                         "只是不参与 gate_conditions；对照 `gate_criterion_status` 与 `criterion_status` 可定位差异。")}
 
     # ---- 基线臂（无机制）解析（硬门⑤）----
     def _baseline_arm_value(self, cfg: str, T_ms: float, criterion: str, estimator: str) -> Dict[str, Any]:
@@ -953,18 +1051,40 @@ class Evaluator:
 
     def _eval_ei(self, cfg: str, T_ms: float, mech: str, arms: List[Arm], n_neuron: Optional[int]) -> None:
         lo, hi, bstat, breasons = self.tt.band("ei_ratio_lo", "ei_ratio_hi")
-        vals = [self.arm_metrics[a.arm_id].get("ei_ratio") for a in arms]
+        # 【v2/R200-A（= R124）】**(e) 只在基准臂上判**：口径 = baseline_arm_only。
+        #   原实现取「该格全部臂的中位数」⇒ 零驱动臂（i_exc→0 ⇒ ei_ratio≈7.5–8.0）混入 ⇒ 伪影 fail。
+        scope_arms, scope_excluded = self._ei_scope_arms(arms)
+        scope_txt = ("；口径=baseline_arm_only（只取 role=baseline 且 drive_mult=1.0 的臂；R124/R200 §③1）"
+                     f"；所用臂={[a.arm_id for a in scope_arms]}"
+                     + (f"；排除臂={[[x['arm_id'], x['role'], x['drive_mult']] for x in scope_excluded]}"
+                        if scope_excluded else "；排除臂=[]"))
+        vals = [self.arm_metrics[a.arm_id].get("ei_ratio") for a in scope_arms]
         vals = [v for v in vals if v is not None]
         val = float(np.median(vals)) if vals else None
+        self.ei_scope[self._unit_key_str((cfg, T_ms, mech))] = {
+            "scope": "baseline_arm_only", "definition": "role==baseline 且 drive_mult==1.0",
+            "basis": "docs/m11_acceptance_master.md R124（§3do）+ R200 §③1（§3gl）；"
+                     "data/m12_targets.csv::rule_e_baseline_arm_only（M12 侧同名规则）",
+            "arms_used": [a.arm_id for a in scope_arms],
+            "arms_excluded": scope_excluded,
+            "ei_ratio_median": val, "band": [lo, hi], "band_status": bstat,
+            "estimator": "synaptic_current_integral_ratio",
+        }
         bl = self._baseline_arm_value(cfg, T_ms, CRIT["e"], "per_neuron")
-        if not arms:
-            status, reason = "unavailable", "arm_missing"
+        if not scope_arms:
+            if arms:
+                status, reason = "unavailable", ("baseline_arm_missing(该格未提供 role=baseline 且 "
+                                                 "drive_mult=1.0 的臂 ⇒ 口径 baseline_arm_only 不可判"
+                                                 "；本工具不从其它角色代判而只能判 unavailable)" + scope_txt)
+            else:
+                status, reason = "unavailable", ("arm_missing（该格无任何臂）" + scope_txt)
         elif not vals:
             status, reason = "unavailable", ("ei_input_unavailable: 臂内未注入 i_exc_integral/i_inh_integral"
-                                            "（本工具不从发放率反推电流；(e) 的唯一来源是仿真侧注入）")
+                                             "（本工具不从发放率反推电流；(e) 的唯一来源是仿真侧注入）" + scope_txt)
         else:
             status, reason = self._judge(val, lo, hi, bstat, breasons, True,
-                                        extra="定义=i_inh_integral/i_exc_integral（判据表 ei_ratio_definition）")
+                                         extra="定义=i_inh_integral/i_exc_integral（判据表 ei_ratio_definition）"
+                                               + scope_txt)
         self._emit(config_id=cfg, T_ms=T_ms, mechanism=mech, criterion=CRIT["e"],
                    estimator="synaptic_current_integral_ratio",
                    value=val, unit="", status=status, reason=reason, band_lo=lo, band_hi=hi,
@@ -972,7 +1092,7 @@ class Evaluator:
                    discriminative=(None if not bl["available"] else (not _meets(bl["value"], lo, hi))),
                    baseline_value=bl.get("value"), baseline_meets=(None if not bl["available"] else _meets(bl["value"], lo, hi)),
                    note="数值端点为预注册设计选择（derived）；四篇文献仅支撑方向与量级（判据表 ei_ratio_* 行）",
-                   arm=(arms[0] if arms else None))
+                   arm=(scope_arms[0] if scope_arms else (arms[0] if arms else None)))
 
     def _eval_engineering(self, cfg: str, T_ms: float, mech: str, arms: List[Arm],
                           n_neuron: Optional[int]) -> None:
@@ -1326,8 +1446,30 @@ class Evaluator:
                 h[r["status"]] = h.get(r["status"], 0) + 1
             crit_rows[c] = h
         gate = {}
-        for c in GATE_CRITERIA:
-            gate[c] = crit_status.get(c, "unavailable")
+        # 【v2/R200-B（缺陷 B 修复）】门条件**只由「格条件齐备」的格贡献**：缺 role=baseline/zero_drive 的
+        #   辅助格（例如只有 dose 臂的格）不再把门条件拉成 unavailable。**聚合规则与上面逐字相同**
+        #   （最坏优先），只是行集合限定为齐备格 ⇒ 差异可逐条归因。
+        #   注意：上面的 `crit_status`（⇒ 输出键 `criterion_status`）**仍按全量行**计算，语义不变
+        #   ⇒ 被排除的格**不静默丢弃**（其四态仍在 criterion_status / rows / CSV 里）。
+        scope = self.gate_aggregation_scope or self._gate_aggregation_scope()
+        gate_units = set(scope["units_used"])
+        gate_by_crit: Dict[str, List[Dict[str, Any]]] = {}
+        for r in self.rows:
+            if self._unit_key_str((r["config_id"], r["T_ms"], r["mechanism"])) in gate_units:
+                gate_by_crit.setdefault(r["criterion"], []).append(r)
+        gate_status: Dict[str, str] = {}
+        for c, rs in gate_by_crit.items():
+            prim = [r for r in rs if r["is_primary_estimator"] == 1] or rs
+            sts = {r["status"] for r in prim}
+            if "invalid" in sts:
+                gate_status[c] = "invalid"
+            elif sts == {"pass"}:
+                gate_status[c] = "pass"
+            elif "fail" in sts:
+                gate_status[c] = "fail"
+            else:
+                gate_status[c] = "unavailable"
+        gate = {c: gate_status.get(c, "unavailable") for c in GATE_CRITERIA}
         # 判别性摘要（硬门⑤）
         non_disc = sorted({r["criterion"] for r in self.rows
                            if r["discriminative"] is False or r["evidence_class"].startswith("sanity_precondition")})
@@ -1363,10 +1505,17 @@ class Evaluator:
                                       f"（{len(self.estimator_gate_unmet)} 个臂）⇒ 不得判 pass")
         counts = {s: sum(1 for r in self.rows if r["status"] == s) for s in STATES}
         return {"verdict_G1": g1, "verdict_reason": why, "gate_conditions": gate,
+                # 【v2/R200-B 新增键】门聚合的判据级状态（只含齐备格）与作用域登记（含被排除格及原因）
+                "gate_criterion_status": gate_status,
+                "gate_aggregation_scope": scope,
                 "criterion_status": crit_status, "state_counts": counts,
                 "criterion_row_status_histogram": crit_rows,
                 "aggregation_rule": ("判据级状态 = 该判据**所有行**的最坏优先聚合（invalid > fail > pass > unavailable）；"
-                                     "门条件读判据级状态 ⇒ 行状态与门条件可以不同（见 verdict_G1 处的规则声明）"),
+                                     "门条件读判据级状态 ⇒ 行状态与门条件可以不同（见 verdict_G1 处的规则声明）"
+                                     "【v2/R200-B 补写（只追加，原句保留）】门条件**不读**全量判据级状态，"
+                                     "而只读「**格条件齐备**（同时提供 baseline 与 zero_drive 臂）的格」的行聚合"
+                                     "（见 `gate_aggregation_scope` / `gate_criterion_status`）；缺角色的格其行照常输出"
+                                     "（`criterion_status` 仍按全量算）但不参与门条件。"),
                 "hard_failures": self.hard_failures,
                 "guard_failures": self.guard_failures,
                 "discipline_45_rule": ("「通过」必须能回答「它本来可能失败吗」：若某判据在该配置下**不可能失败**"
@@ -1416,6 +1565,16 @@ def print_summary(out: Dict[str, Any], rows: List[Dict[str, Any]], arm_m: Dict[s
     print(f"M11 P5 / G1 评估：**{out['verdict_G1']}**  exit={out['exit_code']}")
     print(f"  reason: {out['verdict_reason']}")
     print(f"  门条件: {out['gate_conditions']}")
+    # 【v2/R200-B】**不得静默丢弃**：门条件的作用域 + 被排除的格及其原因必须打印出来（可核对）
+    _scope = out.get("gate_aggregation_scope") or {}
+    if _scope:
+        print(f"  门条件聚合作用域（R200-B）：齐备格 {_scope.get('n_units_used')} 个 → {_scope.get('units_used')}")
+        _ex = _scope.get("units_excluded") or []
+        if _ex:
+            print(f"  ⚠ 被排除的格 {_scope.get('n_units_excluded')} 个（其行仍原样在 CSV/rows 中；仅不参与门条件）：")
+            for _r in _ex:
+                print(f"    - {_r['unit']}  roles_present={_r['roles_present']} "
+                      f"missing_roles={_r['missing_roles']} ⇒ {_r['reason']}")
     print(f"  四态计数: {out['state_counts']}")
     if out["hard_failures"]:
         print("  硬失败：")
@@ -1625,6 +1784,8 @@ def main(argv=None) -> int:
                   "n_neuron": a.n_neuron, "pop_trace": a.pop_trace_path, "counts": a.counts_path,
                   "n_steps_present": (None if a.trace is None else int(a.trace.size))} for a in ev.arms],
         "arm_metrics": ev.arm_metrics,
+        # 【v2/R200-A 新增键】(e) 的口径作用域登记：逐格的所用基准臂 ID 与被排除臂（含原因）——可核对
+        "ei_scope": ev.ei_scope,
         "output_invariants": ev.invariants,
         "gate_composition": ev.gate_composition,
         "seed_effectiveness_check": ev.seed_effectiveness_check,
