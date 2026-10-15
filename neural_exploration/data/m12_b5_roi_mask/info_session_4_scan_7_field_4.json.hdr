@@ -1,0 +1,13 @@
+HTTP/1.1 200 OK
+x-amz-request-id: 1KW7Z29WYC7TMFWF
+x-amz-id-2: qvVM7PRrLOU7i7kMhnjOEWwIWaye8hhHZFebz/oBOiSs6HHY2OIhuqfuyqSDl7UBc/2RqpMkPRM=
+Content-Length: 561
+Accept-Ranges: bytes
+Date: Wed, 14 Oct 2026 16:37:20 GMT
+Server: AmazonS3
+Last-Modified: Mon, 26 Jul 2021 20:44:30 GMT
+ETag: "6f1641e1aac8fb49e83b785823911f69"
+x-amz-version-id: null
+Cache-Control: no-cache
+Content-Type: application/json
+

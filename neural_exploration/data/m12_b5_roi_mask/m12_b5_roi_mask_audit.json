@@ -1,0 +1,1449 @@
+{
+ "generated_by": "neural_exploration/tools/m12_b5_roi_mask_audit.py",
+ "generated_at": "2026-10-14T16:40:24Z",
+ "evidence_level": "measured",
+ "purpose": "M12 B-5：真实 ROI 掩膜自证 + (b) 钙域静默口径重算（只新增）",
+ "fields": {
+  "field4": {
+   "generated_by": "neural_exploration/tools/m12_b5_roi_mask_audit.py",
+   "generated_at": "2026-10-14T16:40:25Z",
+   "evidence_level": "measured",
+   "field": "field4",
+   "field_label": "主 field（R18 定案）",
+   "s3_field": "session_4_scan_7_field_4",
+   "mask_fetched_by": "M11（本节点复核 sha256 与线上逐字节一致）",
+   "mask_source": {
+    "s3": "iarpa_microns/minnie/functional_data/field_seg_masks/session_4_scan_7_field_4/2500_2500_10000/<x0>-<x1>_<y0>-<y1>_0-1",
+    "local": "neural_exploration/data/m11_raw/microns/field_masks/*.bin",
+    "info": {
+     "type": "segmentation",
+     "data_type": "uint64",
+     "encoding": "compressed_segmentation",
+     "compressed_segmentation_block_size": [
+      8,
+      8,
+      8
+     ],
+     "size": [
+      248,
+      440,
+      1
+     ],
+     "chunk_sizes": [
+      [
+       128,
+       128,
+       1
+      ]
+     ],
+     "resolution_nm": [
+      2500,
+      2500,
+      10000
+     ],
+     "key": "2500_2500_10000"
+    }
+   },
+   "format_spec": {
+    "authority": "seung-lab compressed_segmentation 2.3.3 sdist src/decompress_segmentation.cc::DecompressChannel",
+    "upstream": "google/neuroglancer src/neuroglancer/sliceview/compressed_segmentation",
+    "channel_prefix_rule": "num_channels 个 LE uint32 偏移；单通道 = 1 个 `1`"
+   },
+   "per_chunk": [
+    {
+     "key": "0-128_0-128_0-1",
+     "x": [
+      0,
+      128
+     ],
+     "y": [
+      0,
+      128
+     ],
+     "chunk_shape": [
+      128,
+      128
+     ],
+     "gz_bytes": 4070,
+     "raw_bytes": 32540,
+     "gz_sha256": "cfbafb134850af6d3c9e8f14bcad11fc5718378ca88564a55e19107eba4bec60",
+     "n_blocks": 256,
+     "header_u32": 512,
+     "encoded_bits_hist": {
+      "0": 48,
+      "1": 65,
+      "2": 115,
+      "4": 28
+     },
+     "n_labels": 147,
+     "n_nonzero": 9459,
+     "ref_impl_bitexact": true,
+     "ref_impl_module": "compressed_segmentation ?"
+    },
+    {
+     "key": "0-128_128-256_0-1",
+     "x": [
+      0,
+      128
+     ],
+     "y": [
+      128,
+      256
+     ],
+     "chunk_shape": [
+      128,
+      128
+     ],
+     "gz_bytes": 5213,
+     "raw_bytes": 42108,
+     "gz_sha256": "14f520e33d02481527c100565029f959876dd0809ab782386742504cbdab08b6",
+     "n_blocks": 256,
+     "header_u32": 512,
+     "encoded_bits_hist": {
+      "0": 5,
+      "1": 55,
+      "2": 159,
+      "4": 37
+     },
+     "n_labels": 237,
+     "n_nonzero": 7006,
+     "ref_impl_bitexact": true,
+     "ref_impl_module": "compressed_segmentation ?"
+    },
+    {
+     "key": "0-128_256-384_0-1",
+     "x": [
+      0,
+      128
+     ],
+     "y": [
+      256,
+      384
+     ],
+     "chunk_shape": [
+      128,
+      128
+     ],
+     "gz_bytes": 5432,
+     "raw_bytes": 43668,
+     "gz_sha256": "5223588dcdc61ffed5bda4dc9f92b8d6040cb2c9753a4c80d8ea6840dddd4f40",
+     "n_blocks": 256,
+     "header_u32": 512,
+     "encoded_bits_hist": {
+      "0": 5,
+      "1": 38,
+      "2": 175,
+      "4": 38
+     },
+     "n_labels": 250,
+     "n_nonzero": 7115,
+     "ref_impl_bitexact": true,
+     "ref_impl_module": "compressed_segmentation ?"
+    },
+    {
+     "key": "0-128_384-440_0-1",
+     "x": [
+      0,
+      128
+     ],
+     "y": [
+      384,
+      440
+     ],
+     "chunk_shape": [
+      128,
+      56
+     ],
+     "gz_bytes": 2330,
+     "raw_bytes": 17908,
+     "gz_sha256": "2858d1c3567e5dc3330192c2c6a5b755298c167a7fcf8905550d0113f6b01a5b",
+     "n_blocks": 112,
+     "header_u32": 224,
+     "encoded_bits_hist": {
+      "0": 6,
+      "1": 19,
+      "2": 73,
+      "4": 14
+     },
+     "n_labels": 99,
+     "n_nonzero": 3342,
+     "ref_impl_bitexact": true,
+     "ref_impl_module": "compressed_segmentation ?"
+    },
+    {
+     "key": "128-248_0-128_0-1",
+     "x": [
+      128,
+      248
+     ],
+     "y": [
+      0,
+      128
+     ],
+     "chunk_shape": [
+      120,
+      128
+     ],
+     "gz_bytes": 4737,
+     "raw_bytes": 38044,
+     "gz_sha256": "5974a7c0ab6158b054873448526527fdd582d50bca10683b67dfe94cd092f7c8",
+     "n_blocks": 240,
+     "header_u32": 480,
+     "encoded_bits_hist": {
+      "0": 17,
+      "1": 41,
+      "2": 149,
+      "4": 33
+     },
+     "n_labels": 191,
+     "n_nonzero": 7482,
+     "ref_impl_bitexact": true,
+     "ref_impl_module": "compressed_segmentation ?"
+    },
+    {
+     "key": "128-248_128-256_0-1",
+     "x": [
+      128,
+      248
+     ],
+     "y": [
+      128,
+      256
+     ],
+     "chunk_shape": [
+      120,
+      128
+     ],
+     "gz_bytes": 4906,
+     "raw_bytes": 39196,
+     "gz_sha256": "fc48ff4538e0390324d7999af80085259bcf3dc5bae5e91f41a856dda13190a6",
+     "n_blocks": 240,
+     "header_u32": 480,
+     "encoded_bits_hist": {
+      "0": 8,
+      "1": 45,
+      "2": 154,
+      "4": 33
+     },
+     "n_labels": 219,
+     "n_nonzero": 7204,
+     "ref_impl_bitexact": true,
+     "ref_impl_module": "compressed_segmentation ?"
+    },
+    {
+     "key": "128-248_256-384_0-1",
+     "x": [
+      128,
+      248
+     ],
+     "y": [
+      256,
+      384
+     ],
+     "chunk_shape": [
+      120,
+      128
+     ],
+     "gz_bytes": 5086,
+     "raw_bytes": 41236,
+     "gz_sha256": "4af04b14ab329b682c824d7467c210e1152832413dafc00b435a29804668f781",
+     "n_blocks": 240,
+     "header_u32": 480,
+     "encoded_bits_hist": {
+      "0": 7,
+      "1": 38,
+      "2": 153,
+      "4": 42
+     },
+     "n_labels": 235,
+     "n_nonzero": 6909,
+     "ref_impl_bitexact": true,
+     "ref_impl_module": "compressed_segmentation ?"
+    },
+    {
+     "key": "128-248_384-440_0-1",
+     "x": [
+      128,
+      248
+     ],
+     "y": [
+      384,
+      440
+     ],
+     "chunk_shape": [
+      120,
+      56
+     ],
+     "gz_bytes": 2236,
+     "raw_bytes": 17068,
+     "gz_sha256": "d3cd9885a660a56bf3cb2f1f7e768954691be5efeb0d739abb68fa15e5959012",
+     "n_blocks": 105,
+     "header_u32": 210,
+     "encoded_bits_hist": {
+      "0": 3,
+      "1": 18,
+      "2": 72,
+      "4": 12
+     },
+     "n_labels": 103,
+     "n_nonzero": 2871,
+     "ref_impl_bitexact": true,
+     "ref_impl_module": "compressed_segmentation ?"
+    }
+   ],
+   "label_shape_stats": {
+    "n_labels": 1388,
+    "id_min": 1,
+    "id_max": 1389,
+    "missing_ids_in_range": 1,
+    "area_px": {
+     "min": 2,
+     "p25": 20.0,
+     "p50": 26.0,
+     "p75": 38.0,
+     "mean": 37.023054755043226,
+     "max": 4942
+    },
+    "area_hist": {
+     "0-5": 3,
+     "5-10": 14,
+     "10-20": 334,
+     "20-50": 839,
+     "50-100": 166,
+     "100-200": 30,
+     "200-500": 1,
+     "500-1000000000": 1
+    },
+    "coverage_frac": 0.470931
+   },
+   "seam_tests": [
+    {
+     "seam": "x=127|128, y=[0,128)",
+     "probe": "correct",
+     "overlap_px": 63,
+     "equal_px": 63,
+     "agree_frac": 1.0,
+     "negctrl_overlap_px": 63,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 12,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "y=127|128, x=[0,128)",
+     "probe": "correct",
+     "overlap_px": 59,
+     "equal_px": 58,
+     "agree_frac": 0.983051,
+     "negctrl_overlap_px": 59,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 11,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "x=127|128, y=[128,256)",
+     "probe": "correct",
+     "overlap_px": 28,
+     "equal_px": 28,
+     "agree_frac": 1.0,
+     "negctrl_overlap_px": 28,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 8,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "y=255|256, x=[0,128)",
+     "probe": "correct",
+     "overlap_px": 29,
+     "equal_px": 28,
+     "agree_frac": 0.965517,
+     "negctrl_overlap_px": 29,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 6,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "x=127|128, y=[256,384)",
+     "probe": "correct",
+     "overlap_px": 61,
+     "equal_px": 58,
+     "agree_frac": 0.95082,
+     "negctrl_overlap_px": 61,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 13,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "y=383|384, x=[0,128)",
+     "probe": "correct",
+     "overlap_px": 51,
+     "equal_px": 51,
+     "agree_frac": 1.0,
+     "negctrl_overlap_px": 51,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 11,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "x=127|128, y=[384,440)",
+     "probe": "correct",
+     "overlap_px": 9,
+     "equal_px": 9,
+     "agree_frac": 1.0,
+     "negctrl_overlap_px": 9,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 2,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "y=127|128, x=[128,248)",
+     "probe": "correct",
+     "overlap_px": 67,
+     "equal_px": 67,
+     "agree_frac": 1.0,
+     "negctrl_overlap_px": 67,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 9,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "y=255|256, x=[128,248)",
+     "probe": "correct",
+     "overlap_px": 57,
+     "equal_px": 52,
+     "agree_frac": 0.912281,
+     "negctrl_overlap_px": 57,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 12,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "y=383|384, x=[128,248)",
+     "probe": "correct",
+     "overlap_px": 45,
+     "equal_px": 44,
+     "agree_frac": 0.977778,
+     "negctrl_overlap_px": 45,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 9,
+     "negctrl_shared_label_ids": 0
+    }
+   ],
+   "seam_tests_axis_swap_negative_control": [
+    {
+     "seam": "x=127|128, y=[0,128)",
+     "probe": "axis_swap",
+     "overlap_px": 1,
+     "equal_px": 0,
+     "agree_frac": 0.0,
+     "negctrl_overlap_px": 1,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 0,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "y=127|128, x=[0,128)",
+     "probe": "axis_swap",
+     "overlap_px": 0,
+     "equal_px": 0,
+     "agree_frac": null,
+     "negctrl_overlap_px": 0,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": null,
+     "shared_label_ids": 0,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "x=127|128, y=[128,256)",
+     "probe": "axis_swap",
+     "overlap_px": 15,
+     "equal_px": 0,
+     "agree_frac": 0.0,
+     "negctrl_overlap_px": 15,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 0,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "y=255|256, x=[0,128)",
+     "probe": "axis_swap",
+     "overlap_px": 0,
+     "equal_px": 0,
+     "agree_frac": null,
+     "negctrl_overlap_px": 0,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": null,
+     "shared_label_ids": 0,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "x=127|128, y=[256,384)",
+     "probe": "axis_swap",
+     "overlap_px": 22,
+     "equal_px": 0,
+     "agree_frac": 0.0,
+     "negctrl_overlap_px": 22,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 0,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "y=383|384, x=[0,128)",
+     "probe": "axis_swap",
+     "overlap_px": 24,
+     "equal_px": 0,
+     "agree_frac": 0.0,
+     "negctrl_overlap_px": 24,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 0,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "x=127|128, y=[384,440)",
+     "probe": "axis_swap",
+     "overlap_px": 7,
+     "equal_px": 0,
+     "agree_frac": 0.0,
+     "negctrl_overlap_px": 7,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 0,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "y=127|128, x=[128,248)",
+     "probe": "axis_swap",
+     "overlap_px": 34,
+     "equal_px": 0,
+     "agree_frac": 0.0,
+     "negctrl_overlap_px": 34,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 0,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "y=255|256, x=[128,248)",
+     "probe": "axis_swap",
+     "overlap_px": 27,
+     "equal_px": 0,
+     "agree_frac": 0.0,
+     "negctrl_overlap_px": 27,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 0,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "y=383|384, x=[128,248)",
+     "probe": "axis_swap",
+     "overlap_px": 16,
+     "equal_px": 0,
+     "agree_frac": 0.0,
+     "negctrl_overlap_px": 16,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 0,
+     "negctrl_shared_label_ids": 0
+    }
+   ],
+   "seam_summary": {
+    "n_seams": 10,
+    "correct_mean": 0.9789447000000001,
+    "relabel_negctrl_mean": 0.0,
+    "axis_swap_mean": 0.0
+   },
+   "negative_controls": {
+    "relabel_disjoint": "缝检验的 `negctrl_*` 列（一侧标签双射到**不相交**的新 id）",
+    "axis_swap": "`seam_tests_axis_swap_negative_control`（快轴假设 x⇄y 互换）"
+   },
+   "calcium_event_caliber": {
+    "dff_median": 0.423285,
+    "dff_mad": 0.385062,
+    "event_threshold_dff": 1.57847,
+    "rule": "逐像素 F0=20 分位；dF/F=(F-F0)/F0；事件阈值 = 中位 + 3·MAD（承 M11 J2 同源）"
+   },
+   "real_roi_silence": {
+    "n_rois_field_total": 1388,
+    "n_rois_fully_in_movie_window": 432,
+    "n_rois_partially_outside_window": 956,
+    "silent_frac_zero_count_real_roi": 0.101852,
+    "silent_frac_zero_count_real_roi_min10px": 0.102804,
+    "silent_frac_zero_count_real_roi_min20px": 0.112637,
+    "median_events_per_roi": 46.5,
+    "mean_events_per_roi": 89.30555555555556,
+    "cross_time_window_dispersion": {
+     "first_half": 0.150463,
+     "second_half": 0.252315,
+     "abs_diff": 0.101852,
+     "frames": [
+      1000,
+      1000
+     ]
+    },
+    "window": {
+     "x": [
+      0,
+      200
+     ],
+     "y": [
+      0,
+      200
+     ],
+     "n_frames": 2000,
+     "note": "窗口取自 manifest 的 S3 key（x_chunk=0,y_chunk=0,t_chunk∈[0,200)）"
+    }
+   },
+   "real_roi_silence_matched_100x100": {
+    "n_rois_fully_in_movie_window": 55,
+    "silent_frac_zero_count_real_roi": 0.0,
+    "cross_time_window_dispersion": {
+     "first_half": 0.018182,
+     "second_half": 0.054545,
+     "abs_diff": 0.036363,
+     "frames": [
+      1000,
+      1000
+     ]
+    },
+    "note": "与 field2 的 100×100 窗口**同尺寸**，用于跨 field 的同口径比较"
+   },
+   "semantic_anchor": {
+    "metric": "逐像素时间方差/标准差经低频背景（boxfilt k=61）归一化",
+    "window": [
+     200,
+     200
+    ],
+    "grid_step_px": 10,
+    "grid_range_px": 40,
+    "range_rule": "rng_px = 20% × min(窗口边长)（比例口径；小窗口下 ±40 px 会退化为截断）",
+    "note": "掩膜内指标 > 掩膜外 且 (0,0) 是平移网格上的唯一最优点 ⇒ 掩膜落在**有钙瞬变的像素**上且与电影**同格同向**；该检验只使用电影，不引用掩膜的元数据声明。",
+    "per_metric": {
+     "var": {
+      "inside_mean": 1.160501,
+      "outside_mean": 0.68443,
+      "inside_over_outside": 1.6956,
+      "true_shift_rank": "1/81",
+      "top3_shifts": [
+       {
+        "dx": 0,
+        "dy": 0,
+        "value": 1.1605
+       },
+       {
+        "dx": -40,
+        "dy": 30,
+        "value": 1.0027
+       },
+       {
+        "dx": -40,
+        "dy": 20,
+        "value": 0.9823
+       }
+      ],
+      "gap_true_over_runnerup": 1.1574
+     },
+     "sd": {
+      "inside_mean": 1.085326,
+      "outside_mean": 0.876099,
+      "inside_over_outside": 1.2388,
+      "true_shift_rank": "1/81",
+      "top3_shifts": [
+       {
+        "dx": 0,
+        "dy": 0,
+        "value": 1.0853
+       },
+       {
+        "dx": -40,
+        "dy": 30,
+        "value": 1.0083
+       },
+       {
+        "dx": 40,
+        "dy": -20,
+        "value": 1.0037
+       }
+      ],
+      "gap_true_over_runnerup": 1.0764
+     },
+     "mean": {
+      "inside_mean": 1.036924,
+      "outside_mean": 0.910326,
+      "inside_over_outside": 1.1391,
+      "true_shift_rank": "1/81",
+      "top3_shifts": [
+       {
+        "dx": 0,
+        "dy": 0,
+        "value": 1.0369
+       },
+       {
+        "dx": 40,
+        "dy": -30,
+        "value": 0.9955
+       },
+       {
+        "dx": -40,
+        "dy": 30,
+        "value": 0.9945
+       }
+      ],
+      "gap_true_over_runnerup": 1.0416
+     }
+    },
+    "verdict": "pass（3/3 指标上 (0,0) 均为平移网格唯一最优，且掩膜内>外）"
+   },
+   "proxy_caliber_reproduction": {
+    "bin_px": 20,
+    "n_units_proxy": 100,
+    "silent_frac_zero_count_proxy": 0.49,
+    "median_events_per_unit": 1.0,
+    "m11_published_field4": 0.49,
+    "reproduces_m11": "yes"
+   },
+   "independent_cell_detection": {
+    "n_cell_candidates": 2079,
+    "peak_density_inside": 0.053836,
+    "peak_density_outside": 0.049995,
+    "fold_inside_over_outside": 1.0768,
+    "n_rois_in_window": 459,
+    "frac_rois_containing_ge1_peak": 0.9434,
+    "shifted_controls": {
+     "shift(0,40)": 0.5011,
+     "shift(0,-40)": 0.4532,
+     "shift(40,0)": 0.5556,
+     "shift(-40,0)": 0.4532
+    },
+    "note": "检出规则**先定死再看结果**；未引用任何掩膜元数据。对照为同形状平移掩膜（±20% 窗口）。"
+   }
+  },
+  "field2": {
+   "generated_by": "neural_exploration/tools/m12_b5_roi_mask_audit.py",
+   "generated_at": "2026-10-14T16:40:37Z",
+   "evidence_level": "measured",
+   "field": "field2",
+   "field_label": "复现对照 field（非主口径）",
+   "s3_field": "session_5_scan_3_field_1",
+   "mask_fetched_by": "本节点 B-5（probe_m12_b5_roi_mask_sources.py）",
+   "mask_source": {
+    "s3": "iarpa_microns/minnie/functional_data/field_seg_masks/session_5_scan_3_field_1/2500_2500_10000/<x0>-<x1>_<y0>-<y1>_0-1",
+    "local": "neural_exploration/data/m12_b5_roi_mask/field2_masks/*.bin",
+    "info": {
+     "type": "segmentation",
+     "data_type": "uint64",
+     "encoding": "compressed_segmentation",
+     "compressed_segmentation_block_size": [
+      8,
+      8,
+      8
+     ],
+     "size": [
+      248,
+      440,
+      1
+     ],
+     "chunk_sizes": [
+      [
+       128,
+       128,
+       1
+      ]
+     ],
+     "resolution_nm": [
+      2500,
+      2500,
+      10000
+     ],
+     "key": "2500_2500_10000"
+    }
+   },
+   "format_spec": {
+    "authority": "seung-lab compressed_segmentation 2.3.3 sdist src/decompress_segmentation.cc::DecompressChannel",
+    "upstream": "google/neuroglancer src/neuroglancer/sliceview/compressed_segmentation",
+    "channel_prefix_rule": "num_channels 个 LE uint32 偏移；单通道 = 1 个 `1`"
+   },
+   "per_chunk": [
+    {
+     "key": "0-128_0-128_0-1",
+     "x": [
+      0,
+      128
+     ],
+     "y": [
+      0,
+      128
+     ],
+     "chunk_shape": [
+      128,
+      128
+     ],
+     "gz_bytes": 4383,
+     "raw_bytes": 34396,
+     "gz_sha256": "3e71d354a892af9bb7db8a363113de5052feb5f047cb05d394b12fa2b30d9ca9",
+     "n_blocks": 256,
+     "header_u32": 512,
+     "encoded_bits_hist": {
+      "0": 21,
+      "1": 84,
+      "2": 132,
+      "4": 19
+     },
+     "n_labels": 185,
+     "n_nonzero": 6147,
+     "ref_impl_bitexact": true,
+     "ref_impl_module": "compressed_segmentation ?"
+    },
+    {
+     "key": "0-128_128-256_0-1",
+     "x": [
+      0,
+      128
+     ],
+     "y": [
+      128,
+      256
+     ],
+     "chunk_shape": [
+      128,
+      128
+     ],
+     "gz_bytes": 5109,
+     "raw_bytes": 40996,
+     "gz_sha256": "07f61db2fafe105841c5d416718c30e8748f6a90b856b0968cb12e3f8a919c09",
+     "n_blocks": 256,
+     "header_u32": 512,
+     "encoded_bits_hist": {
+      "0": 20,
+      "1": 42,
+      "2": 156,
+      "4": 38
+     },
+     "n_labels": 246,
+     "n_nonzero": 6478,
+     "ref_impl_bitexact": true,
+     "ref_impl_module": "compressed_segmentation ?"
+    },
+    {
+     "key": "0-128_256-384_0-1",
+     "x": [
+      0,
+      128
+     ],
+     "y": [
+      256,
+      384
+     ],
+     "chunk_shape": [
+      128,
+      128
+     ],
+     "gz_bytes": 5336,
+     "raw_bytes": 42676,
+     "gz_sha256": "47757931cfc237d7482af04261028a6c3dffac8e0780d053bdc6d36c5385ca0a",
+     "n_blocks": 256,
+     "header_u32": 512,
+     "encoded_bits_hist": {
+      "0": 5,
+      "1": 56,
+      "2": 153,
+      "4": 42
+     },
+     "n_labels": 252,
+     "n_nonzero": 6977,
+     "ref_impl_bitexact": true,
+     "ref_impl_module": "compressed_segmentation ?"
+    },
+    {
+     "key": "0-128_384-440_0-1",
+     "x": [
+      0,
+      128
+     ],
+     "y": [
+      384,
+      440
+     ],
+     "chunk_shape": [
+      128,
+      56
+     ],
+     "gz_bytes": 2522,
+     "raw_bytes": 19996,
+     "gz_sha256": "c79e44346a189da8d735bb8504f1ff63c355dfaebb1287b1fbb776cb6db94a4a",
+     "n_blocks": 112,
+     "header_u32": 224,
+     "encoded_bits_hist": {
+      "0": 3,
+      "1": 17,
+      "2": 68,
+      "4": 24
+     },
+     "n_labels": 113,
+     "n_nonzero": 3497,
+     "ref_impl_bitexact": true,
+     "ref_impl_module": "compressed_segmentation ?"
+    },
+    {
+     "key": "128-248_0-128_0-1",
+     "x": [
+      128,
+      248
+     ],
+     "y": [
+      0,
+      128
+     ],
+     "chunk_shape": [
+      120,
+      128
+     ],
+     "gz_bytes": 3067,
+     "raw_bytes": 24244,
+     "gz_sha256": "a26c2d14be7fab952bbac4a812bb7877e6ca50ddf343e2276883fa8abbaca9e2",
+     "n_blocks": 240,
+     "header_u32": 480,
+     "encoded_bits_hist": {
+      "0": 80,
+      "1": 52,
+      "2": 96,
+      "4": 12
+     },
+     "n_labels": 135,
+     "n_nonzero": 3987,
+     "ref_impl_bitexact": true,
+     "ref_impl_module": "compressed_segmentation ?"
+    },
+    {
+     "key": "128-248_128-256_0-1",
+     "x": [
+      128,
+      248
+     ],
+     "y": [
+      128,
+      256
+     ],
+     "chunk_shape": [
+      120,
+      128
+     ],
+     "gz_bytes": 4624,
+     "raw_bytes": 36780,
+     "gz_sha256": "2fbdf9fc0b4418ecc5738ab3876a0ba1e896a116d879faeac1371963f7c873c8",
+     "n_blocks": 240,
+     "header_u32": 480,
+     "encoded_bits_hist": {
+      "0": 13,
+      "1": 46,
+      "2": 158,
+      "4": 23
+     },
+     "n_labels": 220,
+     "n_nonzero": 5845,
+     "ref_impl_bitexact": true,
+     "ref_impl_module": "compressed_segmentation ?"
+    },
+    {
+     "key": "128-248_256-384_0-1",
+     "x": [
+      128,
+      248
+     ],
+     "y": [
+      256,
+      384
+     ],
+     "chunk_shape": [
+      120,
+      128
+     ],
+     "gz_bytes": 5026,
+     "raw_bytes": 40788,
+     "gz_sha256": "61523179e635668ad24ecd84f23261e550d34cc657ed82a566a1e4a0dc411001",
+     "n_blocks": 240,
+     "header_u32": 480,
+     "encoded_bits_hist": {
+      "0": 5,
+      "1": 35,
+      "2": 165,
+      "4": 35
+     },
+     "n_labels": 243,
+     "n_nonzero": 6313,
+     "ref_impl_bitexact": true,
+     "ref_impl_module": "compressed_segmentation ?"
+    },
+    {
+     "key": "128-248_384-440_0-1",
+     "x": [
+      128,
+      248
+     ],
+     "y": [
+      384,
+      440
+     ],
+     "chunk_shape": [
+      120,
+      56
+     ],
+     "gz_bytes": 2110,
+     "raw_bytes": 16324,
+     "gz_sha256": "fd07568b65a63357fa9c43d8d52038cd3a0262724f2189a4cfb2adeec14ae660",
+     "n_blocks": 105,
+     "header_u32": 210,
+     "encoded_bits_hist": {
+      "0": 10,
+      "1": 23,
+      "2": 54,
+      "4": 18
+     },
+     "n_labels": 96,
+     "n_nonzero": 2724,
+     "ref_impl_bitexact": true,
+     "ref_impl_module": "compressed_segmentation ?"
+    }
+   ],
+   "label_shape_stats": {
+    "n_labels": 1413,
+    "id_min": 1,
+    "id_max": 1413,
+    "missing_ids_in_range": 0,
+    "area_px": {
+     "min": 7,
+     "p25": 20.0,
+     "p50": 24.0,
+     "p75": 34.0,
+     "mean": 29.70134465675867,
+     "max": 115
+    },
+    "area_hist": {
+     "0-5": 0,
+     "5-10": 11,
+     "10-20": 375,
+     "20-50": 895,
+     "50-100": 126,
+     "100-200": 6,
+     "200-500": 0,
+     "500-1000000000": 0
+    },
+    "coverage_frac": 0.384604
+   },
+   "seam_tests": [
+    {
+     "seam": "x=127|128, y=[0,128)",
+     "probe": "correct",
+     "overlap_px": 28,
+     "equal_px": 28,
+     "agree_frac": 1.0,
+     "negctrl_overlap_px": 28,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 7,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "y=127|128, x=[0,128)",
+     "probe": "correct",
+     "overlap_px": 36,
+     "equal_px": 31,
+     "agree_frac": 0.861111,
+     "negctrl_overlap_px": 36,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 8,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "x=127|128, y=[128,256)",
+     "probe": "correct",
+     "overlap_px": 40,
+     "equal_px": 33,
+     "agree_frac": 0.825,
+     "negctrl_overlap_px": 40,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 8,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "y=255|256, x=[0,128)",
+     "probe": "correct",
+     "overlap_px": 31,
+     "equal_px": 29,
+     "agree_frac": 0.935484,
+     "negctrl_overlap_px": 31,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 6,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "x=127|128, y=[256,384)",
+     "probe": "correct",
+     "overlap_px": 39,
+     "equal_px": 39,
+     "agree_frac": 1.0,
+     "negctrl_overlap_px": 39,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 8,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "y=383|384, x=[0,128)",
+     "probe": "correct",
+     "overlap_px": 42,
+     "equal_px": 37,
+     "agree_frac": 0.880952,
+     "negctrl_overlap_px": 42,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 10,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "x=127|128, y=[384,440)",
+     "probe": "correct",
+     "overlap_px": 37,
+     "equal_px": 36,
+     "agree_frac": 0.972973,
+     "negctrl_overlap_px": 37,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 7,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "y=127|128, x=[128,248)",
+     "probe": "correct",
+     "overlap_px": 25,
+     "equal_px": 24,
+     "agree_frac": 0.96,
+     "negctrl_overlap_px": 25,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 6,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "y=255|256, x=[128,248)",
+     "probe": "correct",
+     "overlap_px": 37,
+     "equal_px": 36,
+     "agree_frac": 0.972973,
+     "negctrl_overlap_px": 37,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 11,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "y=383|384, x=[128,248)",
+     "probe": "correct",
+     "overlap_px": 23,
+     "equal_px": 19,
+     "agree_frac": 0.826087,
+     "negctrl_overlap_px": 23,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 6,
+     "negctrl_shared_label_ids": 0
+    }
+   ],
+   "seam_tests_axis_swap_negative_control": [
+    {
+     "seam": "x=127|128, y=[0,128)",
+     "probe": "axis_swap",
+     "overlap_px": 0,
+     "equal_px": 0,
+     "agree_frac": null,
+     "negctrl_overlap_px": 0,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": null,
+     "shared_label_ids": 0,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "y=127|128, x=[0,128)",
+     "probe": "axis_swap",
+     "overlap_px": 0,
+     "equal_px": 0,
+     "agree_frac": null,
+     "negctrl_overlap_px": 0,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": null,
+     "shared_label_ids": 0,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "x=127|128, y=[128,256)",
+     "probe": "axis_swap",
+     "overlap_px": 12,
+     "equal_px": 0,
+     "agree_frac": 0.0,
+     "negctrl_overlap_px": 12,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 0,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "y=255|256, x=[0,128)",
+     "probe": "axis_swap",
+     "overlap_px": 0,
+     "equal_px": 0,
+     "agree_frac": null,
+     "negctrl_overlap_px": 0,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": null,
+     "shared_label_ids": 0,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "x=127|128, y=[256,384)",
+     "probe": "axis_swap",
+     "overlap_px": 23,
+     "equal_px": 0,
+     "agree_frac": 0.0,
+     "negctrl_overlap_px": 23,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 0,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "y=383|384, x=[0,128)",
+     "probe": "axis_swap",
+     "overlap_px": 21,
+     "equal_px": 0,
+     "agree_frac": 0.0,
+     "negctrl_overlap_px": 21,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 0,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "x=127|128, y=[384,440)",
+     "probe": "axis_swap",
+     "overlap_px": 17,
+     "equal_px": 0,
+     "agree_frac": 0.0,
+     "negctrl_overlap_px": 17,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 0,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "y=127|128, x=[128,248)",
+     "probe": "axis_swap",
+     "overlap_px": 9,
+     "equal_px": 0,
+     "agree_frac": 0.0,
+     "negctrl_overlap_px": 9,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 0,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "y=255|256, x=[128,248)",
+     "probe": "axis_swap",
+     "overlap_px": 25,
+     "equal_px": 0,
+     "agree_frac": 0.0,
+     "negctrl_overlap_px": 25,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 0,
+     "negctrl_shared_label_ids": 0
+    },
+    {
+     "seam": "y=383|384, x=[128,248)",
+     "probe": "axis_swap",
+     "overlap_px": 29,
+     "equal_px": 0,
+     "agree_frac": 0.0,
+     "negctrl_overlap_px": 29,
+     "negctrl_equal_px": 0,
+     "negctrl_agree_frac": 0.0,
+     "shared_label_ids": 0,
+     "negctrl_shared_label_ids": 0
+    }
+   ],
+   "seam_summary": {
+    "n_seams": 10,
+    "correct_mean": 0.9234579999999999,
+    "relabel_negctrl_mean": 0.0,
+    "axis_swap_mean": 0.0
+   },
+   "negative_controls": {
+    "relabel_disjoint": "缝检验的 `negctrl_*` 列（一侧标签双射到**不相交**的新 id）",
+    "axis_swap": "`seam_tests_axis_swap_negative_control`（快轴假设 x⇄y 互换）"
+   },
+   "calcium_event_caliber": {
+    "dff_median": 0.606383,
+    "dff_mad": 0.567295,
+    "event_threshold_dff": 2.308268,
+    "rule": "逐像素 F0=20 分位；dF/F=(F-F0)/F0；事件阈值 = 中位 + 3·MAD（承 M11 J2 同源）"
+   },
+   "real_roi_silence": {
+    "n_rois_field_total": 1413,
+    "n_rois_fully_in_movie_window": 87,
+    "n_rois_partially_outside_window": 1326,
+    "silent_frac_zero_count_real_roi": 0.229885,
+    "silent_frac_zero_count_real_roi_min10px": 0.229885,
+    "silent_frac_zero_count_real_roi_min20px": 0.231707,
+    "median_events_per_roi": 8.0,
+    "mean_events_per_roi": 31.655172413793103,
+    "cross_time_window_dispersion": {
+     "first_half": 0.689655,
+     "second_half": 0.252874,
+     "abs_diff": 0.436781,
+     "frames": [
+      1000,
+      1000
+     ]
+    },
+    "window": {
+     "x": [
+      0,
+      100
+     ],
+     "y": [
+      0,
+      100
+     ],
+     "n_frames": 2000,
+     "note": "窗口取自 manifest 的 S3 key（x_chunk=0,y_chunk=0,t_chunk∈[0,200)）"
+    }
+   },
+   "semantic_anchor": {
+    "metric": "逐像素时间方差/标准差经低频背景（boxfilt k=61）归一化",
+    "window": [
+     100,
+     100
+    ],
+    "grid_step_px": 10,
+    "grid_range_px": 20,
+    "range_rule": "rng_px = 20% × min(窗口边长)（比例口径；小窗口下 ±40 px 会退化为截断）",
+    "note": "掩膜内指标 > 掩膜外 且 (0,0) 是平移网格上的唯一最优点 ⇒ 掩膜落在**有钙瞬变的像素**上且与电影**同格同向**；该检验只使用电影，不引用掩膜的元数据声明。",
+    "per_metric": {
+     "var": {
+      "inside_mean": 1.049277,
+      "outside_mean": 0.845849,
+      "inside_over_outside": 1.2405,
+      "true_shift_rank": "1/25",
+      "top3_shifts": [
+       {
+        "dx": 0,
+        "dy": 0,
+        "value": 1.0493
+       },
+       {
+        "dx": 10,
+        "dy": -20,
+        "value": 1.0402
+       },
+       {
+        "dx": 20,
+        "dy": 10,
+        "value": 1.0322
+       }
+      ],
+      "gap_true_over_runnerup": 1.0088
+     },
+     "sd": {
+      "inside_mean": 1.040545,
+      "outside_mean": 0.94025,
+      "inside_over_outside": 1.1067,
+      "true_shift_rank": "3/25",
+      "top3_shifts": [
+       {
+        "dx": 10,
+        "dy": -20,
+        "value": 1.0432
+       },
+       {
+        "dx": 20,
+        "dy": 20,
+        "value": 1.0417
+       },
+       {
+        "dx": 0,
+        "dy": 0,
+        "value": 1.0405
+       }
+      ],
+      "gap_true_over_runnerup": 1.0015
+     },
+     "mean": {
+      "inside_mean": 1.03462,
+      "outside_mean": 0.912605,
+      "inside_over_outside": 1.1337,
+      "true_shift_rank": "6/25",
+      "top3_shifts": [
+       {
+        "dx": 20,
+        "dy": 20,
+        "value": 1.05
+       },
+       {
+        "dx": 10,
+        "dy": 10,
+        "value": 1.0381
+       },
+       {
+        "dx": -10,
+        "dy": 10,
+        "value": 1.0379
+       }
+      ],
+      "gap_true_over_runnerup": 1.0114
+     }
+    },
+    "verdict": "FAIL／部分不通过 —— 见 per_metric（不得当作已配准）"
+   },
+   "independent_cell_detection": {
+    "n_cell_candidates": 561,
+    "peak_density_inside": 0.057175,
+    "peak_density_outside": 0.055504,
+    "fold_inside_over_outside": 1.0301,
+    "n_rois_in_window": 103,
+    "frac_rois_containing_ge1_peak": 0.9223,
+    "shifted_controls": {
+     "shift(0,20)": 0.3883,
+     "shift(0,-20)": 0.3981,
+     "shift(20,0)": 0.466,
+     "shift(-20,0)": 0.4272
+    },
+    "note": "检出规则**先定死再看结果**；未引用任何掩膜元数据。对照为同形状平移掩膜（±20% 窗口）。"
+   }
+  }
+ },
+ "cross_field_dispersion": {
+  "values": {
+   "field4": 0.101852,
+   "field2": 0.229885
+  },
+  "ratio": 2.257,
+  "abs_diff": 0.128033,
+  "note": "J2 验收条件 b) 要求 ≥2 个 field 的跨 field 离散度"
+ }
+}

@@ -1,0 +1,31 @@
+{
+ "run_id": "l4_g0.70_8192_T10000ms_d1.0_s1",
+ "stage": "l4_0",
+ "config_id": "p5_L4_g0.70_b1.30_s0.10",
+ "T_ms": 10000.0,
+ "drive_mult": 1.0,
+ "seed": 1,
+ "net_seed": 1,
+ "event_seed": 12,
+ "role": "baseline",
+ "mechanism": "lever_l4",
+ "delivery": "chunk",
+ "gmax_scale": 0.7,
+ "bias_scale": 1.3,
+ "bias_log_sigma": 0.1,
+ "slow": true,
+ "tau_slow_ms": 1000.0,
+ "slow_inc": 6.0,
+ "n_neuron": 8192,
+ "settle_ms": 500.0,
+ "indegree": 20,
+ "delay_bins": [
+  40,
+  60,
+  80
+ ],
+ "subtypes": true,
+ "device": "mps",
+ "lever": "L4-0 N2: gmax_scale=0.70\uff08\u7edf\u4e00\u9012\u5f52\u589e\u76ca\u4e0b\u8c03\uff1b\u5de5\u4f5c\u683c bias=1.30,\u03c3=0.10\uff09",
+ "drive_rate_hz": 8.0
+}

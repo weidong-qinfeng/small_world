@@ -1,0 +1,5 @@
+# **提案行**（M12 B-5 节点生成；append-only 建议；**本节点未改 m11_p5_targets.csv**）
+proposal_id,target_row,proposed_value,unit,evidence,provenance,judge,note
+B5-P1,data/m11_p5_targets.csv L115 silent_frac_calcium_band_lo,0.1019,"fraction of units (real ROI, zero-event caliber)",measured,neural_exploration/data/m12_b5_roi_mask/m12_b5_roi_mask_audit.json,"pass（3/3 指标上 (0,0) 均为平移网格唯一最优，且掩膜内>外）",**建议值，非本节点写入**；须主 agent 裁决。判据见 docs/m12_b5_roi_mask.md §4
+B5-P2,data/m11_p5_targets.csv L116 silent_frac_calcium_band_hi,0.2299,"fraction of units (real ROI, zero-event caliber, 复现 field)",measured,neural_exploration/data/m12_b5_roi_mask/m12_b5_roi_mask_audit.json,跨 field 2.257×（同尺寸窗口 100×100 下为 0.0000 vs 0.2299）,**建议值，非本节点写入**；须主 agent 裁决。跨 field 离散度远大于 proxy 口径的 1.0208×
+B5-P3,（对照）proxy 口径复算,0.49,fraction of units (20×20 px proxy),measured,同 JSON,复现 M11 定稿 0.49 ⇒ 与 B5-P1 逐项可比 ⇒ proxy 高估 4.81×,**本条用于说明口径差，不作为 (b) 的候选值**

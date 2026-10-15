@@ -1,0 +1,31 @@
+{
+ "run_id": "l3r_R1125_b1.125_8192_T10000ms_d1.0_s2",
+ "stage": "l3_resolution",
+ "config_id": "p5_L3R_b1.125_s0.10",
+ "T_ms": 10000.0,
+ "drive_mult": 1.0,
+ "seed": 2,
+ "net_seed": 2,
+ "event_seed": 13,
+ "role": "baseline",
+ "mechanism": "lever_l3",
+ "delivery": "chunk",
+ "gmax_scale": 1.0,
+ "bias_scale": 1.125,
+ "bias_log_sigma": 0.1,
+ "slow": true,
+ "tau_slow_ms": 1000.0,
+ "slow_inc": 6.0,
+ "n_neuron": 8192,
+ "settle_ms": 500.0,
+ "indegree": 20,
+ "delay_bins": [
+  40,
+  60,
+  80
+ ],
+ "subtypes": true,
+ "device": "mps",
+ "lever": "L3 \u5206\u8fa8\u7387\u7cbe\u5316\uff1abias=1.125\uff08\u586b bias\u2208(1.00,1.15) \u7684\u672a\u8986\u76d6\u6bb5\uff0c\u68c0\u9a8c R=0.10 \u4e0e (a)=0.5 \u7684\u5148\u540e\uff09",
+ "drive_rate_hz": 8.0
+}

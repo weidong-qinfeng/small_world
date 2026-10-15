@@ -1,0 +1,14 @@
+HTTP/1.1 200 OK
+x-amz-id-2: ps2Ml/c3hfTm6bMF2FOXgPHlkE97f9PWJPG/587ZAoO+vyDpSvEge0nrzB60GVHPKvG/E2FXoDA=
+x-amz-request-id: 8F5N4NXGTDFWS7JQ
+Server: AmazonS3
+Date: Wed, 14 Oct 2026 16:37:31 GMT
+Last-Modified: Mon, 26 Jul 2021 20:44:50 GMT
+ETag: "88decf09b18f27e4b4194bc39abea4b1"
+Cache-Control: max-age=3600, s-max-age=3600
+Content-Encoding: gzip
+x-amz-version-id: null
+Accept-Ranges: bytes
+Content-Type: image/x.compressed_segmentation
+Content-Length: 5026
+
