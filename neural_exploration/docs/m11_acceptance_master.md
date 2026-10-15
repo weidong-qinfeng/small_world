@@ -6162,3 +6162,37 @@ R191 ② 已证：**无噪**模型下池化样本 >50% 为 0 ⇒ `median = MAD =
 **启动纪律（照既有实测过的模板）**：绝对 `--out-dir`（非绝对退 96）、**计划/spec sha 守卫**（不符退 97）、**已有 MPS 作业则拒启**（退 99）、`caffeinate -i`、`PYTHONHASHSEED=0 MPLBACKEND=Agg`、venv = `.venv-m9`。
 
 **⇒ 本次未运行仿真、未用 MPS、未联网、未改任何已登记 sha 的文件** ✓
+
+
+# 3gn. R202：🔴 **重跑的架构事实已定** —— 生产者的 `record` **无参数入口** ⇒ `import` 复用夹具**不可行**、复制夹具**被禁** ⇒ **授权对生产者做最小改动**（并沿用 R157 的三条接受性判据）
+
+**触发**：我实读生产者 `tools/run_m11_p5_arms.py`，以判定 R201 ⑤ 的两条路线哪条可行。
+
+## ① 实读结论（**`import` 复用路线不通**）
+| 事实 | 证据 |
+|---|---|
+| 记录模式**硬编码** | `tools/run_m11_p5_arms.py` **L752** `eng.run(n_settle, delivery="step", record="counts")`（settle，丢弃）、**L755** `res = eng.run(n_meas, delivery=delivery, record="counts", pop_trace=True, ei_integrals=True)` |
+| 承载函数**无 `record` 参数** | `run_one(spec: dict, out_dir: str) -> dict`（**L728**）—— 签名里**没有** `record` |
+| 全文 `record` 仅两处 | `grep -n "record" tools/run_m11_p5_arms.py` ⇒ **只有 L752 / L755** |
+
+**⇒ 因此 R201 ⑤ 的"`import` 生产者并只把记录模式换掉"**不可行****（函数体内硬编码，外部无入口）。
+**⇒ 而"另写驱动、把夹具代码复制一份"**被纪律禁止**** —— 本项目"**同款 = 同一份代码**"的证明方式（rho 节点与 B-5 的 `import m12_b5_roi_mask_audit`）要求**同一份实现**，复制品会在未来漂移。
+
+## ② ⇒ **裁决：授权对生产者做最小改动**（读 spec 的 `record`，默认 `"counts"`）
+- **改动范围（最小）**：在 `run_one` 内加一行 `record = str(spec.get("record", "counts"))`，并把 **L755** 的 `record="counts"` 换成 `record=record`；**L752（settle）保持 `"counts"`** —— settle 段本就被丢弃（其计数被 `eng.reset_counts()` 清掉），且**改动现场即断（不引入 settle 的记录开销）**；
+- **不得**改其它任何行、不得改 `src/*.py`、不得改其它已登记件。
+
+## ③ **接受性判据（三条，缺一即须作废该轮并重跑）—— 沿用 R157 的纪律第七十八条**
+1. **逻辑证明**：**未在 spec 里出现 `record` 键的臂 ⇒ 走 `spec.get("record","counts")` 的默认分支 ⇒ 传给引擎的 kwargs 与改前逐字相同 ⇒ rng 序列与产物逐字节不变**；
+2. **逐字节比对**：**任选 2 个既有臂**（建议 `l4_g0.35_8192_T10000ms_d1.0_s0` 与 `d0.0_s0`）用**改前/改后**的生产者各跑一次 ⇒ `_counts.csv`、`_poptrace.npy`、`.json`（除时间戳/`wall_s`/`pid`/`host` 等易变字段）**逐字节相同**，且 `sha256_of_trace` 相同；
+3. **官方臂键集全同**：既有臂 JSON 的**键集**与改前**完全一致**（防 schema 漂移）。
+**⇒ 并须重新登记生产者的新 sha256**（旧 = `26292f7b0078aad275ea2d9d21324f6ad47ea5da53e3323479dbe1ad56972b27`／1537 行）。
+
+## ④ 重跑的输入设计（据此定稿）
+6 份 **spec 副本**，**只在 R201 给出的参数上"仅增 `"record": "full"`"**，其余**逐字照抄**现成的 `l4_g0.35_8192_T10000ms_d{0.0,1.0}_s{0,1,2}.spec.json` ⇒ **`diff` 应恰好只有一行差异**（这一条要作为产物之一给出证明）。
+**产出契约（引擎侧已实读，供实现参考）**：`record == "full"` 时（`src/mouse_cortex_engine.py` **L581**）分配 `rec_rows`（`delivery=="chunk"` ⇒ `rec_rows = W`）的**逐 step 脉冲栅格环形缓冲**，并在 **L766/L789** 经 `_flush_rec(..., spike_steps, spike_idx)` 落进 `spike_steps` / `spike_idx` ⇒ **实现者须实读 `_flush_rec` 与其落点**（确认这两个容器最终挂在哪儿、以及 `delivery` 应取 `"chunk"` 还是 `"step"` 才能拿到逐 step 时刻），**不得凭猜**。
+
+## ⑤ 自证标准不变（R201 ④ 仍然有效）
+**新产物的逐神经元 `count` 必须与已落盘 `_counts.csv` 逐位相同**（baseline 三臂 `spk_total` = `47203 / 47342 / 47036`）⇒ 证明"脉冲时刻属于同一批臂"。
+
+**⇒ 本次未运行仿真、未用 MPS、未联网、未改任何已登记 sha 的文件**（只读 + 追加本裁决）✓
