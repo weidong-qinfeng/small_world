@@ -44,3 +44,6 @@ neural_exploration/data/*_poptrace_*.npy
 .venv-m10/
 .venv-m11/
 neural_exploration/data/m12_raw/
+
+# 超大原始轨迹（>100MB，超 GitHub 单文件上限；2026-10-15 因推送被拒而从历史移除）
+neural_exploration/data/m10_raw/zapbench_traces_*.f32.npy
