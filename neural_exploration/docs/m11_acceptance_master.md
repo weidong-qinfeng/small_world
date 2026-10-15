@@ -6196,3 +6196,51 @@ R191 ② 已证：**无噪**模型下池化样本 >50% 为 0 ⇒ `median = MAD =
 **新产物的逐神经元 `count` 必须与已落盘 `_counts.csv` 逐位相同**（baseline 三臂 `spk_total` = `47203 / 47342 / 47036`）⇒ 证明"脉冲时刻属于同一批臂"。
 
 **⇒ 本次未运行仿真、未用 MPS、未联网、未改任何已登记 sha 的文件**（只读 + 追加本裁决）✓
+
+
+# 3go. R203：🔴 **评估器 A/B 两处缺陷 —— 我的独立复核判定：A ✅ / B ✅（均已修好）**；其残余 `unavailable` 是**已登记的硬门⑤语义**（非缺陷）⇒ **验收仍待节点回报 + sha 稳定**
+
+**性质**：本条是**状态性裁决**（我自己的独立核验结论），**不是**对节点交付的正式验收（R151：不验收在途版本；该文件在本轮内已被改**两次**：`0d3c1d99…` → `12cec980…` → **`a9c2756ecf63c61f`**）。
+
+## ① 我的独立核验方式（**不采信自述**）
+在**改后**的评估器上、用**既有 L5 产物**跑冒烟，输出**只写 `/tmp`**（**未覆盖**任何已登记产物）：
+```
+.venv-m11/bin/python tools/validate_p11_resting.py   --protocol-json data/m11_p5_protocol_p5_L5_confirm_working_point.json   --targets-csv data/m11_p5_targets.csv   --out-csv /tmp/ma_eval_check2.csv --out-json /tmp/ma_eval_check2.json
+```
+
+## ② 缺陷 A（`(e)` 的 R124 伪影）：**✅ 已修好**
+- 改后 `(e)` = **`1.23098 / 1.51615 / 1.37977 / 1.3783`** ⇒ **全部 `pass`**（带 `[0.5,3.0]`）；
+- 输出**新增标注 `口径=base`** ⇒ 明确"只取基准臂"；
+- **与主判 reporter 的值完全一致**（reporter：`1.230976 / 1.51615 / 1.379773 / 1.378299`）✓
+- 改前为 `4.50844 / 4.50525 / 4.52422 / 4.52182` ⇒ 判 `fail`（即 R124 登记的"全部臂中位数"伪影）⇒ **修复后该伪影消失** ✓
+
+## ③ 缺陷 B（门条件被缺臂辅助格污染）：**✅ 已修好**（**我第一次复核时发现未修好，下达补完要求后节点已补完**）
+**修复前的状态（我第一次核验，sha `12cec980…`）**：门条件仍为 `c/e/tension = unavailable`（经 `fail` → `unavailable` 变化，但仍被第 5 格污染）。
+**修复后的状态（sha `a9c2756e…`）**：
+```
+门条件: {'p5_c_selfsustain': 'pass', 'p5_e_ei_balance': 'pass', 'p5_g1_tension_quantified': 'pass'}
+门条件聚合作用域（R200-B）：齐备格 4 个 → ['p5_L5_fs_g0.30@10000ms|mech=lever_l4',
+  'p5_L5_fs_g0.40@10000ms|mech=lever_l4', 'p5_L5_work_T20000@20000ms|mech=lever_l4',
+  'p5_L5_work_T40000@40000ms|mech=lever_l4']
+⚠ 被排除的格 1 个（其行仍原样在 CSV/rows 中；仅不参与门条件）：
+  - p5_L5_work_d2.0@10000ms|mech=lever_l4  roles_present=['dose'] missing_roles=['baseline','zero_drive']
+    ⇒ unit_incomplete(缺角色=['baseline','zero_drive'])：该格的行照常输出，但门条件的作用域前提
+      （同时提供 baseline 与 zero_drive）不满足 ⇒ 不得贡献门条件（R200 §③2）
+```
+**⇒ 三项要求逐条达成**：① 门条件**只由"格齐备"的 4 个格贡献**（全 `pass`）✓；② **被排除的格与原因显式打印**（`unit_incomplete` + 缺哪些角色）✓；③ **未放宽任何判据/阈值** —— 该格的行**照常输出**（其 `(e)` 自身仍显示 `unavailable baseline_arm_missing`，只是**不参与门条件**）✓
+
+## ④ 🔴 残余 `unavailable` 的成因：**已登记的硬门⑤语义**（**不是**缺陷）
+改后总判仍为 `unavailable`（exit 3），但 `reason` 已换为：
+> **`硬门⑤：缺「无机制基线臂」的同一判据值 ⇒ 判别性未登记，整体不得判 pass`**
+
+**⇒ 这正是 R120/§③ 早已登记的语义**：本链计划的臂是 `mechanism="lever_*"`，而硬门⑤要求存在 `mechanism="none"` 的**同判据基线臂** ⇒ **评估器对本链本就应判 `unavailable`** ⇒ **这正是 R200 裁定"以 `report_m11_l3.py` 为主判"的原因** ✓
+**⇒ 因此本次修复**不必也不应**去"消除"这个 `unavailable`** —— 若有人为了让总判变 `pass` 而去放宽硬门⑤，那将是**伪造**。
+
+## ⑤ 正式验收的前置（**尚缺，据此不得算通过**）
+1. 节点**回报**：逐字段「**变／不变**」清单 ＋ **回归风险声明**（若称"仅影响 A/B 两处"，须给对照证据）；
+2. **sha 稳定**（现 `a9c2756ecf63c61f`；若再改以最终值为准）；
+3. 归档件已建（**已确认**：`tools/_archive/validate_p11_resting.0d3c1d990dfe.py` 存在 ✓）；
+4. 交付文档 `docs/m11_evaluator_fix_A_B.md`（**尚未出现**）。
+**⇒ 四项齐备后**，我**重新登记评估器新 sha**（并注明旧 `0d3c1d99…` 已归档）。
+
+**⇒ 本次未运行仿真、未用 MPS、未联网、未改任何已登记 sha 的文件、未覆盖任何已登记产物**（只读 + 写 `/tmp` + 追加本裁决）✓
